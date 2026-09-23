@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trading-bot"
+version = "0.1.0"
+description = "A small, extensible trading bot with backtesting, paper trading and live execution."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+live = ["ccxt>=4"]
+
+[project.scripts]
+trading-bot = "trading_bot.cli:main"
+
+[tool.setuptools]
+packages = ["trading_bot"]
