@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+demo_data/
+# Everything in data/ stays local, except the paper-trading record that the
+# scheduled GitHub Actions run saves back to the repository.
+data/*
+!data/journal.csv
+!data/positions.json
