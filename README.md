@@ -117,8 +117,10 @@ When a token passes every filter, the scheduled run opens an issue titled
 - the exit levels worked out from the entry price: take profit (sell half)
   at +50%, stop loss at -30%, trailing stop 40% below the peak, and the 48h
   time stop (which only sells if the price is still within ±10% of entry)
-- a reminder that passing the filters is not a buy signal (change its wording
-  under `[github_issues]` in `config.toml`)
+- a reminder that passing the filters is not a buy signal, and the
+  one-sentence test: why does this coin exist, why now, and who will buy from
+  you at a higher price? (change the wording under `[github_issues]` in
+  `config.toml`)
 
 Each token only ever gets one issue, even if it passes again later or two
 tokens share a symbol: issues are matched by contract address. When the paper
