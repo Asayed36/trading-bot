@@ -30,6 +30,7 @@ class Result:
     pair: dict | None
     checks: list = field(default_factory=list)
     top_holders: list = field(default_factory=list)  # the 10 biggest real wallets
+    insider: dict | None = None  # insider_status(report), saved at buy time
 
     @property
     def passed(self):
@@ -248,6 +249,18 @@ def _lp_check(report, pair, f):
     )
 
 
+def insider_status(report):
+    """Insider-network numbers from a RugCheck report (None if no report).
+    Only recorded for later analysis; the checks use their own logic."""
+    if not report:
+        return None
+    networks = report.get("insiderNetworks") or []
+    linked = report.get("graphInsidersDetected") or 0
+    flagged = sum(1 for h in report.get("topHolders") or [] if h.get("insider"))
+    return {"networks": len(networks), "linked_wallets": linked,
+            "insider_top_holders": flagged}
+
+
 def _insider_check(report, f):
     networks = report.get("insiderNetworks") or []
     detected = report.get("graphInsidersDetected") or 0
@@ -279,6 +292,7 @@ def evaluate(address, pair, report, f, safety_skipped=False):
         result.checks.extend(safety_checks(report, pair, f))
         if report:
             result.top_holders = real_holders(report, pair, f)[:10]
+            result.insider = insider_status(report)
     return result
 
 

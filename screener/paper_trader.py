@@ -15,6 +15,13 @@ JOURNAL_COLUMNS = [
     "usd_amount", "pnl_usd", "pnl_pct", "running_total_pnl_usd",
 ]
 
+# entries.csv: one row per paper buy with what the market looked like at that
+# moment, for later analysis. Rows are only ever added, never removed.
+ENTRY_COLUMNS = [
+    "time_utc", "symbol", "token_address", "price_usd", "buys_1h", "sells_1h",
+    "insider_flagged", "insider_networks", "insider_linked_wallets", "insider_top_holders",
+]
+
 
 def now_utc():
     return datetime.now(timezone.utc)
@@ -26,6 +33,7 @@ class PaperTrader:
         os.makedirs(data_folder, exist_ok=True)
         self.state_path = os.path.join(data_folder, "positions.json")
         self.journal_path = os.path.join(data_folder, "journal.csv")
+        self.entries_path = os.path.join(data_folder, "entries.csv")
         self.state = self._load()
 
     # ---- saving & loading ----
@@ -92,7 +100,32 @@ class PaperTrader:
         self.open_positions.append(pos)
         self.state["ever_bought"].append(result.address)
         self._journal(when, "BUY", pos, "passed all filters", price, cost)
+        self._entry(when, pos, result)
         return pos
+
+    def _entry(self, when, pos, result):
+        """Save buys vs sells over the last hour and insider-network status
+        at the moment of the buy. Blank means the data wasn't available."""
+        tx = ((result.pair or {}).get("txns") or {}).get("h1") or {}
+        ins = getattr(result, "insider", None)
+        if ins is None:
+            flagged = "unknown"
+        else:
+            flagged = "yes" if any(ins.get(k) for k in ins) else "no"
+        new_file = not os.path.exists(self.entries_path)
+        with open(self.entries_path, "a", newline="") as fh:
+            writer = csv.writer(fh)
+            if new_file:
+                writer.writerow(ENTRY_COLUMNS)
+            writer.writerow([
+                when.strftime("%Y-%m-%d %H:%M:%S"), pos["symbol"], pos["address"],
+                f"{pos['entry_price']:.10g}",
+                "" if tx.get("buys") is None else tx["buys"],
+                "" if tx.get("sells") is None else tx["sells"],
+                flagged,
+                *(("", "", "") if ins is None else
+                  (ins["networks"], ins["linked_wallets"], ins["insider_top_holders"])),
+            ])
 
     # ---- selling ----
 

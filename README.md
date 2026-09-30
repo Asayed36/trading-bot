@@ -95,6 +95,13 @@ market check aren't sent to RugCheck (they show `skip Safety checks`). Set
   Sheets or Numbers.
 - `data/positions.json`: the pretend positions you currently hold. Delete the
   whole `data/` folder to start over from zero.
+- `data/entries.csv` (and the same file in `data/early/` and
+  `data/convergence/`): one row per pretend buy with what the market looked
+  like at that moment, for later analysis: buys and sells over the last hour
+  (DexScreener) and insider-network status (RugCheck: whether any insider
+  flag was set, the number of networks, linked wallets and insider top
+  holders). Blank or `unknown` means the data wasn't available. Rows are never
+  removed, even after the position closes. Nothing here affects trading.
 - `data/early/`: the same two files for the early strategy (below), plus its
   watchlist of young tokens and the creators it has seen launch dead tokens.
 - `data/convergence/`: the same two files for the convergence strategy

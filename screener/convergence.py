@@ -43,7 +43,7 @@ import requests
 
 from screener.api import ApiError, RateLimited
 from screener.filters import (FAIL, PASS, Check, Result, best_pair, find_candidates,
-                              money, real_holders, to_float)
+                              insider_status, money, real_holders, to_float)
 from screener.paper_trader import PaperTrader, now_utc
 
 HELIUS_RPC = "https://mainnet.helius-rpc.com/?api-key={}"
@@ -572,6 +572,7 @@ class ConvergenceStrategy:
             base = (pair or {}).get("baseToken") or {}
             result = Result(mint, base.get("symbol", "?"), base.get("name", "?"), pair, checks)
             result.wallets = sig["wallets"]
+            result.insider = insider_status(report)
             plan["results"].append(result)
 
     # ---- the paper trades ----
