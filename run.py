@@ -18,6 +18,7 @@ asks for keys or seed phrases, and never places a real order.
 """
 
 import argparse
+import json
 import os
 import sys
 import tomllib
@@ -84,6 +85,24 @@ def screen(api, cfg, out):
         out(format_report(result))
         out("")
     return results
+
+
+def record_schedule(data_folder, every, now, out=print):
+    """Remember when the workflow schedule changed, in data/schedule.json.
+    Adds an entry the first time a run happens with a new interval."""
+    path = os.path.join(data_folder, "schedule.json")
+    data = {"history": []}
+    if os.path.exists(path):
+        with open(path) as fh:
+            data = json.load(fh)
+    history = data.setdefault("history", [])
+    if history and history[-1]["every_minutes"] == every:
+        return
+    history.append({"every_minutes": every, "since": now.isoformat()})
+    os.makedirs(data_folder, exist_ok=True)
+    with open(path, "w") as fh:
+        json.dump(data, fh, indent=2)
+    out(f"\n(Schedule change recorded: every {every} minutes since {now:%Y-%m-%d %H:%M} UTC)")
 
 
 def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_factory=None):
@@ -230,6 +249,8 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
                 f"holding {pos['remaining_fraction'] * 100:.0f}%")
         out(f"  Total realized paper P&L: ${ct.state['running_total_pnl_usd']:+.2f}")
         out(f"  Journal: {ct.journal_path}")
+    if cfg.get("schedule"):
+        record_schedule(data_folder, cfg["schedule"]["run_every_minutes"], now_utc(), out)
     return results
 
 

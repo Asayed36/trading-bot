@@ -133,9 +133,9 @@ slippage are assumed to be 5% per full trade (3% for the main strategy),
 because young pools are thinner.
 
 **Good to know:**
-- The bot runs every 15 minutes, so "the peak" is what it has seen at those
+- The bot runs every 5 minutes, so "the peak" is what it has seen at those
   moments (plus DexScreener's 5m/1h/6h changes when it first sees a token),
-  and the 45-minute time stop really triggers at 45–60 minutes.
+  and the 45-minute time stop really triggers at 45–50 minutes.
 - "Creator has dead tokens" uses RugCheck's list of the creator's other tokens
   when it has one, which is rare. On top of that, whenever a token the bot is
   watching dies (market cap under $5k, or flagged as rugged), its creator is
@@ -169,8 +169,8 @@ its results are in the daily comparison. Numbers are in `[convergence]` in
 5. The 15 most profitable become the tracked list. This work is spread over
    many runs, so a new list takes a few hours to build.
 
-**Buying:** every run, each tracked wallet's new transactions are read and
-decoded. When 3+ of them bought the same token within 20 minutes, and the
+**Buying:** every 15 minutes, each tracked wallet's new transactions are read
+and decoded. When 3+ of them bought the same token within 20 minutes, and the
 last of those buys was in the last 20 minutes, the token is paper-bought if
 it has a DexScreener price, at least $10k liquidity, and mint and freeze
 authority revoked.
@@ -251,10 +251,21 @@ Actions), or set `enabled = false` under `[convergence]`.
 
 ## Running automatically on GitHub
 
-`.github/workflows/screener.yml` runs the screener every 15 minutes on GitHub
+`.github/workflows/screener.yml` runs the screener every 5 minutes on GitHub
 Actions (and you can start a run by hand from the **Actions** tab). GitHub
-sometimes starts scheduled runs a few minutes late when it's busy. Each run's
+sometimes starts scheduled runs a few minutes late when it's busy. Runs never
+overlap: one that's due while another is still going waits for it. Each run's
 full PASS/FAIL report is shown on that run's summary page.
+
+The convergence strategy still reads Helius only every 15 minutes
+(`helius_every_minutes` in `config.toml`), so its credit use doesn't go up; its
+open positions are checked every run.
+
+**Schedule changes are recorded.** `[schedule] run_every_minutes` in
+`config.toml` must match the workflow's cron line. When it changes, the next
+run adds the date and time to `data/schedule.json`, and the daily comparison
+shows each strategy's results before and after the latest change separately
+(positions are grouped by when they were bought).
 
 After a run, it commits `data/journal.csv` and `data/positions.json` back to
 the repository so the next run carries on with the same pretend positions,
@@ -315,7 +326,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/compare.py`, `compare.py` | The side-by-side comparison of all strategies, with Helius credit use |
 | `screener/demo.py` | Made-up tokens for `--demo` and the tests |
 | `tests/` | Automated checks that the rules work. Run with `python -m unittest -v` |
-| `.github/workflows/screener.yml` | Runs all strategies every 15 minutes on GitHub |
+| `.github/workflows/screener.yml` | Runs all strategies every 5 minutes on GitHub |
 | `.github/workflows/daily-comparison.yml` | Posts the daily comparison issue |
 
 ## Important caveats

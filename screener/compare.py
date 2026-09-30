@@ -7,6 +7,7 @@ import csv
 import json
 import os
 from collections import defaultdict
+from datetime import datetime, timezone
 
 MARKER = "<!-- daily-comparison: {} -->"
 
@@ -24,9 +25,27 @@ def _read(folder):
     return rows, state
 
 
-def strategy_stats(folder, cost_pct, day):
-    """Numbers for one strategy. `day` is 'YYYY-MM-DD' (UTC)."""
+def _when(text):
+    """Journal times ('YYYY-MM-DD HH:MM:SS') and ISO times, as UTC datetimes."""
+    when = datetime.fromisoformat(text.replace(" ", "T"))
+    return when if when.tzinfo else when.replace(tzinfo=timezone.utc)
+
+
+def strategy_stats(folder, cost_pct, day, entered=None):
+    """Numbers for one strategy. `day` is 'YYYY-MM-DD' (UTC). `entered` is an
+    optional (since, until) pair of datetimes (either can be None): only
+    positions bought in that time are counted."""
     rows, state = _read(folder)
+    if entered:
+        since, until = entered
+
+        def keep(when):
+            return (since is None or when >= since) and (until is None or when < until)
+        bought = {r["token_address"] for r in rows
+                  if r["action"] == "BUY" and keep(_when(r["time_utc"]))}
+        rows = [r for r in rows if r["token_address"] in bought]
+        state = dict(state, open_positions=[p for p in state.get("open_positions", [])
+                                            if keep(_when(p["entry_time"]))])
     open_now = {p["address"] for p in state.get("open_positions", [])}
 
     # A position = every SELL row for that token (rebuys are off by default).
@@ -71,6 +90,56 @@ def strategy_stats(folder, cost_pct, day):
 
 def _usd(x):
     return "–" if x is None else f"${x:+.2f}"
+
+
+def schedule_split(path):
+    """(time of the latest schedule change, interval before, interval after)
+    from data/schedule.json, or None if there hasn't been a change."""
+    if not os.path.exists(path):
+        return None
+    with open(path) as fh:
+        history = json.load(fh).get("history") or []
+    if len(history) < 2:
+        return None
+    return _when(history[-1]["since"]), history[-2]["every_minutes"], history[-1]["every_minutes"]
+
+
+def schedule_lines(strategies, schedule_path):
+    """All-time results before and after the latest schedule change, per
+    strategy, grouped by when each position was bought."""
+    split = schedule_split(schedule_path)
+    if not split:
+        return ["**Before / after the schedule change:** no change recorded yet."]
+    when, before, after = split
+    cols = []
+    for name, folder, cost in strategies:
+        cols.append((f"{name}, every {before:g} min",
+                     strategy_stats(folder, cost, "", entered=(None, when))))
+        cols.append((f"{name}, every {after:g} min",
+                     strategy_stats(folder, cost, "", entered=(when, None))))
+
+    def row(label, fn):
+        return f"| {label} | " + " | ".join(fn(s) for _, s in cols) + " |"
+
+    def rate(s):
+        return "–" if s["win_rate"] is None else f"{s['win_rate']:.0f}% ({s['wins']} of {s['closed']})"
+
+    return [
+        f"**Before / after the schedule change** (every {before:g} min until "
+        f"{when:%Y-%m-%d %H:%M} UTC, every {after:g} min since; positions grouped "
+        "by when they were bought, all time)",
+        "",
+        "| | " + " | ".join(label for label, _ in cols) + " |",
+        "|---|" + "---|" * len(cols),
+        row("Paper buys", lambda s: str(s["closed"] + s["open"])),
+        row("Positions closed", lambda s: str(s["closed"])),
+        row("Win rate", rate),
+        row("Average win / loss", lambda s: f"{_usd(s['avg_win'])} / {_usd(s['avg_loss'])}"),
+        row("Realized P&L", lambda s: _usd(s["realized"])),
+        row("Open positions (unrealized P&L)",
+            lambda s: f"{s['open']} ({_usd(s['unrealized'])})"),
+        row("**Total P&L**", lambda s: f"**{_usd(s['total'])}**"),
+    ]
 
 
 def helius_lines(folder, day):

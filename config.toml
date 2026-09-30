@@ -162,8 +162,11 @@ pause_at_pct = 80
 # month you created your Helius account (1-28; use 28 for the 29th-31st).
 helius_cycle_day = 28
 helius_max_requests_per_second = 5
-# How often the GitHub workflow runs this (for pacing the budget).
-run_every_minutes = 15
+# How often to read tracked wallets from Helius. The workflow runs every
+# 5 minutes, but this strategy only uses Helius on runs at least this far
+# apart (with 2 minutes' slack for GitHub's start-time jitter), so credit use
+# stays the same. Its open positions are still checked every run, for free.
+helius_every_minutes = 15
 
 # --- The signal ---
 # Buy when at least min_wallets tracked wallets bought within window_minutes,
@@ -250,3 +253,10 @@ skip_safety_if_market_fails = true
 [files]
 # Where results are saved (created automatically).
 data_folder = "data"
+
+[schedule]
+# How often the GitHub workflow runs, in minutes. Keep this the same as the
+# cron line in .github/workflows/screener.yml. When it changes, the next run
+# records the date and time in data/schedule.json, and the daily comparison
+# shows results before and after the change separately.
+run_every_minutes = 5

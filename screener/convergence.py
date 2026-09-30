@@ -17,10 +17,11 @@ How it works (numbers in [convergence] in config.toml):
    Wallets that trade too often (bots), made most of their profit on one
    token, or didn't close enough trades are dropped. The most profitable
    ones become the tracked list. This work is spread over many runs.
-3. Live. Every run, each tracked wallet's new transactions are read from
-   Helius and decoded into buys and sells. When 3+ tracked wallets bought the
-   same token within 20 minutes, and the last of those buys was in the last
-   20 minutes, the token is paper-bought if it passes basic checks.
+3. Live. Every 15 minutes (helius_every_minutes), each tracked wallet's new
+   transactions are read from Helius and decoded into buys and sells. When
+   3+ tracked wallets bought the same token within 20 minutes, and the last
+   of those buys was in the last 20 minutes, the token is paper-bought if it
+   passes basic checks. Open positions are checked on every run.
 4. Exits: sell half at 2x, -30% hard stop, sell the rest when 2 of the
    wallets that triggered the buy sell, a 40% trailing stop after taking
    profit, and 24 hours at most.
@@ -100,7 +101,7 @@ class CreditMeter:
         return self.cap - self.used
 
     def runs_left(self):
-        return max(1, (self.end - self.now).total_seconds() / 60 / self.c["run_every_minutes"])
+        return max(1, (self.end - self.now).total_seconds() / 60 / self.c["helius_every_minutes"])
 
     def spend(self, credits):
         if self.used + credits > self.cap:
@@ -350,6 +351,24 @@ class ConvergenceStrategy:
             plan["notes"].append("not active: add the HELIUS_API_KEY secret (see README)")
             plan["state"] = state
             return plan
+
+        # Helius only on runs at least helius_every_minutes apart (2 min slack
+        # for GitHub's start-time jitter), however often the workflow runs.
+        last = state.get("last_helius_check")
+        gap = self.c["helius_every_minutes"] - 2
+        if last and now - datetime.fromisoformat(last) < timedelta(minutes=gap):
+            nxt = datetime.fromisoformat(last) + timedelta(minutes=gap)
+            plan["notes"].append(f"Helius checked at {last[11:16]} UTC; next check from "
+                                 f"{nxt:%H:%M} UTC (every {self.c['helius_every_minutes']} min)")
+            plan["state"] = state
+            if not state.get("paused_until"):
+                try:
+                    self._signals(state, api, pairs, now, plan)
+                except ApiError as exc:
+                    plan["results"] = []
+                    plan["notes"].append(f"entry checks failed this run: {exc}")
+            return plan
+        state["last_helius_check"] = now.isoformat()
 
         helius, live = self._rpcs(meter)
         try:

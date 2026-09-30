@@ -23,7 +23,10 @@ from screener.demo import (EARLY_GOOD, DemoApi, DemoRpc, _swap,  # noqa: E402
 from screener.paper_trader import now_utc  # noqa: E402
 
 CFG = load_config()
-C = CFG["convergence"]
+# helius_every_minutes = 2 means no gap between Helius checks, so these tests
+# can run the strategy several times in a row. The gap has its own tests.
+C = dict(CFG["convergence"], helius_every_minutes=2)
+FAST = dict(CFG, convergence=C)
 QUIET = dict(out=lambda *a: None)
 TRACKED = ["whale", "h0", "h1"]
 
@@ -152,7 +155,7 @@ class FlowTests(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def go(self, cfg=CFG, api=None, now=None, factory=None):
+    def go(self, cfg=FAST, api=None, now=None, factory=None):
         strategy = ConvergenceStrategy(cfg, self.tmp.name,
                                        rpc_factory=factory or demo_rpc_factory(self.history,
                                                                                self.live))
@@ -260,7 +263,7 @@ class FlowTests(unittest.TestCase):
         self.assertTrue(any("entry checks failed" in line for line in lines))
 
     def test_without_key_nothing_is_spent(self):
-        strategy = ConvergenceStrategy(CFG, self.tmp.name)       # no key, no fake
+        strategy = ConvergenceStrategy(FAST, self.tmp.name)      # no key, no fake
         plan = strategy.fetch(DemoApi())
         strategy.apply(plan, **QUIET)
         self.assertTrue(any("HELIUS_API_KEY" in n for n in plan["notes"]))

@@ -1,4 +1,4 @@
-# Runs the paper strategies ("main", "early" and "convergence") every 15
+# Runs the paper strategies ("main", "early" and "convergence") every 5
 # minutes and saves their results (data/journal.csv, data/positions.json and
 # the same two files in data/early/ and data/convergence/) back to the
 # repository, so each run picks up the pretend positions left by the previous
@@ -18,7 +18,10 @@ name: Paper trading run
 
 on:
   schedule:
-    - cron: "*/15 * * * *"  # every 15 minutes (UTC); GitHub may start it a few minutes late
+    # Every 5 minutes (UTC); GitHub may start it a few minutes late. Keep
+    # [schedule] run_every_minutes in config.toml the same. The convergence
+    # strategy still reads Helius only every 15 minutes (see config.toml).
+    - cron: "*/5 * * * *"
   workflow_dispatch:         # lets you start a run by hand from the Actions tab
 
 permissions:
@@ -26,7 +29,9 @@ permissions:
   issues: write              # needed to open and close the "passed" issues
 
 # Never let two runs overlap: both would start from the same positions and
-# the second push would lose the first run's trades.
+# the second push would lose the first run's trades. A run that starts while
+# another is going waits for it; if several pile up, GitHub keeps only the
+# newest waiting one.
 concurrency:
   group: paper-trading
   cancel-in-progress: false
@@ -88,7 +93,7 @@ jobs:
           # credit count, which changes on every run that uses credits; that
           # has to be saved so the monthly limit is never passed.
           journal_changed=$(git status --porcelain -- data/journal.csv data/early/journal.csv \
-            data/convergence/journal.csv)
+            data/convergence/journal.csv data/schedule.json)
           if [ -z "$journal_changed" ] && python - <<'PY'
           import json, os, subprocess, sys
 
@@ -119,7 +124,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/journal.csv data/positions.json
           for f in data/early/journal.csv data/early/positions.json \
-                   data/convergence/journal.csv data/convergence/positions.json; do
+                   data/convergence/journal.csv data/convergence/positions.json \
+                   data/schedule.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           git commit -m "Paper trading run $(date -u '+%Y-%m-%d %H:%M UTC')"
