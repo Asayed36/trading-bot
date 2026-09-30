@@ -27,7 +27,7 @@ A token is (pretend) bought only when ALL of these hold (numbers are in
 
 The price history behind the pullback check comes from DexScreener's 6h/1h/5m
 price changes the first time a token is seen, then one reading per run (every
-15 minutes), so the peak it knows about is approximate.
+5 minutes), so the peak it knows about is approximate.
 
 "Creator has dead tokens" uses RugCheck's list of the creator's other tokens
 when it has one (it usually doesn't), plus the bot's own memory: whenever a

@@ -16,7 +16,7 @@ import sys
 from datetime import timedelta
 
 from run import HERE, load_config
-from screener.compare import MARKER, helius_lines, report
+from screener.compare import MARKER, helius_lines, report, schedule_lines
 from screener.github_issues import GitHubError, GitHubIssues
 from screener.paper_trader import now_utc
 
@@ -66,12 +66,14 @@ def main():
     if cfg.get("early", {}).get("enabled"):
         strategies.append(("early", os.path.join(folder, "early"),
                            cfg["early"]["paper_trading"]["round_trip_cost_pct"]))
-    extra = None
+    extra = []
     if cfg.get("convergence", {}).get("enabled"):
         conv = os.path.join(folder, "convergence")
         strategies.append(("convergence", conv,
                            cfg["convergence"]["paper_trading"]["round_trip_cost_pct"]))
-        extra = helius_lines(conv, day)
+    extra += schedule_lines(strategies, os.path.join(folder, "schedule.json")) + [""]
+    if cfg.get("convergence", {}).get("enabled"):
+        extra += helius_lines(os.path.join(folder, "convergence"), day)
     body = report(strategies, day, extra)
     print(body)
 
