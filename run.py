@@ -6,9 +6,12 @@ How to run it:
     python run.py --github-issues   <- also open/close GitHub issues for tokens
                                        that pass (used by the GitHub workflow)
 
-Each run paper-trades two strategies side by side: "main" (the filters in
-[filters]) and "early" (young tokens bought on a pullback, see [early] and
-screener/early.py). Compare them with `python compare.py`.
+Each run paper-trades three strategies side by side: "main" (the filters in
+[filters]), "early" (young tokens bought on a pullback, see [early] and
+screener/early.py) and "convergence" (3+ proven traders buying the same
+token, see [convergence] and screener/convergence.py; needs a free Helius
+API key in the HELIUS_API_KEY environment variable). Compare them with
+`python compare.py`.
 
 This program is READ-ONLY. It never connects to a wallet or exchange, never
 asks for keys or seed phrases, and never places a real order.
@@ -21,6 +24,7 @@ import tomllib
 
 from screener.api import ApiError, PublicApi, RateLimited
 from screener.filters import best_pair, evaluate, find_candidates, format_report, market_checks
+from screener.convergence import ConvergenceStrategy
 from screener.early import EarlyStrategy
 from screener.github_issues import GitHubIssues, issue_details, sync
 from screener.paper_trader import PaperTrader, now_utc
@@ -82,7 +86,7 @@ def screen(api, cfg, out):
     return results
 
 
-def run(api, cfg, data_folder, out=print, issues=None):
+def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_factory=None):
     f, pt = cfg["filters"], cfg["paper_trading"]
     trader = PaperTrader(pt, data_folder)
 
@@ -102,6 +106,16 @@ def run(api, cfg, data_folder, out=print, issues=None):
             early_plan = early.fetch(api)
         except ApiError as exc:
             early_skipped = f"{exc}"
+
+    # Same for "convergence". Its Helius credit count is saved even when a
+    # later step of its own fails (see ConvergenceStrategy.fetch).
+    conv, conv_plan, conv_skipped = None, None, None
+    if cfg.get("convergence", {}).get("enabled"):
+        conv = ConvergenceStrategy(cfg, data_folder, helius_key, rpc_factory)
+        try:
+            conv_plan = conv.fetch(api)
+        except ApiError as exc:
+            conv_skipped = f"{exc}"
 
     # ---- Step 1: check the pretend trades we already hold ----
     out(LINE)
@@ -169,6 +183,17 @@ def run(api, cfg, data_folder, out=print, issues=None):
                      strategy="early")
                 early.trader.save()
 
+    # ---- Step 6: the "convergence" strategy ----
+    if conv:
+        out("")
+        out(LINE)
+        out("STEP 6: Convergence strategy (3+ proven traders buying the same token)")
+        out(LINE)
+        if conv_skipped:
+            out(f"  Skipped this run, nothing changed: {conv_skipped}")
+        else:
+            conv.apply(conv_plan, out)
+
     # ---- Summary ----
     out("")
     out(LINE)
@@ -194,6 +219,17 @@ def run(api, cfg, data_folder, out=print, issues=None):
                 f"holding {pos['remaining_fraction'] * 100:.0f}%")
         out(f"  Total realized paper P&L: ${et.state['running_total_pnl_usd']:+.2f}")
         out(f"  Journal: {et.journal_path}")
+    if conv:
+        ct = conv.trader
+        out("")
+        out("SUMMARY (convergence strategy)" + ("  - skipped this run" if conv_skipped else ""))
+        out(f"  Open paper positions: {len(ct.open_positions)}")
+        for pos in ct.open_positions:
+            change = (pos["last_price"] / pos["entry_price"] - 1) * 100
+            out(f"    {pos['symbol']:<10} entry ${pos['entry_price']:.10g}  now {change:+.1f}%  "
+                f"holding {pos['remaining_fraction'] * 100:.0f}%")
+        out(f"  Total realized paper P&L: ${ct.state['running_total_pnl_usd']:+.2f}")
+        out(f"  Journal: {ct.journal_path}")
     return results
 
 
@@ -217,16 +253,18 @@ def main():
             print("--github-issues needs GITHUB_TOKEN and GITHUB_REPOSITORY; "
                   "skipping GitHub issues.\n")
 
+    helius_key, rpc_factory = os.environ.get("HELIUS_API_KEY") or None, None
     if args.demo:
-        from screener.demo import DemoApi
-        print("*** DEMO MODE: all tokens and prices below are MADE UP. ***\n")
+        from screener.demo import DemoApi, demo_rpc_factory
+        print("*** DEMO MODE: all tokens, wallets and prices below are MADE UP. ***\n")
         api, folder = DemoApi(), os.path.join(HERE, "demo_data")
+        helius_key, rpc_factory = None, demo_rpc_factory()
     else:
         api = PublicApi(cfg["api"]["timeout_seconds"], cfg["api"]["rugcheck_delay_seconds"])
         folder = os.path.join(HERE, cfg["files"]["data_folder"])
 
     try:
-        run(api, cfg, folder, issues=issues)
+        run(api, cfg, folder, issues=issues, helius_key=helius_key, rpc_factory=rpc_factory)
     except RateLimited as exc:
         print(f"\nRate limited: {exc}")
         print("Skipping this run. Nothing was traded; try again later.")

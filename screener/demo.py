@@ -132,3 +132,86 @@ class DemoApi:
     def rugcheck_report(self, address):
         known = TOKENS.get(address) or EARLY_TOKENS.get(address) or (None, None)
         return copy.deepcopy(known[1])
+
+
+# ---------------------------------------------------------------------
+# A pretend Helius for the "convergence" strategy
+# ---------------------------------------------------------------------
+
+def _swap(mint, side, sol, tokens, when):
+    return {"mint": mint, "side": side, "sol": sol, "tokens": tokens,
+            "time": int(when.timestamp())}
+
+
+def demo_trader_history(now=None):
+    """Made-up swap histories. The top holders 'whale', 'h0' and 'h1' of the
+    demo ROCKET token are profitable traders; the other holders never traded."""
+    now = now or datetime.now(timezone.utc)
+    history = {}
+    for n, wallet in enumerate(("whale", "h0", "h1")):
+        swaps = []
+        for i in range(6):
+            when = now - timedelta(days=10 - i, hours=n)
+            mint = f"PASTWIN{i}"
+            swaps.append(_swap(mint, "buy", 1.0, 1000.0, when))
+            # five winners (2x) and one loser (-50%)
+            swaps.append(_swap(mint, "sell", 2.0 if i else 0.5, 1000.0, when + timedelta(hours=2)))
+        history[wallet] = swaps
+    return history
+
+
+class DemoRpc:
+    """Pretends to be Helius: serves made-up transactions and spends made-up
+    credits on the strategy's credit meter, 10 per call like the real one."""
+
+    per_call = 10
+    name = "demo Helius"
+
+    def __init__(self, meter=None, history=None, live=None):
+        self.meter = meter
+        self.history = history if history is not None else demo_trader_history()
+        self.live = live if live is not None else {}
+        self.calls = 0
+        self._txs = {}
+
+    def _spend(self):
+        if self.meter is not None:
+            self.meter.spend(self.per_call)
+        self.calls += 1
+
+    def signatures(self, wallet, limit, until=None):
+        self._spend()
+        swaps = self.history.get(wallet, []) + self.live.get(wallet, [])
+        sigs = []
+        for i, swap in enumerate(swaps):
+            sig = f"{wallet}-{i}"
+            self._txs[sig] = (wallet, swap)
+            sigs.append({"signature": sig, "blockTime": swap["time"], "err": None})
+        sigs.reverse()  # newest first, like the real API
+        if until:
+            cut = next((k for k, s in enumerate(sigs) if s["signature"] == until), len(sigs))
+            sigs = sigs[:cut]
+        return sigs[:limit]
+
+    def transaction(self, signature):
+        self._spend()
+        wallet, s = self._txs[signature]
+        lamports = int(s["sol"] * 1e9)
+        before, after = (0.0, s["tokens"]) if s["side"] == "buy" else (s["tokens"], 0.0)
+        sol_after = 50 * 10**9 - lamports if s["side"] == "buy" else 50 * 10**9 + lamports
+
+        def bal(amount):
+            return [{"owner": wallet, "mint": s["mint"],
+                     "uiTokenAmount": {"uiAmountString": str(amount)}}]
+        return {"blockTime": s["time"],
+                "transaction": {"message": {"accountKeys": [{"pubkey": wallet}]}},
+                "meta": {"err": None, "preBalances": [50 * 10**9], "postBalances": [sol_after],
+                         "preTokenBalances": bal(before), "postTokenBalances": bal(after)}}
+
+
+def demo_rpc_factory(history=None, live=None):
+    """For ConvergenceStrategy(rpc_factory=...): one fake for Helius and live."""
+    def make(meter):
+        rpc = DemoRpc(meter, history, live)
+        return rpc, rpc
+    return make

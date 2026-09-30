@@ -1,14 +1,18 @@
-# Runs both paper strategies ("main" and "early") every 15 minutes and saves
-# their results (data/journal.csv, data/positions.json and the same two files
-# in data/early/) back to the repository, so each run picks up the pretend
-# positions left by the previous one.
+# Runs the paper strategies ("main", "early" and "convergence") every 15
+# minutes and saves their results (data/journal.csv, data/positions.json and
+# the same two files in data/early/ and data/convergence/) back to the
+# repository, so each run picks up the pretend positions left by the previous
+# one.
 #
-# Read-only: no secrets, keys or wallets are used. The only things it writes
-# are the commit of those two files (only when a run actually changed them)
-# and GitHub issues: one "PASSED: SYMBOL" issue per token that passes every
-# filter, closed with the result when its paper position closes.
-# If DexScreener or RugCheck rate-limit us, that run is skipped and nothing is
-# saved; the next run 15 minutes later tries again.
+# Read-only: no wallets or private keys are used. The only secret is the
+# optional HELIUS_API_KEY (a free data-access key for the convergence
+# strategy, see the README); without it that strategy just stays inactive.
+# The only things it writes are the commit of the data files (only when a run
+# actually changed them) and GitHub issues: one "PASSED: SYMBOL" issue per
+# token that passes the main or early strategy, closed with the result when
+# its paper position closes.
+# If DexScreener or RugCheck rate-limit the main strategy, that run is skipped
+# and nothing is saved; the next run 15 minutes later tries again.
 
 name: Paper trading run
 
@@ -50,6 +54,7 @@ jobs:
         shell: bash
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          HELIUS_API_KEY: ${{ secrets.HELIUS_API_KEY }}
         run: |
           set +e
           python run.py --github-issues 2>&1 | tee report.txt
@@ -79,7 +84,11 @@ jobs:
           # (a buy or sell), or a change to the positions other than
           # last_price. last_price is just for display and moves every run, so
           # on its own it would mean a commit every 15 minutes.
-          journal_changed=$(git status --porcelain -- data/journal.csv data/early/journal.csv)
+          # The convergence strategy's positions.json also holds its Helius
+          # credit count, which changes on every run that uses credits; that
+          # has to be saved so the monthly limit is never passed.
+          journal_changed=$(git status --porcelain -- data/journal.csv data/early/journal.csv \
+            data/convergence/journal.csv)
           if [ -z "$journal_changed" ] && python - <<'PY'
           import json, os, subprocess, sys
 
@@ -89,7 +98,8 @@ jobs:
                   pos.pop("last_price", None)
               return state
 
-          for path in ("data/positions.json", "data/early/positions.json"):
+          for path in ("data/positions.json", "data/early/positions.json",
+                       "data/convergence/positions.json"):
               if not os.path.exists(path):
                   continue
               old = subprocess.run(["git", "show", f"HEAD:{path}"],
@@ -108,7 +118,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/journal.csv data/positions.json
-          for f in data/early/journal.csv data/early/positions.json; do
+          for f in data/early/journal.csv data/early/positions.json \
+                   data/convergence/journal.csv data/convergence/positions.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           git commit -m "Paper trading run $(date -u '+%Y-%m-%d %H:%M UTC')"
