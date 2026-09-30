@@ -53,6 +53,19 @@ class FilterTests(unittest.TestCase):
         keep_pools = dict(CFG["filters"], exclude_pools_from_holders=False)
         self.assertEqual(status(filters.safety_checks(report, pair, keep_pools), "Top 10"), FAIL)
 
+    def test_live_rugcheck_market_shape(self):
+        # Real RugCheck reports give liquidityA/B as vault addresses and
+        # liquidityAAccount/BAccount as parsed account dicts, not strings.
+        pair, report = TOKENS[GOOD]
+        vault = {"mint": "x", "owner": pair["pairAddress"], "amount": 1}
+        markets = [dict(m, liquidityA="VAULT-A", liquidityB="VAULT-B",
+                        liquidityAAccount=vault, liquidityBAccount=dict(vault))
+                   for m in report["markets"]]
+        report = dict(report, markets=markets)
+        checks = filters.safety_checks(report, pair, CFG["filters"])
+        self.assertEqual(status(checks, "Top 10"), PASS)
+        self.assertEqual(status(checks, "LP locked"), PASS)
+
     def test_creator_check_without_balance_field(self):
         pair, report = TOKENS[GOOD]
         report = dict(report, creatorBalance=None)

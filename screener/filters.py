@@ -146,9 +146,16 @@ def _pool_accounts(report, pair):
         if (info or {}).get("type") == "AMM":
             pools.add(addr)
     for m in report.get("markets") or []:
-        for key in ("pubkey", "liquidityAAccount", "liquidityBAccount"):
-            if m.get(key):
-                pools.add(m[key])
+        # RugCheck gives the pool's vault addresses as strings in liquidityA/B,
+        # and the parsed vault accounts (a dict whose "owner" is the pool) in
+        # liquidityAAccount/BAccount. Only ever collect plain address strings.
+        for key in ("pubkey", "liquidityA", "liquidityB",
+                    "liquidityAAccount", "liquidityBAccount"):
+            value = m.get(key)
+            if isinstance(value, dict):
+                value = value.get("owner")
+            if isinstance(value, str) and value:
+                pools.add(value)
     if pair and pair.get("pairAddress"):
         pools.add(pair["pairAddress"])
     return pools
