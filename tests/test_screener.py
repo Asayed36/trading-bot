@@ -66,6 +66,13 @@ class FilterTests(unittest.TestCase):
         self.assertEqual(status(checks, "Top 10"), PASS)
         self.assertEqual(status(checks, "LP locked"), PASS)
 
+    def test_lp_fails_when_traded_pool_missing(self):
+        # Another pool being 100% locked must not vouch for the one we trade in.
+        pair, report = TOKENS[GOOD]
+        pair = dict(pair, pairAddress="SOME-OTHER-POOL")
+        checks = filters.safety_checks(report, pair, CFG["filters"])
+        self.assertEqual(status(checks, "LP locked"), FAIL)
+
     def test_creator_check_without_balance_field(self):
         pair, report = TOKENS[GOOD]
         report = dict(report, creatorBalance=None)

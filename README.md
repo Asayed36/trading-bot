@@ -88,6 +88,19 @@ market check aren't sent to RugCheck (they show `skip Safety checks`). Set
 - `data/positions.json`: the pretend positions you currently hold. Delete the
   whole `data/` folder to start over from zero.
 
+## Running automatically on GitHub
+
+`.github/workflows/screener.yml` runs the screener every 2 hours on GitHub
+Actions (and you can start a run by hand from the **Actions** tab). After each
+run it commits `data/journal.csv` and `data/positions.json` back to the
+repository, so the next run carries on with the same pretend positions. Each
+run's full PASS/FAIL report is shown on that run's summary page.
+
+Those two files are tracked by git, so if you also run `python run.py` on
+your own computer, your local runs change the same files. Pull first
+(`git pull`) and don't commit your local `data/` changes, or the two records
+will get mixed up. Use `python run.py --demo` to try things out safely.
+
 ## Files in this project
 
 | File | What it does |
@@ -99,6 +112,7 @@ market check aren't sent to RugCheck (they show `skip Safety checks`). Set
 | `screener/paper_trader.py` | Pretend buys, sells and the journal |
 | `screener/demo.py` | Made-up tokens for `--demo` and the tests |
 | `tests/` | Automated checks that the rules work. Run with `python -m unittest -v` |
+| `.github/workflows/screener.yml` | Runs the screener every 2 hours on GitHub |
 
 ## Important caveats
 

@@ -1,0 +1,71 @@
+# Runs the screener every 2 hours and saves the paper-trading results
+# (data/journal.csv and data/positions.json) back to the repository, so each
+# run picks up the pretend positions left by the previous one.
+#
+# Read-only: no secrets, keys or wallets are used. The only thing it writes
+# is the commit of those two files.
+
+name: Paper trading run
+
+on:
+  schedule:
+    - cron: "0 */2 * * *"   # every 2 hours, on the hour (UTC)
+  workflow_dispatch:         # lets you start a run by hand from the Actions tab
+
+permissions:
+  contents: write            # needed to commit data/ back to the repository
+
+# Never let two runs overlap: both would start from the same positions and
+# the second push would lose the first run's trades.
+concurrency:
+  group: paper-trading
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Tests
+        run: python -m unittest -v
+
+      - name: Screen and paper trade
+        shell: bash
+        run: |
+          python run.py | tee report.txt
+          {
+            echo '## Screener report'
+            echo '```'
+            cat report.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Save results to the repository
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/journal.csv data/positions.json
+          if git diff --cached --quiet; then
+            echo "No changes to save."
+            exit 0
+          fi
+          git commit -m "Paper trading run $(date -u '+%Y-%m-%d %H:%M UTC')"
+          # If someone pushed in the meantime, replay our commit on top and retry.
+          for attempt in 1 2 3; do
+            git push && exit 0
+            sleep $((attempt * 5))
+            git pull --rebase
+          done
+          echo "Could not push the results after 3 attempts." >&2
+          exit 1

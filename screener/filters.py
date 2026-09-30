@@ -229,10 +229,13 @@ def _lp_check(report, pair, f):
     markets = [m for m in report.get("markets") or [] if m.get("lp")]
     if not markets:
         return Check(name, FAIL, "no liquidity pool data")
+    # Only the pool we'd actually trade in counts. Another pool being locked
+    # says nothing about this one, so if RugCheck doesn't list it, we FAIL.
     pair_addr = (pair or {}).get("pairAddress")
-    matching = [m for m in markets if m.get("pubkey") == pair_addr]
-    pcts = [to_float(m["lp"].get("lpLockedPct")) or 0.0 for m in (matching or markets)]
-    locked = max(pcts)
+    matching = [m for m in markets if pair_addr and m.get("pubkey") == pair_addr]
+    if not matching:
+        return Check(name, FAIL, "RugCheck has no data for the pool this token trades in")
+    locked = max(to_float(m["lp"].get("lpLockedPct")) or 0.0 for m in matching)
     return Check(
         name, PASS if locked >= f["min_lp_locked_pct"] else FAIL,
         f"{locked:.0f}% locked or burned (need {f['min_lp_locked_pct']}%)",
