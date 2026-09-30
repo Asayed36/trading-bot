@@ -81,6 +81,16 @@ round_trip_cost_pct = 3
 allow_rebuy = false
 
 # ---------------------------------------------------------------------
+# GITHUB ISSUES: only used by the scheduled GitHub run
+# ---------------------------------------------------------------------
+[github_issues]
+# Each token that passes every filter gets one issue titled "PASSED: SYMBOL"
+# with this label. It is closed with the result when the paper position closes.
+label = "passed"
+# Shown as a warning in every issue. Change the wording to whatever you like.
+note = "Passing the filters is not a buy signal. Before acting, answer in one sentence: Why does this coin exist? Why now? Who will buy from me at a higher price? If you can't, skip it."
+
+# ---------------------------------------------------------------------
 # TECHNICAL: how the program talks to the free public APIs
 # ---------------------------------------------------------------------
 [api]

@@ -3,6 +3,8 @@
 How to run it:
     python run.py            <- real data from DexScreener + RugCheck
     python run.py --demo     <- made-up example data, to see how it works offline
+    python run.py --github-issues   <- also open/close GitHub issues for tokens
+                                       that pass (used by the GitHub workflow)
 
 This program is READ-ONLY. It never connects to a wallet or exchange, never
 asks for keys or seed phrases, and never places a real order.
@@ -15,7 +17,8 @@ import tomllib
 
 from screener.api import ApiError, PublicApi, RateLimited
 from screener.filters import best_pair, evaluate, find_candidates, format_report, market_checks
-from screener.paper_trader import PaperTrader
+from screener.github_issues import GitHubIssues, issue_details, sync
+from screener.paper_trader import PaperTrader, now_utc
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 LINE = "=" * 78
@@ -74,7 +77,7 @@ def screen(api, cfg, out):
     return results
 
 
-def run(api, cfg, data_folder, out=print):
+def run(api, cfg, data_folder, out=print, issues=None):
     f, pt = cfg["filters"], cfg["paper_trading"]
     trader = PaperTrader(pt, data_folder)
 
@@ -90,6 +93,9 @@ def run(api, cfg, data_folder, out=print):
     out(LINE)
     for s in trader.update(prices):
         out(f"  SELL {s['symbol']:<10} {s['reason']:<45} P&L ${s['pnl_usd']:+.2f}")
+        if s["closed"] and s["position"].get("issue_details"):
+            # Its GitHub issue gets the result comment and is closed below.
+            trader.state.setdefault("issues_to_close", []).append(s["position"])
     for pos in trader.open_positions:
         if pos["address"] not in prices:
             out(f"  (no price for {pos['symbol']} this run - will retry next time)")
@@ -116,7 +122,19 @@ def run(api, cfg, data_folder, out=print):
             out(f"  BUY  {r.symbol:<10} ${pt['buy_amount_usd']} at ${r.price:.10g}")
         else:
             out(f"  skip {r.symbol:<10} already bought before")
+            pos = trader.position(r.address)  # still held: it can get an issue too
+        if pos and not pos.get("issue_details"):
+            pos["issue_details"] = issue_details(r, now_utc())
     trader.save()
+
+    # ---- Step 4: GitHub issues for tokens that passed ----
+    if issues:
+        out("")
+        out(LINE)
+        out("STEP 4: GitHub issues")
+        out(LINE)
+        sync(issues, trader, pt, cfg["github_issues"]["note"], out)
+        trader.save()
 
     # ---- Summary ----
     out("")
@@ -139,8 +157,21 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--demo", action="store_true",
                         help="use made-up example data instead of the internet")
+    parser.add_argument("--github-issues", action="store_true",
+                        help="open a GitHub issue for each token that passes, and close it "
+                             "when the paper position closes (needs GITHUB_TOKEN and "
+                             "GITHUB_REPOSITORY, which GitHub Actions provides)")
     args = parser.parse_args()
     cfg = load_config()
+
+    issues = None
+    if args.github_issues and not args.demo:
+        token, repo = os.environ.get("GITHUB_TOKEN"), os.environ.get("GITHUB_REPOSITORY")
+        if token and repo:
+            issues = GitHubIssues(token, repo, cfg["github_issues"]["label"])
+        else:
+            print("--github-issues needs GITHUB_TOKEN and GITHUB_REPOSITORY; "
+                  "skipping GitHub issues.\n")
 
     if args.demo:
         from screener.demo import DemoApi
@@ -151,7 +182,7 @@ def main():
         folder = os.path.join(HERE, cfg["files"]["data_folder"])
 
     try:
-        run(api, cfg, folder)
+        run(api, cfg, folder, issues=issues)
     except RateLimited as exc:
         print(f"\nRate limited: {exc}")
         print("Skipping this run. Nothing was traded; try again later.")

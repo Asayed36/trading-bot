@@ -15,12 +15,18 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import run as run_module  # noqa: E402
 from run import EXIT_RATE_LIMITED, load_config, run  # noqa: E402
 from screener.api import PublicApi, RateLimited  # noqa: E402
+from screener.github_issues import GitHubError, GitHubIssues, MARKER  # noqa: E402
 from screener import filters  # noqa: E402
 from screener.demo import GOOD, TOKENS, DemoApi  # noqa: E402
 from screener.filters import FAIL, PASS, WARN, Result  # noqa: E402
 from screener.paper_trader import PaperTrader, now_utc  # noqa: E402
 
 CFG = load_config()
+
+
+def read(path):
+    with open(path) as fh:
+        return fh.read()
 
 
 def status(checks, name):
@@ -109,18 +115,178 @@ class RateLimitTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             run(DemoApi(), CFG, d, out=lambda *a: None)  # buys GOODCAT and FRENS
             files = [os.path.join(d, n) for n in ("positions.json", "journal.csv")]
-            before = [open(p).read() for p in files]
+            before = [read(p) for p in files]
             # GOODCAT's price has halved (a stop loss would sell), but RugCheck
             # is rate limited, so the whole run must be skipped untouched.
             with self.assertRaises(RateLimited):
                 run(RateLimitedDemoApi({GOOD: 0.5}), CFG, d, out=lambda *a: None)
-            self.assertEqual([open(p).read() for p in files], before)
+            self.assertEqual([read(p) for p in files], before)
 
     def test_main_exits_with_skip_code_when_rate_limited(self):
         with mock.patch.object(run_module, "run", side_effect=RateLimited("429")), \
                 mock.patch.object(sys, "argv", ["run.py"]), \
                 mock.patch("builtins.print"):
             self.assertEqual(run_module.main(), EXIT_RATE_LIMITED)
+
+
+class FakeGitHub(GitHubIssues):
+    """Records what would be sent to GitHub. Set `down` to make calls fail."""
+
+    def __init__(self, existing=None):
+        super().__init__("token", "me/repo")
+        self.issues, self.comments, self.closed = {}, [], []
+        self.known = dict(existing or {})
+        self.down = set()  # names of methods that should fail
+
+    def _check(self, name):
+        if name in self.down:
+            raise GitHubError(f"{name} failed")
+
+    def ensure_label(self):
+        self._check("ensure_label")
+
+    def existing(self):
+        self._check("existing")
+        return dict(self.known)
+
+    def create(self, title, body):
+        self._check("create")
+        number = 100 + len(self.issues)
+        self.issues[number] = {"title": title, "body": body}
+        return number
+
+    def comment(self, number, body):
+        self._check("comment")
+        self.comments.append((number, body))
+
+    def close(self, number):
+        self._check("close")
+        self.closed.append(number)
+
+
+class GitHubIssueTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.gh = FakeGitHub()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def go(self, moves=None):
+        run(DemoApi(moves), CFG, self.tmp.name, out=lambda *a: None, issues=self.gh)
+        return PaperTrader(CFG["paper_trading"], self.tmp.name)
+
+    def issue_for(self, symbol):
+        return next(i for i in self.gh.issues.values() if i["title"] == f"PASSED: {symbol}")
+
+    def test_issue_opened_with_details_and_exit_levels(self):
+        trader = self.go()
+        self.assertEqual(sorted(i["title"] for i in self.gh.issues.values()),
+                         ["PASSED: FRENS", "PASSED: GOODCAT"])
+        body = self.issue_for("GOODCAT")["body"]
+        pair = TOKENS[GOOD][0]
+        for text in (MARKER.format(GOOD), "Demo GOODCAT", f"`{GOOD}`", pair["url"],
+                     "$0.0008 |", "$800,000", "$60,000", "+45%",
+                     "$0.0012 (+50%)", "$0.00056 (-30%)", "Starts at $0.00048",
+                     "if the price is still within ±10% of entry",
+                     CFG["github_issues"]["note"]):
+            self.assertIn(text, body)
+        self.assertEqual(body.count("| `h"), 9)  # 10 real wallets: whale + 9 of h0..h11
+        self.assertIn("| 1 | `whale` | 2.00% |", body)
+        self.assertNotIn("AMM-AUTH", body)  # the pool wallet isn't a holder
+        pos = trader.position(GOOD)
+        self.assertEqual(self.gh.issues[pos["issue"]]["title"], "PASSED: GOODCAT")
+
+    def test_no_duplicate_issues(self):
+        self.go()
+        self.go()
+        self.assertEqual(len(self.gh.issues), 2)
+
+    def test_reuses_issue_already_on_github(self):
+        # e.g. the issue was opened but the commit saving its number was lost
+        self.gh.known = {GOOD: 7}
+        trader = self.go()
+        self.assertEqual(trader.position(GOOD)["issue"], 7)
+        self.assertEqual(len(self.gh.issues), 1)  # only FRENS is new
+
+    def test_closing_position_comments_and_closes(self):
+        self.go()
+        number = PaperTrader(CFG["paper_trading"], self.tmp.name).position(GOOD)["issue"]
+        trader = self.go({GOOD: 0.5})  # down 50%: stop loss sells everything
+        self.assertEqual(self.gh.closed, [number])
+        (commented, text), = self.gh.comments
+        self.assertEqual(commented, number)
+        self.assertIn("stop loss: down 50% from entry", text)
+        self.assertIn("$0.0004", text)
+        self.assertIn("**Result:** $-5.30 (-53.0% on $10, after fees)", text)
+        self.assertFalse(trader.state["issues_to_close"])
+
+    def test_github_down_is_retried_next_run(self):
+        self.gh.down = {"create"}
+        trader = self.go()  # trading still happens
+        self.assertEqual(len(trader.open_positions), 2)
+        self.assertFalse(self.gh.issues)
+        self.gh.down = set()
+        self.go()
+        self.assertEqual(len(self.gh.issues), 2)
+
+    def test_close_retry_does_not_comment_twice(self):
+        self.go()
+        self.gh.down = {"close"}
+        trader = self.go({GOOD: 0.5})
+        self.assertEqual(len(trader.state["issues_to_close"]), 1)
+        self.gh.down = set()
+        trader = self.go({GOOD: 0.5})
+        self.assertEqual(len(self.gh.comments), 1)
+        self.assertEqual(len(self.gh.closed), 1)
+        self.assertFalse(trader.state["issues_to_close"])
+
+    def test_position_closed_before_issue_opened(self):
+        self.gh.down = {"create"}
+        self.go()
+        self.gh.down = set()
+        self.go({GOOD: 0.5})  # issue opened, commented on and closed in one go
+        number = next(n for n, i in self.gh.issues.items() if i["title"] == "PASSED: GOODCAT")
+        self.assertEqual(self.gh.closed, [number])
+
+    def test_http_requests(self):
+        gh = GitHubIssues("tok123", "me/repo")
+        created = mock.Mock(status_code=201)
+        created.json.return_value = {"number": 42}
+        ok = mock.Mock(status_code=200)
+        missing = mock.Mock(status_code=404)
+        with mock.patch("screener.github_issues.requests.request",
+                        side_effect=[missing, created, created, ok, ok]) as req:
+            gh.ensure_label()
+            self.assertEqual(gh.create("PASSED: X", "body"), 42)
+            gh.comment(42, "done")
+            gh.close(42)
+        calls = [(c.args[0], c.args[1], c.kwargs.get("json")) for c in req.call_args_list]
+        base = "https://api.github.com/repos/me/repo"
+        self.assertEqual(calls[0][:2], ("GET", f"{base}/labels/passed"))
+        self.assertEqual(calls[1][:2], ("POST", f"{base}/labels"))
+        self.assertEqual(calls[2], ("POST", f"{base}/issues",
+                                    {"title": "PASSED: X", "body": "body", "labels": ["passed"]}))
+        self.assertEqual(calls[3], ("POST", f"{base}/issues/42/comments", {"body": "done"}))
+        self.assertEqual(calls[4], ("PATCH", f"{base}/issues/42",
+                                    {"state": "closed", "state_reason": "completed"}))
+        self.assertEqual(req.call_args.kwargs["headers"]["Authorization"], "Bearer tok123")
+        with mock.patch("screener.github_issues.requests.request",
+                        return_value=mock.Mock(status_code=403, text="forbidden")):
+            with self.assertRaises(GitHubError):
+                gh.create("t", "b")
+
+    def test_existing_reads_markers_across_pages(self):
+        gh = GitHubIssues("token", "me/repo")
+        page1 = mock.Mock(status_code=200, links={"next": {"url": "https://api.github.com/p2"}})
+        page1.json.return_value = [{"number": 1, "body": MARKER.format("AAA") + "\nhi"},
+                                   {"number": 2, "body": "no marker"}]
+        page2 = mock.Mock(status_code=200, links={})
+        page2.json.return_value = [{"number": 3, "body": MARKER.format("BBB")}]
+        with mock.patch("screener.github_issues.requests.request",
+                        side_effect=[page1, page2]) as req:
+            self.assertEqual(gh.existing(), {"AAA": 1, "BBB": 3})
+        self.assertIn("labels=passed&state=all", req.call_args_list[0].args[1])
 
 
 class PaperTradingTests(unittest.TestCase):

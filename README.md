@@ -106,6 +106,34 @@ whole run: it fetches all the data *before* changing any pretend trade, so a
 skipped run changes nothing (`python run.py` exits with code 75). The run
 shows a notice instead of failing, and the next run tries again.
 
+### A GitHub issue for every token that passes
+
+When a token passes every filter, the scheduled run opens an issue titled
+**PASSED: SYMBOL**, labelled `passed`, with:
+
+- the token name, contract address and DexScreener link
+- the paper entry price, market cap, liquidity and 24h change when it passed
+- the top 10 holders (pool wallets left out)
+- the exit levels worked out from the entry price: take profit (sell half)
+  at +50%, stop loss at -30%, trailing stop 40% below the peak, and the 48h
+  time stop (which only sells if the price is still within ±10% of entry)
+- a reminder that passing the filters is not a buy signal, and the
+  one-sentence test: why does this coin exist, why now, and who will buy from
+  you at a higher price? (change the wording under `[github_issues]` in
+  `config.toml`)
+
+Each token only ever gets one issue, even if it passes again later or two
+tokens share a symbol: issues are matched by contract address. When the paper
+position closes, the run comments on the issue with every sale, the exit
+reason and the final profit or loss, then closes it. If GitHub can't be
+reached, nothing is lost: the pending issue work is saved in
+`data/positions.json` and retried on the next run.
+
+Issues are only opened for tokens you hold a paper position in (a new buy,
+or one bought earlier that passes again), so every issue gets closed.
+Positions bought before this feature existed get an issue the next time they
+pass. Local runs (`python run.py`) never touch GitHub.
+
 Those two files are tracked by git, so if you also run `python run.py` on
 your own computer, your local runs change the same files. Pull first
 (`git pull`) and don't commit your local `data/` changes, or the two records
@@ -120,6 +148,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/api.py` | Fetches data from DexScreener and RugCheck |
 | `screener/filters.py` | The PASS/FAIL checks |
 | `screener/paper_trader.py` | Pretend buys, sells and the journal |
+| `screener/github_issues.py` | Opens and closes the "PASSED" GitHub issues |
 | `screener/demo.py` | Made-up tokens for `--demo` and the tests |
 | `tests/` | Automated checks that the rules work. Run with `python -m unittest -v` |
 | `.github/workflows/screener.yml` | Runs the screener every 15 minutes on GitHub |
