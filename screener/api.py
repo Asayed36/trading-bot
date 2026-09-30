@@ -19,6 +19,11 @@ class ApiError(Exception):
     """Raised when a website can't be reached or gives a bad answer."""
 
 
+class RateLimited(ApiError):
+    """Raised when a website keeps saying 'too many requests' (HTTP 429).
+    The whole run should be skipped and tried again later."""
+
+
 class PublicApi:
     def __init__(self, timeout=20, rugcheck_delay=1.5):
         self.timeout = timeout
@@ -35,7 +40,9 @@ class PublicApi:
                     raise ApiError(f"could not reach {url}: {exc}") from exc
                 time.sleep(2 * (attempt + 1))
                 continue
-            if resp.status_code == 429 and attempt < 2:  # "slow down, too many requests"
+            if resp.status_code == 429:  # "slow down, too many requests"
+                if attempt == 2:
+                    raise RateLimited(f"{url} kept saying 'too many requests'")
                 time.sleep(5 * (attempt + 1))
                 continue
             if resp.status_code == 404:
@@ -43,7 +50,6 @@ class PublicApi:
             if resp.status_code != 200:
                 raise ApiError(f"{url} answered with error {resp.status_code}")
             return resp.json()
-        raise ApiError(f"{url} kept saying 'too many requests'")
 
     # ---- DexScreener (prices, volume, liquidity) ----
 

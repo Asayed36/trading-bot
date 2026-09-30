@@ -90,11 +90,21 @@ market check aren't sent to RugCheck (they show `skip Safety checks`). Set
 
 ## Running automatically on GitHub
 
-`.github/workflows/screener.yml` runs the screener every 2 hours on GitHub
-Actions (and you can start a run by hand from the **Actions** tab). After each
-run it commits `data/journal.csv` and `data/positions.json` back to the
-repository, so the next run carries on with the same pretend positions. Each
-run's full PASS/FAIL report is shown on that run's summary page.
+`.github/workflows/screener.yml` runs the screener every 15 minutes on GitHub
+Actions (and you can start a run by hand from the **Actions** tab). GitHub
+sometimes starts scheduled runs a few minutes late when it's busy. Each run's
+full PASS/FAIL report is shown on that run's summary page.
+
+After a run, it commits `data/journal.csv` and `data/positions.json` back to
+the repository so the next run carries on with the same pretend positions,
+but only when something actually changed: a buy, a sell, or a new price high
+for a position you hold (the trailing stop needs it). Runs where nothing
+changed make no commit.
+
+If DexScreener or RugCheck say "too many requests", the program skips that
+whole run: it fetches all the data *before* changing any pretend trade, so a
+skipped run changes nothing (`python run.py` exits with code 75). The run
+shows a notice instead of failing, and the next run tries again.
 
 Those two files are tracked by git, so if you also run `python run.py` on
 your own computer, your local runs change the same files. Pull first
@@ -112,7 +122,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/paper_trader.py` | Pretend buys, sells and the journal |
 | `screener/demo.py` | Made-up tokens for `--demo` and the tests |
 | `tests/` | Automated checks that the rules work. Run with `python -m unittest -v` |
-| `.github/workflows/screener.yml` | Runs the screener every 2 hours on GitHub |
+| `.github/workflows/screener.yml` | Runs the screener every 15 minutes on GitHub |
 
 ## Important caveats
 
