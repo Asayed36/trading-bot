@@ -29,6 +29,7 @@ class Result:
     name: str
     pair: dict | None
     checks: list = field(default_factory=list)
+    top_holders: list = field(default_factory=list)  # the 10 biggest real wallets
 
     @property
     def passed(self):
@@ -161,6 +162,16 @@ def _pool_accounts(report, pair):
     return pools
 
 
+def real_holders(report, pair, f):
+    """RugCheck's top holders, biggest first, minus pool wallets (if configured)."""
+    holders = report.get("topHolders") or []
+    if f.get("exclude_pools_from_holders", True):
+        pools = _pool_accounts(report, pair)
+        holders = [h for h in holders
+                   if h.get("address") not in pools and h.get("owner") not in pools]
+    return holders
+
+
 def safety_checks(report, pair, f):
     if not report:
         return [Check("Safety data", FAIL, "RugCheck has no report for this token")]
@@ -176,12 +187,7 @@ def safety_checks(report, pair, f):
             "revoked" if not value else f"still active ({value[:8]}...)",
         ))
 
-    holders = report.get("topHolders") or []
-    if f.get("exclude_pools_from_holders", True):
-        pools = _pool_accounts(report, pair)
-        holders = [h for h in holders
-                   if h.get("address") not in pools and h.get("owner") not in pools]
-
+    holders = real_holders(report, pair, f)
     if not holders:
         checks.append(Check("Top 10 holders", FAIL, "no holder data"))
     else:
@@ -271,6 +277,8 @@ def evaluate(address, pair, report, f, safety_skipped=False):
         result.checks.append(Check("Safety checks", SKIP, "skipped because market checks failed"))
     else:
         result.checks.extend(safety_checks(report, pair, f))
+        if report:
+            result.top_holders = real_holders(report, pair, f)[:10]
     return result
 
 

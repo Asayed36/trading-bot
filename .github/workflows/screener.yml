@@ -2,8 +2,10 @@
 # (data/journal.csv and data/positions.json) back to the repository, so each
 # run picks up the pretend positions left by the previous one.
 #
-# Read-only: no secrets, keys or wallets are used. The only thing it writes
-# is the commit of those two files, and only when a run actually changed them.
+# Read-only: no secrets, keys or wallets are used. The only things it writes
+# are the commit of those two files (only when a run actually changed them)
+# and GitHub issues: one "PASSED: SYMBOL" issue per token that passes every
+# filter, closed with the result when its paper position closes.
 # If DexScreener or RugCheck rate-limit us, that run is skipped and nothing is
 # saved; the next run 15 minutes later tries again.
 
@@ -16,6 +18,7 @@ on:
 
 permissions:
   contents: write            # needed to commit data/ back to the repository
+  issues: write              # needed to open and close the "passed" issues
 
 # Never let two runs overlap: both would start from the same positions and
 # the second push would lose the first run's trades.
@@ -44,9 +47,11 @@ jobs:
       - name: Screen and paper trade
         id: screen
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set +e
-          python run.py 2>&1 | tee report.txt
+          python run.py --github-issues 2>&1 | tee report.txt
           code=${PIPESTATUS[0]}
           set -e
           {

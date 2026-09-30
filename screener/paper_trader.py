@@ -58,6 +58,10 @@ class PaperTrader:
     def open_positions(self):
         return self.state["open_positions"]
 
+    def position(self, address):
+        """The open position in this token, or None."""
+        return next((p for p in self.open_positions if p["address"] == address), None)
+
     def can_buy(self, address):
         if any(p["address"] == address for p in self.open_positions):
             return False
@@ -102,7 +106,12 @@ class PaperTrader:
         pos["remaining_fraction"] = round(pos["remaining_fraction"] - fraction, 10)
         self.state["running_total_pnl_usd"] += pnl
         self._journal(when, "SELL", pos, reason, price, proceeds - fees, pnl, pnl / cost * 100)
-        return {"symbol": pos["symbol"], "reason": reason, "pnl_usd": pnl}
+        pos.setdefault("sells", []).append({
+            "time": when.isoformat(), "fraction": fraction, "price": price,
+            "reason": reason, "proceeds_usd": proceeds - fees, "pnl_usd": pnl,
+        })
+        return {"symbol": pos["symbol"], "reason": reason, "pnl_usd": pnl,
+                "closed": pos["remaining_fraction"] <= 0, "position": pos}
 
     def update(self, prices, when=None):
         """Check every open position against the exit rules.
