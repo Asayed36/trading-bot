@@ -1,11 +1,13 @@
 """Opens a GitHub issue for each token that passes every filter, and closes it
-when the paper position closes.
+when the paper position closes. Each paper strategy ("main" and "early") gets
+its own issues, told apart by title, a "strategy: ..." label and a hidden
+marker, so the same token can have one issue per strategy but never two.
 
 Only used by the scheduled GitHub Actions run (`python run.py --github-issues`),
 which provides the repository name and a short-lived token. It only creates,
 comments on and closes issues in this repository.
 
-What's still to do is kept in data/positions.json, so if GitHub can't be
+What's still to do is kept in each strategy's positions.json, so if GitHub can't be
 reached, nothing is lost: the next run tries again.
   - an open position with "issue_details" but no "issue" number still needs
     its issue opened
@@ -15,14 +17,24 @@ reached, nothing is lost: the next run tries again.
 
 import re
 from datetime import datetime, timedelta
+from urllib.parse import quote
 
 import requests
 
 from screener.filters import money, to_float
 
 API = "https://api.github.com"
-MARKER = "<!-- screener-token: {} -->"
-MARKER_RE = re.compile(r"<!-- screener-token: (\S+) -->")
+MARKER_RE = re.compile(r"<!-- screener-token: (\S+?)(?: strategy: (\S+))? -->")
+
+
+def marker(address, strategy="main"):
+    # The main strategy keeps the original marker, so its older issues still match.
+    if strategy == "main":
+        return f"<!-- screener-token: {address} -->"
+    return f"<!-- screener-token: {address} strategy: {strategy} -->"
+
+
+MARKER = "<!-- screener-token: {} -->"  # main strategy marker, kept for reference
 
 
 class GitHubError(Exception):
@@ -54,30 +66,35 @@ class GitHubIssues:
                               f"{resp.text[:200]}")
         return resp
 
-    def ensure_label(self):
-        if self._request("GET", f"/labels/{self.label}", allow_404=True) is None:
+    def ensure_label(self, name=None, color="0e8a16",
+                     description="Token passed every screener filter"):
+        name = name or self.label
+        if self._request("GET", f"/labels/{quote(name)}", allow_404=True) is None:
             self._request("POST", "/labels", json={
-                "name": self.label, "color": "0e8a16",
-                "description": "Token passed every screener filter",
+                "name": name, "color": color, "description": description,
             })
 
-    def existing(self):
-        """{token address: issue number} for every issue with our label,
-        open or closed, so a token never gets a second issue."""
-        found = {}
-        url = f"/issues?labels={self.label}&state=all&per_page=100"
+    def issues_with_label(self):
+        """Every issue with our label, open or closed."""
+        url = f"/issues?labels={quote(self.label)}&state=all&per_page=100"
         while url:
             resp = self._request("GET", url)
-            for issue in resp.json():
-                match = MARKER_RE.search(issue.get("body") or "")
-                if match:
-                    found.setdefault(match.group(1), issue["number"])
+            yield from resp.json()
             url = resp.links.get("next", {}).get("url")
+
+    def existing(self):
+        """{(strategy, token address): issue number} for every issue with our
+        label, open or closed, so a token never gets a second issue."""
+        found = {}
+        for issue in self.issues_with_label():
+            match = MARKER_RE.search(issue.get("body") or "")
+            if match:
+                found.setdefault((match.group(2) or "main", match.group(1)), issue["number"])
         return found
 
-    def create(self, title, body):
-        resp = self._request("POST", "/issues",
-                             json={"title": title, "body": body, "labels": [self.label]})
+    def create(self, title, body, labels=None):
+        resp = self._request("POST", "/issues", json={
+            "title": title, "body": body, "labels": labels or [self.label]})
         return resp.json()["number"]
 
     def comment(self, number, body):
@@ -92,10 +109,12 @@ class GitHubIssues:
 # What goes in the issue
 # ---------------------------------------------------------------------
 
-def issue_details(result, when):
-    """Snapshot of the numbers at the moment the token passed."""
+def issue_details(result, when, extra=None):
+    """Snapshot of the numbers at the moment the token passed. `extra` is a
+    list of (label, value) rows a strategy wants to add."""
     pair = result.pair or {}
     return {
+        "extra": [list(row) for row in extra or []],
         "name": result.name,
         "url": pair.get("url"),
         "passed_at": when.isoformat(),
@@ -117,17 +136,18 @@ def price(x):
     return f"${x:.10g}"
 
 
-def issue_title(pos):
-    return f"PASSED: {pos['symbol']}"
+def issue_title(pos, strategy="main"):
+    return STRATEGIES[strategy]["title"].format(symbol=pos["symbol"])
 
 
-def issue_body(pos, pt, note):
+def issue_body(pos, pt, note, strategy="main"):
     d = pos["issue_details"]
     entry = pos["entry_price"]
     change = d["change_24h_pct"]
     holders = d["top_holders"]
     lines = [
-        MARKER.format(pos["address"]),
+        marker(pos["address"], strategy),
+        f"**Strategy:** {strategy} ({STRATEGIES[strategy]['about']})",
         f"**Token:** {d['name']} ({pos['symbol']})",
         f"**Contract address:** `{pos['address']}`",
         f"**DexScreener:** {d['url'] or 'no link'}",
@@ -139,6 +159,9 @@ def issue_body(pos, pt, note):
         f"| Market cap | {money(d['market_cap_usd'])} |",
         f"| Liquidity | {money(d['liquidity_usd'])} |",
         f"| 24h change | {'unknown' if change is None else f'{change:+.0f}%'} |",
+    ]
+    lines += [f"| {label} | {value} |" for label, value in d.get("extra") or []]
+    lines += [
         "",
         f"### Top 10 holders ({sum(h['pct'] for h in holders):.1f}% together, "
         "pool wallets excluded)",
@@ -150,22 +173,14 @@ def issue_body(pos, pt, note):
     else:
         lines.append("No holder data.")
 
-    tp, sl, trail = pt["take_profit_pct"], pt["stop_loss_pct"], pt["trailing_stop_pct"]
-    sell_part = pt["take_profit_sell_fraction"]
-    sell_part = "half" if sell_part == 0.5 else f"{sell_part * 100:g}%"
-    time_stop = datetime.fromisoformat(pos["entry_time"]) + timedelta(hours=pt["max_hold_hours"])
     lines += [
         "",
         f"### Exit levels (from the {price(entry)} entry)",
         "| Rule | Level |",
         "|---|---|",
-        f"| Take profit: sell {sell_part} | {price(entry * (1 + tp / 100))} (+{tp:g}%) |",
-        f"| Stop loss: sell the rest | {price(entry * (1 - sl / 100))} (-{sl:g}%) |",
-        f"| Trailing stop: sell the rest | {trail:g}% below the highest price since entry. "
-        f"Starts at {price(entry * (1 - trail / 100))} and rises with the peak |",
-        f"| Time stop: sell the rest | {time_stop.strftime('%Y-%m-%d %H:%M UTC')} "
-        f"({pt['max_hold_hours']:g}h), if the price is still within "
-        f"±{pt['stale_move_pct']:g}% of entry |",
+    ]
+    lines += STRATEGIES[strategy]["exit_rows"](pos, pt)
+    lines += [
         "",
         f"> [!WARNING]\n> {note}",
         "",
@@ -173,6 +188,55 @@ def issue_body(pos, pt, note):
         "paper position closes._",
     ]
     return "\n".join(lines)
+
+
+def _sell_part(pt):
+    part = pt["take_profit_sell_fraction"]
+    return "half" if part == 0.5 else f"{part * 100:g}%"
+
+
+def _main_exit_rows(pos, pt):
+    entry = pos["entry_price"]
+    tp, sl, trail = pt["take_profit_pct"], pt["stop_loss_pct"], pt["trailing_stop_pct"]
+    time_stop = datetime.fromisoformat(pos["entry_time"]) + timedelta(hours=pt["max_hold_hours"])
+    return [
+        f"| Take profit: sell {_sell_part(pt)} | {price(entry * (1 + tp / 100))} (+{tp:g}%) |",
+        f"| Stop loss: sell the rest | {price(entry * (1 - sl / 100))} (-{sl:g}%) |",
+        f"| Trailing stop: sell the rest | {trail:g}% below the highest price since entry. "
+        f"Starts at {price(entry * (1 - trail / 100))} and rises with the peak |",
+        f"| Time stop: sell the rest | {time_stop.strftime('%Y-%m-%d %H:%M UTC')} "
+        f"({pt['max_hold_hours']:g}h), if the price is still within "
+        f"±{pt['stale_move_pct']:g}% of entry |",
+    ]
+
+
+def _early_exit_rows(pos, pt):
+    entry = pos["entry_price"]
+    tp, sl, trail = pt["take_profit_pct"], pt["stop_loss_pct"], pt["trailing_stop_pct"]
+    start = datetime.fromisoformat(pos["entry_time"])
+    time_stop = start + timedelta(minutes=pt["time_stop_minutes"])
+    give_up = start + timedelta(hours=pt["max_hold_hours"])
+    return [
+        f"| Take profit: sell {_sell_part(pt)} | {price(entry * (1 + tp / 100))} (+{tp:g}%) |",
+        f"| Hard stop: sell everything left | {price(entry * (1 - sl / 100))} (-{sl:g}%) |",
+        f"| Time stop: sell everything | {time_stop.strftime('%Y-%m-%d %H:%M UTC')} "
+        f"({pt['time_stop_minutes']:g} min), if take profit hasn't hit by then |",
+        f"| After take profit: sell the rest | {trail:g}% below the highest price since "
+        f"entry, or at {give_up.strftime('%Y-%m-%d %H:%M UTC')} ({pt['max_hold_hours']:g}h) |",
+    ]
+
+
+STRATEGIES = {
+    "main": {"title": "PASSED: {symbol}", "about": "established tokens, all filters",
+             "exit_rows": _main_exit_rows, "color": "1d76db"},
+    "early": {"title": "PASSED (early): {symbol}",
+              "about": "tokens under 6h old, bought on a pullback",
+              "exit_rows": _early_exit_rows, "color": "d93f0b"},
+}
+
+
+def strategy_label(strategy):
+    return f"strategy: {strategy}"
 
 
 def close_comment(pos):
@@ -198,7 +262,7 @@ def close_comment(pos):
 # Bringing GitHub up to date
 # ---------------------------------------------------------------------
 
-def sync(gh, trader, pt, note, out=print):
+def sync(gh, trader, pt, note, out=print, strategy="main"):
     """Open issues for newly passed tokens and close the ones whose position
     closed. Never raises: anything that fails is retried next run."""
     state = trader.state
@@ -209,18 +273,23 @@ def sync(gh, trader, pt, note, out=print):
         return
     try:
         gh.ensure_label()
+        gh.ensure_label(strategy_label(strategy), STRATEGIES[strategy]["color"],
+                        f"Paper strategy: {STRATEGIES[strategy]['about']}")
         known = gh.existing()
     except GitHubError as exc:
         out(f"  (GitHub unavailable, will retry next run: {exc})")
         return
 
     def open_issue(pos):
-        if pos["address"] in known:
-            pos["issue"] = known[pos["address"]]
+        key = (strategy, pos["address"])
+        if key in known:
+            pos["issue"] = known[key]
             out(f"  {pos['symbol']:<10} already has issue #{pos['issue']}")
         else:
-            pos["issue"] = gh.create(issue_title(pos), issue_body(pos, pt, note))
-            known[pos["address"]] = pos["issue"]
+            pos["issue"] = gh.create(issue_title(pos, strategy),
+                                     issue_body(pos, pt, note, strategy),
+                                     [gh.label, strategy_label(strategy)])
+            known[key] = pos["issue"]
             out(f"  {pos['symbol']:<10} opened issue #{pos['issue']}")
 
     for pos in to_open:

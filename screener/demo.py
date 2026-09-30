@@ -4,29 +4,39 @@ the automated tests.
 """
 
 import copy
+from datetime import datetime, timedelta, timezone
 
 GOOD = "DEMOgood1111111111111111111111111111111111"
 
 
+def _ms_ago(**ago):
+    return (datetime.now(timezone.utc) - timedelta(**ago)).timestamp() * 1000
+
+
 def _pair(addr, symbol, dex="pumpswap", mcap=800_000, liq=60_000, change=45.0,
-          buys=900, sells=600, price="0.0008"):
+          buys=900, sells=600, price="0.0008", created_ms=None, m5=None, h1=None,
+          h6=None, buys_1h=None, sells_1h=None):
     return {
         "chainId": "solana", "dexId": dex, "pairAddress": f"POOL-{symbol}",
         "url": f"https://dexscreener.com/solana/pool-{symbol.lower()} (fake)",
         "baseToken": {"address": addr, "symbol": symbol, "name": f"Demo {symbol}"},
         "priceUsd": price, "marketCap": mcap, "fdv": mcap,
-        "liquidity": {"usd": liq}, "priceChange": {"h24": change},
-        "txns": {"h24": {"buys": buys, "sells": sells}},
+        "liquidity": {"usd": liq},
+        "priceChange": {"m5": m5, "h1": h1, "h6": h6, "h24": change},
+        "txns": {"h1": {"buys": buys_1h, "sells": sells_1h},
+                 "h24": {"buys": buys, "sells": sells}},
+        "pairCreatedAt": created_ms if created_ms is not None else _ms_ago(days=3),
     }
 
 
 def _report(symbol, mint=None, freeze=None, whale_pct=2.0, creator_pct=1.0,
-            lp_locked=100, insiders=0):
+            lp_locked=100, insiders=0, creator="CREATOR", detected=None):
     holders = [{"address": f"POOLACCT-{symbol}", "owner": "AMM-AUTH", "pct": 18.0}]
     holders.append({"address": "whale", "owner": "whale", "pct": whale_pct})
     holders += [{"address": f"h{i}", "owner": f"h{i}", "pct": 1.5} for i in range(12)]
     return {
-        "creator": "CREATOR", "creatorBalance": creator_pct * 10_000,
+        "creator": creator, "creatorBalance": creator_pct * 10_000,
+        "detectedAt": detected,
         "token": {"mintAuthority": mint, "freezeAuthority": freeze, "supply": 1_000_000},
         "topHolders": holders,
         "knownAccounts": {"AMM-AUTH": {"name": "Pump Fun AMM", "type": "AMM"}},
@@ -49,6 +59,34 @@ TOKENS = {
 }
 
 
+def _early(addr, symbol, grad_min=90, age_h=3.0, h6=100.0, h1=-30.0, m5=2.0,
+           buys_1h=400, sells_1h=300, whale_pct=2.0, insiders=0, liq=25_000):
+    """A young token for the "early" strategy. The defaults make a clean
+    pullback: +100% over 6h, then down 30% from the peak and holding."""
+    detected = (datetime.now(timezone.utc) - timedelta(hours=age_h)).isoformat()
+    pair = _pair(addr, symbol, mcap=120_000, liq=liq, change=h6, price="0.0006",
+                 created_ms=_ms_ago(minutes=grad_min), m5=m5, h1=h1, h6=h6,
+                 buys_1h=buys_1h, sells_1h=sells_1h)
+    report = _report(symbol, whale_pct=whale_pct, insiders=insiders,
+                     creator=f"DEV-{symbol}", detected=detected)
+    return pair, report
+
+
+# Young tokens for the "early" strategy, found through GeckoTerminal's newest
+# pools. Only EARLYgood passes; each other one fails a single early rule.
+EARLY_GOOD = "EARLYgood111111111111111111111111111111111"
+EARLY_TOKENS = {
+    EARLY_GOOD: _early(EARLY_GOOD, "PULLY"),
+    "EARLYfresh": _early("EARLYfresh", "FRESHY", grad_min=10),         # graduated 10 min ago
+    "EARLYchase": _early("EARLYchase", "CHASEY", h6=150, h1=40, m5=5),  # still at its peak
+    "EARLYcopy": _early("EARLYcopy", "DOGGO"),                         # another DOGGO exists
+    "EARLYinsider": _early("EARLYinsider", "INSIDY", insiders=3),      # insider wallets
+    "EARLYwhale": _early("EARLYwhale", "WHALY", whale_pct=8.0),        # top 10 own 21.5%
+}
+# A different, older DOGGO that makes EARLYcopy a copycat.
+OTHER_DOGGO = _pair("OTHERdoggo", "DOGGO", created_ms=_ms_ago(days=2))
+
+
 class DemoApi:
     """Pretends to be the real websites. `price_moves` lets tests change prices,
     e.g. {GOOD: 1.6} means GOODCAT's price is now 1.6x the original."""
@@ -63,14 +101,34 @@ class DemoApi:
     def latest_boosts(self):
         return [{"chainId": "solana", "tokenAddress": a} for a in list(TOKENS)[3:]]
 
+    def gecko_new_pools(self, page=1):
+        if page > 1:
+            return []
+        return [{"id": f"solana_POOL-{a}", "type": "pool", "relationships": {
+                    "base_token": {"data": {"id": f"solana_{a}", "type": "token"}},
+                    "quote_token": {"data": {"id": "solana_So11111111111111111111111111111111111111112",
+                                             "type": "token"}},
+                    "dex": {"data": {"id": "pumpswap", "type": "dex"}}}}
+                for a in EARLY_TOKENS]
+
+    def search_pairs(self, query):
+        q = query.lower()
+        pairs = [p for p, _ in list(TOKENS.values()) + list(EARLY_TOKENS.values())] + [OTHER_DOGGO]
+        return [copy.deepcopy(p) for p in pairs
+                if q in (p["baseToken"]["symbol"].lower(), p["baseToken"]["name"].lower())]
+
     def pairs_for_tokens(self, addresses):
         pairs = []
         for a in addresses:
-            if a in TOKENS:
-                pair = copy.deepcopy(TOKENS[a][0])
-                pair["priceUsd"] = str(float(pair["priceUsd"]) * self.price_moves.get(a, 1.0))
+            known = TOKENS.get(a) or EARLY_TOKENS.get(a)
+            if known:
+                pair = copy.deepcopy(known[0])
+                move = self.price_moves.get(a, 1.0)
+                pair["priceUsd"] = str(float(pair["priceUsd"]) * move)
+                pair["marketCap"] = pair["fdv"] = pair["marketCap"] * move
                 pairs.append(pair)
         return pairs
 
     def rugcheck_report(self, address):
-        return copy.deepcopy(TOKENS.get(address, (None, None))[1])
+        known = TOKENS.get(address) or EARLY_TOKENS.get(address) or (None, None)
+        return copy.deepcopy(known[1])

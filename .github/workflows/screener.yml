@@ -1,6 +1,7 @@
-# Runs the screener every 15 minutes and saves the paper-trading results
-# (data/journal.csv and data/positions.json) back to the repository, so each
-# run picks up the pretend positions left by the previous one.
+# Runs both paper strategies ("main" and "early") every 15 minutes and saves
+# their results (data/journal.csv, data/positions.json and the same two files
+# in data/early/) back to the repository, so each run picks up the pretend
+# positions left by the previous one.
 #
 # Read-only: no secrets, keys or wallets are used. The only things it writes
 # are the commit of those two files (only when a run actually changed them)
@@ -78,9 +79,9 @@ jobs:
           # (a buy or sell), or a change to the positions other than
           # last_price. last_price is just for display and moves every run, so
           # on its own it would mean a commit every 15 minutes.
-          journal_changed=$(git status --porcelain -- data/journal.csv)
+          journal_changed=$(git status --porcelain -- data/journal.csv data/early/journal.csv)
           if [ -z "$journal_changed" ] && python - <<'PY'
-          import json, subprocess, sys
+          import json, os, subprocess, sys
 
           def strip(text):
               state = json.loads(text)
@@ -88,12 +89,17 @@ jobs:
                   pos.pop("last_price", None)
               return state
 
-          old = subprocess.run(["git", "show", "HEAD:data/positions.json"],
-                               capture_output=True, text=True)
-          if old.returncode != 0:
-              sys.exit(1)  # not in the repository yet, so it's new
-          with open("data/positions.json") as fh:
-              sys.exit(0 if strip(old.stdout) == strip(fh.read()) else 1)
+          for path in ("data/positions.json", "data/early/positions.json"):
+              if not os.path.exists(path):
+                  continue
+              old = subprocess.run(["git", "show", f"HEAD:{path}"],
+                                   capture_output=True, text=True)
+              if old.returncode != 0:
+                  sys.exit(1)  # not in the repository yet, so it's new
+              with open(path) as fh:
+                  if strip(old.stdout) != strip(fh.read()):
+                      sys.exit(1)
+          sys.exit(0)
           PY
           then
             echo "Nothing changed this run, so nothing to save."
@@ -102,6 +108,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/journal.csv data/positions.json
+          for f in data/early/journal.csv data/early/positions.json; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
           git commit -m "Paper trading run $(date -u '+%Y-%m-%d %H:%M UTC')"
           # If someone pushed in the meantime, replay our commit on top and retry.
           for attempt in 1 2 3; do
