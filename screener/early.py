@@ -22,6 +22,7 @@ A token is (pretend) bought only when ALL of these hold (numbers are in
   - the top 10 holders own under 20%
   - no insider networks or insider holders at all
   - no other token with the same name or symbol launched in the last 7 days
+    has as much liquidity (the most liquid of same-named tokens is allowed)
   - the creator isn't known to have launched a token that died
 
 The price history behind the pullback check comes from DexScreener's 6h/1h/5m
@@ -292,20 +293,32 @@ def copycat_check(api, address, pair, e, now):
     except ApiError as exc:
         return Check(name, FAIL, f"couldn't check for copycats ({exc})")
     since = now - timedelta(days=e["copycat_window_days"])
-    others = set()
+    days = f"{e['copycat_window_days']:g}"
+    others = {}  # address -> highest liquidity seen for that token (0 if unknown)
+    own = to_float((pair.get("liquidity") or {}).get("usd"))
     for p in pairs:
         other = p.get("baseToken") or {}
-        if p.get("chainId") != "solana" or other.get("address") in (None, address):
+        liq = to_float((p.get("liquidity") or {}).get("usd"))
+        if p.get("chainId") != "solana" or other.get("address") is None:
+            continue
+        if other["address"] == address:
+            if liq is not None:
+                own = max(own or 0.0, liq)
             continue
         same = ((other.get("symbol") or "").strip().lower() == symbol.lower()
                 or (title and (other.get("name") or "").strip().lower() == title.lower()))
         created = from_ms(p.get("pairCreatedAt"))
         if same and (created is None or created >= since):  # unknown age counts as new
-            others.add(other["address"])
-    if others:
-        return Check(name, FAIL, f"{len(others)} other token(s) called {symbol} launched "
-                                 f"in the last {e['copycat_window_days']:g} days")
-    return Check(name, PASS, f"no other {symbol} in the last {e['copycat_window_days']:g} days")
+            others[other["address"]] = max(others.get(other["address"], 0.0), liq or 0.0)
+    if not others:
+        return Check(name, PASS, f"no other {symbol} in the last {days} days")
+    # Same-named tokens are allowed only for the one with the most liquidity.
+    top = max(others.values())
+    if own is not None and own > top:
+        return Check(name, PASS, f"most liquidity of {len(others) + 1} tokens called {symbol} "
+                                 f"in the last {days} days ({money(own)} vs {money(top)})")
+    return Check(name, FAIL, f"{len(others)} other token(s) called {symbol} in the last {days} "
+                             f"days, one with more liquidity ({money(own)} vs {money(top)})")
 
 
 # ---------------------------------------------------------------------

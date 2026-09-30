@@ -111,8 +111,9 @@ max_top10_holders_pct = 20
 # At least this % of the pool's LP tokens must be locked or burned.
 min_lp_locked_pct = 95
 
-# Skip a token if another token with the same name or symbol was launched
-# within this many days (copycats).
+# Copycats: if other tokens with the same name or symbol were launched within
+# this many days, only the one with the most liquidity is allowed; the rest
+# are skipped.
 copycat_window_days = 7
 
 # A token worth less than this is "dead". Its creator is remembered, and any
