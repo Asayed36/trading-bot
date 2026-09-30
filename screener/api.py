@@ -1,4 +1,5 @@
-"""Talks to the two free public websites we use for data.
+"""Talks to the free public websites we use for data (DexScreener, RugCheck
+and GeckoTerminal).
 
 Everything here only READS public information. There are no API keys, no
 wallets, and no way to place orders. Every function just asks a website a
@@ -6,11 +7,13 @@ question and returns the answer.
 """
 
 import time
+from urllib.parse import quote
 
 import requests
 
 DEXSCREENER = "https://api.dexscreener.com"
 RUGCHECK = "https://api.rugcheck.xyz"
+GECKOTERMINAL = "https://api.geckoterminal.com/api/v2"
 
 HEADERS = {"User-Agent": "memecoin-screener/1.0 (read-only paper trading)"}
 
@@ -28,6 +31,8 @@ class PublicApi:
     def __init__(self, timeout=20, rugcheck_delay=1.5):
         self.timeout = timeout
         self.rugcheck_delay = rugcheck_delay
+        self._rugcheck_cache = {}  # both strategies can ask about the same token
+        self._last_gecko = 0.0
         self._last_rugcheck = 0.0
 
     def _get(self, url):
@@ -68,13 +73,36 @@ class PublicApi:
             pairs.extend(self._get(f"{DEXSCREENER}/tokens/v1/solana/{chunk}") or [])
         return pairs
 
+    def search_pairs(self, query):
+        """Every trading pair whose token name or symbol matches `query`."""
+        found = self._get(f"{DEXSCREENER}/latest/dex/search?q={quote(query)}") or {}
+        return found.get("pairs") or []
+
+    # ---- GeckoTerminal (newest pools) ----
+
+    def gecko_new_pools(self, page=1):
+        """The newest Solana pools, 20 per page. The free API allows about 30
+        requests a minute, so requests are spaced out."""
+        wait = 2.1 - (time.time() - self._last_gecko)
+        if wait > 0:
+            time.sleep(wait)
+        try:
+            found = self._get(f"{GECKOTERMINAL}/networks/solana/new_pools?page={page}") or {}
+        finally:
+            self._last_gecko = time.time()
+        return found.get("data") or []
+
     # ---- RugCheck (token safety) ----
 
     def rugcheck_report(self, address):
+        if address in self._rugcheck_cache:
+            return self._rugcheck_cache[address]
         wait = self.rugcheck_delay - (time.time() - self._last_rugcheck)
         if wait > 0:
             time.sleep(wait)
         try:
-            return self._get(f"{RUGCHECK}/v1/tokens/{address}/report")
+            report = self._get(f"{RUGCHECK}/v1/tokens/{address}/report")
         finally:
             self._last_rugcheck = time.time()
+        self._rugcheck_cache[address] = report
+        return report

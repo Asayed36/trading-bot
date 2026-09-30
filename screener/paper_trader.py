@@ -113,6 +113,17 @@ class PaperTrader:
         return {"symbol": pos["symbol"], "reason": reason, "pnl_usd": pnl,
                 "closed": pos["remaining_fraction"] <= 0, "position": pos}
 
+    def close_reason(self, pos, change_pct, from_peak, hours):
+        """Why to sell everything that's left, or None to keep holding."""
+        c = self.cfg
+        if change_pct <= -c["stop_loss_pct"]:
+            return f"stop loss: down {-change_pct:.0f}% from entry"
+        if from_peak <= -c["trailing_stop_pct"]:
+            return f"trailing stop: down {-from_peak:.0f}% from peak"
+        if hours >= c["max_hold_hours"] and abs(change_pct) < c["stale_move_pct"]:
+            return f"time exit: {hours:.0f}h held, only {change_pct:+.1f}% move"
+        return None
+
     def update(self, prices, when=None):
         """Check every open position against the exit rules.
 
@@ -141,13 +152,7 @@ class PaperTrader:
             if pos["remaining_fraction"] > 0:
                 hours = (when - datetime.fromisoformat(pos["entry_time"])).total_seconds() / 3600
                 from_peak = (price / pos["peak_price"] - 1) * 100
-                reason = None
-                if change_pct <= -c["stop_loss_pct"]:
-                    reason = f"stop loss: down {-change_pct:.0f}% from entry"
-                elif from_peak <= -c["trailing_stop_pct"]:
-                    reason = f"trailing stop: down {-from_peak:.0f}% from peak"
-                elif hours >= c["max_hold_hours"] and abs(change_pct) < c["stale_move_pct"]:
-                    reason = f"time exit: {hours:.0f}h held, only {change_pct:+.1f}% move"
+                reason = self.close_reason(pos, change_pct, from_peak, hours)
                 if reason:
                     sells.append(self._sell(pos, pos["remaining_fraction"], price, reason, when))
 

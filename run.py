@@ -6,6 +6,10 @@ How to run it:
     python run.py --github-issues   <- also open/close GitHub issues for tokens
                                        that pass (used by the GitHub workflow)
 
+Each run paper-trades two strategies side by side: "main" (the filters in
+[filters]) and "early" (young tokens bought on a pullback, see [early] and
+screener/early.py). Compare them with `python compare.py`.
+
 This program is READ-ONLY. It never connects to a wallet or exchange, never
 asks for keys or seed phrases, and never places a real order.
 """
@@ -17,6 +21,7 @@ import tomllib
 
 from screener.api import ApiError, PublicApi, RateLimited
 from screener.filters import best_pair, evaluate, find_candidates, format_report, market_checks
+from screener.early import EarlyStrategy
 from screener.github_issues import GitHubIssues, issue_details, sync
 from screener.paper_trader import PaperTrader, now_utc
 
@@ -87,6 +92,17 @@ def run(api, cfg, data_folder, out=print, issues=None):
     screen_lines = []
     results = screen(api, cfg, screen_lines.append)
 
+    # The "early" strategy fetches its own data. If that fails (including a
+    # rate limit from one of its sources), only the early strategy skips this
+    # run; the main strategy carries on as normal.
+    early, early_plan, early_skipped = None, None, None
+    if cfg.get("early", {}).get("enabled"):
+        early = EarlyStrategy(cfg, data_folder)
+        try:
+            early_plan = early.fetch(api)
+        except ApiError as exc:
+            early_skipped = f"{exc}"
+
     # ---- Step 1: check the pretend trades we already hold ----
     out(LINE)
     out(f"STEP 1: Updating {len(trader.open_positions)} open paper position(s)")
@@ -136,10 +152,27 @@ def run(api, cfg, data_folder, out=print, issues=None):
         sync(issues, trader, pt, cfg["github_issues"]["note"], out)
         trader.save()
 
+    # ---- Step 5: the "early" strategy ----
+    if early:
+        out("")
+        out(LINE)
+        out("STEP 5: Early strategy (young tokens, pullback entry)")
+        out(LINE)
+        if early_skipped:
+            out(f"  Skipped this run, nothing changed: {early_skipped}")
+        else:
+            early.apply(early_plan, issue_details, out)
+            if issues:
+                out("")
+                out("  GitHub issues (early):")
+                sync(issues, early.trader, early.pt, cfg["github_issues"]["note"], out,
+                     strategy="early")
+                early.trader.save()
+
     # ---- Summary ----
     out("")
     out(LINE)
-    out("SUMMARY")
+    out("SUMMARY (main strategy)")
     out(LINE)
     out(f"  Tokens checked: {len(results)}   passed: {len(passed)}   "
         f"failed: {len(results) - len(passed)}")
@@ -150,6 +183,17 @@ def run(api, cfg, data_folder, out=print, issues=None):
             f"holding {pos['remaining_fraction'] * 100:.0f}%")
     out(f"  Total realized paper P&L: ${trader.state['running_total_pnl_usd']:+.2f}")
     out(f"  Journal: {trader.journal_path}")
+    if early:
+        et = early.trader
+        out("")
+        out("SUMMARY (early strategy)" + ("  - skipped this run" if early_skipped else ""))
+        out(f"  Open paper positions: {len(et.open_positions)}")
+        for pos in et.open_positions:
+            change = (pos["last_price"] / pos["entry_price"] - 1) * 100
+            out(f"    {pos['symbol']:<10} entry ${pos['entry_price']:.10g}  now {change:+.1f}%  "
+                f"holding {pos['remaining_fraction'] * 100:.0f}%")
+        out(f"  Total realized paper P&L: ${et.state['running_total_pnl_usd']:+.2f}")
+        out(f"  Journal: {et.journal_path}")
     return results
 
 

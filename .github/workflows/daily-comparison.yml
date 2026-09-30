@@ -1,0 +1,40 @@
+# Once a day, posts a side-by-side comparison of the two paper strategies
+# ("main" and "early") for the previous UTC day as a GitHub issue labelled
+# "daily-comparison", and closes the previous day's issue.
+#
+# Read-only: it only reads data/ and posts the issue. No secrets, keys or
+# wallets are used.
+
+name: Daily strategy comparison
+
+on:
+  schedule:
+    - cron: "7 0 * * *"      # 00:07 UTC, just after the day it reports on ends
+  workflow_dispatch:         # lets you post one by hand from the Actions tab
+
+permissions:
+  contents: read
+  issues: write              # needed to post and close the comparison issues
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Compare yesterday's results
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python compare.py --date yesterday --github-issue | tee comparison.md
+          cat comparison.md >> "$GITHUB_STEP_SUMMARY"

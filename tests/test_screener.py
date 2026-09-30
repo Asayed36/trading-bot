@@ -142,17 +142,17 @@ class FakeGitHub(GitHubIssues):
         if name in self.down:
             raise GitHubError(f"{name} failed")
 
-    def ensure_label(self):
+    def ensure_label(self, *args, **kwargs):
         self._check("ensure_label")
 
     def existing(self):
         self._check("existing")
         return dict(self.known)
 
-    def create(self, title, body):
+    def create(self, title, body, labels=None):
         self._check("create")
         number = 100 + len(self.issues)
-        self.issues[number] = {"title": title, "body": body}
+        self.issues[number] = {"title": title, "body": body, "labels": labels}
         return number
 
     def comment(self, number, body):
@@ -176,12 +176,15 @@ class GitHubIssueTests(unittest.TestCase):
         run(DemoApi(moves), CFG, self.tmp.name, out=lambda *a: None, issues=self.gh)
         return PaperTrader(CFG["paper_trading"], self.tmp.name)
 
+    def main_issues(self):
+        return {n: i for n, i in self.gh.issues.items() if "strategy: main" in i["labels"]}
+
     def issue_for(self, symbol):
         return next(i for i in self.gh.issues.values() if i["title"] == f"PASSED: {symbol}")
 
     def test_issue_opened_with_details_and_exit_levels(self):
         trader = self.go()
-        self.assertEqual(sorted(i["title"] for i in self.gh.issues.values()),
+        self.assertEqual(sorted(i["title"] for i in self.main_issues().values()),
                          ["PASSED: FRENS", "PASSED: GOODCAT"])
         body = self.issue_for("GOODCAT")["body"]
         pair = TOKENS[GOOD][0]
@@ -200,14 +203,14 @@ class GitHubIssueTests(unittest.TestCase):
     def test_no_duplicate_issues(self):
         self.go()
         self.go()
-        self.assertEqual(len(self.gh.issues), 2)
+        self.assertEqual(len(self.main_issues()), 2)
 
     def test_reuses_issue_already_on_github(self):
         # e.g. the issue was opened but the commit saving its number was lost
-        self.gh.known = {GOOD: 7}
+        self.gh.known = {("main", GOOD): 7}
         trader = self.go()
         self.assertEqual(trader.position(GOOD)["issue"], 7)
-        self.assertEqual(len(self.gh.issues), 1)  # only FRENS is new
+        self.assertEqual(len(self.main_issues()), 1)  # only FRENS is new
 
     def test_closing_position_comments_and_closes(self):
         self.go()
@@ -228,7 +231,7 @@ class GitHubIssueTests(unittest.TestCase):
         self.assertFalse(self.gh.issues)
         self.gh.down = set()
         self.go()
-        self.assertEqual(len(self.gh.issues), 2)
+        self.assertEqual(len(self.main_issues()), 2)
 
     def test_close_retry_does_not_comment_twice(self):
         self.go()
@@ -285,7 +288,7 @@ class GitHubIssueTests(unittest.TestCase):
         page2.json.return_value = [{"number": 3, "body": MARKER.format("BBB")}]
         with mock.patch("screener.github_issues.requests.request",
                         side_effect=[page1, page2]) as req:
-            self.assertEqual(gh.existing(), {"AAA": 1, "BBB": 3})
+            self.assertEqual(gh.existing(), {("main", "AAA"): 1, ("main", "BBB"): 3})
         self.assertIn("labels=passed&state=all", req.call_args_list[0].args[1])
 
 

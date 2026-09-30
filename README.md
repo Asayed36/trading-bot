@@ -14,13 +14,16 @@ spends real money.
 - **Paper trading only.** "Buys" and "sells" are just rows in a spreadsheet.
   There's no code anywhere in here that can place a real order.
 
-## Where the data comes from (both free, no sign-up)
+## Where the data comes from (all free, no sign-up)
 
 - **DexScreener** (`api.dexscreener.com`): prices, market cap, liquidity, trade
   counts. The candidate list comes from its *latest token profiles* and
   *latest boosts* lists (tokens whose teams recently paid to promote them).
 - **RugCheck** (`api.rugcheck.xyz`): who holds the token, whether the creator
   can still mint more or freeze wallets, and whether the pool money is locked.
+- **GeckoTerminal** (`api.geckoterminal.com`): its *new pools* list is an extra
+  source of candidates for the early strategy (below). If it's down, the early
+  strategy carries on with the other sources.
 
 ## How to run it
 
@@ -87,6 +90,55 @@ market check aren't sent to RugCheck (they show `skip Safety checks`). Set
   Sheets or Numbers.
 - `data/positions.json`: the pretend positions you currently hold. Delete the
   whole `data/` folder to start over from zero.
+- `data/early/`: the same two files for the early strategy (below), plus its
+  watchlist of young tokens and the creators it has seen launch dead tokens.
+- `python compare.py`: both strategies side by side, for today and all time
+  (`--date yesterday` or `--date 2026-10-01` for another day).
+
+## The "early" strategy (a second, separate paper strategy)
+
+Every run also paper-trades a second strategy that goes after young tokens,
+with its own $10 pretend buys, positions and journal. The main strategy above
+is unchanged. The point is to find out, with pretend money, whether buying
+early actually works for someone arriving at the bot's speed.
+
+**It buys a token only when all of these are true** (numbers in `[early]` in
+`config.toml`):
+
+| Check | Why |
+|---|---|
+| Graduated to PumpSwap or Raydium, at least 30 min ago | Past the first-minutes dump, and RugCheck can check the real pool |
+| Token at most 6 hours old | Still early |
+| Pullback: spiked 50%+, now 20–50% below its peak | Buys the dip, not the green candle |
+| Not falling over the last 5 min, more buys than sells over the last hour | The dip is holding |
+| Liquidity at least $10k | You could sell again |
+| Mint and freeze authority revoked, LP locked or burned | Same basic safety as the main strategy |
+| Top 10 holders own under 20% | Stricter than main: young tokens are easy to dump |
+| No insider flags at all | Linked wallets are a **FAIL** here, not a warning |
+| No other token with the same name or symbol in the last 7 days | Skips copycats and hype waves |
+| Creator not known for dead tokens | Skips serial ruggers (see below) |
+
+**Selling:** half at 2x. Everything left goes at -30% (hard stop), or after
+45 minutes if 2x hasn't happened (time stop). After taking profit, the other
+half rides until it falls 40% from its peak, or 24 hours pass. Fees and
+slippage are assumed to be 5% per full trade (3% for the main strategy),
+because young pools are thinner.
+
+**Good to know:**
+- The bot runs every 15 minutes, so "the peak" is what it has seen at those
+  moments (plus DexScreener's 5m/1h/6h changes when it first sees a token),
+  and the 45-minute time stop really triggers at 45–60 minutes.
+- "Creator has dead tokens" uses RugCheck's list of the creator's other tokens
+  when it has one, which is rare. On top of that, whenever a token the bot is
+  watching dies (market cap under $5k, or flagged as rugged), its creator is
+  remembered and their later tokens are skipped. That memory starts empty and
+  gets more useful the longer the bot runs.
+- Early tokens get their own GitHub issues, titled **PASSED (early): SYMBOL**
+  and labelled `strategy: early`. Main-strategy issues are labelled
+  `strategy: main`.
+- Once a day (00:07 UTC), `.github/workflows/daily-comparison.yml` posts the
+  previous day's comparison of both strategies as an issue labelled
+  `daily-comparison`, and closes the day before's.
 
 ## Running automatically on GitHub
 
@@ -145,13 +197,16 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 |---|---|
 | `run.py` | The program you run. Ties everything together |
 | `config.toml` | All the numbers you can change |
-| `screener/api.py` | Fetches data from DexScreener and RugCheck |
+| `screener/api.py` | Fetches data from DexScreener, RugCheck and GeckoTerminal |
 | `screener/filters.py` | The PASS/FAIL checks |
 | `screener/paper_trader.py` | Pretend buys, sells and the journal |
 | `screener/github_issues.py` | Opens and closes the "PASSED" GitHub issues |
+| `screener/early.py` | The early strategy: candidates, checks, pullback entry and exits |
+| `screener/compare.py`, `compare.py` | The side-by-side comparison of both strategies |
 | `screener/demo.py` | Made-up tokens for `--demo` and the tests |
 | `tests/` | Automated checks that the rules work. Run with `python -m unittest -v` |
-| `.github/workflows/screener.yml` | Runs the screener every 15 minutes on GitHub |
+| `.github/workflows/screener.yml` | Runs both strategies every 15 minutes on GitHub |
+| `.github/workflows/daily-comparison.yml` | Posts the daily comparison issue |
 
 ## Important caveats
 

@@ -81,6 +81,69 @@ round_trip_cost_pct = 3
 allow_rebuy = false
 
 # ---------------------------------------------------------------------
+# EARLY STRATEGY: a second paper strategy that runs alongside the one above
+# (its own positions and journal in data/early/). It looks for tokens under
+# 6 hours old and buys them on a pullback after their first spike.
+# Paper trading only: no wallet, no keys, no real orders.
+# ---------------------------------------------------------------------
+[early]
+enabled = true
+
+# Only tokens that graduated to one of these (DexScreener's names)...
+allowed_dexes = ["pumpswap", "raydium"]
+# ...at least this many minutes ago...
+min_minutes_since_graduation = 30
+# ...and that are at most this many hours old.
+max_token_age_hours = 6
+
+# Pullback entry: the price must have spiked at least min_spike_pct, then
+# fallen back between pullback_min_pct and pullback_max_pct below its peak,
+# not be falling over the last 5 minutes, and have more buys than sells over
+# the last hour.
+min_spike_pct = 50
+pullback_min_pct = 20
+pullback_max_pct = 50
+
+# Enough money in the pool to get out again.
+min_liquidity_usd = 10_000
+# The 10 biggest wallets (pools excluded) must own LESS than this %.
+max_top10_holders_pct = 20
+# At least this % of the pool's LP tokens must be locked or burned.
+min_lp_locked_pct = 95
+
+# Skip a token if another token with the same name or symbol was launched
+# within this many days (copycats).
+copycat_window_days = 7
+
+# A token worth less than this is "dead". Its creator is remembered, and any
+# later token from them is skipped.
+dead_token_max_mcap_usd = 5_000
+
+# How many pages (20 pools each) of GeckoTerminal's newest pools to read,
+# and at most how many never-seen tokens to look up on RugCheck per run.
+gecko_pages = 3
+max_new_tokens_per_run = 60
+
+[early.paper_trading]
+# Pretend dollars per buy (same as the main strategy, so results compare).
+buy_amount_usd = 10
+# Sell half at 2x.
+take_profit_pct = 100
+take_profit_sell_fraction = 0.5
+# Sell everything left if the price falls this % below the buy price.
+stop_loss_pct = 30
+# Sell everything if take profit hasn't happened after this many minutes.
+time_stop_minutes = 45
+# After take profit, sell the rest when it falls this % from its peak...
+trailing_stop_pct = 40
+# ...or after this many hours, whichever comes first.
+max_hold_hours = 24
+# Fees + slippage for a full buy-and-sell, as a % of the money put in.
+# Higher than the main strategy's 3% because young pools are thinner.
+round_trip_cost_pct = 5
+allow_rebuy = false
+
+# ---------------------------------------------------------------------
 # GITHUB ISSUES: only used by the scheduled GitHub run
 # ---------------------------------------------------------------------
 [github_issues]
