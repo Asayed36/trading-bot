@@ -9,12 +9,15 @@ spends real money.
 
 - **Read-only.** It only reads public web pages of data. It never connects to
   a wallet or an exchange.
-- **No secrets.** It never asks for private keys, seed phrases or API keys.
-  If anything ever asks you for these, don't give them.
+- **No wallet secrets.** It never asks for private keys or seed phrases. If
+  anything ever asks you for these, don't give them. The one key it can use
+  is an optional, free Helius API key for the convergence strategy: that's a
+  data-access key (like a library card), not a wallet key, and it can't move
+  or trade anything.
 - **Paper trading only.** "Buys" and "sells" are just rows in a spreadsheet.
   There's no code anywhere in here that can place a real order.
 
-## Where the data comes from (all free, no sign-up)
+## Where the data comes from (all free)
 
 - **DexScreener** (`api.dexscreener.com`): prices, market cap, liquidity, trade
   counts. The candidate list comes from its *latest token profiles* and
@@ -24,6 +27,8 @@ spends real money.
 - **GeckoTerminal** (`api.geckoterminal.com`): its *new pools* list is an extra
   source of candidates for the early strategy (below). If it's down, the early
   strategy carries on with the other sources.
+- **Helius** (`mainnet.helius-rpc.com`, free plan, needs a free sign-up):
+  wallets' transactions, for the convergence strategy only (below).
 
 ## How to run it
 
@@ -92,8 +97,11 @@ market check aren't sent to RugCheck (they show `skip Safety checks`). Set
   whole `data/` folder to start over from zero.
 - `data/early/`: the same two files for the early strategy (below), plus its
   watchlist of young tokens and the creators it has seen launch dead tokens.
-- `python compare.py`: both strategies side by side, for today and all time
-  (`--date yesterday` or `--date 2026-10-01` for another day).
+- `data/convergence/`: the same two files for the convergence strategy
+  (below), plus its tracked wallets and its Helius credit count.
+- `python compare.py`: all strategies side by side, for today and all time
+  (`--date yesterday` or `--date 2026-10-01` for another day), plus Helius
+  credit use.
 
 ## The "early" strategy (a second, separate paper strategy)
 
@@ -137,8 +145,109 @@ because young pools are thinner.
   and labelled `strategy: early`. Main-strategy issues are labelled
   `strategy: main`.
 - Once a day (00:07 UTC), `.github/workflows/daily-comparison.yml` posts the
-  previous day's comparison of both strategies as an issue labelled
+  previous day's comparison of all strategies as an issue labelled
   `daily-comparison`, and closes the day before's.
+
+## The "convergence" strategy (a third, separate paper strategy)
+
+It follows proven traders: when **3 or more wallets from a tracked list buy
+the same token within 20 minutes**, it paper-buys **$5** of it. It has its own
+positions and journal in `data/convergence/`, and no GitHub issue per trade;
+its results are in the daily comparison. Numbers are in `[convergence]` in
+`config.toml`.
+
+**The tracked list, rebuilt every week:**
+1. Every run, tokens up 100%+ in 24h with $30k+ liquidity are remembered as
+   the week's winners (free DexScreener data).
+2. The biggest holders of the top 10 winners (free RugCheck data, creators
+   and insiders left out) become candidates, up to 30.
+3. Each candidate's last 14 days of swaps are read from Helius and their
+   **realized profit** (in SOL) is worked out.
+4. Candidates are dropped if they made over 150 transactions in 14 days
+   (probably a bot), closed fewer than 5 trades, made under 2 SOL, won under
+   40% of trades, or made over 60% of their profit on one token.
+5. The 15 most profitable become the tracked list. This work is spread over
+   many runs, so a new list takes a few hours to build.
+
+**Buying:** every run, each tracked wallet's new transactions are read and
+decoded. When 3+ of them bought the same token within 20 minutes, and the
+last of those buys was in the last 20 minutes, the token is paper-bought if
+it has a DexScreener price, at least $10k liquidity, and mint and freeze
+authority revoked.
+
+**Selling:** half at 2x; everything left at -30%; everything left once 2 of
+the wallets that triggered the buy have sold it ("smart money exit"); after
+taking profit, the rest at 40% below its peak; 24 hours at most. Fees and
+slippage are assumed to be 5% per full trade.
+
+**Helius credits.** The two calls this uses (`getSignaturesForAddress` and
+`getTransaction`) cost **10 credits each**, so the free plan's 1,000,000
+monthly credits buy about 100,000 calls. That's why it tracks about 15
+wallets, not 50. Every call is counted before it's made, and:
+- the weekly list rebuild only uses credits left over after reserving enough
+  for live checks until the end of the month;
+- the strategy **pauses itself** rather than go past **80%** of the monthly
+  credits, and starts again when Helius resets your credits (open positions
+  keep being managed while paused, using free DexScreener prices);
+- the daily comparison shows credits used that day, this cycle, the pause
+  limit and whether it's paused.
+
+On the free plan with no payment method, Helius doesn't charge for going
+over: it just stops answering until your credits reset. The 80% pause keeps it well away from that.
+
+Following wallets means buying after them: the price has usually moved by the
+third buy, and some tracked wallets will sell to their followers. That's what
+this paper test is for.
+
+### Setting up the free Helius API key
+
+You only do this once. It takes about 5 minutes.
+
+**1. Create the free Helius account and key**
+1. Go to **https://dashboard.helius.dev/signup** and create an account. If
+   you're asked to choose a plan, choose **Free** ($0/month). Don't add a
+   payment method: without one, Helius can't charge you anything.
+2. Write down **today's date**. Your free credits reset on this day of the
+   month (see step 3).
+3. In the dashboard's left sidebar, click **API Keys**.
+4. If a key is already listed, you can use it. Otherwise click **Create New
+   API Key** and name it `trading-bot`.
+5. **Copy the key right away**: Helius may not show it again after you leave
+   the page. It looks like `a1b2c3d4-e5f6-...`. Keep it private: don't paste
+   it into chats, files or commits. This repository is public.
+
+**2. Add it to GitHub as a secret**
+1. Open the repository on GitHub and click **Settings** (top right of the
+   repository page, not your account settings).
+2. In the left sidebar, click **Secrets and variables**, then **Actions**.
+3. Click the green **New repository secret** button.
+4. **Name:** `HELIUS_API_KEY` (exactly like that).
+5. **Secret:** paste the key.
+6. Click **Add secret**.
+
+GitHub keeps the secret encrypted, hides it in logs, and only gives it to
+this repository's own workflows. It isn't given to pull requests from other
+people's copies of the repository.
+
+**3. Tell the bot when your credits reset**
+In `config.toml`, under `[convergence]`, set `helius_cycle_day` to the day of
+the month from step 1.2 (for example `helius_cycle_day = 30`; use `28` if you
+signed up on the 29th, 30th or 31st, which resets a little early and stays
+safe). Commit that change.
+
+**4. Check it works**
+1. Go to the repository's **Actions** tab, pick **Paper trading run**, and
+   click **Run workflow**.
+2. When it finishes, open the run and look at **STEP 6** in the summary. You
+   should see `Helius credits this cycle: ...` and
+   `weekly list refresh started: N candidate wallets`, instead of
+   `not active: add the HELIUS_API_KEY secret`.
+3. Optional: the credit usage shown in your Helius dashboard should be about
+   the same as the bot's count. If you use the same key anywhere else, the
+   bot can't see that usage, so give this bot its own Helius account.
+
+To stop using Helius, delete the secret (Settings, Secrets and variables,
+Actions), or set `enabled = false` under `[convergence]`.
 
 ## Running automatically on GitHub
 
@@ -202,10 +311,11 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/paper_trader.py` | Pretend buys, sells and the journal |
 | `screener/github_issues.py` | Opens and closes the "PASSED" GitHub issues |
 | `screener/early.py` | The early strategy: candidates, checks, pullback entry and exits |
-| `screener/compare.py`, `compare.py` | The side-by-side comparison of both strategies |
+| `screener/convergence.py` | The convergence strategy: Helius reads, credit budget, wallet scoring, signals and exits |
+| `screener/compare.py`, `compare.py` | The side-by-side comparison of all strategies, with Helius credit use |
 | `screener/demo.py` | Made-up tokens for `--demo` and the tests |
 | `tests/` | Automated checks that the rules work. Run with `python -m unittest -v` |
-| `.github/workflows/screener.yml` | Runs both strategies every 15 minutes on GitHub |
+| `.github/workflows/screener.yml` | Runs all strategies every 15 minutes on GitHub |
 | `.github/workflows/daily-comparison.yml` | Posts the daily comparison issue |
 
 ## Important caveats

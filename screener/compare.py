@@ -73,8 +73,39 @@ def _usd(x):
     return "–" if x is None else f"${x:+.2f}"
 
 
-def report(strategies, day):
-    """Markdown table. `strategies` is a list of (name, folder, round_trip_cost_pct)."""
+def helius_lines(folder, day):
+    """Helius credit use of the convergence strategy, from its positions.json."""
+    path = os.path.join(folder, "positions.json")
+    if not os.path.exists(path):
+        return ["**Helius credits (convergence):** no data yet."]
+    with open(path) as fh:
+        state = json.load(fh)
+    m = state.get("helius")
+    if not m:
+        return ["**Helius credits (convergence):** not used yet "
+                "(is the HELIUS_API_KEY secret set?)."]
+    pct = m["used"] / m["monthly"] * 100
+    paused = state.get("paused_until")
+    status = (f"**paused** until {paused[:10]} (would pass {m['pause_at_pct']:g}%)"
+              if paused else "active")
+    return [
+        "**Helius credits (convergence)**",
+        "",
+        "| | |",
+        "|---|---|",
+        f"| Used on {day} | {m['by_day'].get(day, 0):,} |",
+        f"| Used this cycle (since {m['cycle_start'][:10]}) | {m['used']:,} of "
+        f"{m['monthly']:,} ({pct:.1f}%) |",
+        f"| Pauses at | {m['cap']:,} ({m['pause_at_pct']:g}%) |",
+        f"| Cycle resets | {m['cycle_end'][:10]} |",
+        f"| Status | {status} |",
+        f"| Wallets tracked | {len(state.get('tracked') or [])} |",
+    ]
+
+
+def report(strategies, day, extra=None):
+    """Markdown table. `strategies` is a list of (name, folder, round_trip_cost_pct).
+    `extra` is more Markdown lines to add at the end."""
     stats = {name: strategy_stats(folder, cost, day) for name, folder, cost in strategies}
     names = list(stats)
 
@@ -107,7 +138,12 @@ def report(strategies, day):
             lambda s: f"{s['open']} ({_usd(s['unrealized'])})"),
         row("**Total P&L**", lambda s: f"**{_usd(s['total'])}**"),
         "",
-        "_Paper trading only, $10 per pretend buy. Fees and slippage assumed per full "
+    ]
+    if extra:
+        lines += list(extra) + [""]
+    lines += [
+        "_Paper trading only ($10 per pretend buy, $5 for convergence). Fees and "
+        "slippage assumed per full "
         "trade: " + ", ".join(f"{n} {c:g}%" for n, _, c in strategies) + ". Unrealized "
         "P&L uses the last price the bot saw. A handful of trades says little; judge "
         "the strategies over weeks, not days._",

@@ -144,6 +144,87 @@ round_trip_cost_pct = 5
 allow_rebuy = false
 
 # ---------------------------------------------------------------------
+# CONVERGENCE STRATEGY: a third paper strategy. Paper-buys a token when 3+
+# wallets from a weekly list of proven traders buy it within 20 minutes.
+# Needs a free Helius API key in the HELIUS_API_KEY GitHub secret (see
+# README). Paper trading only: it only reads public data, no wallet, no keys.
+# ---------------------------------------------------------------------
+[convergence]
+enabled = true
+
+# --- Helius free plan budget ---
+# getSignaturesForAddress and getTransaction cost 10 credits each.
+helius_monthly_credits = 1_000_000
+# Pause the strategy (until the next cycle) rather than go past this %.
+pause_at_pct = 80
+# Day of the month your Helius credits reset. Set this to the day of the
+# month you created your Helius account (1-28; use 28 for the 29th-31st).
+helius_cycle_day = 1
+helius_max_requests_per_second = 5
+# How often the GitHub workflow runs this (for pacing the budget).
+run_every_minutes = 15
+
+# --- The signal ---
+# Buy when at least min_wallets tracked wallets bought within window_minutes,
+# and the last of those buys was at most max_signal_age_minutes ago.
+min_wallets = 3
+window_minutes = 20
+max_signal_age_minutes = 20
+# How many wallets to follow. About 15 fits the Helius free plan when checked
+# every 15 minutes. With live_rpc = "public" (the free public Solana RPC, no
+# sign-up, but less reliable) live checks cost no Helius credits and this can
+# go up to about 50.
+tracked_wallets = 15
+live_rpc = "helius"
+# At most this many new transactions per wallet, and decoded per run.
+max_new_tx_per_wallet = 25
+max_decodes_per_run = 60
+
+# --- The weekly list of proven traders ---
+# Winners: tokens up at least this much in 24h, with this much liquidity.
+winner_min_change_24h_pct = 100
+winner_min_liquidity_usd = 30_000
+# Candidates: the biggest holders (RugCheck, free) of the week's top winners.
+winners_per_refresh = 10
+holders_per_winner = 10
+candidates_per_refresh = 30
+# Each candidate's last history_days of swaps are read from Helius. Wallets
+# with more transactions than max_tx_per_candidate in that time are treated
+# as bots and skipped.
+history_days = 14
+max_tx_per_candidate = 150
+# A candidate joins the list only with at least this many closed trades,
+# this much realized profit, this win rate, and no single token making up
+# more than max_top_token_share_pct of their profit.
+min_closed_trades = 5
+min_realized_sol = 2
+min_win_rate_pct = 40
+max_top_token_share_pct = 60
+# Helius credits the refresh may use per run (it's spread over many runs).
+refresh_credits_per_run = 3_100
+
+# --- Basic checks before buying ---
+min_liquidity_usd = 10_000
+
+[convergence.paper_trading]
+buy_amount_usd = 5
+# Sell half at 2x.
+take_profit_pct = 100
+take_profit_sell_fraction = 0.5
+# Sell everything left at -30%.
+stop_loss_pct = 30
+# Sell everything left once this many of the wallets that triggered the buy
+# have sold the token.
+exit_when_wallets_sell = 2
+# After take profit, sell the rest when it falls this % from its peak...
+trailing_stop_pct = 40
+# ...and never hold longer than this.
+max_hold_hours = 24
+# Fees + slippage for a full buy-and-sell, as a % of the money put in.
+round_trip_cost_pct = 5
+allow_rebuy = false
+
+# ---------------------------------------------------------------------
 # GITHUB ISSUES: only used by the scheduled GitHub run
 # ---------------------------------------------------------------------
 [github_issues]
