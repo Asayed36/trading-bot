@@ -1,15 +1,17 @@
-# Runs the screener every 2 hours and saves the paper-trading results
+# Runs the screener every 15 minutes and saves the paper-trading results
 # (data/journal.csv and data/positions.json) back to the repository, so each
 # run picks up the pretend positions left by the previous one.
 #
 # Read-only: no secrets, keys or wallets are used. The only thing it writes
-# is the commit of those two files.
+# is the commit of those two files, and only when a run actually changed them.
+# If DexScreener or RugCheck rate-limit us, that run is skipped and nothing is
+# saved; the next run 15 minutes later tries again.
 
 name: Paper trading run
 
 on:
   schedule:
-    - cron: "0 */2 * * *"   # every 2 hours, on the hour (UTC)
+    - cron: "*/15 * * * *"  # every 15 minutes (UTC); GitHub may start it a few minutes late
   workflow_dispatch:         # lets you start a run by hand from the Actions tab
 
 permissions:
@@ -24,7 +26,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -40,26 +42,61 @@ jobs:
         run: python -m unittest -v
 
       - name: Screen and paper trade
+        id: screen
         shell: bash
         run: |
-          python run.py | tee report.txt
+          set +e
+          python run.py 2>&1 | tee report.txt
+          code=${PIPESTATUS[0]}
+          set -e
           {
             echo '## Screener report'
             echo '```'
             cat report.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          # 75 = rate limited (see EXIT_RATE_LIMITED in run.py). run.py fetches
+          # everything before touching any paper trade, so nothing changed;
+          # mark the run as skipped instead of failed.
+          if [ "$code" -eq 75 ]; then
+            echo "::notice::Rate limited by DexScreener or RugCheck - run skipped, nothing saved."
+            echo "skipped=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          exit "$code"
 
       - name: Save results to the repository
+        if: steps.screen.outputs.skipped != 'true'
         shell: bash
         run: |
+          # Only commit when something that matters changed: a new journal row
+          # (a buy or sell), or a change to the positions other than
+          # last_price. last_price is just for display and moves every run, so
+          # on its own it would mean a commit every 15 minutes.
+          journal_changed=$(git status --porcelain -- data/journal.csv)
+          if [ -z "$journal_changed" ] && python - <<'PY'
+          import json, subprocess, sys
+
+          def strip(text):
+              state = json.loads(text)
+              for pos in state.get("open_positions", []):
+                  pos.pop("last_price", None)
+              return state
+
+          old = subprocess.run(["git", "show", "HEAD:data/positions.json"],
+                               capture_output=True, text=True)
+          if old.returncode != 0:
+              sys.exit(1)  # not in the repository yet, so it's new
+          with open("data/positions.json") as fh:
+              sys.exit(0 if strip(old.stdout) == strip(fh.read()) else 1)
+          PY
+          then
+            echo "Nothing changed this run, so nothing to save."
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/journal.csv data/positions.json
-          if git diff --cached --quiet; then
-            echo "No changes to save."
-            exit 0
-          fi
           git commit -m "Paper trading run $(date -u '+%Y-%m-%d %H:%M UTC')"
           # If someone pushed in the meantime, replay our commit on top and retry.
           for attempt in 1 2 3; do

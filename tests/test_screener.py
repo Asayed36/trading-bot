@@ -8,10 +8,13 @@ import sys
 import tempfile
 import unittest
 from datetime import timedelta
+from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from run import load_config, run  # noqa: E402
+import run as run_module  # noqa: E402
+from run import EXIT_RATE_LIMITED, load_config, run  # noqa: E402
+from screener.api import PublicApi, RateLimited  # noqa: E402
 from screener import filters  # noqa: E402
 from screener.demo import GOOD, TOKENS, DemoApi  # noqa: E402
 from screener.filters import FAIL, PASS, WARN, Result  # noqa: E402
@@ -85,6 +88,39 @@ class FilterTests(unittest.TestCase):
         curve = dict(TOKENS[GOOD][0], dexId="pumpfun", liquidity={"usd": 999_999})
         chosen = filters.best_pair([curve, TOKENS[GOOD][0]], GOOD, ["pumpswap", "raydium"])
         self.assertEqual(chosen["dexId"], "pumpswap")
+
+
+class RateLimitedDemoApi(DemoApi):
+    def rugcheck_report(self, address):
+        raise RateLimited("RugCheck kept saying 'too many requests'")
+
+
+class RateLimitTests(unittest.TestCase):
+    def test_repeated_429_raises_rate_limited(self):
+        api = PublicApi()
+        with mock.patch("screener.api.requests.get",
+                        return_value=mock.Mock(status_code=429)) as get, \
+                mock.patch("screener.api.time.sleep"):
+            with self.assertRaises(RateLimited):
+                api.latest_profiles()
+        self.assertEqual(get.call_count, 3)
+
+    def test_rate_limited_run_changes_nothing(self):
+        with tempfile.TemporaryDirectory() as d:
+            run(DemoApi(), CFG, d, out=lambda *a: None)  # buys GOODCAT and FRENS
+            files = [os.path.join(d, n) for n in ("positions.json", "journal.csv")]
+            before = [open(p).read() for p in files]
+            # GOODCAT's price has halved (a stop loss would sell), but RugCheck
+            # is rate limited, so the whole run must be skipped untouched.
+            with self.assertRaises(RateLimited):
+                run(RateLimitedDemoApi({GOOD: 0.5}), CFG, d, out=lambda *a: None)
+            self.assertEqual([open(p).read() for p in files], before)
+
+    def test_main_exits_with_skip_code_when_rate_limited(self):
+        with mock.patch.object(run_module, "run", side_effect=RateLimited("429")), \
+                mock.patch.object(sys, "argv", ["run.py"]), \
+                mock.patch("builtins.print"):
+            self.assertEqual(run_module.main(), EXIT_RATE_LIMITED)
 
 
 class PaperTradingTests(unittest.TestCase):

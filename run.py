@@ -13,12 +13,16 @@ import os
 import sys
 import tomllib
 
-from screener.api import ApiError, PublicApi
+from screener.api import ApiError, PublicApi, RateLimited
 from screener.filters import best_pair, evaluate, find_candidates, format_report, market_checks
 from screener.paper_trader import PaperTrader
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 LINE = "=" * 78
+
+# Exit code for "rate limited, run skipped" (EX_TEMPFAIL). The GitHub workflow
+# treats it as a skipped run, not a failure, and saves nothing.
+EXIT_RATE_LIMITED = 75
 
 
 def load_config(path=os.path.join(HERE, "config.toml")):
@@ -42,27 +46,10 @@ def current_prices(api, positions, allowed_dexes):
     return prices
 
 
-def run(api, cfg, data_folder, out=print):
-    f, pt = cfg["filters"], cfg["paper_trading"]
-    trader = PaperTrader(pt, data_folder)
-
-    # ---- Step 1: check the pretend trades we already hold ----
-    out(LINE)
-    out(f"STEP 1: Updating {len(trader.open_positions)} open paper position(s)")
-    out(LINE)
-    prices = current_prices(api, trader.open_positions, f["allowed_dexes"])
-    for s in trader.update(prices):
-        out(f"  SELL {s['symbol']:<10} {s['reason']:<45} P&L ${s['pnl_usd']:+.2f}")
-    for pos in trader.open_positions:
-        if pos["address"] not in prices:
-            out(f"  (no price for {pos['symbol']} this run - will retry next time)")
-    trader.save()
-
-    # ---- Step 2: find new tokens and screen them ----
-    out("")
-    out(LINE)
-    out("STEP 2: Screening new tokens")
-    out(LINE)
+def screen(api, cfg, out):
+    """Find new tokens and run every check on them. Network only: this never
+    touches the paper positions or the journal."""
+    f = cfg["filters"]
     addresses = find_candidates(api.latest_profiles(), api.latest_boosts())
     out(f"Found {len(addresses)} Solana candidates in DexScreener's latest profiles + boosts.\n")
     pairs = api.pairs_for_tokens(addresses) if addresses else []
@@ -76,12 +63,45 @@ def run(api, cfg, data_folder, out=print):
         if not skip:
             try:
                 report = api.rugcheck_report(addr)
+            except RateLimited:
+                raise  # skip the whole run rather than screen with gaps
             except ApiError as exc:
                 out(f"  (RugCheck failed for {addr}: {exc})")
         result = evaluate(addr, pair, report, f, safety_skipped=skip)
         results.append(result)
         out(format_report(result))
         out("")
+    return results
+
+
+def run(api, cfg, data_folder, out=print):
+    f, pt = cfg["filters"], cfg["paper_trading"]
+    trader = PaperTrader(pt, data_folder)
+
+    # Fetch everything from the internet BEFORE changing any paper trades, so
+    # a failed or rate-limited run leaves positions and journal untouched.
+    prices = current_prices(api, trader.open_positions, f["allowed_dexes"])
+    screen_lines = []
+    results = screen(api, cfg, screen_lines.append)
+
+    # ---- Step 1: check the pretend trades we already hold ----
+    out(LINE)
+    out(f"STEP 1: Updating {len(trader.open_positions)} open paper position(s)")
+    out(LINE)
+    for s in trader.update(prices):
+        out(f"  SELL {s['symbol']:<10} {s['reason']:<45} P&L ${s['pnl_usd']:+.2f}")
+    for pos in trader.open_positions:
+        if pos["address"] not in prices:
+            out(f"  (no price for {pos['symbol']} this run - will retry next time)")
+    trader.save()
+
+    # ---- Step 2: new tokens and their PASS/FAIL report ----
+    out("")
+    out(LINE)
+    out("STEP 2: Screening new tokens")
+    out(LINE)
+    for line in screen_lines:
+        out(line)
 
     # ---- Step 3: pretend-buy anything that passed everything ----
     out(LINE)
@@ -132,6 +152,10 @@ def main():
 
     try:
         run(api, cfg, folder)
+    except RateLimited as exc:
+        print(f"\nRate limited: {exc}")
+        print("Skipping this run. Nothing was traded; try again later.")
+        return EXIT_RATE_LIMITED
     except ApiError as exc:
         print(f"\nCould not get data: {exc}")
         print("Check your internet connection and try again. Nothing was traded.")
