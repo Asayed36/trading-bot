@@ -123,7 +123,7 @@ early actually works for someone arriving at the bot's speed.
 | Mint and freeze authority revoked, LP locked or burned | Same basic safety as the main strategy |
 | Top 10 holders own under 20% | Stricter than main: young tokens are easy to dump |
 | No insider flags at all | Linked wallets are a **FAIL** here, not a warning |
-| No other token with the same name or symbol in the last 7 days | Skips copycats and hype waves |
+| The most liquid of all tokens with the same name or symbol from the last 7 days | Skips copycats and hype waves, but not the original (or leading) token |
 | Creator not known for dead tokens | Skips serial ruggers (see below) |
 
 **Selling:** half at 2x. Everything left goes at -30% (hard stop), or after

@@ -95,24 +95,36 @@ class EarlyScreeningTests(unittest.TestCase):
         small = {"peak": 1.0, "low_before_peak": 0.8}                   # only +25%
         self.assertEqual(statuses(pair(0.7), small)[0], FAIL)
 
-    def test_copycat_window(self):
+    def test_copycat_rule_allows_only_the_most_liquid(self):
         from screener import early
-        pair = EARLY_TOKENS[EARLY_GOOD][0]
+        pair = EARLY_TOKENS[EARLY_GOOD][0]  # PULLY, $25,000 liquidity
         now = now_utc()
-
-        class Search:
-            def __init__(self, created_ms):
-                self.created_ms = created_ms
-
-            def search_pairs(self, q):
-                return [{"chainId": "solana", "pairCreatedAt": self.created_ms,
-                         "baseToken": {"address": "OTHER", "symbol": "pully", "name": "x"}}]
-
         old = (now - timedelta(days=30)).timestamp() * 1000
         new = (now - timedelta(days=1)).timestamp() * 1000
-        self.assertEqual(early.copycat_check(Search(old), EARLY_GOOD, pair, E, now).status, PASS)
-        self.assertEqual(early.copycat_check(Search(new), EARLY_GOOD, pair, E, now).status, FAIL)
-        self.assertEqual(early.copycat_check(Search(None), EARLY_GOOD, pair, E, now).status, FAIL)
+
+        class Search:
+            def __init__(self, *others):  # (created_ms, liquidity) per other PULLY
+                self.others = others
+
+            def search_pairs(self, q):
+                return [{"chainId": "solana", "pairCreatedAt": created,
+                         "liquidity": {} if liq is None else {"usd": liq},
+                         "baseToken": {"address": f"OTHER{i}", "symbol": "pully", "name": "x"}}
+                        for i, (created, liq) in enumerate(self.others)]
+
+        def status(api, own_pair=pair):
+            return early.copycat_check(api, EARLY_GOOD, own_pair, E, now).status
+
+        self.assertEqual(status(Search()), PASS)                        # no namesakes
+        self.assertEqual(status(Search((new, 5_000), (None, 9_000))), PASS)  # we're the most liquid
+        self.assertEqual(status(Search((new, 5_000), (new, 40_000))), FAIL)  # one has more
+        self.assertEqual(status(Search((new, 25_000))), FAIL)            # a tie isn't "highest"
+        self.assertEqual(status(Search((new, None))), PASS)              # unknown counts as $0
+        self.assertEqual(status(Search((old, 900_000))), PASS)           # older than 7 days: ignored
+        no_liq = dict(pair, liquidity={})
+        self.assertEqual(status(Search((new, 1)), no_liq), FAIL)        # our own is unknown
+        detail = early.copycat_check(Search((new, 5_000)), EARLY_GOOD, pair, E, now).detail
+        self.assertIn("most liquidity of 2 tokens called PULLY", detail)
 
     def test_gecko_tokens(self):
         pools = DemoApi().gecko_new_pools()
