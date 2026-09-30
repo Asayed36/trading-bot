@@ -1,0 +1,97 @@
+# =====================================================================
+#  SETTINGS FOR THE MEMECOIN SCREENER
+#  You can change any number below with a plain text editor.
+#  Lines starting with "#" are notes for humans and are ignored.
+#  After editing, just run the program again. No other changes needed.
+# =====================================================================
+
+# ---------------------------------------------------------------------
+# FILTERS: a token must pass EVERY one of these to be "bought" (on paper)
+# ---------------------------------------------------------------------
+[filters]
+
+# Only tokens that have "graduated" from the pump.fun bonding curve and
+# now trade on a real exchange pool. These are DexScreener's names for them.
+allowed_dexes = ["pumpswap", "raydium"]
+
+# Market cap = price x number of tokens, in US dollars.
+min_market_cap_usd = 100_000
+max_market_cap_usd = 5_000_000
+
+# Liquidity = how much money sits in the trading pool.
+# Low liquidity means your sell could crash the price.
+min_liquidity_usd = 30_000
+
+# The 10 biggest wallets together must own LESS than this % of all tokens.
+max_top10_holders_pct = 30
+
+# The wallet that created the token must own LESS than this %.
+max_creator_pct = 5
+
+# At least this % of the pool's LP tokens must be locked or burned
+# (so the creator can't pull the money out of the pool).
+min_lp_locked_pct = 95
+
+# If true, the pool's own wallet (which holds tokens for trading) is NOT
+# counted as a "top holder". Leave this true.
+exclude_pools_from_holders = true
+
+# Skip tokens whose price went up more than this % in the last 24 hours
+# (to avoid buying at the top of a huge spike).
+max_price_change_24h_pct = 300
+
+# The token must have at least this many trades in the last 24 hours...
+min_txns_24h = 500
+# ...and more buys than sells (true = required, false = ignored).
+require_more_buys_than_sells = true
+
+# Insider networks (groups of linked wallets) are shown as a WARNING.
+# Set this to true if you'd rather treat them as a hard FAIL.
+insider_networks_are_fail = false
+
+# ---------------------------------------------------------------------
+# PAPER TRADING: pretend trades, no real money ever
+# ---------------------------------------------------------------------
+[paper_trading]
+
+# Pretend dollars "spent" on each buy.
+buy_amount_usd = 10
+
+# When the price is up this % from where we bought, sell HALF.
+take_profit_pct = 50
+take_profit_sell_fraction = 0.5
+
+# Sell everything that's left if the price falls this % below our buy price.
+stop_loss_pct = 30
+
+# Sell everything that's left if the price falls this % below its highest point
+# since we bought (a "trailing stop" that locks in gains).
+trailing_stop_pct = 40
+
+# If we've held this many hours and the price has moved less than
+# stale_move_pct (up OR down), give up and sell.
+max_hold_hours = 48
+stale_move_pct = 10
+
+# Pretend cost of fees + slippage for one full buy-and-sell, as a % of the
+# money put in. Charged proportionally each time we sell part of a position.
+round_trip_cost_pct = 3
+
+# If false, never buy the same token twice (even after we've sold it).
+allow_rebuy = false
+
+# ---------------------------------------------------------------------
+# TECHNICAL: how the program talks to the free public APIs
+# ---------------------------------------------------------------------
+[api]
+# Seconds to wait between RugCheck requests (be polite to free services).
+rugcheck_delay_seconds = 1.5
+# Give up on any single request after this many seconds.
+timeout_seconds = 20
+# Only run the (slower) RugCheck safety check on tokens that already passed
+# the market checks. Set to false to safety-check every candidate.
+skip_safety_if_market_fails = true
+
+[files]
+# Where results are saved (created automatically).
+data_folder = "data"
