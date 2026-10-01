@@ -48,8 +48,10 @@ jobs:
           python-version: "3.12"
           cache: pip
 
+      # requirements-launch.txt (websockets) isn't needed to trade here, but
+      # the tests below also cover the launch bot, which imports it.
       - name: Install
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt -r requirements-launch.txt
 
       - name: Tests
         run: python -m unittest -v
