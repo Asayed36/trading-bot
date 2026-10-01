@@ -177,6 +177,9 @@ class LaunchEngine:
         self.memory = {"names": {}, "creators": {}, "migrated": {}}
         self.stats = {}
         self._load()
+        # Counted so restarts show up in stats.json: launches being evaluated
+        # when the bot stopped lose the speeds they hadn't reached yet.
+        self._count(clock(), "bot started")
         # Positions still open from before a restart need their prices again.
         for trader in self.traders.values():
             for pos in trader.open_positions:
@@ -257,7 +260,12 @@ class LaunchEngine:
         mint, creator = msg["mint"], msg.get("traderPublicKey")
         name, symbol = (msg.get("name") or "").strip(), (msg.get("symbol") or "").strip()
         self._count(t, "launches_seen")
-        reason = self._instant_skip(mint, creator, name, symbol, t)
+        price = curve_price_sol(msg.get("vSolInBondingCurve"), msg.get("vTokensInBondingCurve"))
+        # A launch the free feed doesn't price (e.g. from another launchpad)
+        # can't be paper-traded at any speed: skip it before it takes a slot
+        # under the hourly cap.
+        reason = (self._instant_skip(mint, creator, name, symbol, t)
+                  or (None if price else "no price in the feed"))
         self._remember(mint, creator, name, symbol, t)
         if reason:
             self._count(t, f"skipped: {reason}")
@@ -266,10 +274,7 @@ class LaunchEngine:
         self.watch[mint] = {
             "mint": mint, "symbol": symbol or "?", "name": name, "creator": creator,
             "created": t, "slot": msg.get("slot"), "status": "evaluating", "price_time": t,
-            "price_sol": curve_price_sol(msg.get("vSolInBondingCurve"),
-                                         msg.get("vTokensInBondingCurve")),
-            "created_price_sol": curve_price_sol(msg.get("vSolInBondingCurve"),
-                                                 msg.get("vTokensInBondingCurve")),
+            "price_sol": price, "created_price_sol": price,
             "dev_buy_pct": initial / TOTAL_SUPPLY * 100, "first_block_buyers": set(),
             "buys": 0, "sells": 0, "entered": set(),
         }
