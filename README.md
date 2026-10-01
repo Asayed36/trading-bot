@@ -392,7 +392,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `deploy/` | Server setup guide, systemd services and the hourly push script for the launch bot |
 | `screener/compare.py`, `compare.py` | The side-by-side comparison of all strategies, with Helius credit use |
 | `screener/demo.py` | Made-up tokens for `--demo` and the tests |
-| `tests/` | Automated checks that the rules work. Run with `python -m unittest -v` |
+| `tests/` | Automated checks that the rules work. Run with `python -m unittest -v` (first `pip install -r requirements-launch.txt` too: the launch bot's tests need it) |
 | `.github/workflows/screener.yml` | Runs all strategies every 5 minutes on GitHub |
 | `.github/workflows/daily-comparison.yml` | Posts the daily comparison issue |
 
