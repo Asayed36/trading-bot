@@ -249,7 +249,7 @@ class FlowTests(Base):
         self.go()
         seen = self.state()["seen"]
         self.assertTrue(seen and all(len(k) == 12 for k in seen))
-        self.go(DemoNewsHttp(now=NOW + timedelta(days=5), items=[]), now=NOW + timedelta(days=5))
+        self.go(DemoNewsHttp(now=NOW + timedelta(days=2), items=[]), now=NOW + timedelta(days=2))
         self.assertEqual(self.state()["seen"], {})
 
     def test_first_run_skips_the_old_backlog(self):
@@ -257,8 +257,9 @@ class FlowTests(Base):
                                              "blockchain; JPMorgan", 600)])
         _, plan, bought, lines = self.go(http)
         self.assertEqual((plan["candidates"], bought), ([], []))
-        self.assertTrue(any(re.search(r"first read of a source: \d+ older item\(s\)", line)
+        self.assertTrue(any(re.search(r"PR Newswire crypto .* 1 older than 180 min", line)
                             for line in lines))
+        self.assertEqual(self.state()["seen"], {})      # old items are only counted
 
     def test_a_source_that_starts_working_later_skips_its_backlog(self):
         class Fixed(DemoNewsHttp):
@@ -280,8 +281,31 @@ class FlowTests(Base):
         http.broken = False
         _, plan, _, lines = self.go(http, now=NOW + timedelta(minutes=15))
         self.assertEqual(plan["candidates"], [])           # 3-day-old item: noted, not checked
-        self.assertTrue(any("1 older item(s)" in line for line in lines))
+        self.assertEqual(self.state()["sources"]["Business Wire"]["old"], 1)
         self.assertIn("Business Wire", self.state()["sources_read"])
+
+    def test_undated_items_skipped_on_first_read_then_checked(self):
+        class Undated(DemoNewsHttp):
+            def text(self, url):
+                if "prnewswire.com/rss/financial" in url:
+                    return ("<rss><channel>" + "".join(
+                        f"<item><title>Visa Selects Demo Network {n}</title><description>"
+                        f"blockchain</description><link>https://u/{n}</link></item>"
+                        for n in self.ids) + "</channel></rss>")
+                return super().text(url)
+
+        http = Undated(now=NOW, items=[])
+        http.ids = [1]
+        _, plan, _, lines = self.go(http)
+        self.assertEqual(plan["candidates"], [])
+        self.assertTrue(any("1 undated item(s)" in line for line in lines))
+        http.ids = [1, 2]
+        _, plan, _, _ = self.go(http, now=NOW + timedelta(minutes=15))
+        self.assertEqual([c["item"]["url"] for c in plan["candidates"]], ["https://u/2"])
+        # undated items are remembered for 4 days, so they're never checked twice
+        _, plan, _, _ = self.go(http, now=NOW + timedelta(days=3))
+        self.assertEqual(plan["candidates"], [])
+        self.assertTrue(all(v.endswith("u") for v in self.state()["seen"].values()))
 
     def test_coingecko_down_means_retry_next_run(self):
         class Down(DemoNewsHttp):

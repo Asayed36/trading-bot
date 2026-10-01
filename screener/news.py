@@ -59,7 +59,11 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; trading-bot-news/1.0; read-on
 CANDIDATE_COLUMNS = ["time_utc", "source", "kind", "published_utc", "title", "url", "coin",
                      "symbol", "verdict", "failed", "checks"]
 QUALIFIERS = r"(?:Network|Protocol|Foundation|Labs|Chain|Blockchain|[Tt]oken|[Cc]oin|DAO|Finance)"
-SEEN_DAYS = 4
+# How long an item is remembered as seen. Dated items are only checked while
+# under max_age_minutes old, so a day is plenty; undated items ("u" after the
+# time) never age out of a feed, so they're remembered longer.
+SEEN_DAYS = 1
+SEEN_UNDATED_DAYS = 4
 
 
 # ---------------------------------------------------------------------
@@ -171,7 +175,7 @@ def parse_feed(text):
         try:
             root = ET.fromstring(repair_xml(text).encode("utf-8"))
         except ET.ParseError as exc:
-            start = clean(text[:300])[:80]
+            start = re.sub(r"\s+", " ", text[:200]).strip()[:60]
             raise ApiError(f"not a valid feed ({exc}); it starts: {start!r}") from exc
     items = []
     for el in root.iter():
@@ -471,9 +475,16 @@ class NewsStrategy:
                     items = parse_feed(self.http.text(source["url"]))
                 status.update(items=len(items), ok=True)
             except ApiError as exc:
-                status.update(ok=False, error=str(exc)[:120])
+                status.update(ok=False, error=str(exc)[:160])
                 plan["sources"].append(status)
                 continue
+            # Items already older than max_age_minutes can never pass "Fresh
+            # news", so they're only counted: never stored or checked. (Some
+            # feeds, like Business Wire's, list thousands of old releases.)
+            limit = timedelta(minutes=c["max_age_minutes"])
+            recent = [i for i in items if not i["published"] or now - i["published"] <= limit]
+            status["old"] = len(items) - len(recent)
+            items = recent
             fresh = []
             for item in items:
                 key = seen_key(f"{source['name']}|{item['id'] or item['url'] or item['title']}")
@@ -481,25 +492,24 @@ class NewsStrategy:
                 same = seen_key("title|" + re.sub(r"\W+", " ", item["title"].lower()).strip())
                 if key in seen or key in plan["seen"]:
                     continue
-                plan["seen"][key] = now.strftime("%Y-%m-%dT%H:%M")
+                mark = now.strftime("%Y-%m-%dT%H:%M") + ("" if item["published"] else "u")
+                plan["seen"][key] = mark
                 if same in seen or same in plan["seen"]:
                     continue
-                plan["seen"][same] = now.strftime("%Y-%m-%dT%H:%M")
+                plan["seen"][same] = mark
                 fresh.append((source, item, key))
             status["new"] = len(fresh)
             plan["sources"].append(status)
             if source["name"] not in read:
                 plan["sources_read"].append(source["name"])
-                # The feeds' backlog: only items still fresh enough are checked.
-                limit = timedelta(minutes=c["max_age_minutes"])
-                kept = [x for x in fresh
-                        if x[1]["published"] and now - x[1]["published"] <= limit]
+                # First read: items without a date may be old; skip them.
+                kept = [x for x in fresh if x[1]["published"]]
                 backlog += len(fresh) - len(kept)
                 fresh = kept
             new += fresh
         if backlog:
-            plan["notes"].append(f"first read of a source: {backlog} older item(s) already in "
-                                 "its feed were noted and skipped")
+            plan["notes"].append(f"first read of a source: {backlog} undated item(s) already "
+                                 "in its feed were noted and skipped")
 
         # 2. Coins: CoinGecko's top coins (only when there's something to match)
         #    and prices for open positions and project-blog coins.
@@ -567,9 +577,11 @@ class NewsStrategy:
         if plan["checked"]:
             seen = dict(trader.state.get("seen") or {})
             seen.update(plan["seen"])
-            cutoff = now - timedelta(days=SEEN_DAYS)
-            trader.state["seen"] = {k: v for k, v in seen.items()
-                                    if _utc(datetime.fromisoformat(v)) >= cutoff}
+            def keep(v):
+                days = SEEN_UNDATED_DAYS if v.endswith("u") else SEEN_DAYS
+                return now - _utc(datetime.fromisoformat(v.rstrip("u"))) < timedelta(days=days)
+
+            trader.state["seen"] = {k: v for k, v in seen.items() if keep(v)}
             trader.state["sources_read"] = plan["sources_read"]
             trader.state["sources"] = {s["name"]: s for s in plan["sources"]}
 
@@ -580,7 +592,8 @@ class NewsStrategy:
                 f"{c['coingecko_monthly_calls']:,}")
             for s in plan["sources"]:
                 if s.get("ok"):
-                    out(f"  ok    {s['name']:<22} {s['items']} item(s), {s.get('new', 0)} new")
+                    out(f"  ok    {s['name']:<22} {s['items']} item(s), {s.get('new', 0)} new, "
+                        f"{s.get('old', 0)} older than {c['max_age_minutes']} min")
                 else:
                     out(f"  FAIL  {s['name']:<22} {s['error']}")
         out("")
