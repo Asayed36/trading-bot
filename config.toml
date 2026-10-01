@@ -238,6 +238,83 @@ round_trip_cost_pct = 5
 allow_rebuy = false
 
 # ---------------------------------------------------------------------
+# LAUNCH STRATEGY: a fourth paper strategy that tests sniping brand-new
+# pump.fun tokens. It runs all the time on your own small server
+# (launch_bot.py; see deploy/LAUNCH_SERVER_SETUP.md), not on GitHub, and
+# pushes its results here about once an hour. Paper trading only: it reads
+# PumpPortal's free data feed and never uses a wallet, a private key or
+# PumpPortal's trading API.
+# ---------------------------------------------------------------------
+[launch]
+enabled = true
+# PumpPortal's free real-time data feed (read-only).
+ws_url = "wss://pumpportal.fun/api/data"
+
+# Caps: at most this many new launches traded an hour (the same launches
+# are traded by all three speeds), and at most this many open per speed.
+max_new_trades_per_hour = 10
+max_open_per_speed = 30
+
+# Skip copycats: an earlier launch (seen by the bot) with the same name or
+# symbol within this many days.
+copycat_window_days = 7
+# Skip creators with a dead token: an earlier launch of theirs (seen by the
+# bot, within creator_memory_days) that is older than dead_after_minutes and
+# never graduated.
+dead_after_minutes = 60
+creator_memory_days = 7
+
+# Flag a launch if the creator bought in the creation transaction, or other
+# wallets bought within first_block_seconds (or in the same block, if the
+# feed says which block). The free feed can't tell snipers from wallets
+# linked to the creator, so every early buyer counts. With skip_flagged =
+# false, flagged launches are still traded and the flag is recorded, so you
+# can compare flagged and clean launches later.
+first_block_seconds = 1.0
+skip_flagged = false
+
+# If a held token's price hasn't moved on the feed for this long (or it
+# graduated), its price is read from DexScreener instead.
+stale_price_seconds = 60
+
+[launch.paper_trading]
+# Pretend dollars per buy.
+buy_amount_usd = 5
+# Sell half at 2x...
+take_profit_pct = 100
+take_profit_sell_fraction = 0.5
+# ...and everything left at -30% or 30 minutes after the buy.
+stop_loss_pct = 30
+time_stop_minutes = 30
+allow_rebuy = false
+# Costs on every buy and every sell: a trading-bot fee and pump.fun's own
+# fee (up to 0.95% for small coins since September 2025).
+bot_fee_pct = 1.0
+platform_fee_pct = 0.95
+
+# The three speeds, each with its own journal in data/launch/<name>/.
+# priority_fee_sol is paid on every buy and every sell (faster = higher
+# fees to beat other bots); extra_slippage_pct is on top of the price at
+# that moment, on every buy and every sell, for bots trading ahead of you.
+[[launch.speeds]]
+name = "5s"
+delay_seconds = 5
+priority_fee_sol = 0.003
+extra_slippage_pct = 5
+
+[[launch.speeds]]
+name = "30s"
+delay_seconds = 30
+priority_fee_sol = 0.001
+extra_slippage_pct = 5
+
+[[launch.speeds]]
+name = "90s"
+delay_seconds = 90
+priority_fee_sol = 0.0005
+extra_slippage_pct = 5
+
+# ---------------------------------------------------------------------
 # GITHUB ISSUES: only used by the scheduled GitHub run
 # ---------------------------------------------------------------------
 [github_issues]

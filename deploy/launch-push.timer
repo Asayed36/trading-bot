@@ -1,0 +1,11 @@
+# Pushes the launch results to GitHub about once an hour.
+[Unit]
+Description=Push launch paper results to GitHub every hour
+
+[Timer]
+OnCalendar=hourly
+RandomizedDelaySec=300
+Persistent=true
+
+[Install]
+WantedBy=timers.target

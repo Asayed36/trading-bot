@@ -71,7 +71,15 @@ def main():
         conv = os.path.join(folder, "convergence")
         strategies.append(("convergence", conv,
                            cfg["convergence"]["paper_trading"]["round_trip_cost_pct"]))
+    # The GitHub schedule only affects the strategies run by the workflow.
     extra += schedule_lines(strategies, os.path.join(folder, "schedule.json")) + [""]
+    if cfg.get("launch", {}).get("enabled"):
+        # Runs on your own server and pushes here about once an hour.
+        lp = cfg["launch"]["paper_trading"]
+        for speed in cfg["launch"]["speeds"]:
+            sell_cost = lp["bot_fee_pct"] + lp["platform_fee_pct"] + speed["extra_slippage_pct"]
+            strategies.append((f"launch {speed['name']}",
+                               os.path.join(folder, "launch", speed["name"]), sell_cost))
     if cfg.get("convergence", {}).get("enabled"):
         extra += helius_lines(os.path.join(folder, "convergence"), day)
     body = report(strategies, day, extra)
