@@ -10,6 +10,8 @@ import json
 import os
 from datetime import datetime, timezone
 
+from screener.filters import to_float
+
 JOURNAL_COLUMNS = [
     "time_utc", "action", "symbol", "token_address", "reason", "price_usd",
     "usd_amount", "pnl_usd", "pnl_pct", "running_total_pnl_usd",
@@ -17,10 +19,43 @@ JOURNAL_COLUMNS = [
 
 # entries.csv: one row per paper buy with what the market looked like at that
 # moment, for later analysis. Rows are only ever added, never removed.
+# price_change_5m_pct / price_change_1h_pct are DexScreener's price change over
+# the last 5 minutes / hour at the moment of the buy.
 ENTRY_COLUMNS = [
     "time_utc", "symbol", "token_address", "price_usd", "buys_1h", "sells_1h",
     "insider_flagged", "insider_networks", "insider_linked_wallets", "insider_top_holders",
+    "price_change_5m_pct", "price_change_1h_pct",
 ]
+
+
+def pct(value):
+    """A percentage for a CSV cell; blank when it isn't known."""
+    value = to_float(value)
+    return "" if value is None else f"{value:g}"
+
+
+def append_row(path, columns, row):
+    """Add one row to a CSV file. If the file was written with fewer columns
+    (before a column was added), it's rewritten with the new header first,
+    leaving the new columns blank in the old rows."""
+    if os.path.exists(path):
+        with open(path, newline="") as fh:
+            header = next(csv.reader(fh), None)
+        if header != columns:
+            with open(path, newline="") as fh:
+                old = list(csv.DictReader(fh))
+            tmp = path + ".tmp"
+            with open(tmp, "w", newline="") as fh:
+                writer = csv.DictWriter(fh, fieldnames=columns, extrasaction="ignore")
+                writer.writeheader()
+                writer.writerows(old)
+            os.replace(tmp, path)
+    new_file = not os.path.exists(path)
+    with open(path, "a", newline="") as fh:
+        writer = csv.writer(fh)
+        if new_file:
+            writer.writerow(columns)
+        writer.writerow(row)
 
 
 def now_utc():
@@ -104,28 +139,26 @@ class PaperTrader:
         return pos
 
     def _entry(self, when, pos, result):
-        """Save buys vs sells over the last hour and insider-network status
-        at the moment of the buy. Blank means the data wasn't available."""
+        """Save buys vs sells over the last hour, insider-network status and
+        DexScreener's 5-minute and 1-hour price change at the moment of the
+        buy. Blank means the data wasn't available."""
         tx = ((result.pair or {}).get("txns") or {}).get("h1") or {}
+        change = (result.pair or {}).get("priceChange") or {}
         ins = getattr(result, "insider", None)
         if ins is None:
             flagged = "unknown"
         else:
             flagged = "yes" if any(ins.get(k) for k in ins) else "no"
-        new_file = not os.path.exists(self.entries_path)
-        with open(self.entries_path, "a", newline="") as fh:
-            writer = csv.writer(fh)
-            if new_file:
-                writer.writerow(ENTRY_COLUMNS)
-            writer.writerow([
-                when.strftime("%Y-%m-%d %H:%M:%S"), pos["symbol"], pos["address"],
-                f"{pos['entry_price']:.10g}",
-                "" if tx.get("buys") is None else tx["buys"],
-                "" if tx.get("sells") is None else tx["sells"],
-                flagged,
-                *(("", "", "") if ins is None else
-                  (ins["networks"], ins["linked_wallets"], ins["insider_top_holders"])),
-            ])
+        append_row(self.entries_path, ENTRY_COLUMNS, [
+            when.strftime("%Y-%m-%d %H:%M:%S"), pos["symbol"], pos["address"],
+            f"{pos['entry_price']:.10g}",
+            "" if tx.get("buys") is None else tx["buys"],
+            "" if tx.get("sells") is None else tx["sells"],
+            flagged,
+            *(("", "", "") if ins is None else
+              (ins["networks"], ins["linked_wallets"], ins["insider_top_holders"])),
+            pct(change.get("m5")), pct(change.get("h1")),
+        ])
 
     # ---- selling ----
 

@@ -38,7 +38,17 @@ from collections import deque
 from datetime import datetime, timezone
 
 from screener.filters import to_float
-from screener.paper_trader import PaperTrader
+from screener.paper_trader import PaperTrader, append_row, pct
+
+# The 5-minute and 1-hour price change at each buy, like the other strategies'
+# entries.csv. Launches are bought at most 90 seconds old, before DexScreener
+# reliably lists them, so both are the change since creation measured from the
+# PumpPortal feed: for a token younger than 5 minutes that's the whole window.
+LAUNCH_ENTRY_COLUMNS = [
+    "time_utc", "symbol", "token_address", "price_usd", "seconds_after_creation",
+    "buys_so_far", "sells_so_far", "dev_buy_pct", "first_block_buyers", "flagged",
+    "price_change_5m_pct", "price_change_1h_pct",
+]
 
 TOTAL_SUPPLY = 1_000_000_000  # every pump.fun token
 
@@ -53,6 +63,13 @@ def curve_price_sol(v_sol, v_tokens):
     if not v_sol or not v_tokens:
         return None
     return v_sol / v_tokens
+
+
+def change_pct(before, after):
+    """% change from `before` to `after`, or None if either is unknown."""
+    if not before or not after:
+        return None
+    return round((after / before - 1) * 100, 2)
 
 
 def _atomic_json(path, data):
@@ -129,18 +146,13 @@ class LaunchTrader(PaperTrader):
         return None
 
     def _launch_entry(self, when, pos, info):
-        path = self.entries_path
-        new = not os.path.exists(path)
-        with open(path, "a", newline="") as fh:
-            w = csv.writer(fh)
-            if new:
-                w.writerow(["time_utc", "symbol", "token_address", "price_usd",
-                            "seconds_after_creation", "buys_so_far", "sells_so_far",
-                            "dev_buy_pct", "first_block_buyers", "flagged"])
-            w.writerow([when.strftime("%Y-%m-%d %H:%M:%S"), pos["symbol"], pos["address"],
-                        f"{pos['entry_price']:.10g}", f"{info['seconds_after_creation']:.1f}",
-                        info["buys"], info["sells"], f"{info['dev_buy_pct']:.2f}",
-                        info["first_block_buyers"], "yes" if info["flagged"] else "no"])
+        append_row(self.entries_path, LAUNCH_ENTRY_COLUMNS, [
+            when.strftime("%Y-%m-%d %H:%M:%S"), pos["symbol"], pos["address"],
+            f"{pos['entry_price']:.10g}", f"{info['seconds_after_creation']:.1f}",
+            info["buys"], info["sells"], f"{info['dev_buy_pct']:.2f}",
+            info["first_block_buyers"], "yes" if info["flagged"] else "no",
+            pct(info.get("change_since_creation_pct")),
+            pct(info.get("change_since_creation_pct"))])
 
 
 class LaunchEngine:
@@ -256,6 +268,8 @@ class LaunchEngine:
             "created": t, "slot": msg.get("slot"), "status": "evaluating", "price_time": t,
             "price_sol": curve_price_sol(msg.get("vSolInBondingCurve"),
                                          msg.get("vTokensInBondingCurve")),
+            "created_price_sol": curve_price_sol(msg.get("vSolInBondingCurve"),
+                                                 msg.get("vTokensInBondingCurve")),
             "dev_buy_pct": initial / TOTAL_SUPPLY * 100, "first_block_buyers": set(),
             "buys": 0, "sells": 0, "entered": set(),
         }
@@ -392,7 +406,9 @@ class LaunchEngine:
                     info = {"seconds_after_creation": age, "buys": w["buys"],
                             "sells": w["sells"], "dev_buy_pct": w["dev_buy_pct"],
                             "first_block_buyers": len(w["first_block_buyers"]),
-                            "flagged": w.get("flagged", False), "creator": w["creator"]}
+                            "flagged": w.get("flagged", False), "creator": w["creator"],
+                            "change_since_creation_pct": change_pct(
+                                w.get("created_price_sol"), w.get("price_sol"))}
                     if trader.buy_launch(mint, w["symbol"], price, self.sol_usd, utc(t), info):
                         trader.save()
                 if w["entered"] >= set(self.speeds):
