@@ -198,6 +198,21 @@ class SkipTests(Base):
         self.assertEqual(self.at(20, create("m10", creator="D10"), engine), ([], []))
         self.assertEqual(self.at(3601, create("m11", creator="D11"), engine)[0], ["m11"])
 
+    def test_unpriced_launch_is_skipped_without_using_the_cap(self):
+        engine = self.make(cfg_with(max_new_trades_per_hour=1))
+        unpriced = create("x1", creator="DX")
+        del unpriced["vSolInBondingCurve"], unpriced["vTokensInBondingCurve"]
+        self.assertEqual(self.at(0, unpriced, engine), ([], []))
+        self.assertEqual(self.at(1, create("m1", creator="D1"), engine)[0], ["m1"])
+        hour = next(iter(engine.stats.values()))
+        self.assertEqual(hour["skipped: no price in the feed"], 1)
+
+    def test_restarts_are_counted(self):
+        self.engine.save()                   # started once (setUp), stopped
+        engine = self.make()                 # started again
+        engine.save()
+        self.assertEqual(sum(h.get("bot started", 0) for h in engine.stats.values()), 2)
+
     def test_open_cap_per_speed(self):
         engine = self.make(cfg_with(max_open_per_speed=2, max_new_trades_per_hour=10))
         for i in range(3):

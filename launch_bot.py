@@ -1,6 +1,7 @@
 """Runs the "launch" paper strategy around the clock (on your own server).
 
-    python launch_bot.py
+    python launch_bot.py            <- run for good (the systemd service does this)
+    python launch_bot.py --test     <- try the setup for 2 minutes; saves nothing
 
 It listens to PumpPortal's free real-time data feed for new pump.fun tokens
 and the trades of the tokens it is following, and paper-trades them at three
@@ -13,12 +14,14 @@ PumpPortal's trading API. The only messages it ever sends to PumpPortal are
 the four data subscriptions in ALLOWED_METHODS.
 """
 
+import argparse
 import asyncio
 import json
 import logging
 import os
 import signal
 import sys
+import tempfile
 import time
 
 import websockets
@@ -158,8 +161,10 @@ class Runner:
             except asyncio.TimeoutError:
                 pass
 
-    async def main(self):
+    async def main(self, stop_after=None):
         loop = asyncio.get_running_loop()
+        if stop_after:
+            loop.call_later(stop_after, self.stop.set)
         for sig in (signal.SIGINT, signal.SIGTERM):
             try:
                 loop.add_signal_handler(sig, self.stop.set)
@@ -176,11 +181,37 @@ class Runner:
         log.info("stopped; everything saved")
 
 
-def main():
+def test_summary(engine):
+    """What a --test run saw, for checking the setup."""
+    totals = {}
+    for hour in engine.stats.values():
+        for key, n in hour.items():
+            totals[key] = totals.get(key, 0) + n
+    lines = ["", "Test run summary (nothing was saved to data/launch):"]
+    lines += [f"  {key}: {n}" for key, n in sorted(totals.items())] or ["  no launches seen"]
+    for name, trader in engine.traders.items():
+        lines.append(f"  paper buys at {name}: {len(trader.state['ever_bought'])}")
+    return "\n".join(lines)
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--test", nargs="?", const=120, type=int, metavar="SECONDS",
+                        help="try the setup: run for SECONDS (default 120, enough for all three "
+                             "speeds) with results in a temporary folder, then print a summary")
+    args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     cfg = load_config()
     if not cfg.get("launch", {}).get("enabled"):
         print("The launch strategy is turned off ([launch] enabled = false).")
+        return 0
+    if args.test:
+        # A test must never write real results: a short run leaves the slower
+        # speeds without their buys and uses up the hourly cap.
+        with tempfile.TemporaryDirectory() as folder:
+            runner = Runner(cfg, folder)
+            asyncio.run(runner.main(stop_after=args.test))
+            print(test_summary(runner.engine))
         return 0
     folder = os.path.join(HERE, cfg["files"]["data_folder"])
     asyncio.run(Runner(cfg, folder).main())

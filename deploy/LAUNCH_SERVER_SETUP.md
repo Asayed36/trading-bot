@@ -202,14 +202,27 @@ unset TOKEN
 git config credential.helper store
 ```
 
-Try the bot for a minute:
+Give git a name and email for the result commits. Without them git can't
+make a commit, and a push can get stuck half-way (the push script sets them
+too, but set them here so every git command on the server works):
 
 ```
-timeout 60 .venv/bin/python launch_bot.py
+git config user.name "launch-bot"
+git config user.email "launch-bot@users.noreply.github.com"
 ```
 
-You should see `connected to PumpPortal`. It stops by itself after 60
-seconds (or press Ctrl+C).
+Try the bot for 2 minutes:
+
+```
+.venv/bin/python launch_bot.py --test
+```
+
+You should see `connected to PumpPortal`, then after 2 minutes a short
+summary: launches seen, skipped (and why), and paper buys at each speed.
+A test run saves **nothing** to `data/launch`: its results go to a temporary
+folder that's deleted afterwards. (Don't test with
+`timeout 60 .venv/bin/python launch_bot.py`: that writes real results, stops
+before the 90s speed can buy, and uses up the hourly limit of new trades.)
 
 Turn it on for good, with the hourly push:
 
@@ -235,9 +248,19 @@ Within an hour or two you should see commits called **"Launch paper results
 
 ## Part E. Looking after it
 
-- **Get bot updates** (after a pull request is merged):
-  `cd ~/trading-bot && git pull && sudo systemctl restart launch-bot`
-- **Test the push by hand:** `~/trading-bot/deploy/push_results.sh`
+- **Get bot updates** (after a pull request is merged): the hourly push
+  already brings the code on the server up to date with GitHub (like
+  `git pull`), so you only need to restart the bot to use it:
+  `sudo systemctl restart launch-bot`. (Any of your own edits to a file that
+  also changed on GitHub are replaced by GitHub's version.)
+- **Test the push by hand:** `~/trading-bot/deploy/push_results.sh`. It
+  never uses a rebase, and if an older version left a rebase or cherry-pick
+  stuck, it clears it first and still pushes the newest results. Check the
+  push log with `journalctl -u launch-push -n 20`.
+- **Restarts:** the bot counts each start as `bot started` in
+  `data/launch/stats.json`. A launch that was being followed when the bot
+  stopped keeps the positions it had, but the speeds it hadn't reached yet
+  (say 90s) don't buy it after the restart.
 - **Token expired** (after 90 days): make a new one (Part C) and run the
   `read -rsp …` lines in Part D again.
 - **Pause:** `sudo systemctl stop launch-bot`. **Turn off for good:**
