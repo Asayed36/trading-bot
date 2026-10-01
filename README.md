@@ -352,8 +352,8 @@ Settings are under `[news]` in `config.toml`.
 - press-release wires: PR Newswire (crypto and blockchain feeds),
   GlobeNewswire (public companies' releases) and Business Wire (all news);
   releases that don't mention crypto are skipped;
-- project blogs (each one tied to its coin): Quant and Chainlink to start
-  with, and you can add more;
+- project blogs (each one tied to its coin): Quant to start with, and you
+  can add more (Chainlink's blog was tried but has no RSS feed);
 - exchange announcements: Binance's new-listing list and Kraken's blog.
 
 Each run's log shows which sources worked (`ok` / `FAIL` with the reason),
