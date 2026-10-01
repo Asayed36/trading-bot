@@ -78,7 +78,7 @@ class PublicApi:
         found = self._get(f"{DEXSCREENER}/latest/dex/search?q={quote(query)}") or {}
         return found.get("pairs") or []
 
-    # ---- GeckoTerminal (newest pools) ----
+    # ---- GeckoTerminal (newest pools, recent trades) ----
 
     def gecko_new_pools(self, page=1):
         """The newest Solana pools, 20 per page. The free API allows about 30
@@ -91,6 +91,19 @@ class PublicApi:
         finally:
             self._last_gecko = time.time()
         return found.get("data") or []
+
+    def gecko_pool_trades(self, pool):
+        """The latest trades (up to 300, last 24 hours) in one pool. Each has
+        tx_from_address (the trader's wallet), kind ("buy"/"sell"),
+        volume_in_usd and block_timestamp. Spaced out like new_pools."""
+        wait = 2.1 - (time.time() - self._last_gecko)
+        if wait > 0:
+            time.sleep(wait)
+        try:
+            found = self._get(f"{GECKOTERMINAL}/networks/solana/pools/{quote(pool)}/trades") or {}
+        finally:
+            self._last_gecko = time.time()
+        return [t.get("attributes") or {} for t in found.get("data") or []]
 
     # ---- RugCheck (token safety) ----
 
