@@ -43,7 +43,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      # Start from the branch as it is NOW, not the commit the run was queued
+      # on: a run that waited behind another one would otherwise start from
+      # stale positions and its save would conflict with the previous run's.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
 
       - uses: actions/setup-python@v5
         with:
