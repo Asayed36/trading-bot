@@ -1,5 +1,5 @@
 """Opens a GitHub issue for each token that passes every filter, and closes it
-when the paper position closes. Each paper strategy ("main" and "early") gets
+when the paper position closes. Each paper strategy ("main", "early", "news") gets
 its own issues, told apart by title, a "strategy: ..." label and a hidden
 marker, so the same token can have one issue per strategy but never two.
 
@@ -144,34 +144,36 @@ def issue_body(pos, pt, note, strategy="main"):
     d = pos["issue_details"]
     entry = pos["entry_price"]
     change = d["change_24h_pct"]
-    holders = d["top_holders"]
     lines = [
         marker(pos["address"], strategy),
         f"**Strategy:** {strategy} ({STRATEGIES[strategy]['about']})",
         f"**Token:** {d['name']} ({pos['symbol']})",
-        f"**Contract address:** `{pos['address']}`",
-        f"**DexScreener:** {d['url'] or 'no link'}",
+        f"**{d.get('address_label', 'Contract address')}:** `{pos['address']}`",
+        f"**{d.get('link_label', 'DexScreener')}:** {d['url'] or 'no link'}",
         "",
         f"### When it passed ({_utc(d['passed_at'])})",
         "| | |",
         "|---|---|",
         f"| Entry price (paper) | {price(entry)} |",
         f"| Market cap | {money(d['market_cap_usd'])} |",
-        f"| Liquidity | {money(d['liquidity_usd'])} |",
-        f"| 24h change | {'unknown' if change is None else f'{change:+.0f}%'} |",
     ]
+    if "liquidity_usd" in d:
+        lines.append(f"| Liquidity | {money(d['liquidity_usd'])} |")
+    lines.append(f"| 24h change | {'unknown' if change is None else f'{change:+.0f}%'} |")
     lines += [f"| {label} | {value} |" for label, value in d.get("extra") or []]
-    lines += [
-        "",
-        f"### Top 10 holders ({sum(h['pct'] for h in holders):.1f}% together, "
-        "pool wallets excluded)",
-    ]
-    if holders:
-        lines += ["| # | Wallet | Share |", "|---|---|---|"]
-        lines += [f"| {i} | `{h['wallet']}` | {h['pct']:.2f}% |"
-                  for i, h in enumerate(holders, 1)]
-    else:
-        lines.append("No holder data.")
+    if "top_holders" in d:  # the news strategy has no holder data
+        holders = d["top_holders"]
+        lines += [
+            "",
+            f"### Top 10 holders ({sum(h['pct'] for h in holders):.1f}% together, "
+            "pool wallets excluded)",
+        ]
+        if holders:
+            lines += ["| # | Wallet | Share |", "|---|---|---|"]
+            lines += [f"| {i} | `{h['wallet']}` | {h['pct']:.2f}% |"
+                      for i, h in enumerate(holders, 1)]
+        else:
+            lines.append("No holder data.")
 
     lines += [
         "",
@@ -226,12 +228,29 @@ def _early_exit_rows(pos, pt):
     ]
 
 
+def _news_exit_rows(pos, pt):
+    entry = pos["entry_price"]
+    tp, sl, trail = pt["take_profit_pct"], pt["stop_loss_pct"], pt["trailing_stop_pct"]
+    limit = datetime.fromisoformat(pos["entry_time"]) + timedelta(days=pt["max_hold_days"])
+    return [
+        f"| Take profit: sell {_sell_part(pt)} | {price(entry * (1 + tp / 100))} (+{tp:g}%) |",
+        f"| Stop loss: sell everything left | {price(entry * (1 - sl / 100))} (-{sl:g}%) |",
+        f"| Trailing stop: sell everything left | {trail:g}% below the highest price since "
+        f"entry. Starts at {price(entry * (1 - trail / 100))} and rises with the peak |",
+        f"| Time limit: sell everything left | {limit.strftime('%Y-%m-%d %H:%M UTC')} "
+        f"({pt['max_hold_days']:g} days) |",
+    ]
+
+
 STRATEGIES = {
     "main": {"title": "PASSED: {symbol}", "about": "established tokens, all filters",
              "exit_rows": _main_exit_rows, "color": "1d76db"},
     "early": {"title": "PASSED (early): {symbol}",
               "about": "tokens under 6h old, bought on a pullback",
               "exit_rows": _early_exit_rows, "color": "d93f0b"},
+    "news": {"title": "PASSED (news): {symbol}",
+             "about": "official news about an established coin, rule-based checks",
+             "exit_rows": _news_exit_rows, "color": "0052cc"},
 }
 
 

@@ -325,6 +325,166 @@ priority_fee_sol = 0.0005
 extra_slippage_pct = 5
 
 # ---------------------------------------------------------------------
+# NEWS STRATEGY: buy a coin right after real, official news (paper only)
+# ---------------------------------------------------------------------
+# Reads official sources only (press-release wires, project blogs, exchange
+# announcements), names the coin with CoinGecko's free coin list, and runs
+# rule-based checks (no AI, no X). Every candidate is logged with each check's
+# result to data/news/candidates.csv. See screener/news.py.
+[news]
+enabled = true
+# Runs inside the 5-minute workflow, but only checks the news on runs at
+# least this many minutes apart (2 minutes' slack for GitHub's jitter).
+every_minutes = 15
+
+# --- CoinGecko free plan ---
+# The free "Demo" plan allows 10,000 calls a month with a free API key (put it
+# in the COINGECKO_API_KEY secret). Without a key the public API is tried, but
+# it's often rate-limited on GitHub's shared servers. The bot stops looking up
+# new candidates (but still prices open positions while calls last) at this
+# many calls a month.
+coingecko_monthly_calls = 9000
+# Pages of CoinGecko's coin list (250 coins a page, biggest first) that news
+# is matched against. Only fetched on runs with crypto news to check.
+coin_pages = 2
+
+# --- The checks ---
+# News older than this when the bot sees it is too late.
+max_age_minutes = 180
+# Coin size, so a move is real and tradable.
+min_market_cap_usd = 20_000_000
+min_volume_usd = 1_000_000
+# Skip coins that already moved: the news is priced in.
+max_change_1h_pct = 15
+max_change_24h_pct = 40
+# Don't buy the same coin again within this many days.
+cooldown_days = 3
+
+# One-word coin names that are also everyday words ("Flow", "Core") need
+# their ticker - "(FLOW)" or "$FLOW" - or "Network"/"Protocol"/"Token"... right
+# after the name. Names listed here don't.
+unambiguous_names = ["Bitcoin", "Ethereum", "Solana", "Cardano", "Chainlink", "Avalanche",
+                     "Polkadot", "Litecoin", "Dogecoin", "XRP", "TRON", "Stellar", "Hedera",
+                     "Algorand", "Tezos", "Aptos", "Arbitrum", "Toncoin", "Monero", "Uniswap",
+                     "Aave", "Filecoin", "Polygon", "Quant", "Ondo", "Injective", "Kaspa"]
+# Mentioned in passing ("accepts Bitcoin and Ether"), these don't count when
+# another coin is the subject.
+background_coins = ["bitcoin", "ethereum", "tether", "usd-coin"]
+stablecoin_symbols = ["usdt", "usdc", "dai", "fdusd", "usde", "tusd", "pyusd", "usdd", "usds",
+                      "frax", "lusd", "gusd", "usdp", "eurc", "rlusd", "usd1", "usdtb"]
+# A press release must mention crypto at all.
+crypto_words = ["crypto", "cryptocurrency", "blockchain", "token", "tokens", "tokenized",
+                "tokenization", "digital asset", "digital assets", "stablecoin", "web3",
+                "on-chain", "onchain", "DeFi", "decentralized", "distributed ledger",
+                "mainnet", "smart contract"]
+# Real catalysts...
+catalyst_words = ["selects", "selected", "partners with", "partnership with", "launches",
+                  "launched", "goes live", "went live", "is live", "mainnet launch",
+                  "integrates", "integration with", "adopts", "chooses", "acquires",
+                  "acquisition of", "approved", "approval", "granted", "signs", "signed",
+                  "agreement with", "collaboration with", "invests in", "strategic investment"]
+# ...and for exchange announcements, a new listing.
+exchange_words = ["will list", "lists", "listing", "will add", "adds", "trading starts",
+                  "now available", "will launch", "launches"]
+# Hype or not-yet-real...
+hype_words = ["exploring", "explores", "in talks", "in discussions", "potential partnership",
+              "potential listing", "rumor", "rumour", "reportedly", "speculation",
+              "memorandum of understanding", "MoU", "non-binding", "letter of intent",
+              "price prediction", "could reach", "presale", "pre-sale", "airdrop", "giveaway",
+              "100x", "1000x"]
+# ...bad news...
+bad_news_words = ["hack", "hacked", "exploit", "exploited", "delist", "delisting", "lawsuit",
+                  "sued", "charges", "charged", "fraud", "investigation", "halts", "suspends",
+                  "suspended", "bankruptcy", "insolvency", "outage", "vulnerability",
+                  "monitoring tag"]
+# ...and paid content.
+paid_words = ["sponsored", "paid content", "advertorial", "promoted content", "paid press release"]
+# Well-known institutions: one must be named in a press release or blog post.
+institutions = ["JPMorgan", "J.P. Morgan", "Citi", "Citigroup", "Bank of America", "Wells Fargo",
+                "Goldman Sachs", "Morgan Stanley", "BNY", "State Street", "HSBC", "Barclays",
+                "Deutsche Bank", "UBS", "BNP Paribas", "Santander", "Standard Chartered",
+                "Societe Generale", "ING", "Nomura", "Mizuho", "SBI", "DBS", "BlackRock",
+                "Fidelity", "Franklin Templeton", "Vanguard", "Invesco", "WisdomTree", "VanEck",
+                "Grayscale", "Nasdaq", "NYSE", "CME Group", "Cboe", "DTCC", "SWIFT", "Swift",
+                "Euroclear", "Clearstream", "The Clearing House", "Visa", "Mastercard",
+                "PayPal", "Stripe", "American Express", "Google", "Microsoft", "Amazon", "AWS",
+                "Apple", "NVIDIA", "Oracle", "IBM", "Samsung", "Sony", "Deloitte", "PwC",
+                "KPMG", "Accenture", "Coinbase", "Binance", "Kraken", "Robinhood", "Revolut",
+                "OKX", "Bybit", "Upbit", "Federal Reserve", "European Central Bank",
+                "Bank of England", "SEC", "CFTC", "Monetary Authority of Singapore",
+                "Hong Kong Monetary Authority"]
+
+# --- Sources ---
+# kind: "press" (press-release wire), "blog" (a project's own blog: set coin
+# to its CoinGecko id) or "exchange" (listing announcements). format: "rss"
+# (RSS or Atom, the default) or "binance" (Binance's public announcement
+# list). Each run's log says which sources worked; fix or remove any that
+# keep failing. Feed addresses change now and then.
+[[news.sources]]
+name = "PR Newswire crypto"
+kind = "press"
+url = "https://www.prnewswire.com/rss/financial-services-latest-news/cryptocurrency-list.rss"
+
+[[news.sources]]
+name = "PR Newswire blockchain"
+kind = "press"
+url = "https://www.prnewswire.com/rss/consumer-technology-latest-news/blockchain-list.rss"
+
+[[news.sources]]
+name = "GlobeNewswire crypto"
+kind = "press"
+url = "https://www.globenewswire.com/RssFeed/keyword/cryptocurrency"
+
+[[news.sources]]
+# Business Wire's all-news feed: releases that don't mention crypto are
+# skipped without any CoinGecko call.
+name = "Business Wire"
+kind = "press"
+url = "https://feed.businesswire.com/rss/home/?rss=G1QFDERJXkpaGVlYXg=="
+
+[[news.sources]]
+name = "Binance listings"
+kind = "exchange"
+format = "binance"
+url = "https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=1&catalogId=48&pageNo=1&pageSize=20"
+
+[[news.sources]]
+name = "Kraken blog"
+kind = "exchange"
+url = "https://blog.kraken.com/feed/"
+
+[[news.sources]]
+name = "Quant blog"
+kind = "blog"
+coin = "quant-network"
+url = "https://quant.network/feed/"
+
+[[news.sources]]
+name = "Chainlink blog"
+kind = "blog"
+coin = "chainlink"
+url = "https://blog.chain.link/feed/"
+
+[news.paper_trading]
+# Pretend dollars per buy.
+buy_amount_usd = 10
+# Sell half at +50%...
+take_profit_pct = 50
+take_profit_sell_fraction = 0.5
+# ...and everything left at -20% from entry, 25% below the highest price
+# since entry, or after 7 days.
+stop_loss_pct = 20
+trailing_stop_pct = 25
+max_hold_days = 7
+# A later, different piece of news about the same coin can be bought again
+# (after cooldown_days above).
+allow_rebuy = true
+# Fees + slippage for a full buy-and-sell on an exchange, as a % of the money
+# put in. These are bigger, exchange-listed coins, so lower than the memecoin
+# strategies.
+round_trip_cost_pct = 1
+
+# ---------------------------------------------------------------------
 # GITHUB ISSUES: only used by the scheduled GitHub run
 # ---------------------------------------------------------------------
 [github_issues]
