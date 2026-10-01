@@ -264,10 +264,12 @@ class DemoNewsHttp:
 
     def text(self, url):
         self.calls.append(url)
-        if "prnewswire" not in url:
-            return "<rss><channel></channel></rss>"
         from email.utils import format_datetime
         now = self.now or datetime.now(timezone.utc)
+        if "prnewswire" not in url:   # other feeds: one old, unrelated post
+            when = format_datetime(now - timedelta(days=2))
+            return (f"<rss><channel><item><title>Weekly update from {url[8:30]}</title>"
+                    f"<link>{url}#old</link><pubDate>{when}</pubDate></item></channel></rss>")
         rows = []
         for n, (_, title, summary, ago) in enumerate(self.items):
             when = format_datetime(now - timedelta(minutes=ago))
@@ -279,7 +281,10 @@ class DemoNewsHttp:
     def json(self, url, headers=None):
         self.calls.append(url)
         if "binance" in url:
-            return {"code": "000000", "data": {"catalogs": []}}
+            old = (self.now or datetime.now(timezone.utc)) - timedelta(days=2)
+            return {"code": "000000", "data": {"catalogs": [{"articles": [
+                {"id": 1, "code": "demo1", "title": "Notice on Scheduled Maintenance",
+                 "releaseDate": int(old.timestamp() * 1000)}]}]}}
         coins = copy.deepcopy(self.coins)
         for coin in coins:
             coin["current_price"] *= self.price_moves.get(coin["id"], 1.0)

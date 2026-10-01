@@ -431,16 +431,19 @@ kind = "press"
 url = "https://www.prnewswire.com/rss/consumer-technology-latest-news/blockchain-list.rss"
 
 [[news.sources]]
-name = "GlobeNewswire crypto"
+# GlobeNewswire's latest 20 releases from public companies (its documented
+# feed). Releases that don't mention crypto are skipped without any
+# CoinGecko call.
+name = "GlobeNewswire"
 kind = "press"
-url = "https://www.globenewswire.com/RssFeed/keyword/cryptocurrency"
+url = "https://www.globenewswire.com/RssFeed/orgclass/1/feedTitle/GlobeNewswire%20-%20News%20About%20Public%20Companies"
 
 [[news.sources]]
 # Business Wire's all-news feed: releases that don't mention crypto are
 # skipped without any CoinGecko call.
 name = "Business Wire"
 kind = "press"
-url = "https://feed.businesswire.com/rss/home/?rss=G1QFDERJXkpaGVlYXg=="
+url = "https://feed.businesswire.com/rss/home/?rss=G1QFDERJXkJcFVJYWQ=="
 
 [[news.sources]]
 name = "Binance listings"
