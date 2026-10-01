@@ -41,6 +41,7 @@ import re
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
+from html.entities import name2codepoint
 from types import SimpleNamespace
 
 import requests
@@ -50,7 +51,11 @@ from screener.filters import FAIL, PASS, Check, money, to_float
 from screener.paper_trader import PaperTrader, now_utc
 
 COINGECKO = "https://api.coingecko.com/api/v3"
-HEADERS = {"User-Agent": "memecoin-screener/1.0 (read-only paper trading)"}
+# Identifies the bot as a feed reader, with a link back to this project.
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; trading-bot-news/1.0; read-only "
+                         "paper trading; +https://github.com/Asayed36/trading-bot)",
+           "Accept": "application/rss+xml, application/atom+xml, application/xml, "
+                     "application/json, text/xml;q=0.9, */*;q=0.8"}
 CANDIDATE_COLUMNS = ["time_utc", "source", "kind", "published_utc", "title", "url", "coin",
                      "symbol", "verdict", "failed", "checks"]
 QUALIFIERS = r"(?:Network|Protocol|Foundation|Labs|Chain|Blockchain|[Tt]oken|[Cc]oin|DAO|Finance)"
@@ -72,7 +77,7 @@ class NewsHttp:
             resp = requests.get(url, headers=dict(HEADERS, **(headers or {})),
                                 timeout=self.timeout)
         except requests.RequestException as exc:
-            raise ApiError(f"could not reach {url.split('?')[0]}: {exc}") from exc
+            raise ApiError(f"could not reach {url.split('?')[0]}: {why(exc)}") from exc
         if resp.status_code == 429:
             raise RateLimited(f"{url.split('?')[0]} said 'too many requests'")
         if resp.status_code != 200:
@@ -124,12 +129,50 @@ def _child(el, *names):
     return None
 
 
+def why(exc):
+    """The useful part of a connection error, e.g. "ReadTimeout" or
+    "ConnectionResetError: [Errno 104] Connection reset by peer"."""
+    text = str(exc)
+    caused = re.search(r"Caused by (\w+)\((.*)\)\)?\s*$", text)
+    if caused:
+        return f"{caused.group(1)}: {caused.group(2)[-80:]}"
+    return f"{type(exc).__name__}: {text[-80:]}"
+
+
+XML_ENTITIES = {"amp", "lt", "gt", "quot", "apos"}
+
+
+def repair_xml(text):
+    """Fix the usual mistakes in hand-made feeds: HTML entities like &nbsp;
+    (not valid XML), a bare "&", and control characters."""
+    text = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", "", text)
+
+    def entity(m):
+        name = m.group(1)
+        if name in XML_ENTITIES:
+            return m.group(0)
+        code = name2codepoint.get(name)
+        return f"&#{code};" if code else f"&amp;{name};"
+
+    text = re.sub(r"&([A-Za-z][A-Za-z0-9]*);", entity, text)
+    return re.sub(r"&(?!(?:[A-Za-z][A-Za-z0-9]*|#\d+|#x[0-9A-Fa-f]+);)", "&amp;", text)
+
+
 def parse_feed(text):
-    """Items from an RSS 2.0 or Atom feed: [{id, title, summary, url, published}]."""
+    """Items from an RSS 2.0 or Atom feed: [{id, title, summary, url, published}].
+    A feed with no items at all is treated as broken: a working feed always
+    lists its latest posts (Business Wire, for one, answers a bad address
+    with an empty feed whose description holds the error)."""
+    if isinstance(text, bytes):
+        text = text.decode("utf-8", "replace")
     try:
-        root = ET.fromstring(text.encode("utf-8") if isinstance(text, str) else text)
-    except ET.ParseError as exc:
-        raise ApiError(f"not a valid feed ({exc})") from exc
+        root = ET.fromstring(text.encode("utf-8"))
+    except ET.ParseError:
+        try:
+            root = ET.fromstring(repair_xml(text).encode("utf-8"))
+        except ET.ParseError as exc:
+            start = clean(text[:300])[:80]
+            raise ApiError(f"not a valid feed ({exc}); it starts: {start!r}") from exc
     items = []
     for el in root.iter():
         if el.tag.split("}")[-1] not in ("item", "entry"):
@@ -147,6 +190,11 @@ def parse_feed(text):
             "url": url,
             "published": parse_time(when.text if when is not None else None),
         })
+    if not items:
+        about = _child(root.find("channel") if root.find("channel") is not None else root,
+                       "description", "subtitle", "title")
+        note = clean(about.text if about is not None else "")[:80]
+        raise ApiError("the feed has no items" + (f" ({note!r})" if note else ""))
     return items
 
 
@@ -176,6 +224,8 @@ def parse_binance(data):
             "url": f"https://www.binance.com/en/support/announcement/{a['code']}",
             "published": datetime.fromtimestamp(ms / 1000, timezone.utc) if ms else None,
         })
+    if not items:
+        raise ApiError("no announcements in the answer")
     return items
 
 
@@ -402,7 +452,15 @@ class NewsStrategy:
 
         # 1. New items from every source. One broken source doesn't stop the rest.
         seen = state.get("seen") or {}
-        first_run = not state.get("seen_started")
+        # Sources already read successfully. A source read for the first time
+        # (the very first run, a new source, or one that just started
+        # working) has its backlog noted, not checked: only items still
+        # fresh enough are. Older states: sources that gave items before.
+        read = state.get("sources_read")
+        if read is None:
+            read = [n for n, st in (state.get("sources") or {}).items()
+                    if st.get("ok") and st.get("items")]
+        plan["sources_read"] = list(read)
         new, backlog = [], 0
         for source in c["sources"]:
             status = {"name": source["name"], "kind": source.get("kind", "press")}
@@ -430,7 +488,8 @@ class NewsStrategy:
                 fresh.append((source, item, key))
             status["new"] = len(fresh)
             plan["sources"].append(status)
-            if first_run:
+            if source["name"] not in read:
+                plan["sources_read"].append(source["name"])
                 # The feeds' backlog: only items still fresh enough are checked.
                 limit = timedelta(minutes=c["max_age_minutes"])
                 kept = [x for x in fresh
@@ -438,9 +497,9 @@ class NewsStrategy:
                 backlog += len(fresh) - len(kept)
                 fresh = kept
             new += fresh
-        if first_run:
-            plan["notes"].append(f"first run: {backlog} older item(s) already in the feeds "
-                                 "were noted and skipped")
+        if backlog:
+            plan["notes"].append(f"first read of a source: {backlog} older item(s) already in "
+                                 "its feed were noted and skipped")
 
         # 2. Coins: CoinGecko's top coins (only when there's something to match)
         #    and prices for open positions and project-blog coins.
@@ -501,16 +560,17 @@ class NewsStrategy:
         trader, now, c = self.trader, plan["now"], self.c
         state = plan["state"]
         # Keep the trader's positions (updated below) but take fetch's other state.
-        for key in ("last_check", "coingecko", "seen_started"):
+        for key in ("last_check", "coingecko"):
             if key in state:
                 trader.state[key] = state[key]
+        trader.state.pop("seen_started", None)   # replaced by sources_read
         if plan["checked"]:
             seen = dict(trader.state.get("seen") or {})
             seen.update(plan["seen"])
             cutoff = now - timedelta(days=SEEN_DAYS)
             trader.state["seen"] = {k: v for k, v in seen.items()
                                     if _utc(datetime.fromisoformat(v)) >= cutoff}
-            trader.state["seen_started"] = trader.state.get("seen_started") or now.isoformat()
+            trader.state["sources_read"] = plan["sources_read"]
             trader.state["sources"] = {s["name"]: s for s in plan["sources"]}
 
         for note in plan["notes"]:

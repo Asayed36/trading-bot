@@ -336,13 +336,17 @@ Settings are under `[news]` in `config.toml`.
 
 **Sources** (`[[news.sources]]`, read every 15 minutes):
 - press-release wires: PR Newswire (crypto and blockchain feeds),
-  GlobeNewswire, Business Wire;
+  GlobeNewswire (public companies' releases) and Business Wire (all news);
+  releases that don't mention crypto are skipped;
 - project blogs (each one tied to its coin): Quant and Chainlink to start
   with, and you can add more;
 - exchange announcements: Binance's new-listing list and Kraken's blog.
 
-Each run's log shows which sources worked (`ok` / `FAIL`), and the latest
-status is saved in `data/news/positions.json`. Feed addresses change now and
+Each run's log shows which sources worked (`ok` / `FAIL` with the reason),
+and the latest status is saved in `data/news/positions.json`. A feed with no
+items at all counts as `FAIL`: Business Wire, for one, answers a wrong
+address with an empty feed. Common mistakes in hand-made feeds (HTML
+entities like `&nbsp;`, a bare `&`) are repaired before reading. Feed addresses change now and
 then, so fix or remove any that keep failing.
 
 **Which coin?** CoinGecko's top 500 coins. A coin counts when its name
@@ -371,8 +375,9 @@ don't mention crypto at all are skipped.
 **Every candidate is logged** to `data/news/candidates.csv`: the time, source,
 headline, link, coin, PASS or FAIL, the failed checks with reasons, and every
 check's result. A candidate is any new item that names a coin; items that
-name no coin are only counted in the run log. On its very first run the bot
-skips the feeds' older backlog and only checks news from the last 3 hours.
+name no coin are only counted in the run log. The first time it reads a
+source (including one that just started working), it skips that feed's older
+backlog and only checks news from the last 3 hours.
 
 **Buying:** $10 at CoinGecko's price. **Exits** suit moves that take days:
 

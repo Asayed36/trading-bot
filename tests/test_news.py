@@ -7,6 +7,7 @@ import copy
 import csv
 import json
 import os
+import re
 import sys
 import tempfile
 import unittest
@@ -21,7 +22,7 @@ from screener.demo import (DEMO_COINS, DemoApi, DemoNewsHttp,  # noqa: E402
 from screener.filters import FAIL  # noqa: E402
 from screener.github_issues import issue_body, issue_title  # noqa: E402
 from screener.news import (NewsStrategy, check_candidate, coin_info,  # noqa: E402
-                           find_coins, parse_binance, parse_feed)
+                           find_coins, parse_binance, parse_feed, why)
 
 CFG = load_config()
 C = CFG["news"]
@@ -89,6 +90,29 @@ class FeedTests(unittest.TestCase):
     def test_bad_feed_is_an_api_error(self):
         with self.assertRaises(ApiError):
             parse_feed("<html>not a feed")
+
+    def test_common_feed_mistakes_are_repaired(self):
+        text = ("<rss><channel><item><title>Q&nbsp;&amp;&nbsp;A: R&D \x01update</title>"
+                "<link>https://x/3?a=1&b=2</link></item></channel></rss>")
+        (it,) = parse_feed(text)
+        self.assertEqual(it["title"], "Q & A: R&D update")
+        self.assertEqual(it["url"], "https://x/3?a=1&b=2")
+
+    def test_empty_feed_is_broken(self):
+        # Business Wire answers a bad address with an empty feed holding the error.
+        text = ("<rss><channel><title>Business Wire</title><description>RSS channel ID is "
+                "not available in the request.</description></channel></rss>")
+        with self.assertRaisesRegex(ApiError, "no items.*channel ID is not available"):
+            parse_feed(text)
+        with self.assertRaises(ApiError):
+            parse_binance({"code": "000000", "data": {"catalogs": []}})
+
+    def test_connection_errors_say_why(self):
+        exc = Exception("HTTPSConnectionPool(host='www.globenewswire.com', port=443): Max "
+                        "retries exceeded with url: /x (Caused by ConnectTimeoutError(<conn>, "
+                        "'Connection to www.globenewswire.com timed out. (connect timeout=20)'))")
+        self.assertTrue(why(exc).startswith("ConnectTimeoutError: "))
+        self.assertIn("timed out", why(exc))
 
     def test_binance_list(self):
         data = {"code": "000000", "data": {"catalogs": [{"catalogId": 48, "articles": [
@@ -233,7 +257,31 @@ class FlowTests(Base):
                                              "blockchain; JPMorgan", 600)])
         _, plan, bought, lines = self.go(http)
         self.assertEqual((plan["candidates"], bought), ([], []))
-        self.assertTrue(any("first run: 1 older item(s)" in line for line in lines))
+        self.assertTrue(any(re.search(r"first read of a source: \d+ older item\(s\)", line)
+                            for line in lines))
+
+    def test_a_source_that_starts_working_later_skips_its_backlog(self):
+        class Fixed(DemoNewsHttp):
+            broken = True
+
+            def text(self, url):
+                if "businesswire" in url and self.broken:
+                    raise ApiError("the feed has no items")
+                if "businesswire" in url:
+                    return ("<rss><channel><item><title>Visa Selects Demo Network</title>"
+                            "<description>blockchain JPMorgan</description><link>https://b/1"
+                            "</link><pubDate>Mon, 21 Sep 2026 10:00:00 GMT</pubDate></item>"
+                            "</channel></rss>")
+                return super().text(url)
+
+        http = Fixed(now=NOW)
+        self.go(http)
+        self.assertNotIn("Business Wire", self.state()["sources_read"])
+        http.broken = False
+        _, plan, _, lines = self.go(http, now=NOW + timedelta(minutes=15))
+        self.assertEqual(plan["candidates"], [])           # 3-day-old item: noted, not checked
+        self.assertTrue(any("1 older item(s)" in line for line in lines))
+        self.assertIn("Business Wire", self.state()["sources_read"])
 
     def test_coingecko_down_means_retry_next_run(self):
         class Down(DemoNewsHttp):
@@ -258,7 +306,7 @@ class FlowTests(Base):
         _, _, bought, lines = self.go(Broken(now=NOW))
         self.assertEqual(len(bought), 1)
         self.assertTrue(any(l.strip().startswith("FAIL  GlobeNewswire") for l in lines))
-        self.assertEqual(self.state()["sources"]["GlobeNewswire crypto"]["ok"], False)
+        self.assertEqual(self.state()["sources"]["GlobeNewswire"]["ok"], False)
 
     def test_no_coingecko_call_without_crypto_news(self):
         http = DemoNewsHttp(now=NOW, items=[("press", "Acme Opens a Factory", "jobs", 5)])
