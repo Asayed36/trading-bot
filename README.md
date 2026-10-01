@@ -152,7 +152,8 @@ because young pools are thinner.
   and labelled `strategy: early`. Main-strategy issues are labelled
   `strategy: main`.
 - Once a day (00:07 UTC), `.github/workflows/daily-comparison.yml` posts the
-  previous day's comparison of all strategies as an issue labelled
+  previous day's comparison of all strategies (including the launch bot's latest
+  pushed results) as an issue labelled
   `daily-comparison`, and closes the day before's.
 
 ## The "convergence" strategy (a third, separate paper strategy)
@@ -265,6 +266,49 @@ safe). Commit that change.
 To stop using Helius, delete the secret (Settings, Secrets and variables,
 Actions), or set `enabled = false` under `[convergence]`.
 
+## The "launch" strategy (a fourth paper strategy, on your own server)
+
+It tests whether **sniping** brand-new pump.fun tokens could work. Because a
+check every few minutes is far too slow for launches, it doesn't run on
+GitHub: `launch_bot.py` runs all the time on a small server (about
+$5/month) and pushes its results here about once an hour. Setup, step by
+step: [`deploy/LAUNCH_SERVER_SETUP.md`](deploy/LAUNCH_SERVER_SETUP.md).
+
+- **Data:** PumpPortal's **free** real-time data feed only: new tokens,
+  migrations, and the trades of the tokens it's following. It never uses
+  PumpPortal's trading API, a wallet or a private key. After a token
+  graduates to PumpSwap (not in the free feed), prices come from DexScreener.
+- **Which launches** (numbers in `[launch]` in `config.toml`): it skips
+  copycat names (an earlier launch with the same name or symbol in the last 7
+  days), creators with a dead earlier token (older than an hour and never
+  graduated), and stops at **10 launches an hour**. These checks only know
+  launches the bot itself has seen, so they get better the longer it runs.
+- **First-block flag:** a launch is flagged if the creator bought in the
+  creation transaction or other wallets bought in the first ~1 second. The
+  free feed can't tell snipers from wallets linked to the creator, so every
+  early buyer counts. Flagged launches are still traded (`skip_flagged =
+  false`), so flagged and clean launches can be compared later.
+- **Three speeds, side by side**, each with its own journal in
+  `data/launch/5s/`, `30s/` and `90s/`: the same launch is paper-bought **$5**
+  at 5 seconds (sniper-bot speed), 30 seconds and 90 seconds (human speed)
+  after creation, at the bonding-curve price at that moment. At most **30
+  open** per speed.
+- **Costs on every buy and sell:** a priority fee (0.003 / 0.001 / 0.0005 SOL
+  for 5s / 30s / 90s), a **1% bot fee**, pump.fun's fee (0.95%) and **5%
+  extra slippage**. On $5, a round trip at a flat price loses about $1.30 at
+  5s, so a launch has to rise roughly 30% before the 5s speed breaks even.
+- **Exits:** sell half at **2x**; everything left at **-30%** or **30
+  minutes** after the buy, whichever comes first.
+- **Results:** each speed's `journal.csv`, `positions.json` and
+  `entries.csv` (when it bought, buys/sells so far, dev buy %, first-block
+  buyers, flag), plus `data/launch/launches.csv` (every launch it considered
+  and why) and `stats.json` (hourly counts: launches seen, skipped by reason,
+  flagged, traded). The daily comparison shows **launch 5s / 30s / 90s** next
+  to the other strategies.
+- **Caveat:** the simulation is still generous. A real buy at 5 seconds can
+  fail or land later, and real slippage in the first seconds can be far
+  worse than 5%.
+
 ## Running automatically on GitHub
 
 `.github/workflows/screener.yml` runs the screener every 5 minutes on GitHub
@@ -339,6 +383,8 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/github_issues.py` | Opens and closes the "PASSED" GitHub issues |
 | `screener/early.py` | The early strategy: candidates, checks, pullback entry and exits |
 | `screener/convergence.py` | The convergence strategy: Helius reads, credit budget, wallet scoring, signals and exits |
+| `screener/launch.py`, `launch_bot.py` | The launch strategy and the program that runs it on your server |
+| `deploy/` | Server setup guide, systemd services and the hourly push script for the launch bot |
 | `screener/compare.py`, `compare.py` | The side-by-side comparison of all strategies, with Helius credit use |
 | `screener/demo.py` | Made-up tokens for `--demo` and the tests |
 | `tests/` | Automated checks that the rules work. Run with `python -m unittest -v` |

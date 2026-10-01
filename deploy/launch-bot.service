@@ -1,0 +1,29 @@
+# Runs the launch paper strategy all the time and restarts it if it stops.
+# Paper trading only: it reads PumpPortal's free data feed and DexScreener.
+# Install: see deploy/LAUNCH_SERVER_SETUP.md
+[Unit]
+Description=Launch paper strategy (read-only data, paper trading only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=bot
+WorkingDirectory=/home/bot/trading-bot
+ExecStart=/home/bot/trading-bot/.venv/bin/python launch_bot.py
+Restart=always
+RestartSec=10
+# Lock it down: it can only write to its data folder.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/bot/trading-bot/data
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryMax=600M
+
+[Install]
+WantedBy=multi-user.target

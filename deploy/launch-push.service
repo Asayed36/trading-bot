@@ -1,0 +1,14 @@
+# Pushes the launch strategy's results (data/launch) to GitHub.
+# Started once an hour by launch-push.timer.
+[Unit]
+Description=Push launch paper results to GitHub
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=bot
+WorkingDirectory=/home/bot/trading-bot
+ExecStart=/home/bot/trading-bot/deploy/push_results.sh
+NoNewPrivileges=true
+PrivateTmp=true
