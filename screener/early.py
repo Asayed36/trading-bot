@@ -44,7 +44,8 @@ from datetime import datetime, timedelta, timezone
 
 from screener.api import ApiError, RateLimited
 from screener.filters import (FAIL, PASS, Check, Result, _lp_check, best_pair,
-                              find_candidates, money, real_holders, to_float)
+                              find_candidates, insider_status, money, real_holders,
+                              to_float)
 from screener.paper_trader import PaperTrader, now_utc
 
 # Tokens that are the "money" side of a pool, never the memecoin itself.
@@ -431,6 +432,7 @@ class EarlyStrategy:
             result = Result(addr, base.get("symbol", "?"), base.get("name", "?"), pair, checks)
             if report:
                 result.top_holders = real_holders(report, pair, {})[:10]
+                result.insider = insider_status(report)
             result.entry = entry
             results.append(result)
 
