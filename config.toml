@@ -154,8 +154,15 @@ allow_rebuy = false
 enabled = true
 
 # --- Helius free plan budget ---
-# getSignaturesForAddress and getTransaction cost 10 credits each.
 helius_monthly_credits = 1_000_000
+# Credits the bot counts per Helius call. Helius's price list says up to 10
+# for getSignaturesForAddress/getTransaction ("archival"), but your dashboard
+# showed about 1 per call for recent data (live checks) and about 2.5 per call
+# when scoring candidates' 14-day histories. These estimates stay above what
+# was measured, so the count errs high and the pause triggers early, never
+# late. Compare with your Helius dashboard now and then.
+helius_live_credits_per_call = 2
+helius_history_credits_per_call = 4
 # Pause the strategy (until the next cycle) rather than go past this %.
 pause_at_pct = 80
 # Day of the month your Helius credits reset. Set this to the day of the
@@ -174,15 +181,17 @@ helius_every_minutes = 15
 min_wallets = 3
 window_minutes = 20
 max_signal_age_minutes = 20
-# How many wallets to follow. About 15 fits the Helius free plan when checked
-# every 15 minutes. With live_rpc = "public" (the free public Solana RPC, no
-# sign-up, but less reliable) live checks cost no Helius credits and this can
-# go up to about 50.
-tracked_wallets = 15
+# How many wallets to follow. 50 fits the Helius free plan when checked
+# every 15 minutes: about 320k credits a month for live checks plus about
+# 210k for the weekly lists, at the estimates above (about 53% of the
+# monthly credits, under the 80% pause). With live_rpc = "public" (the free
+# public Solana RPC, no sign-up, less reliable) live checks cost no Helius
+# credits at all.
+tracked_wallets = 50
 live_rpc = "helius"
 # At most this many new transactions per wallet, and decoded per run.
 max_new_tx_per_wallet = 25
-max_decodes_per_run = 60
+max_decodes_per_run = 150
 
 # --- The weekly list of proven traders ---
 # Winners: tokens up at least this much in 24h, with this much liquidity.
@@ -191,7 +200,7 @@ winner_min_liquidity_usd = 30_000
 # Candidates: the biggest holders (RugCheck, free) of the week's top winners.
 winners_per_refresh = 10
 holders_per_winner = 10
-candidates_per_refresh = 30
+candidates_per_refresh = 80
 # Each candidate's last history_days of swaps are read from Helius. Wallets
 # with more transactions than max_tx_per_candidate in that time are treated
 # as bots and skipped.
@@ -205,7 +214,7 @@ min_realized_sol = 2
 min_win_rate_pct = 40
 max_top_token_share_pct = 60
 # Helius credits the refresh may use per run (it's spread over many runs).
-refresh_credits_per_run = 3_100
+refresh_credits_per_run = 2_500
 
 # --- Basic checks before buying ---
 min_liquidity_usd = 10_000
