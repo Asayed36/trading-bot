@@ -92,6 +92,27 @@ class GitHubIssues:
                 found.setdefault((match.group(2) or "main", match.group(1)), issue["number"])
         return found
 
+    def workflow_runs(self, workflow, since):
+        """Runs of one workflow (file name) created since `since`, newest first.
+        Needs "actions: read" permission."""
+        stamp = since.strftime("%Y-%m-%dT%H:%M:%SZ")
+        url = f"/actions/workflows/{quote(workflow)}/runs?created=%3E%3D{stamp}&per_page=100"
+        runs = []
+        while url and len(runs) < 1000:
+            resp = self._request("GET", url)
+            runs += resp.json().get("workflow_runs") or []
+            url = resp.links.get("next", {}).get("url")
+        return runs
+
+    def last_commit_time(self, path):
+        """When the newest commit touching `path` was made, or None."""
+        resp = self._request("GET", f"/commits?path={quote(path)}&per_page=1")
+        commits = resp.json()
+        if not commits:
+            return None
+        when = commits[0]["commit"]["committer"]["date"]
+        return datetime.fromisoformat(when.replace("Z", "+00:00"))
+
     def create(self, title, body, labels=None):
         resp = self._request("POST", "/issues", json={
             "title": title, "body": body, "labels": labels or [self.label]})

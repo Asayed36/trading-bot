@@ -509,6 +509,18 @@ timeout_seconds = 20
 # the market checks. Set to false to safety-check every candidate.
 skip_safety_if_market_fails = true
 
+[health]
+# The health section at the top of the daily comparison warns when...
+# ...a strategy's last successful scheduled run is older than this,
+stale_minutes = 60
+# ...more scheduled runs than this failed in the last 24 hours,
+max_failed_runs_24h = 0
+# ...or the launch bot hasn't pushed results from your server for this long
+# (it pushes about once an hour).
+launch_stale_hours = 3
+# The workflow file of the scheduled paper trading run.
+workflow = "screener.yml"
+
 [files]
 # Where results are saved (created automatically).
 data_folder = "data"

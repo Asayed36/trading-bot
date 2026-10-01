@@ -18,6 +18,7 @@ from datetime import timedelta
 from run import HERE, load_config
 from screener.compare import MARKER, helius_lines, report, schedule_lines
 from screener.github_issues import GitHubError, GitHubIssues
+from screener.health import health_lines
 from screener.paper_trader import now_utc
 
 LABEL = "daily-comparison"
@@ -86,16 +87,20 @@ def main():
                                os.path.join(folder, "launch", speed["name"]), sell_cost))
     if cfg.get("convergence", {}).get("enabled"):
         extra += helius_lines(os.path.join(folder, "convergence"), day)
-    body = report(strategies, day, extra)
+    # Health checks that ask GitHub (failed runs, the launch bot's last push)
+    # need GITHUB_TOKEN and GITHUB_REPOSITORY; without them they say so.
+    token, repo = os.environ.get("GITHUB_TOKEN"), os.environ.get("GITHUB_REPOSITORY")
+    gh = GitHubIssues(token, repo, LABEL) if token and repo else None
+    health = health_lines(folder, cfg, now_utc(), gh)
+    body = report(strategies, day, extra, health)
     print(body)
 
     if args.github_issue:
-        token, repo = os.environ.get("GITHUB_TOKEN"), os.environ.get("GITHUB_REPOSITORY")
-        if not (token and repo):
+        if gh is None:
             print("\n--github-issue needs GITHUB_TOKEN and GITHUB_REPOSITORY.")
             return 1
         try:
-            post_issue(GitHubIssues(token, repo, LABEL), day, body)
+            post_issue(gh, day, body)
         except GitHubError as exc:
             print(f"\nCould not post to GitHub: {exc}")
             return 1

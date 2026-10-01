@@ -161,6 +161,20 @@ because young pools are thinner.
   previous day's comparison of all strategies (including the launch bot's latest
   pushed results) as an issue labelled
   `daily-comparison`, and closes the day before's.
+- **A health section at the top** of that issue shows, as of when it's posted,
+  whether everything is running, with a ⚠️ and a short list of problems
+  when something is stale or broken (settings under `[health]` in
+  `config.toml`):
+  - scheduled runs: how many failed in the last 24 hours, and when the last
+    successful one finished (warns on any failure);
+  - each strategy (main, early, convergence, news): its last successful run
+    (warns if older than 60 minutes or skipped since). Every run records
+    this in `data/health.json`, which is saved at least every 30 minutes;
+  - convergence: how many wallets it tracks (warns under 3, when it can't
+    give a signal) and whether Helius is paused;
+  - news: each source, ok or failing with the reason;
+  - launch: when your server last pushed results (warns after 3 hours or if
+    it never has).
 
 ## The "convergence" strategy (a third, separate paper strategy)
 
@@ -484,6 +498,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/news.py` | The news strategy: feeds, coin matching, the checks, the candidate log and exits |
 | `screener/launch.py`, `launch_bot.py` | The launch strategy and the program that runs it on your server |
 | `deploy/` | Server setup guide, systemd services and the hourly push script for the launch bot |
+| `screener/health.py` | The health section of the daily comparison, and `data/health.json` |
 | `screener/compare.py`, `compare.py` | The side-by-side comparison of all strategies, with Helius credit use |
 | `screener/demo.py` | Made-up tokens for `--demo` and the tests |
 | `tests/` | Automated checks that the rules work. Run with `python -m unittest -v` (first `pip install -r requirements-launch.txt` too: the launch bot's tests need it) |
