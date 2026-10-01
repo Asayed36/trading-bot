@@ -170,15 +170,25 @@ its results are in the daily comparison. Numbers are in `[convergence]` in
 **The tracked list, rebuilt every week:**
 1. Every run, tokens up 100%+ in 24h with $30k+ liquidity are remembered as
    the week's winners (free DexScreener data).
-2. The biggest holders of the top 10 winners (free RugCheck data, creators
-   and insiders left out) become candidates, up to 80.
+2. From each of the top 10 winners, candidates are the wallets that
+   recently **sold** it (its pool's last 300 trades on GeckoTerminal, free;
+   sells of $50+) and its biggest holders (free RugCheck data, creators and
+   insiders left out), up to 80. Wallets seen on more winners come first,
+   and sellers before holders: a holder who hasn't sold has no closed trades
+   to judge.
 3. Each candidate's last 14 days of swaps are read from Helius and their
    **realized profit** (in SOL) is worked out.
 4. Candidates are dropped if they made over 150 transactions in 14 days
    (probably a bot), closed fewer than 5 trades, made under 2 SOL, won under
    40% of trades, or made over 60% of their profit on one token.
 5. The 50 most profitable become the tracked list. This work is spread over
-   many runs, so a new list takes a few hours to build.
+   many runs, so a new list takes a few hours to build. The run log (and
+   `list_summary` in `data/convergence/positions.json`) says why candidates
+   were dropped, e.g. `26 too few closed trades, 3 qualified; 41 swaps in
+   812 transactions`.
+6. If a finished list has fewer than 3 wallets, it can never give a signal,
+   so it's built again a day later (with that day's winners) instead of a
+   week later, as long as under 50% of the month's Helius credits are used.
 
 **Buying:** every 15 minutes, each tracked wallet's new transactions are read
 and decoded. When 3+ of them bought the same token within 20 minutes, and the

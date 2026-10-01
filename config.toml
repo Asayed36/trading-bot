@@ -197,10 +197,20 @@ max_decodes_per_run = 150
 # Winners: tokens up at least this much in 24h, with this much liquidity.
 winner_min_change_24h_pct = 100
 winner_min_liquidity_usd = 30_000
-# Candidates: the biggest holders (RugCheck, free) of the week's top winners.
+# Candidates, from each of the week's top winners: wallets that recently
+# sold it (GeckoTerminal's last 300 trades, free; sells of at least
+# min_seller_trade_usd), and its biggest holders (RugCheck, free). Sellers
+# matter most: holders who haven't sold have no closed trades to judge.
 winners_per_refresh = 10
+sellers_per_winner = 20
+min_seller_trade_usd = 50
 holders_per_winner = 10
 candidates_per_refresh = 80
+# If a finished list has fewer than min_wallets wallets (it can't give a
+# signal), build it again after this many hours instead of waiting a week,
+# but only while under this % of the monthly Helius credits.
+retry_small_list_hours = 24
+retry_small_list_max_used_pct = 50
 # Each candidate's last history_days of swaps are read from Helius. Wallets
 # with more transactions than max_tx_per_candidate in that time are treated
 # as bots and skipped.

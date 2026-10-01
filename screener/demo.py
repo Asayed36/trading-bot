@@ -129,6 +129,9 @@ class DemoApi:
                 pairs.append(pair)
         return pairs
 
+    def gecko_pool_trades(self, pool):
+        return []  # no demo trades: the demo list is built from holders
+
     def rugcheck_report(self, address):
         known = TOKENS.get(address) or EARLY_TOKENS.get(address) or (None, None)
         return copy.deepcopy(known[1])
