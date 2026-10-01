@@ -99,6 +99,12 @@ class FlowTests(Base):
         self.assertEqual(self.launches()[0]["decision"], "selected")
         (entry,) = rows(os.path.join(self.tmp.name, "launch", "5s", "entries.csv"))
         self.assertEqual(entry["seconds_after_creation"], "5.0")
+        # price change since creation (3e-06 at creation), saved as the 5m and 1h change
+        change = {s: rows(os.path.join(self.tmp.name, "launch", s, "entries.csv"))[0]
+                  for s in ("5s", "30s", "90s")}
+        self.assertEqual({s: (r["price_change_5m_pct"], r["price_change_1h_pct"])
+                          for s, r in change.items()},
+                         {"5s": ("0", "0"), "30s": ("33.33", "33.33"), "90s": ("66.67", "66.67")})
 
     def test_costs_on_a_flat_round_trip(self):
         self.at(0, create("m1"))

@@ -98,10 +98,13 @@ market check aren't sent to RugCheck (they show `skip Safety checks`). Set
 - `data/entries.csv` (and the same file in `data/early/` and
   `data/convergence/`): one row per pretend buy with what the market looked
   like at that moment, for later analysis: buys and sells over the last hour
-  (DexScreener) and insider-network status (RugCheck: whether any insider
+  (DexScreener), insider-network status (RugCheck: whether any insider
   flag was set, the number of networks, linked wallets and insider top
-  holders). Blank or `unknown` means the data wasn't available. Rows are never
-  removed, even after the position closes. Nothing here affects trading.
+  holders), and the price change over the last 5 minutes and the last hour
+  (DexScreener, `price_change_5m_pct` / `price_change_1h_pct`). Blank or
+  `unknown` means the data wasn't available; buys from before a column was
+  added have it blank. Rows are never removed, even after the position
+  closes. Nothing here affects trading.
 - `data/early/`: the same two files for the early strategy (below), plus its
   watchlist of young tokens and the creators it has seen launch dead tokens.
 - `data/convergence/`: the same two files for the convergence strategy
@@ -301,7 +304,9 @@ step: [`deploy/LAUNCH_SERVER_SETUP.md`](deploy/LAUNCH_SERVER_SETUP.md).
   minutes** after the buy, whichever comes first.
 - **Results:** each speed's `journal.csv`, `positions.json` and
   `entries.csv` (when it bought, buys/sells so far, dev buy %, first-block
-  buyers, flag), plus `data/launch/launches.csv` (every launch it considered
+  buyers, flag, and the price change since creation from the feed, saved in
+  the same 5-minute/1-hour columns as the other strategies: every launch is
+  under 5 minutes old when bought, too young for DexScreener), plus `data/launch/launches.csv` (every launch it considered
   and why) and `stats.json` (hourly counts: launches seen, skipped by reason,
   flagged, traded). The daily comparison shows **launch 5s / 30s / 90s** next
   to the other strategies.

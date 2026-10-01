@@ -1,6 +1,6 @@
 """Checks that every paper buy, in every strategy, saves buys vs sells over
-the last hour and insider-network status to entries.csv, without changing
-any trade. Run with:  python -m unittest -v
+the last hour, insider-network status and DexScreener's 5-minute and 1-hour
+price change to entries.csv, without changing any trade. Run with:  python -m unittest -v
 """
 
 import copy
@@ -37,6 +37,7 @@ class HourlyTxnsApi(DemoApi):
         for p in pairs:
             if p["baseToken"]["address"] in TOKENS:
                 p["txns"]["h1"] = {"buys": 120, "sells": 45}
+                p["priceChange"].update(m5=3.5, h1=-12)
         return pairs
 
 
@@ -64,6 +65,35 @@ class EntryRecordTests(unittest.TestCase):
         self.assertEqual((pully["symbol"], pully["buys_1h"], pully["sells_1h"],
                           pully["insider_flagged"]), ("PULLY", "400", "300", "no"))
 
+    def test_price_change_at_entry_is_recorded(self):
+        run(HourlyTxnsApi(), CFG, self.d, **QUIET)
+        main = {r["symbol"]: r for r in rows(os.path.join(self.d, "entries.csv"))}
+        self.assertEqual((main["GOODCAT"]["price_change_5m_pct"],
+                          main["GOODCAT"]["price_change_1h_pct"]), ("3.5", "-12"))
+        (pully,) = rows(os.path.join(self.d, "early", "entries.csv"))
+        self.assertEqual((pully["price_change_5m_pct"], pully["price_change_1h_pct"]),
+                         ("2", "-30"))
+
+    def test_old_file_gets_the_new_columns(self):
+        """An entries.csv saved before the price-change columns existed is
+        upgraded in place: old rows kept, new columns blank for them."""
+        old_columns = ENTRY_COLUMNS[:10]
+        path = os.path.join(self.d, "entries.csv")
+        with open(path, "w", newline="") as fh:
+            w = csv.writer(fh)
+            w.writerow(old_columns)
+            w.writerow(["2026-10-01 00:52:07", "OLD", "OLDaddr", "0.0001", "10", "5",
+                        "no", "0", "0", "0"])
+        trader = PaperTrader(CFG["paper_trading"], self.d)
+        trader.buy(Result("NEW", "NEW", "NEW", {"priceUsd": "1.5",
+                                                 "priceChange": {"m5": 7.25, "h1": 40}}))
+        old, new = rows(path)
+        self.assertEqual(list(old.keys()), ENTRY_COLUMNS)
+        self.assertEqual((old["symbol"], old["buys_1h"], old["price_change_5m_pct"]),
+                         ("OLD", "10", ""))
+        self.assertEqual((new["symbol"], new["price_change_5m_pct"],
+                          new["price_change_1h_pct"]), ("NEW", "7.25", "40"))
+
     def test_one_row_per_buy_and_rows_are_kept(self):
         run(HourlyTxnsApi(), CFG, self.d, **QUIET)
         run(HourlyTxnsApi(), CFG, self.d, **QUIET)                 # no new buys
@@ -77,7 +107,8 @@ class EntryRecordTests(unittest.TestCase):
         trader.buy(Result("X", "X", "X", {"priceUsd": "1.5"}))    # no txns, no report
         (row,) = rows(os.path.join(self.d, "entries.csv"))
         self.assertEqual((row["buys_1h"], row["sells_1h"], row["insider_flagged"],
-                          row["insider_networks"]), ("", "", "unknown", ""))
+                          row["insider_networks"], row["price_change_5m_pct"],
+                          row["price_change_1h_pct"]), ("", "", "unknown", "", "", ""))
         self.assertIsNone(insider_status(None))
 
     def test_convergence_buys_are_recorded(self):
@@ -97,7 +128,8 @@ class EntryRecordTests(unittest.TestCase):
         go(2)
         (row,) = rows(os.path.join(self.d, "convergence", "entries.csv"))
         self.assertEqual((row["token_address"], row["buys_1h"], row["sells_1h"],
-                          row["insider_flagged"]), (EARLY_GOOD, "400", "300", "no"))
+                          row["insider_flagged"], row["price_change_5m_pct"],
+                          row["price_change_1h_pct"]), (EARLY_GOOD, "400", "300", "no", "2", "-30"))
 
     def test_trades_are_unchanged(self):
         """Same demo run with and without the entry record: identical trades."""
