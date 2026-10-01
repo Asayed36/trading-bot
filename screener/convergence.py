@@ -35,6 +35,7 @@ Open positions keep being managed while paused, using free DexScreener prices.
 
 import copy
 import os
+import re
 import time
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -51,11 +52,18 @@ PUBLIC_RPC = "https://api.mainnet-beta.solana.com"
 WSOL = "So11111111111111111111111111111111111111112"
 STABLES = {"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",   # USDC
            "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"}   # USDT
-CREDITS_PER_CALL = 10  # Helius: getSignaturesForAddress / getTransaction
 
 
 class BudgetPaused(Exception):
     """Making this call would take Helius usage past the pause limit."""
+
+
+class RpcError(ApiError):
+    """The RPC server answered with an error (the message never has the URL)."""
+
+    def __init__(self, text, server_message=""):
+        super().__init__(text)
+        self.server_message = server_message
 
 
 # ---------------------------------------------------------------------
@@ -88,6 +96,18 @@ class CreditMeter:
         meter = state.get("helius") or {}
         if meter.get("cycle_start") != start.isoformat():
             meter = {"cycle_start": start.isoformat(), "used": 0, "by_day": {}}
+        # The count is an estimate (see helius_*_credits_per_call). If those
+        # estimates change, rescale what was counted so far by the history
+        # rate (the higher one), so the count stays on the safe side.
+        rates = {"live": c["helius_live_credits_per_call"],
+                 "history": c["helius_history_credits_per_call"]}
+        old = (meter.get("rates") or {}).get("history", 10)  # 10 before calibration
+        if meter.get("used") and old != rates["history"]:
+            factor = rates["history"] / old
+            meter["used"] = int(round(meter["used"] * factor))
+            meter["by_day"] = {d: int(round(n * factor)) for d, n in meter["by_day"].items()}
+            meter["recalibrated"] = f"x{factor:g} on {now:%Y-%m-%d %H:%M} UTC"
+        meter["rates"] = rates
         self.meter = meter
         self.start = start
         self.end = next_cycle_start(start)
@@ -159,7 +179,8 @@ class Rpc:
             raise ApiError(f"{self.name} {method}: error {resp.status_code}")
         body = resp.json()
         if body.get("error"):
-            raise ApiError(f"{self.name} {method}: {str(body['error'].get('message'))[:120]}")
+            message = str(body["error"].get("message"))
+            raise RpcError(f"{self.name} {method}: {message[:120]}", message)
         return body.get("result")
 
     def signatures(self, address, limit, until=None):
@@ -168,9 +189,35 @@ class Rpc:
             opts["until"] = until
         return self.call("getSignaturesForAddress", [address, opts]) or []
 
+    max_version = 0  # raised automatically if the server asks for a newer one
+
     def transaction(self, signature):
-        return self.call("getTransaction", [signature, {
-            "encoding": "jsonParsed", "maxSupportedTransactionVersion": 0}])
+        try:
+            return self.call("getTransaction", [signature, {
+                "encoding": "jsonParsed", "maxSupportedTransactionVersion": self.max_version}])
+        except RpcError as exc:
+            # e.g. "Transaction version (1) is not supported by the requesting
+            # client. Please try the request again with the following
+            # configuration parameter: "maxSupportedTransactionVersion": 1"
+            wanted = re.search(r'maxSupportedTransactionVersion"?\s*:\s*(\d+)',
+                               exc.server_message)
+            if not wanted or int(wanted.group(1)) <= self.max_version:
+                raise
+            self.max_version = int(wanted.group(1))
+            return self.call("getTransaction", [signature, {
+                "encoding": "jsonParsed", "maxSupportedTransactionVersion": self.max_version}])
+
+
+def read_transaction(rpc, signature, plan):
+    """One transaction, or None if the server can't return it. Unreadable
+    transactions are skipped (and counted) instead of stopping the run."""
+    try:
+        return rpc.transaction(signature)
+    except RateLimited:
+        raise
+    except RpcError:
+        plan["unreadable"] = plan.get("unreadable", 0) + 1
+        return None
 
 
 # ---------------------------------------------------------------------
@@ -250,6 +297,8 @@ def score_trader(swaps):
 
 
 def qualifies(stats, c):
+    if stats.get("error"):
+        return False, "couldn't read their history"
     if stats.get("too_active"):
         return False, "trades too often (bot?)"
     if stats["closed"] < c["min_closed_trades"]:
@@ -305,13 +354,16 @@ class ConvergenceStrategy:
     def _rpcs(self, meter):
         if self.rpc_factory:
             return self.rpc_factory(meter)
-        helius = Rpc(HELIUS_RPC.format(self.api_key), "Helius", meter, CREDITS_PER_CALL,
-                     min_interval=1 / self.c["helius_max_requests_per_second"])
+        spacing = 1 / self.c["helius_max_requests_per_second"]
+        url = HELIUS_RPC.format(self.api_key)
+        history = Rpc(url, "Helius", meter, self.c["helius_history_credits_per_call"],
+                      min_interval=spacing)
         if self.c["live_rpc"] == "public":
             live = Rpc(PUBLIC_RPC, "public Solana RPC", min_interval=0.3)
         else:
-            live = helius
-        return helius, live
+            live = Rpc(url, "Helius", meter, self.c["helius_live_credits_per_call"],
+                       min_interval=spacing)
+        return history, live
 
     # ---- the network part: nothing here changes the paper trades ----
 
@@ -383,7 +435,11 @@ class ConvergenceStrategy:
             plan["notes"].append(f"stopped early this run: {exc}")
         finally:
             state["helius"] = meter.export()
-            plan["credits_this_run"] = helius.calls * helius.per_call
+            clients = [helius] if live is helius else [helius, live]
+            plan["credits_this_run"] = sum(r.calls * r.per_call for r in clients)
+            if plan.get("unreadable"):
+                plan["notes"].append(f"skipped {plan['unreadable']} transaction(s) Helius "
+                                     "couldn't return")
 
         if plan["paused"] is None and state.get("paused_until"):
             if now >= datetime.fromisoformat(state["paused_until"]):
@@ -432,7 +488,7 @@ class ConvergenceStrategy:
                         plan["notes"].append("decode limit reached this run")
                     break
                 decoded += 1
-                for swap in decode_swaps(rpc.transaction(s["signature"]), wallet):
+                for swap in decode_swaps(read_transaction(rpc, s["signature"], plan), wallet):
                     mint = swap["mint"]
                     if swap["side"] == "buy":
                         buys.setdefault(mint, {})[wallet] = swap["time"]
@@ -455,10 +511,10 @@ class ConvergenceStrategy:
         if not job and not due:
             return
         # Keep enough credits for live checks for the rest of the cycle.
-        per_run_live = len(state.get("tracked") or []) * CREDITS_PER_CALL * 1.5 \
+        per_run_live = len(state.get("tracked") or []) * c["helius_live_credits_per_call"] * 1.5 \
             if c["live_rpc"] == "helius" else 0
         reserve = per_run_live * meter.runs_left()
-        per_wallet = CREDITS_PER_CALL * (c["max_tx_per_candidate"] + 1)  # worst case
+        per_wallet = c["helius_history_credits_per_call"] * (c["max_tx_per_candidate"] + 1)
         budget = min(c["refresh_credits_per_run"], meter.cap - meter.used - reserve)
         if budget < per_wallet:
             plan["notes"].append("weekly list refresh waiting: credits reserved for live checks")
@@ -491,7 +547,15 @@ class ConvergenceStrategy:
             if meter.used - start_used + per_wallet > budget:
                 break
             wallet = job["queue"][0]
-            sigs = helius.signatures(wallet, c["max_tx_per_candidate"] + 1)
+            try:
+                sigs = helius.signatures(wallet, c["max_tx_per_candidate"] + 1)
+            except RpcError as exc:
+                # Don't let one wallet block the list: record it and move on.
+                job["scored"][wallet] = {"error": str(exc)[:80], "closed": 0, "wins": 0,
+                                         "realized_sol": 0.0, "win_rate": 0.0,
+                                         "top_share": 100.0, "swaps": 0}
+                job["queue"].pop(0)
+                continue
             recent = [s for s in sigs if not s.get("err") and (s.get("blockTime") or 0) >= since]
             if len(recent) > c["max_tx_per_candidate"]:
                 stats = {"too_active": True, "swaps": len(recent), "closed": 0,
@@ -499,7 +563,7 @@ class ConvergenceStrategy:
             else:
                 swaps = []
                 for s in recent:
-                    swaps += decode_swaps(helius.transaction(s["signature"]), wallet)
+                    swaps += decode_swaps(read_transaction(helius, s["signature"], plan), wallet)
                 stats = score_trader(swaps)
             job["scored"][wallet] = stats
             job["queue"].pop(0)

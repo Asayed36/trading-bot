@@ -167,13 +167,13 @@ its results are in the daily comparison. Numbers are in `[convergence]` in
 1. Every run, tokens up 100%+ in 24h with $30k+ liquidity are remembered as
    the week's winners (free DexScreener data).
 2. The biggest holders of the top 10 winners (free RugCheck data, creators
-   and insiders left out) become candidates, up to 30.
+   and insiders left out) become candidates, up to 80.
 3. Each candidate's last 14 days of swaps are read from Helius and their
    **realized profit** (in SOL) is worked out.
 4. Candidates are dropped if they made over 150 transactions in 14 days
    (probably a bot), closed fewer than 5 trades, made under 2 SOL, won under
    40% of trades, or made over 60% of their profit on one token.
-5. The 15 most profitable become the tracked list. This work is spread over
+5. The 50 most profitable become the tracked list. This work is spread over
    many runs, so a new list takes a few hours to build.
 
 **Buying:** every 15 minutes, each tracked wallet's new transactions are read
@@ -187,10 +187,15 @@ the wallets that triggered the buy have sold it ("smart money exit"); after
 taking profit, the rest at 40% below its peak; 24 hours at most. Fees and
 slippage are assumed to be 5% per full trade.
 
-**Helius credits.** The two calls this uses (`getSignaturesForAddress` and
-`getTransaction`) cost **10 credits each**, so the free plan's 1,000,000
-monthly credits buy about 100,000 calls. That's why it tracks about 15
-wallets, not 50. Every call is counted before it's made, and:
+**Helius credits.** Helius's price list says the two calls this uses
+(`getSignaturesForAddress` and `getTransaction`) can cost up to 10 credits
+each, but the Helius dashboard showed far less: about 1 credit per call for
+recent data (live checks) and about 2.5 per call when reading candidates'
+14-day histories. The bot counts **2 credits per live call and 4 per history
+call** (`helius_live_credits_per_call` and `helius_history_credits_per_call`
+in `config.toml`), above what was measured, so its count errs high. At those
+rates it can follow 50 wallets and use roughly half the free 1,000,000
+monthly credits. Every call is counted before it's made, and:
 - the weekly list rebuild only uses credits left over after reserving enough
   for live checks until the end of the month;
 - the strategy **pauses itself** rather than go past **80%** of the monthly
@@ -249,9 +254,13 @@ safe). Commit that change.
    should see `Helius credits this cycle: ...` and
    `weekly list refresh started: N candidate wallets`, instead of
    `not active: add the HELIUS_API_KEY secret`.
-3. Optional: the credit usage shown in your Helius dashboard should be about
-   the same as the bot's count. If you use the same key anywhere else, the
-   bot can't see that usage, so give this bot its own Helius account.
+3. Now and then, compare your Helius dashboard with the bot's count. The bot's
+   count should be **higher** (it's a deliberately cautious estimate). If the
+   dashboard is ever higher, raise `helius_live_credits_per_call` /
+   `helius_history_credits_per_call`; if it's much lower for a week or more,
+   you can lower them. When they change, the bot rescales its count for the
+   current cycle. If you use the same key anywhere else, the bot can't see
+   that usage, so give this bot its own Helius account.
 
 To stop using Helius, delete the secret (Settings, Secrets and variables,
 Actions), or set `enabled = false` under `[convergence]`.
