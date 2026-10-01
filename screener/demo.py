@@ -218,3 +218,72 @@ def demo_rpc_factory(history=None, live=None):
         rpc = DemoRpc(meter, history, live)
         return rpc, rpc
     return make
+
+
+# ---------------------------------------------------------------------
+# Pretend news sources and CoinGecko for the "news" strategy
+# ---------------------------------------------------------------------
+
+DEMO_COINS = [
+    {"id": "bitcoin", "symbol": "btc", "name": "Bitcoin", "current_price": 100000.0,
+     "market_cap": 2.0e12, "total_volume": 4.0e10,
+     "price_change_percentage_1h_in_currency": 0.1, "price_change_percentage_24h_in_currency": 1.0},
+    {"id": "demo-network", "symbol": "demo", "name": "Demo Network", "current_price": 70.0,
+     "market_cap": 1.0e9, "total_volume": 8.0e7,
+     "price_change_percentage_1h_in_currency": 0.5, "price_change_percentage_24h_in_currency": 2.0},
+    {"id": "hypecoin", "symbol": "hype2", "name": "Hypecoin", "current_price": 0.5,
+     "market_cap": 5.0e7, "total_volume": 3.0e6,
+     "price_change_percentage_1h_in_currency": 1.0, "price_change_percentage_24h_in_currency": 3.0},
+]
+
+
+def demo_news_items(now=None):
+    """(feed name, title, summary, minutes ago) - one real catalyst, one hype
+    item, and one press release that isn't about crypto."""
+    return [
+        ("press", "Big Bank Selects Demo Network to Power Its Tokenized Deposit Platform",
+         "Big Bank, with JPMorgan and Citi, selected Demo Network (DEMO) to run its "
+         "blockchain settlement layer, going live in 2027.", 20),
+        ("press", "Hypecoin Explores Potential Partnership With a Major Exchange",
+         "Hypecoin (HYPE2) is reportedly in talks with Binance about a token listing.", 30),
+        ("press", "Acme Corp Opens a New Factory in Ohio",
+         "Acme Corp announced a new factory and 200 jobs.", 10),
+    ]
+
+
+class DemoNewsHttp:
+    """Pretends to be the news feeds and CoinGecko. Any RSS URL returns the
+    demo items; any other JSON URL returns the demo coin list."""
+
+    def __init__(self, now=None, items=None, coins=None, price_moves=None):
+        self.now = now
+        self.items = items if items is not None else demo_news_items()
+        self.coins = coins if coins is not None else DEMO_COINS
+        self.price_moves = price_moves or {}
+        self.calls = []
+
+    def text(self, url):
+        self.calls.append(url)
+        if "prnewswire" not in url:
+            return "<rss><channel></channel></rss>"
+        from email.utils import format_datetime
+        now = self.now or datetime.now(timezone.utc)
+        rows = []
+        for n, (_, title, summary, ago) in enumerate(self.items):
+            when = format_datetime(now - timedelta(minutes=ago))
+            rows.append(f"<item><title>{title}</title><description>{summary}</description>"
+                        f"<link>https://example.com/demo-news/{n}</link>"
+                        f"<guid>demo-{n}-{title[:20]}</guid><pubDate>{when}</pubDate></item>")
+        return f"<rss><channel>{''.join(rows)}</channel></rss>"
+
+    def json(self, url, headers=None):
+        self.calls.append(url)
+        if "binance" in url:
+            return {"code": "000000", "data": {"catalogs": []}}
+        coins = copy.deepcopy(self.coins)
+        for coin in coins:
+            coin["current_price"] *= self.price_moves.get(coin["id"], 1.0)
+        if "ids=" in url:
+            wanted = url.split("ids=")[1].split("&")[0].split(",")
+            return [c for c in coins if c["id"] in wanted]
+        return coins if "page=1" in url else []

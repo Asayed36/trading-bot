@@ -1,15 +1,17 @@
-# Runs the paper strategies ("main", "early" and "convergence") every 5
-# minutes and saves their results (data/journal.csv, data/positions.json and
-# the same two files in data/early/ and data/convergence/) back to the
-# repository, so each run picks up the pretend positions left by the previous
-# one.
+# Runs the paper strategies ("main", "early", "convergence" and "news") every
+# 5 minutes and saves their results (data/journal.csv, data/positions.json and
+# the same files in data/early/, data/convergence/ and data/news/) back to
+# the repository, so each run picks up the pretend positions left by the
+# previous one. The news strategy only checks the news every 15 minutes.
 #
-# Read-only: no wallets or private keys are used. The only secret is the
+# Read-only: no wallets or private keys are used. The only secrets are the
 # optional HELIUS_API_KEY (a free data-access key for the convergence
-# strategy, see the README); without it that strategy just stays inactive.
+# strategy, see the README; without it that strategy just stays inactive)
+# and the optional COINGECKO_API_KEY (a free CoinGecko Demo key for the news
+# strategy's prices; without it the public API is tried).
 # The only things it writes are the commit of the data files (only when a run
 # actually changed them) and GitHub issues: one "PASSED: SYMBOL" issue per
-# token that passes the main or early strategy, closed with the result when
+# token that passes the main, early or news strategy, closed with the result when
 # its paper position closes.
 # If DexScreener or RugCheck rate-limit the main strategy, that run is skipped
 # and nothing is saved; the next run 15 minutes later tries again.
@@ -62,6 +64,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           HELIUS_API_KEY: ${{ secrets.HELIUS_API_KEY }}
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
         run: |
           set +e
           python run.py --github-issues 2>&1 | tee report.txt
@@ -95,7 +98,8 @@ jobs:
           # credit count, which changes on every run that uses credits; that
           # has to be saved so the monthly limit is never passed.
           journal_changed=$(git status --porcelain -- data/journal.csv data/early/journal.csv \
-            data/convergence/journal.csv data/schedule.json)
+            data/convergence/journal.csv data/news/journal.csv data/news/candidates.csv \
+            data/schedule.json)
           if [ -z "$journal_changed" ] && python - <<'PY'
           import json, os, subprocess, sys
 
@@ -106,7 +110,7 @@ jobs:
               return state
 
           for path in ("data/positions.json", "data/early/positions.json",
-                       "data/convergence/positions.json"):
+                       "data/convergence/positions.json", "data/news/positions.json"):
               if not os.path.exists(path):
                   continue
               old = subprocess.run(["git", "show", f"HEAD:{path}"],
@@ -129,7 +133,8 @@ jobs:
           for f in data/entries.csv data/early/entries.csv data/convergence/entries.csv \
                    data/early/journal.csv data/early/positions.json \
                    data/convergence/journal.csv data/convergence/positions.json \
-                   data/schedule.json; do
+                   data/news/journal.csv data/news/positions.json data/news/entries.csv \
+                   data/news/candidates.csv data/schedule.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           git commit -m "Paper trading run $(date -u '+%Y-%m-%d %H:%M UTC')"

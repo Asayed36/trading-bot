@@ -71,8 +71,12 @@ def main():
         conv = os.path.join(folder, "convergence")
         strategies.append(("convergence", conv,
                            cfg["convergence"]["paper_trading"]["round_trip_cost_pct"]))
-    # The GitHub schedule only affects the strategies run by the workflow.
+    # The workflow's schedule change only affected these strategies (news
+    # always checks every 15 minutes).
     extra += schedule_lines(strategies, os.path.join(folder, "schedule.json")) + [""]
+    if cfg.get("news", {}).get("enabled"):
+        strategies.append(("news", os.path.join(folder, "news"),
+                           cfg["news"]["paper_trading"]["round_trip_cost_pct"]))
     if cfg.get("launch", {}).get("enabled"):
         # Runs on your own server and pushes here about once an hour.
         lp = cfg["launch"]["paper_trading"]

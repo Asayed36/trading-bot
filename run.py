@@ -6,11 +6,13 @@ How to run it:
     python run.py --github-issues   <- also open/close GitHub issues for tokens
                                        that pass (used by the GitHub workflow)
 
-Each run paper-trades three strategies side by side: "main" (the filters in
+Each run paper-trades four strategies side by side: "main" (the filters in
 [filters]), "early" (young tokens bought on a pullback, see [early] and
-screener/early.py) and "convergence" (3+ proven traders buying the same
+screener/early.py), "convergence" (3+ proven traders buying the same
 token, see [convergence] and screener/convergence.py; needs a free Helius
-API key in the HELIUS_API_KEY environment variable). Compare them with
+API key in the HELIUS_API_KEY environment variable) and "news" (official
+news about established coins, see [news] and screener/news.py; a free
+CoinGecko key in COINGECKO_API_KEY is recommended). Compare them with
 `python compare.py`.
 
 This program is READ-ONLY. It never connects to a wallet or exchange, never
@@ -28,6 +30,7 @@ from screener.filters import best_pair, evaluate, find_candidates, format_report
 from screener.convergence import ConvergenceStrategy
 from screener.early import EarlyStrategy
 from screener.github_issues import GitHubIssues, issue_details, sync
+from screener.news import NewsHttp, NewsStrategy
 from screener.paper_trader import PaperTrader, now_utc
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -105,7 +108,8 @@ def record_schedule(data_folder, every, now, out=print):
     out(f"\n(Schedule change recorded: every {every} minutes since {now:%Y-%m-%d %H:%M} UTC)")
 
 
-def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_factory=None):
+def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_factory=None,
+        news_http=None, coingecko_key=None):
     f, pt = cfg["filters"], cfg["paper_trading"]
     trader = PaperTrader(pt, data_folder)
 
@@ -135,6 +139,17 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
             conv_plan = conv.fetch(api)
         except ApiError as exc:
             conv_skipped = f"{exc}"
+
+    # And "news" (official news about established coins). It only runs when
+    # given a way to read the web (news_http): main() passes the real one,
+    # the demo a fake one.
+    news, news_plan, news_skipped = None, None, None
+    if cfg.get("news", {}).get("enabled") and news_http is not None:
+        news = NewsStrategy(cfg, data_folder, news_http, coingecko_key)
+        try:
+            news_plan = news.fetch()
+        except ApiError as exc:
+            news_skipped = f"{exc}"
 
     # ---- Step 1: check the pretend trades we already hold ----
     out(LINE)
@@ -213,6 +228,23 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
         else:
             conv.apply(conv_plan, out)
 
+    # ---- Step 7: the "news" strategy ----
+    if news:
+        out("")
+        out(LINE)
+        out("STEP 7: News strategy (official news about established coins)")
+        out(LINE)
+        if news_skipped:
+            out(f"  Skipped this run, nothing changed: {news_skipped}")
+        else:
+            news.apply(news_plan, issue_details, out)
+            if issues:
+                out("")
+                out("  GitHub issues (news):")
+                sync(issues, news.trader, news.pt, cfg["github_issues"]["note"], out,
+                     strategy="news")
+                news.trader.save()
+
     # ---- Summary ----
     out("")
     out(LINE)
@@ -249,6 +281,18 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
                 f"holding {pos['remaining_fraction'] * 100:.0f}%")
         out(f"  Total realized paper P&L: ${ct.state['running_total_pnl_usd']:+.2f}")
         out(f"  Journal: {ct.journal_path}")
+    if news:
+        nt = news.trader
+        out("")
+        out("SUMMARY (news strategy)" + ("  - skipped this run" if news_skipped else ""))
+        out(f"  Open paper positions: {len(nt.open_positions)}")
+        for pos in nt.open_positions:
+            change = (pos["last_price"] / pos["entry_price"] - 1) * 100
+            out(f"    {pos['symbol']:<10} entry ${pos['entry_price']:.10g}  now {change:+.1f}%  "
+                f"holding {pos['remaining_fraction'] * 100:.0f}%")
+        out(f"  Total realized paper P&L: ${nt.state['running_total_pnl_usd']:+.2f}")
+        out(f"  Journal: {nt.journal_path}")
+        out(f"  Candidates: {news.candidates_path}")
     if cfg.get("schedule"):
         record_schedule(data_folder, cfg["schedule"]["run_every_minutes"], now_utc(), out)
     return results
@@ -275,17 +319,21 @@ def main():
                   "skipping GitHub issues.\n")
 
     helius_key, rpc_factory = os.environ.get("HELIUS_API_KEY") or None, None
+    coingecko_key = os.environ.get("COINGECKO_API_KEY") or None
     if args.demo:
-        from screener.demo import DemoApi, demo_rpc_factory
-        print("*** DEMO MODE: all tokens, wallets and prices below are MADE UP. ***\n")
+        from screener.demo import DemoApi, DemoNewsHttp, demo_rpc_factory
+        print("*** DEMO MODE: all tokens, wallets, news and prices below are MADE UP. ***\n")
         api, folder = DemoApi(), os.path.join(HERE, "demo_data")
         helius_key, rpc_factory = None, demo_rpc_factory()
+        news_http, coingecko_key = DemoNewsHttp(), None
     else:
         api = PublicApi(cfg["api"]["timeout_seconds"], cfg["api"]["rugcheck_delay_seconds"])
         folder = os.path.join(HERE, cfg["files"]["data_folder"])
+        news_http = NewsHttp(cfg["api"]["timeout_seconds"])
 
     try:
-        run(api, cfg, folder, issues=issues, helius_key=helius_key, rpc_factory=rpc_factory)
+        run(api, cfg, folder, issues=issues, helius_key=helius_key, rpc_factory=rpc_factory,
+            news_http=news_http, coingecko_key=coingecko_key)
     except RateLimited as exc:
         print(f"\nRate limited: {exc}")
         print("Skipping this run. Nothing was traded; try again later.")

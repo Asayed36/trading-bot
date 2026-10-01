@@ -29,6 +29,9 @@ spends real money.
   strategy carries on with the other sources.
 - **Helius** (`mainnet.helius-rpc.com`, free plan, needs a free sign-up):
   wallets' transactions, for the convergence strategy only (below).
+- **Official news feeds** (PR Newswire, GlobeNewswire, Business Wire, project
+  blogs, Binance and Kraken announcements) and **CoinGecko** (free plan): for
+  the news strategy only (below).
 
 ## How to run it
 
@@ -324,6 +327,81 @@ step: [`deploy/LAUNCH_SERVER_SETUP.md`](deploy/LAUNCH_SERVER_SETUP.md).
   fail or land later, and real slippage in the first seconds can be far
   worse than 5%.
 
+## The "news" strategy (a fifth paper strategy)
+
+It buys an established coin right after **real, official news** about it,
+before the price has moved, like The Clearing House choosing Quant on
+September 24, 2026. **No X, no AI**: only official sources and rule-based checks.
+Settings are under `[news]` in `config.toml`.
+
+**Sources** (`[[news.sources]]`, read every 15 minutes):
+- press-release wires: PR Newswire (crypto and blockchain feeds),
+  GlobeNewswire, Business Wire;
+- project blogs (each one tied to its coin): Quant and Chainlink to start
+  with, and you can add more;
+- exchange announcements: Binance's new-listing list and Kraken's blog.
+
+Each run's log shows which sources worked (`ok` / `FAIL`), and the latest
+status is saved in `data/news/positions.json`. Feed addresses change now and
+then, so fix or remove any that keep failing.
+
+**Which coin?** CoinGecko's top 500 coins. A coin counts when its name
+appears with the right capitals. One-word names that are also everyday words
+("Flow", "Core") also need their ticker, like `(FLOW)` or `$FLOW`, or a word
+like Network/Protocol/Token after the name. Bitcoin and Ether mentioned in
+passing don't count when another coin is the subject. Press releases that
+don't mention crypto at all are skipped.
+
+**The checks** (all must pass):
+
+| Check | Passes when |
+|---|---|
+| Fresh news | published in the last 3 hours |
+| One coin | exactly one coin is named |
+| Not a stablecoin | not a stablecoin or a wrapped/staked token |
+| Not paid content | no "sponsored", "paid content", "advertorial" |
+| Catalyst wording | "selects", "partners with", "launches", "goes live", "acquires", "approved"... (exchanges: "will list", "listing", "trading starts"...) |
+| No hype wording | not "exploring", "in talks", "potential partnership", "rumor", "memorandum of understanding", "price prediction", "airdrop"... |
+| Not bad news | not "hack", "exploit", "delist", "lawsuit", "investigation"... |
+| Named counterparty | a well-known institution is named: a bank, payment network, big exchange, tech company or regulator (exchange announcements count the exchange itself) |
+| Big enough | market cap $20M+ and 24h volume $1M+ |
+| Not already moved | up less than 15% in the last hour and 40% in 24h |
+| Not bought recently | no buy of the same coin in the last 3 days |
+
+**Every candidate is logged** to `data/news/candidates.csv`: the time, source,
+headline, link, coin, PASS or FAIL, the failed checks with reasons, and every
+check's result. A candidate is any new item that names a coin; items that
+name no coin are only counted in the run log. On its very first run the bot
+skips the feeds' older backlog and only checks news from the last 3 hours.
+
+**Buying:** $10 at CoinGecko's price. **Exits** suit moves that take days:
+
+- sell **half at +50%**;
+- sell everything left at **-20%** from entry,
+- or **25% below the highest price** since entry (trailing stop),
+- or after **7 days**.
+
+Costs are assumed at 1% per full trade (bigger, exchange-listed coins). Each
+buy gets a GitHub issue titled **PASSED (news): SYMBOL**, labelled
+`strategy: news`, with the headline, source, link and exit levels. The results
+are in `data/news/journal.csv` and in the daily comparison.
+
+**CoinGecko free plan:** sign up at <https://www.coingecko.com/en/api/pricing>
+(the free **Demo** plan, 10,000 calls a month), create a key, and add it as the
+repository secret **`COINGECKO_API_KEY`** (Settings → Secrets and variables →
+Actions → New repository secret). Without a key the bot tries CoinGecko's
+public API, which is often rate-limited on GitHub's shared servers. The bot
+counts its calls and stops looking up new candidates at 9,000 a month. It
+only looks up the coin list on runs with crypto news to check, which should
+stay well under that.
+
+**What it can't do:** it sees news up to 15–20 minutes late (the schedule plus
+GitHub's delays), so catalysts that move within seconds, like big exchange
+listings, will often already be priced in, and the "Not already moved" check
+will skip them. Keyword checks can't understand nuance: a real deal can fail
+for the wording it uses, and hype can slip through. The candidate log is there
+so you can see which.
+
 ## Running automatically on GitHub
 
 `.github/workflows/screener.yml` runs the screener every 5 minutes on GitHub
@@ -398,6 +476,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/github_issues.py` | Opens and closes the "PASSED" GitHub issues |
 | `screener/early.py` | The early strategy: candidates, checks, pullback entry and exits |
 | `screener/convergence.py` | The convergence strategy: Helius reads, credit budget, wallet scoring, signals and exits |
+| `screener/news.py` | The news strategy: feeds, coin matching, the checks, the candidate log and exits |
 | `screener/launch.py`, `launch_bot.py` | The launch strategy and the program that runs it on your server |
 | `deploy/` | Server setup guide, systemd services and the hourly push script for the launch bot |
 | `screener/compare.py`, `compare.py` | The side-by-side comparison of all strategies, with Helius credit use |
