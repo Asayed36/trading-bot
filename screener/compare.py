@@ -172,9 +172,10 @@ def helius_lines(folder, day):
     ]
 
 
-def report(strategies, day, extra=None):
+def report(strategies, day, extra=None, health=None):
     """Markdown table. `strategies` is a list of (name, folder, round_trip_cost_pct).
-    `extra` is more Markdown lines to add at the end."""
+    `extra` is more Markdown lines to add at the end, `health` lines to put
+    at the top (see screener/health.py)."""
     stats = {name: strategy_stats(folder, cost, day) for name, folder, cost in strategies}
     names = list(stats)
 
@@ -190,6 +191,7 @@ def report(strategies, day, extra=None):
         MARKER.format(day),
         f"## Paper strategy comparison: {day} (UTC)",
         "",
+        *(health or []),
         "| | " + " | ".join(names) + " |",
         "|---|" + "---|" * len(names),
         f"| **{day}** | " + " | ".join("" for _ in names) + " |",

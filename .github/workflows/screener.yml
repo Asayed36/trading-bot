@@ -125,6 +125,17 @@ jobs:
               with open(path) as fh:
                   if strip(old.stdout) != strip(fh.read()):
                       sys.exit(1)
+          # data/health.json (each strategy's last good run, for the daily
+          # comparison's health section) changes every run: save it at least
+          # every 30 minutes even when nothing else changed.
+          from datetime import datetime, timedelta, timezone
+          old = subprocess.run(["git", "show", "HEAD:data/health.json"],
+                               capture_output=True, text=True)
+          if old.returncode != 0:
+              sys.exit(1)
+          saved = datetime.fromisoformat(json.loads(old.stdout)["updated"])
+          if datetime.now(timezone.utc) - saved >= timedelta(minutes=30):
+              sys.exit(1)
           sys.exit(0)
           PY
           then
@@ -139,7 +150,7 @@ jobs:
                    data/early/journal.csv data/early/positions.json \
                    data/convergence/journal.csv data/convergence/positions.json \
                    data/news/journal.csv data/news/positions.json data/news/entries.csv \
-                   data/news/candidates.csv data/schedule.json; do
+                   data/news/candidates.csv data/schedule.json data/health.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           git commit -m "Paper trading run $(date -u '+%Y-%m-%d %H:%M UTC')"

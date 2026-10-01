@@ -30,6 +30,7 @@ from screener.filters import best_pair, evaluate, find_candidates, format_report
 from screener.convergence import ConvergenceStrategy
 from screener.early import EarlyStrategy
 from screener.github_issues import GitHubIssues, issue_details, sync
+from screener.health import record_health
 from screener.news import NewsHttp, NewsStrategy
 from screener.paper_trader import PaperTrader, now_utc
 
@@ -293,6 +294,14 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
         out(f"  Total realized paper P&L: ${nt.state['running_total_pnl_usd']:+.2f}")
         out(f"  Journal: {nt.journal_path}")
         out(f"  Candidates: {news.candidates_path}")
+    # For the health section of the daily comparison: which strategies ran
+    # fine this run, and why any were skipped.
+    outcomes = {"main": None}
+    for name, ran, skipped in (("early", early, early_skipped), ("convergence", conv, conv_skipped),
+                               ("news", news, news_skipped)):
+        if ran:
+            outcomes[name] = skipped
+    record_health(data_folder, now_utc(), outcomes)
     if cfg.get("schedule"):
         record_schedule(data_folder, cfg["schedule"]["run_every_minutes"], now_utc(), out)
     return results
