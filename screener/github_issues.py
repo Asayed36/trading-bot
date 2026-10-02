@@ -104,6 +104,15 @@ class GitHubIssues:
             url = resp.links.get("next", {}).get("url")
         return runs
 
+    def count_runs(self, workflow, start, end, event="schedule"):
+        """How many runs of one workflow started between `start` and `end`
+        (scheduled ones only by default). One request: GitHub reports the
+        total."""
+        span = f"{start:%Y-%m-%dT%H:%M:%SZ}..{end:%Y-%m-%dT%H:%M:%SZ}"
+        resp = self._request("GET", f"/actions/workflows/{quote(workflow)}/runs?created="
+                             f"{quote(span)}&event={event}&per_page=1")
+        return resp.json().get("total_count", 0)
+
     def last_commit_time(self, path):
         """When the newest commit touching `path` was made, or None."""
         resp = self._request("GET", f"/commits?path={quote(path)}&per_page=1")

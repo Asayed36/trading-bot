@@ -16,7 +16,8 @@ import sys
 from datetime import timedelta
 
 from run import HERE, load_config
-from screener.compare import MARKER, helius_lines, report, schedule_lines
+from screener.compare import (MARKER, actual_intervals, helius_lines, report,
+                              schedule_lines)
 from screener.github_issues import GitHubError, GitHubIssues
 from screener.health import health_lines
 from screener.paper_trader import now_utc
@@ -72,9 +73,23 @@ def main():
         conv = os.path.join(folder, "convergence")
         strategies.append(("convergence", conv,
                            cfg["convergence"]["paper_trading"]["round_trip_cost_pct"]))
+    # Health checks that ask GitHub (failed runs, real run intervals, the
+    # launch bot's last push) need GITHUB_TOKEN and GITHUB_REPOSITORY; without
+    # them they say so.
+    token, repo = os.environ.get("GITHUB_TOKEN"), os.environ.get("GITHUB_REPOSITORY")
+    gh = GitHubIssues(token, repo, LABEL) if token and repo else None
     # The workflow's schedule change only affected these strategies (news
     # always checks every 15 minutes).
-    extra += schedule_lines(strategies, os.path.join(folder, "schedule.json")) + [""]
+    schedule_path = os.path.join(folder, "schedule.json")
+    actual = {}
+    if gh is not None:
+        workflow = cfg.get("health", {}).get("workflow", "screener.yml")
+        try:
+            actual = actual_intervals(
+                schedule_path, lambda a, b: gh.count_runs(workflow, a, b), now_utc())
+        except GitHubError as exc:
+            print(f"(Couldn't get the real run intervals from GitHub: {exc})", file=sys.stderr)
+    extra += schedule_lines(strategies, schedule_path, actual) + [""]
     if cfg.get("news", {}).get("enabled"):
         strategies.append(("news", os.path.join(folder, "news"),
                            cfg["news"]["paper_trading"]["round_trip_cost_pct"]))
@@ -87,10 +102,6 @@ def main():
                                os.path.join(folder, "launch", speed["name"]), sell_cost))
     if cfg.get("convergence", {}).get("enabled"):
         extra += helius_lines(os.path.join(folder, "convergence"), day)
-    # Health checks that ask GitHub (failed runs, the launch bot's last push)
-    # need GITHUB_TOKEN and GITHUB_REPOSITORY; without them they say so.
-    token, repo = os.environ.get("GITHUB_TOKEN"), os.environ.get("GITHUB_REPOSITORY")
-    gh = GitHubIssues(token, repo, LABEL) if token and repo else None
     health = health_lines(folder, cfg, now_utc(), gh)
     body = report(strategies, day, extra, health)
     print(body)

@@ -104,7 +104,7 @@ jobs:
           # has to be saved so the monthly limit is never passed.
           journal_changed=$(git status --porcelain -- data/journal.csv data/early/journal.csv \
             data/convergence/journal.csv data/news/journal.csv data/news/candidates.csv \
-            data/schedule.json)
+            data/news/unmatched.csv data/schedule.json)
           if [ -z "$journal_changed" ] && python - <<'PY'
           import json, os, subprocess, sys
 
@@ -150,7 +150,8 @@ jobs:
                    data/early/journal.csv data/early/positions.json \
                    data/convergence/journal.csv data/convergence/positions.json \
                    data/news/journal.csv data/news/positions.json data/news/entries.csv \
-                   data/news/candidates.csv data/schedule.json data/health.json; do
+                   data/news/candidates.csv data/news/unmatched.csv data/schedule.json \
+                   data/health.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           git commit -m "Paper trading run $(date -u '+%Y-%m-%d %H:%M UTC')"

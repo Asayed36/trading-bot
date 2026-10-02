@@ -104,18 +104,46 @@ def schedule_split(path):
     return _when(history[-1]["since"]), history[-2]["every_minutes"], history[-1]["every_minutes"]
 
 
-def schedule_lines(strategies, schedule_path):
+def actual_intervals(schedule_path, count_runs, now):
+    """The real average minutes between scheduled runs before and after the
+    latest schedule change: the period's length divided by the number of
+    runs GitHub started in it. `count_runs(start, end)` asks GitHub."""
+    if not os.path.exists(schedule_path):
+        return {}
+    with open(schedule_path) as fh:
+        history = json.load(fh).get("history") or []
+    if len(history) < 2:
+        return {}
+    spans = {"before": (_when(history[-2]["since"]), _when(history[-1]["since"])),
+             "after": (_when(history[-1]["since"]), now)}
+    out = {}
+    for key, (start, end) in spans.items():
+        n = count_runs(start, end)
+        if n:
+            out[key] = (end - start).total_seconds() / 60 / n
+    return out
+
+
+def schedule_lines(strategies, schedule_path, actual=None):
     """All-time results before and after the latest schedule change, per
-    strategy, grouped by when each position was bought."""
+    strategy, grouped by when each position was bought. `actual` holds the
+    real average minutes between runs ("before"/"after"), when known."""
     split = schedule_split(schedule_path)
     if not split:
         return ["**Before / after the schedule change:** no change recorded yet."]
     when, before, after = split
+    actual = actual or {}
+
+    def label(every, key):
+        real = actual.get(key)
+        return (f"every {every:g} min (actually ~{real:.0f})" if real
+                else f"every {every:g} min")
+
     cols = []
     for name, folder, cost in strategies:
-        cols.append((f"{name}, every {before:g} min",
+        cols.append((f"{name}, {label(before, 'before')}",
                      strategy_stats(folder, cost, "", entered=(None, when))))
-        cols.append((f"{name}, every {after:g} min",
+        cols.append((f"{name}, {label(after, 'after')}",
                      strategy_stats(folder, cost, "", entered=(when, None))))
 
     def row(label, fn):
@@ -125,9 +153,11 @@ def schedule_lines(strategies, schedule_path):
         return "–" if s["win_rate"] is None else f"{s['win_rate']:.0f}% ({s['wins']} of {s['closed']})"
 
     return [
-        f"**Before / after the schedule change** (every {before:g} min until "
-        f"{when:%Y-%m-%d %H:%M} UTC, every {after:g} min since; positions grouped "
-        "by when they were bought, all time)",
+        f"**Before / after the schedule change** (scheduled {label(before, 'before')} "
+        f"until {when:%Y-%m-%d %H:%M} UTC, {label(after, 'after')} since; "
+        + ("the real average time between runs comes from GitHub's run history; "
+           if actual else "real intervals not checked (no GitHub token); ")
+        + "positions grouped by when they were bought, all time)",
         "",
         "| | " + " | ".join(label for label, _ in cols) + " |",
         "|---|" + "---|" * len(cols),
