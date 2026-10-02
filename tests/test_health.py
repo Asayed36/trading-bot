@@ -169,6 +169,46 @@ class HealthTests(Base):
         self.assertTrue(lines[5].startswith("| | main"))
 
 
+class RunIntervalTests(Base):
+    def test_time_between_runs(self):
+        gh = self.healthy()
+        start = NOW - timedelta(hours=2)
+        gh.runs = [{"conclusion": "success", "event": "schedule", "updated_at": ago(minutes=1),
+                    "run_started_at": (start + timedelta(minutes=m)).isoformat()}
+                   for m in (0, 15, 35, 50)]
+        gh.runs.append({"conclusion": "success", "event": "workflow_dispatch",
+                        "updated_at": ago(minutes=1),
+                        "run_started_at": (start + timedelta(minutes=40)).isoformat()})
+        text, rows = self.lines(gh)
+        self.assertIn("ℹ️ average 16.7 min, median 15 min, longest 20 min (4 scheduled runs; "
+                      "the schedule asks for every 5 min)", rows["Time between runs (last 24h)"])
+        self.assertIn("**All checks OK.**", text)            # information, not a problem
+
+    def test_actual_intervals_for_the_before_after_table(self):
+        from screener.compare import actual_intervals, schedule_lines
+        path = os.path.join(self.d, "schedule.json")
+        self.write("schedule.json", {"history": [
+            {"every_minutes": 15, "since": "2026-09-30T00:00:00+00:00"},
+            {"every_minutes": 5, "since": "2026-10-01T00:00:00+00:00"}]})
+        asked = []
+
+        def count(a, b):
+            asked.append((a, b))
+            return 72 if a.day == 30 else 55        # 24h / 72 = 20 min; 24h7m / 55
+
+        actual = actual_intervals(path, count, NOW)
+        self.assertEqual(asked[0][1], asked[1][0])           # the change time
+        self.assertEqual(round(actual["before"]), 20)
+        self.assertEqual(round(actual["after"]), 26)
+        lines = schedule_lines([("main", self.d, 3)], path, actual)
+        self.assertIn("| main, every 15 min (actually ~20) | main, every 5 min (actually ~26) |",
+                      lines[2])
+        self.assertIn("real average time between runs comes from GitHub", lines[0])
+        plain = schedule_lines([("main", self.d, 3)], path)
+        self.assertIn("| main, every 15 min | main, every 5 min |", plain[2])
+        self.assertIn("real intervals not checked", plain[0])
+
+
 class GitHubApiTests(unittest.TestCase):
     def test_workflow_runs_and_last_commit(self):
         def answer(json_body, next_url=None):
@@ -188,6 +228,17 @@ class GitHubApiTests(unittest.TestCase):
                       "2026-10-01T00:07:00Z", first)
         self.assertIn("/commits?path=data/launch&per_page=1", req.call_args_list[2].args[1])
         self.assertEqual(pushed, datetime(2026, 10, 1, 23, 17, tzinfo=timezone.utc))
+
+    def test_count_runs(self):
+        gh = GitHubIssues("tok", "me/repo")
+        answer = mock.Mock(status_code=200, json=lambda: {"total_count": 72}, links={})
+        with mock.patch("screener.github_issues.requests.request", return_value=answer) as req:
+            n = gh.count_runs("screener.yml", datetime(2026, 9, 30, tzinfo=timezone.utc),
+                              datetime(2026, 10, 1, tzinfo=timezone.utc))
+        self.assertEqual(n, 72)
+        url = req.call_args.args[1]
+        self.assertIn("created=2026-09-30T00%3A00%3A00Z..2026-10-01T00%3A00%3A00Z", url)
+        self.assertIn("event=schedule&per_page=1", url)
 
 
 class RecordTests(Base):

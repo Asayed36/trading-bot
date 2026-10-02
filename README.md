@@ -167,6 +167,11 @@ because young pools are thinner.
   `config.toml`):
   - scheduled runs: how many failed in the last 24 hours, and when the last
     successful one finished (warns on any failure);
+  - the real time between scheduled runs in the last 24 hours (average,
+    median, longest), from GitHub's run history: GitHub often starts
+    scheduled runs late, so it's usually longer than the cron line asks for.
+    The before/after-the-schedule-change table also shows each period's real
+    average (e.g. "every 5 min (actually ~18)");
   - each strategy (main, early, convergence, news): its last successful run
     (warns if older than 60 minutes or skipped since). Every run records
     this in `data/health.json`, which is saved at least every 30 minutes;
@@ -388,8 +393,11 @@ don't mention crypto at all are skipped.
 
 **Every candidate is logged** to `data/news/candidates.csv`: the time, source,
 headline, link, coin, PASS or FAIL, the failed checks with reasons, and every
-check's result. A candidate is any new item that names a coin; items that
-name no coin are only counted in the run log. The first time it reads a
+check's result. A candidate is any new item that names a coin. Crypto-related
+items that name no coin are saved (headline, source, link) to
+`data/news/unmatched.csv`, so you can check whether the coin matching misses
+real candidates; items not about crypto at all are only counted in the run
+log. The first time it reads a
 source (including one that just started working), it skips that feed's older
 backlog and only checks news from the last 3 hours.
 

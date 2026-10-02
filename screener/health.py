@@ -17,7 +17,7 @@ import json
 import os
 from datetime import datetime, timedelta, timezone
 
-OK, WARN = "✅", "⚠️"
+OK, WARN, INFO = "✅", "⚠️", "ℹ️"
 FAILED = ("failure", "timed_out", "startup_failure")
 GITHUB_STRATEGIES = ("main", "early", "convergence", "news")
 
@@ -47,6 +47,15 @@ def _ago(when, now):
 
 def _at(when, now):
     return f"{when:%Y-%m-%d %H:%M} UTC ({_ago(when, now)})"
+
+
+def run_gaps(runs):
+    """Minutes between consecutive scheduled runs (GitHub starts them late
+    when it's busy, so the real gap is often longer than the cron line)."""
+    starts = sorted(_utc(r.get("run_started_at") or r.get("created_at"))
+                    for r in runs if r.get("event", "schedule") == "schedule"
+                    and (r.get("run_started_at") or r.get("created_at")))
+    return [(b - a).total_seconds() / 60 for a, b in zip(starts, starts[1:])]
 
 
 # ---------------------------------------------------------------------
@@ -113,6 +122,16 @@ def health_lines(folder, cfg, now, github=None):
                 detail += "; no successful run in 24h"
             bad = len(failed) > limit or not good or now - max(good) > stale
             add("Scheduled runs (last 24h)", WARN if bad else OK, detail)
+            gaps = run_gaps(runs)
+            every = cfg.get("schedule", {}).get("run_every_minutes")
+            if gaps:
+                add("Time between runs (last 24h)", INFO,
+                    f"average {sum(gaps) / len(gaps):.1f} min, median "
+                    f"{sorted(gaps)[len(gaps) // 2]:.0f} min, longest {max(gaps):.0f} min "
+                    f"({len(gaps) + 1} scheduled runs"
+                    + (f"; the schedule asks for every {every:g} min" if every else "") + ")")
+            else:
+                add("Time between runs (last 24h)", INFO, "fewer than 2 scheduled runs")
 
     # 2. Each GitHub strategy's last good run (data/health.json).
     record = (_load(os.path.join(folder, "health.json")) or {}).get("strategies", {})

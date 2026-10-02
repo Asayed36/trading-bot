@@ -332,6 +332,22 @@ class FlowTests(Base):
         self.assertTrue(any(l.strip().startswith("FAIL  GlobeNewswire") for l in lines))
         self.assertEqual(self.state()["sources"]["GlobeNewswire"]["ok"], False)
 
+    def test_crypto_news_naming_no_coin_is_saved(self):
+        http = DemoNewsHttp(now=NOW, items=[
+            ("press", "Acme Raises $20M for Its Blockchain Payments Platform",
+             "The tokenization startup will hire 50 engineers.", 5),
+            ("press", "Acme Opens a Factory", "jobs", 5)])
+        _, plan, bought, lines = self.go(http)
+        self.assertEqual((plan["candidates"], bought), ([], []))
+        rows_ = rows(os.path.join(self.folder, "unmatched.csv"))
+        self.assertEqual([(r["source"], r["title"]) for r in rows_],
+                         [("PR Newswire crypto",
+                           "Acme Raises $20M for Its Blockchain Payments Platform")])
+        self.assertEqual(rows_[0]["url"], "https://example.com/demo-news/0")
+        self.assertEqual(rows_[0]["published_utc"], "2026-09-24 13:25:00")
+        self.assertTrue(any("Crypto news naming no coin" in line for line in lines))
+        self.assertFalse(os.path.exists(os.path.join(self.folder, "candidates.csv")))
+
     def test_no_coingecko_call_without_crypto_news(self):
         http = DemoNewsHttp(now=NOW, items=[("press", "Acme Opens a Factory", "jobs", 5)])
         self.go(http)

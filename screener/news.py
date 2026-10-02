@@ -56,6 +56,9 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; trading-bot-news/1.0; read-on
                          "paper trading; +https://github.com/Asayed36/trading-bot)",
            "Accept": "application/rss+xml, application/atom+xml, application/xml, "
                      "application/json, text/xml;q=0.9, */*;q=0.8"}
+# data/news/unmatched.csv: crypto-related items that named no coin, to check
+# whether the coin matching misses real candidates. Logging only.
+UNMATCHED_COLUMNS = ["time_utc", "source", "kind", "published_utc", "title", "url"]
 CANDIDATE_COLUMNS = ["time_utc", "source", "kind", "published_utc", "title", "url", "coin",
                      "symbol", "verdict", "failed", "checks"]
 QUALIFIERS = r"(?:Network|Protocol|Foundation|Labs|Chain|Blockchain|[Tt]oken|[Cc]oin|DAO|Finance)"
@@ -434,6 +437,7 @@ class NewsStrategy:
         self.http = http or NewsHttp()
         self.key = coingecko_key
         self.candidates_path = os.path.join(self.folder, "candidates.csv")
+        self.unmatched_path = os.path.join(self.folder, "unmatched.csv")
 
     def fetch(self, now=None):
         """Read the sources and CoinGecko, and check every new candidate.
@@ -442,7 +446,7 @@ class NewsStrategy:
         c = self.c
         state = copy.deepcopy(self.trader.state)
         plan = {"now": now, "notes": [], "sources": [], "candidates": [], "prices": {},
-                "seen": {}, "state": state, "checked": False}
+                "seen": {}, "state": state, "checked": False, "unmatched": []}
         last = state.get("last_check")
         gap = timedelta(minutes=c["every_minutes"] - 2)    # 2 min slack for GitHub's jitter
         if last and now - datetime.fromisoformat(last) < gap:
@@ -554,6 +558,7 @@ class NewsStrategy:
                 named = find_coins(text, coins, c)
             if not named:
                 unnamed += 1
+                plan["unmatched"].append((source, item))
                 continue
             checks = check_candidate(item, source, named, now, state, c)
             plan["candidates"].append({"source": source, "item": item, "coins": named,
@@ -596,6 +601,11 @@ class NewsStrategy:
                         f"{s.get('old', 0)} older than {c['max_age_minutes']} min")
                 else:
                     out(f"  FAIL  {s['name']:<22} {s['error']}")
+        if plan.get("unmatched"):
+            self._log_unmatched(now, plan["unmatched"])
+            out(f"  Crypto news naming no coin (saved to {os.path.basename(self.unmatched_path)}):")
+            for source, item in plan["unmatched"]:
+                out(f"    - {source['name']}: {item['title'][:100]}")
         out("")
 
         for s in trader.update(plan["prices"], when=now):
@@ -658,6 +668,22 @@ class NewsStrategy:
             ],
         }
         return pos
+
+    def _log_unmatched(self, now, unmatched):
+        """Headline and source of each crypto-related item that named no coin."""
+        if not unmatched:
+            return
+        new = not os.path.exists(self.unmatched_path)
+        with open(self.unmatched_path, "a", newline="") as fh:
+            w = csv.writer(fh)
+            if new:
+                w.writerow(UNMATCHED_COLUMNS)
+            for source, item in unmatched:
+                published = item.get("published")
+                w.writerow([now.strftime("%Y-%m-%d %H:%M:%S"), source["name"],
+                            source.get("kind", "press"),
+                            published.strftime("%Y-%m-%d %H:%M:%S") if published else "",
+                            item["title"][:200], item["url"]])
 
     def _log(self, now, source, item, coins, passed, checks):
         new = not os.path.exists(self.candidates_path)
