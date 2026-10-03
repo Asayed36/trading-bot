@@ -105,9 +105,10 @@ def schedule_split(path):
 
 
 def actual_intervals(schedule_path, count_runs, now):
-    """The real average minutes between scheduled runs before and after the
-    latest schedule change: the period's length divided by the number of
-    runs GitHub started in it. `count_runs(start, end)` asks GitHub."""
+    """The real average minutes between runs before and after the latest
+    schedule change: the period's length divided by the number of runs
+    started in it (scheduled by GitHub or started by the server's trigger).
+    `count_runs(start, end)` asks GitHub."""
     if not os.path.exists(schedule_path):
         return {}
     with open(schedule_path) as fh:

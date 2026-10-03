@@ -1,0 +1,12 @@
+# Every 10 minutes: start the Paper trading run on GitHub if none ran in the
+# last 8 minutes (GitHub's own 5-minute schedule drops runs when it's busy).
+[Unit]
+Description=Start the Paper trading run on GitHub every 10 minutes
+
+[Timer]
+OnCalendar=*:0/10
+RandomizedDelaySec=30
+Persistent=true
+
+[Install]
+WantedBy=timers.target

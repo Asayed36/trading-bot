@@ -183,8 +183,10 @@ class RunIntervalTests(Base):
                         "updated_at": ago(minutes=1),
                         "run_started_at": (start + timedelta(minutes=40)).isoformat()})
         text, rows = self.lines(gh)
-        self.assertIn("ℹ️ average 16.7 min, median 15 min, longest 20 min (4 scheduled runs; "
-                      "the schedule asks for every 5 min)", rows["Time between runs (last 24h)"])
+        # The run the server started (workflow_dispatch) counts too.
+        self.assertIn("ℹ️ average 12.5 min, median 15 min, longest 20 min (5 runs: 4 scheduled "
+                      "by GitHub, 1 started by the server or by hand; the schedule asks for "
+                      "every 5 min)", rows["Time between runs (last 24h)"])
         self.assertIn("**All checks OK.**", text)            # information, not a problem
 
     def test_actual_intervals_for_the_before_after_table(self):

@@ -1,0 +1,16 @@
+# Starts the "Paper trading run" workflow on GitHub unless one ran recently.
+# Started every 10 minutes by paper-run-trigger.timer. GitHub's own schedule
+# stays on as a backup. Uses only the token in
+# /home/bot/.config/trading-bot/dispatch-token (Actions: Read and write).
+[Unit]
+Description=Start the Paper trading run on GitHub if none ran recently
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=bot
+WorkingDirectory=/home/bot/trading-bot
+ExecStart=/home/bot/trading-bot/deploy/trigger_paper_run.sh
+NoNewPrivileges=true
+PrivateTmp=true

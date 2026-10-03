@@ -489,7 +489,12 @@ issues are titled **PASSED (robinhood): SYMBOL** with the label
 
 `.github/workflows/screener.yml` runs the screener every 5 minutes on GitHub
 Actions (and you can start a run by hand from the **Actions** tab). GitHub
-sometimes starts scheduled runs a few minutes late when it's busy. Runs never
+sometimes starts scheduled runs late, or drops them for hours, when it's
+busy. To make the runs reliable, your launch-bot server can start the run
+every 10 minutes when none ran in the last 8 (`deploy/trigger_paper_run.py`,
+with a token that can only start workflows: see Part F of
+[`deploy/LAUNCH_SERVER_SETUP.md`](deploy/LAUNCH_SERVER_SETUP.md)); GitHub's
+schedule stays on as a backup. Runs never
 overlap: one that's due while another is still going waits for it. Each run's
 full PASS/FAIL report is shown on that run's summary page.
 
@@ -563,7 +568,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/launch.py`, `launch_bot.py` | The launch strategy and the program that runs it on your server |
 | `screener/robinhood.py` | The robinhood strategy: GeckoTerminal watchlist, DexScreener prices, GoPlus and RPC holder checks, costs and exits |
 | `robinhood_probe.py` | Research only: reports what each free data source returns for Robinhood Chain (run by the "Robinhood Chain probe" workflow; no trading) |
-| `deploy/` | Server setup guide, systemd services and the hourly push script for the launch bot |
+| `deploy/` | Server setup guide, systemd services, the hourly push script for the launch bot, and the paper-run trigger that starts the Paper trading run every 10 minutes |
 | `screener/health.py` | The health section of the daily comparison, and `data/health.json` |
 | `screener/compare.py`, `compare.py` | The side-by-side comparison of all strategies, with Helius credit use |
 | `screener/demo.py` | Made-up tokens for `--demo` and the tests |

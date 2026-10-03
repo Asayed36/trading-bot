@@ -7,8 +7,9 @@ this repository about once an hour.
 
 **Paper trading only.** Nothing here uses a wallet, a private key or a seed
 phrase, and nothing can buy or sell anything. **Never put a wallet or a private
-key on this server.** The only secret on it is a GitHub token that can do one
-thing: read and write this repository's files.
+key on this server.** The only secrets on it are GitHub tokens limited to
+this repository: one that can read and write its files (Part C), and,
+optionally, one that can only start its workflows (Part F).
 
 It takes about 30–45 minutes the first time. Copy each command exactly.
 Lines starting with `#` are explanations, not commands.
@@ -269,8 +270,84 @@ Within an hour or two you should see commits called **"Launch paper results
   `read -rsp …` lines in Part D again.
 - **Pause:** `sudo systemctl stop launch-bot`. **Turn off for good:**
   `sudo systemctl disable --now launch-bot launch-push.timer`
+- **Paper-run trigger** (Part F): see what it did with
+  `journalctl -u paper-run-trigger -n 20 --no-pager`. Pause it with
+  `sudo systemctl disable --now paper-run-trigger.timer` (GitHub's own
+  schedule keeps running). When its token expires the log says "the token has
+  expired or lacks permission": make a new one (F1) and repeat F2.
 - **Stop paying:** in Vultr, **destroy** the server. Just stopping it keeps
   billing.
 - **Never** install a wallet, paste a private key or seed phrase, or use
   PumpPortal's trading API on this server. This bot doesn't need any of that,
   and nobody should ask you for it.
+
+---
+
+## Part F. Start the Paper trading runs from the server (optional)
+
+GitHub's own schedule for the **Paper trading run** (every 5 minutes) is
+best-effort: when GitHub is busy it drops scheduled runs, sometimes for hours.
+This makes the server ask GitHub to start the run every 10 minutes, unless
+one is queued or running, or one started in the last 8 minutes (then GitHub's
+schedule did its job and nothing happens). GitHub's schedule stays on as a
+backup. The run itself is the normal one, on GitHub: nothing about the
+strategies changes.
+
+### F1. Make a second GitHub token (start workflows only)
+
+Keep it separate from the Part C token, so each can be revoked on its own.
+
+1. On GitHub: your picture (top right) → **Settings** → **Developer
+   settings** → **Personal access tokens** → **Fine-grained tokens** →
+   **Generate new token**.
+2. **Token name:** `paper-run trigger`. **Expiration:** 90 days.
+3. **Repository access:** **Only select repositories** → `trading-bot`.
+4. **Repository permissions:** **Actions → Read and write**. Leave everything
+   else at **No access** (GitHub adds **Metadata: Read-only** by itself).
+5. Click **Generate token** and copy it (it starts with `github_pat_`).
+
+This token can start, re-run or cancel this repository's workflow runs and
+read their logs. It **can't** change any file or workflow, read or change
+secrets, open issues, or touch any other repository. (GitHub has no narrower
+permission that can start a workflow.)
+
+### F2. Save it on the server
+
+Log in as `bot` (`ssh bot@YOUR_SERVER_IP`). This asks for the token without
+showing it:
+
+```
+mkdir -p ~/.config/trading-bot && chmod 700 ~/.config/trading-bot
+read -rsp "Paste the paper-run token, then press Enter: " TOKEN; echo
+printf '%s' "$TOKEN" > ~/.config/trading-bot/dispatch-token
+chmod 600 ~/.config/trading-bot/dispatch-token
+unset TOKEN
+```
+
+### F3. Get the new files and test once
+
+The hourly push brings the code up to date; start it now instead of waiting:
+
+```
+sudo systemctl start launch-push
+cd ~/trading-bot && git log -1 --oneline
+~/trading-bot/deploy/trigger_paper_run.sh
+```
+
+It prints either `started Paper trading run on main (...)` (a new run
+appears in the **Actions** tab within a minute or so) or `skipped: a run
+started N min ago`. Either means it works. `could not start ...` says why
+(for example a missing or expired token).
+
+### F4. Turn on the 10-minute timer
+
+```
+sudo cp ~/trading-bot/deploy/paper-run-trigger.service ~/trading-bot/deploy/paper-run-trigger.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now paper-run-trigger.timer
+systemctl list-timers paper-run-trigger*
+journalctl -u paper-run-trigger -n 20 --no-pager
+```
+
+The daily comparison's **Time between runs** row counts both kinds of runs
+and says how many GitHub scheduled and how many the server started.
