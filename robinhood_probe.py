@@ -60,7 +60,7 @@ LAUNCHPAD_WORDS = ("pons", "pools-trade", "robinlaunch", "launchhood", "launch",
                    "kickstart", "clank", "bankr", "pad", "mint-club", "virtuals")
 SEARCHES = ("pons", "pools", "robin", "hood", "cat", "dog", "pepe", "ai", "trump", "meme",
             "moon", "stock", "usdg", "frog", "inu")
-GECKO_PAGES = 3
+GECKO_PAGES = 2
 GECKO_GAP = 6.5           # seconds between GeckoTerminal calls (it said 429 at 2.2)
 TOKENS_PER_LAUNCHPAD = 3   # new tokens per launchpad traced on the RPC
 CREATION_BLOCKS = 600      # blocks either side of a pool's creation time to search
@@ -249,7 +249,10 @@ class Probe:
         self.traced = []           # launchpad tokens traced on the RPC
 
     def run(self):
-        for step in (self.dexscreener, self.gecko, self.gecko_launchpads, self.rpc_basics,
+        # GeckoTerminal allows only a few calls a minute from GitHub's runners:
+        # the launchpads' own pools come before the general new-pools pages.
+        for step in (self.dexscreener, self.gecko_dexes, self.gecko_launchpads,
+                     self.gecko_new_pools, self.rpc_basics,
                      self.launchpad_contracts, self.curve_stage, self.holders, self.goplus):
             try:
                 step()
@@ -316,33 +319,43 @@ class Probe:
                           "reserve_usd": a.get("reserve_in_usd")})
         return status, err, pools
 
-    def gecko(self):
-        out = {"pages": []}
+    def gecko_dexes(self):
         status, body, err = self.http.get(f"{GECKO}/networks/robinhood/dexes",
                                           {"page": 1}, gap=GECKO_GAP)
         ids = [d.get("id") for d in (body or {}).get("data") or []]
-        out["dexes"] = {"status": status, "error": err, "count": len(ids), "ids": ids}
-        out["launchpad_like_dexes"] = [i for i in ids if any(w in i for w in LAUNCHPAD_WORDS)]
+        self.r["geckoterminal"] = {
+            "dexes": {"status": status, "error": err, "count": len(ids), "ids": ids},
+            "launchpad_like_dexes": [i for i in ids if any(w in i for w in LAUNCHPAD_WORDS)],
+            "pages": []}
+
+    def gecko_new_pools(self):
+        out = self.r.setdefault("geckoterminal", {"pages": []})
         for page in range(1, GECKO_PAGES + 1):
             status, err, pools = self._gecko_pools(f"{GECKO}/networks/robinhood/new_pools",
                                                    {"page": page, "include": "base_token,dex"})
             out["pages"].append({"page": page, "status": status, "error": err})
-            self.pools += pools
-        created = sorted(p["created"] for p in self.pools if p["created"])
-        out.update({"new_pools": len(self.pools),
-                    "by_dex": Counter(p["dex"] for p in self.pools).most_common(15),
+            known = {p["pool"]: p for p in self.pools}
+            for p in pools:            # tag pools already found on a launchpad's list too
+                known.setdefault(p["pool"], p).setdefault("page", page)
+            self.pools = list(known.values())
+        newest = [p for p in self.pools if p.get("page")]
+        created = sorted(p["created"] for p in newest if p["created"])
+        out.update({"new_pools": len(newest),
+                    "by_dex": Counter(p["dex"] for p in newest).most_common(15),
+                    "by_launchpad": Counter(p["launchpad"] for p in newest).most_common(),
                     "created_range": [created[0], created[-1]] if created else None,
-                    "samples": self.pools[:4]})
-        self.r["geckoterminal"] = out
+                    "samples": newest[:4]})
 
     def gecko_launchpads(self):
         """Each launchpad's own pools (GeckoTerminal lists launchpads as DEXes)."""
         ids = (self.r.get("geckoterminal") or {}).get("dexes", {}).get("ids") or []
         out = {}
-        for pad in LAUNCHPADS:
-            dexes = [i for i in ids if launchpad_of(i) == pad]
-            out[pad] = {"dex_ids": dexes,
-                        "new_pools": sum(p["launchpad"] == pad for p in self.pools)}
+        # Pools.trade first, and Pons v1 ("pons-dot-family") last: if
+        # GeckoTerminal starts refusing calls, the newer launchpads are covered.
+        for pad in sorted(LAUNCHPADS, key=lambda p: p != "pools"):
+            dexes = sorted((i for i in ids if launchpad_of(i) == pad),
+                           key=lambda i: "dot-family" in i)
+            out[pad] = {"dex_ids": dexes}
             for dex in dexes:
                 status, err, pools = self._gecko_pools(
                     f"{GECKO}/networks/robinhood/dexes/{dex}/pools",
