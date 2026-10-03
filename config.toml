@@ -503,8 +503,9 @@ recheck_minutes = 60
 max_candidates_per_run = 10
 # Minimum liquidity in the pool (DexScreener), in USD.
 min_liquidity_usd = 10000
-# Copycats: another Robinhood Chain token with the same name or symbol
-# (DexScreener search, or seen by this strategy in the last N days).
+# Copycats (the early strategy's rule): of all Robinhood Chain tokens with
+# the same name or symbol from the last N days (DexScreener search), only the
+# one with the most liquidity is allowed.
 copycat_window_days = 7
 
 # GeckoTerminal allows only a few calls a minute from GitHub's runners (it
