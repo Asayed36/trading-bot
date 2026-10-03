@@ -61,6 +61,7 @@ LAUNCHPAD_WORDS = ("pons", "pools-trade", "robinlaunch", "launchhood", "launch",
 SEARCHES = ("pons", "pools", "robin", "hood", "cat", "dog", "pepe", "ai", "trump", "meme",
             "moon", "stock", "usdg", "frog", "inu")
 GECKO_PAGES = 3
+GECKO_GAP = 6.5           # seconds between GeckoTerminal calls (it said 429 at 2.2)
 TOKENS_PER_LAUNCHPAD = 3   # new tokens per launchpad traced on the RPC
 CREATION_BLOCKS = 600      # blocks either side of a pool's creation time to search
 EVENT_MINUTES = 5          # recent events read from each launchpad contract
@@ -301,7 +302,7 @@ class Probe:
     # ---- GeckoTerminal ----
 
     def _gecko_pools(self, url, params):
-        status, body, err = self.http.get(url, params, gap=2.2)
+        status, body, err = self.http.get(url, params, gap=GECKO_GAP)
         pools = []
         for pool in (body or {}).get("data") or []:
             a = pool.get("attributes") or {}
@@ -318,7 +319,7 @@ class Probe:
     def gecko(self):
         out = {"pages": []}
         status, body, err = self.http.get(f"{GECKO}/networks/robinhood/dexes",
-                                          {"page": 1}, gap=2.2)
+                                          {"page": 1}, gap=GECKO_GAP)
         ids = [d.get("id") for d in (body or {}).get("data") or []]
         out["dexes"] = {"status": status, "error": err, "count": len(ids), "ids": ids}
         out["launchpad_like_dexes"] = [i for i in ids if any(w in i for w in LAUNCHPAD_WORDS)]
