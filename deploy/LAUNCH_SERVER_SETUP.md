@@ -217,8 +217,12 @@ Try the bot for 2 minutes:
 .venv/bin/python launch_bot.py --test
 ```
 
-You should see `connected to PumpPortal`, then after 2 minutes a short
-summary: launches seen, skipped (and why), and paper buys at each speed.
+You should see `connected to PumpPortal` and one or two `PumpPortal says:`
+lines (its replies to the subscriptions), then after 2 minutes a short
+summary: launches seen, skipped (and why), paper buys at each speed, and the
+feed messages by type (`create` and `reply`, sometimes `migrate`; never
+`buy`/`sell`, because the bot doesn't subscribe to trades: PumpPortal's
+trade stream needs an API key and a funded wallet).
 A test run saves **nothing** to `data/launch`: its results go to a temporary
 folder that's deleted afterwards. (Don't test with
 `timeout 60 .venv/bin/python launch_bot.py`: that writes real results, stops

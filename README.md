@@ -309,20 +309,24 @@ GitHub: `launch_bot.py` runs all the time on a small server (about
 $5/month) and pushes its results here about once an hour. Setup, step by
 step: [`deploy/LAUNCH_SERVER_SETUP.md`](deploy/LAUNCH_SERVER_SETUP.md).
 
-- **Data:** PumpPortal's **free** real-time data feed only: new tokens,
-  migrations, and the trades of the tokens it's following. It never uses
-  PumpPortal's trading API, a wallet or a private key. After a token
-  graduates to PumpSwap (not in the free feed), prices come from DexScreener.
+- **Data:** PumpPortal's **free** real-time data feed only: new tokens and
+  migrations. PumpPortal's stream of each token's trades needs an API key and
+  a funded wallet, so the bot doesn't use it. It never uses PumpPortal's
+  trading API, a wallet or a private key. Prices: the bonding-curve price in
+  the creation message, then DexScreener (every 20 seconds) once that price
+  is a minute old or the token graduates. So the 5s and 30s buys are at the
+  creation price, and exits react to DexScreener's price, not to each trade.
 - **Which launches** (numbers in `[launch]` in `config.toml`): it skips
   copycat names (an earlier launch with the same name or symbol in the last 7
   days), creators with a dead earlier token (older than an hour and never
   graduated), and stops at **10 launches an hour**. These checks only know
   launches the bot itself has seen, so they get better the longer it runs.
 - **First-block flag:** a launch is flagged if the creator bought in the
-  creation transaction or other wallets bought in the first ~1 second. The
-  free feed can't tell snipers from wallets linked to the creator, so every
-  early buyer counts. Flagged launches are still traded (`skip_flagged =
-  false`), so flagged and clean launches can be compared later.
+  creation transaction or other wallets bought in the first ~1 second.
+  Without the trade feed only the creator's buy is known, so in practice
+  flagged means the creator bought. Flagged launches are still traded
+  (`skip_flagged = false`), so flagged and clean launches can be compared
+  later.
 - **Three speeds, side by side**, each with its own journal in
   `data/launch/5s/`, `30s/` and `90s/`: the same launch is paper-bought **$5**
   at 5 seconds (sniper-bot speed), 30 seconds and 90 seconds (human speed)
@@ -335,10 +339,10 @@ step: [`deploy/LAUNCH_SERVER_SETUP.md`](deploy/LAUNCH_SERVER_SETUP.md).
 - **Exits:** sell half at **2x**; everything left at **-30%** or **30
   minutes** after the buy, whichever comes first.
 - **Results:** each speed's `journal.csv`, `positions.json` and
-  `entries.csv` (when it bought, buys/sells so far, dev buy %, first-block
-  buyers, flag, and the price change since creation from the feed, saved in
-  the same 5-minute/1-hour columns as the other strategies: every launch is
-  under 5 minutes old when bought, too young for DexScreener), plus `data/launch/launches.csv` (every launch it considered
+  `entries.csv` (when it bought, dev buy %, flag; the buys/sells so far,
+  first-block buyers and price change since creation, in the 5-minute/1-hour
+  columns, need the trade feed, so they're blank. Before October 2026 they
+  were saved as 0, which meant "not known", too), plus `data/launch/launches.csv` (every launch it considered
   and why) and `stats.json` (hourly counts: launches seen, skipped by reason,
   flagged, traded). The daily comparison shows **launch 5s / 30s / 90s** next
   to the other strategies.

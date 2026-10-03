@@ -29,6 +29,7 @@ class TestModeTests(unittest.TestCase):
                 seen["folder"] = folder
                 self.engine = mock.Mock(stats={"2026-10-01 22:00": {"launches_seen": 5}},
                                         traders={"90s": mock.Mock(state={"ever_bought": ["a"]})})
+                self.kinds = {"create": 5, "reply": 2}
 
             async def main(self, stop_after=None):
                 seen["stop_after"] = stop_after
@@ -43,6 +44,7 @@ class TestModeTests(unittest.TestCase):
         self.assertIn("nothing was saved to data/launch", summary)
         self.assertIn("launches_seen: 5", summary)
         self.assertIn("paper buys at 90s: 1", summary)
+        self.assertIn("feed messages by type: create 5, reply 2", summary)
 
 
 @unittest.skipUnless(shutil.which("git") and shutil.which("bash"), "needs git and bash")

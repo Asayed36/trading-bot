@@ -4,14 +4,16 @@
     python launch_bot.py --test     <- try the setup for 2 minutes; saves nothing
 
 It listens to PumpPortal's free real-time data feed for new pump.fun tokens
-and the trades of the tokens it is following, and paper-trades them at three
-speeds (see screener/launch.py). Results are written to data/launch/ and
+and migrations, and paper-trades them at three speeds (see
+screener/launch.py). It doesn't subscribe to the tokens' trades: PumpPortal's
+trade stream needs an API key and a funded wallet. Prices after creation
+come from DexScreener. Results are written to data/launch/ and
 pushed to GitHub by deploy/push_results.sh.
 
 PAPER TRADING ONLY. This program only READS public data. It never connects
 to a wallet, never uses a private key, never signs anything and never calls
 PumpPortal's trading API. The only messages it ever sends to PumpPortal are
-the four data subscriptions in ALLOWED_METHODS.
+the two free data subscriptions in ALLOWED_METHODS.
 """
 
 import argparse
@@ -33,8 +35,7 @@ from screener.launch import LaunchEngine
 
 WSOL = "So11111111111111111111111111111111111111112"
 # The only things this program ever asks PumpPortal for (read-only data).
-ALLOWED_METHODS = {"subscribeNewToken", "subscribeMigration",
-                   "subscribeTokenTrade", "unsubscribeTokenTrade"}
+ALLOWED_METHODS = {"subscribeNewToken", "subscribeMigration"}
 
 log = logging.getLogger("launch_bot")
 
@@ -77,16 +78,11 @@ class Runner:
         self.api = PublicApi(timeout=15)
         self.stop = asyncio.Event()
         self.ws = None
+        self.kinds = {}          # feed messages received, by type (for --test)
 
     async def send(self, method, keys=None):
         if self.ws is not None:
             await self.ws.send(request(method, keys))
-
-    async def apply(self, subscribe, unsubscribe):
-        if subscribe:
-            await self.send("subscribeTokenTrade", subscribe)
-        if unsubscribe:
-            await self.send("unsubscribeTokenTrade", unsubscribe)
 
     async def feed(self):
         """One connection to PumpPortal, reconnecting with a growing pause."""
@@ -98,15 +94,26 @@ class Runner:
                     self.ws = ws
                     await self.send("subscribeNewToken")
                     await self.send("subscribeMigration")
-                    await self.apply(self.engine.subscriptions(), [])
                     log.info("connected to PumpPortal")
                     pause = 5
+                    said = set()
                     async for raw in ws:
                         try:
                             msg = json.loads(raw)
                         except ValueError:
                             continue
-                        await self.apply(*self.engine.on_message(msg, time.time()))
+                        kind = str(msg.get("txType") or "reply") if isinstance(msg, dict) \
+                            else "other"
+                        self.kinds[kind] = self.kinds.get(kind, 0) + 1
+                        if not (isinstance(msg, dict) and msg.get("mint")):
+                            # PumpPortal's replies (subscription confirmations,
+                            # errors): logged once each per connection.
+                            text = str(msg)[:300]
+                            if text not in said and len(said) < 50:
+                                said.add(text)
+                                log.info("PumpPortal says: %s", text)
+                            continue
+                        self.engine.on_message(msg, time.time())
                         if self.stop.is_set():
                             break
             except (OSError, websockets.WebSocketException) as exc:
@@ -125,7 +132,7 @@ class Runner:
         while not self.stop.is_set():
             await asyncio.sleep(0.5)
             now = time.time()
-            await self.apply(*self.engine.tick(now))
+            self.engine.tick(now)
             if now - last_save >= 30:
                 self.engine.save()
                 last_save = now
@@ -181,7 +188,7 @@ class Runner:
         log.info("stopped; everything saved")
 
 
-def test_summary(engine):
+def test_summary(engine, kinds=None):
     """What a --test run saw, for checking the setup."""
     totals = {}
     for hour in engine.stats.values():
@@ -191,6 +198,9 @@ def test_summary(engine):
     lines += [f"  {key}: {n}" for key, n in sorted(totals.items())] or ["  no launches seen"]
     for name, trader in engine.traders.items():
         lines.append(f"  paper buys at {name}: {len(trader.state['ever_bought'])}")
+    if kinds is not None:
+        got = ", ".join(f"{k} {n}" for k, n in sorted(kinds.items())) or "none"
+        lines.append(f"  feed messages by type: {got}")
     return "\n".join(lines)
 
 
@@ -211,7 +221,7 @@ def main(argv=None):
         with tempfile.TemporaryDirectory() as folder:
             runner = Runner(cfg, folder)
             asyncio.run(runner.main(stop_after=args.test))
-            print(test_summary(runner.engine))
+            print(test_summary(runner.engine, runner.kinds))
         return 0
     folder = os.path.join(HERE, cfg["files"]["data_folder"])
     asyncio.run(Runner(cfg, folder).main())
