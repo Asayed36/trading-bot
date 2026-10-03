@@ -16,13 +16,16 @@ websites and read-only JSON-RPC calls (the four in RPC_METHODS). The optional
 GoPlus and Blockscout keys are free sign-up keys with no wallet involved; with
 none set, those checks are only run without a key.
 
-Sources:
+What it checks:
   - DexScreener: Robinhood pairs from searches, the latest token profiles and
-    boosts, and whether brand-new launchpad tokens are listed (curve stage?)
-  - GeckoTerminal: new pools and DEXes on the "robinhood" network
-  - Blockscout (robinhoodchain.blockscout.com): who created new tokens, which
-    contract created them (the launchpads), their holders and event names
-  - the public RPC: chain id, block time, and the launchpad contracts' events
+    boosts, and whether brand-new launchpad (curve-stage) tokens are listed
+  - GeckoTerminal: the network's DEXes (launchpads show up as DEXes, e.g.
+    "pons-v2" for the Pons curve), its newest pools, and each launchpad's pools
+  - the public RPC: chain id and block time; for new launchpad tokens, every
+    contract that logged an event naming the token around its creation (the
+    launchpad's contracts), those contracts' recent events, and holders
+    rebuilt from the token's own Transfer events
+  - Blockscout: whether its holder API answers without a key (and with one)
   - GoPlus token security for chain 4663, without a key and with one
 """
 
@@ -32,7 +35,7 @@ import json
 import os
 import sys
 import time
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import datetime, timezone
 
 import requests
@@ -48,15 +51,22 @@ GOPLUS = "https://api.gopluslabs.io/api/v1"
 HEADERS = {"User-Agent": "memecoin-screener/1.0 (read-only paper trading research)"}
 # The only JSON-RPC calls this program makes (all read-only).
 RPC_METHODS = {"eth_chainId", "eth_blockNumber", "eth_getBlockByNumber", "eth_getLogs"}
+TRANSFER = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+ZERO = "0x" + "0" * 40
 
 LAUNCHPADS = ("pons", "pools", "robinlaunch", "launchhood")
+# GeckoTerminal DEX ids that look like launchpads (reported, not all probed).
+LAUNCHPAD_WORDS = ("pons", "pools-trade", "robinlaunch", "launchhood", "launch", "fun",
+                   "kickstart", "clank", "bankr", "pad", "mint-club", "virtuals")
 SEARCHES = ("pons", "pools", "robin", "hood", "cat", "dog", "pepe", "ai", "trump", "meme",
             "moon", "stock", "usdg", "frog", "inu")
-GECKO_PAGES = 2
-SAMPLE_TOKENS = 15      # new tokens whose creator and creating contract are looked up
-HOLDER_TOKENS = 5       # tokens whose holders are checked
-GOPLUS_TOKENS = 5
-LOG_MINUTES = 30        # how far back to read launchpad events on the RPC
+GECKO_PAGES = 3
+TOKENS_PER_LAUNCHPAD = 3   # new tokens per launchpad traced on the RPC
+CREATION_BLOCKS = 600      # blocks either side of a pool's creation time to search
+EVENT_MINUTES = 5          # recent events read from each launchpad contract
+MAX_LOG_CALLS = 30         # eth_getLogs calls allowed per scan
+HOLDER_TOKENS = 4
+GOPLUS_TOKENS = 6
 
 
 def rpc_request(method, params, request_id=1):
@@ -166,28 +176,6 @@ def equal_groups(balances, tolerance=0.005):
     return sorted(groups, reverse=True)
 
 
-def holder_summary(holders, total_supply, skip=()):
-    """Top-10 share and equal-balance groups from Blockscout holder items,
-    leaving out `skip` addresses (pools, hooks, burn)."""
-    rows = []
-    for h in holders:
-        a = addr(h.get("address"))
-        try:
-            value = int(h.get("value") or 0)
-        except (TypeError, ValueError):
-            continue
-        if a and a not in skip:
-            rows.append((a, value, bool((h.get("address") or {}).get("is_contract"))))
-    rows.sort(key=lambda r: -r[1])
-    supply = int(total_supply or 0) or sum(r[1] for r in rows) or 1
-    return {
-        "holders_returned": len(holders),
-        "top10_pct": round(100 * sum(r[1] for r in rows[:10]) / supply, 2),
-        "contracts_in_top10": sum(r[2] for r in rows[:10]),
-        "equal_balance_groups": equal_groups([r[1] for r in rows])[:5],
-    }
-
-
 def topic_counts(logs):
     return Counter((log.get("topics") or ["(none)"])[0] for log in logs)
 
@@ -195,10 +183,56 @@ def topic_counts(logs):
 def goplus_sign(app_key, app_secret, now):
     return hashlib.sha1(f"{app_key}{now}{app_secret}".encode()).hexdigest()
 
+def topic_address(address):
+    """An address as a 32-byte log topic."""
+    return "0x" + "0" * 24 + address.lower()[2:]
+
+
+def topic_to_address(topic):
+    return ("0x" + topic[-40:]).lower() if isinstance(topic, str) and len(topic) == 66 else None
+
+
+def balances_from_transfers(logs):
+    """Token balances rebuilt from ERC-20 Transfer logs (from, to, amount)."""
+    bal = defaultdict(int)
+    for log in logs:
+        topics = log.get("topics") or []
+        if len(topics) < 3 or topics[0] != TRANSFER:
+            continue
+        amount = hex_int(log.get("data") or "0x0") or 0
+        bal[topic_to_address(topics[1])] -= amount
+        bal[topic_to_address(topics[2])] += amount
+    bal.pop(ZERO, None)
+    return {a: v for a, v in bal.items() if v > 0}
+
+
+def concentration(balances, skip=()):
+    """Share of the largest holder, the top 10 and equal-balance groups,
+    leaving out `skip` (the curve or pool contract holding unsold supply)."""
+    total = sum(balances.values()) or 1
+    rows = sorted(((a, v) for a, v in balances.items() if a not in skip), key=lambda r: -r[1])
+    return {"holders": len(rows),
+            "skipped_pct": round(100 * sum(balances.get(a, 0) for a in skip) / total, 2),
+            "largest_pct": round(100 * rows[0][1] / total, 2) if rows else None,
+            "top10_pct": round(100 * sum(v for _, v in rows[:10]) / total, 2),
+            "equal_balance_groups": equal_groups([v for _, v in rows])[:5]}
+
+
+
+# ---------------------------------------------------------------------------
+# The probe
+
 
 # ---------------------------------------------------------------------------
 # The probe
 # ---------------------------------------------------------------------------
+
+def _ts(text):
+    try:
+        return datetime.fromisoformat(text.replace("Z", "+00:00")).timestamp()
+    except (AttributeError, ValueError):
+        return None
+
 
 class Probe:
     def __init__(self, http=None, env=None, now=None):
@@ -206,16 +240,16 @@ class Probe:
         self.env = os.environ if env is None else env
         self.now = now or time.time()
         self.r = {"started_utc": datetime.fromtimestamp(self.now, timezone.utc).isoformat()}
-        self.new_tokens = {}       # address -> where we saw it
-        self.factories = Counter()  # contract that created a sample token -> count
-        self.names = {}            # address -> Blockscout name
-        self.skip = {"0x0000000000000000000000000000000000000000",
-                     "0x000000000000000000000000000000000000dead"}
+        self.pools = []            # GeckoTerminal pools: dex, launchpad, token, pool, created
+        self.ds_tokens = []        # tokens of the newest DexScreener pairs
+        self.head = None
+        self.head_time = None
+        self.block_time = None
+        self.traced = []           # launchpad tokens traced on the RPC
 
     def run(self):
-        for step in (self.dexscreener, self.gecko, self.blockscout_search,
-                     self.token_origins, self.rpc_and_events, self.curve_stage,
-                     self.holders, self.goplus):
+        for step in (self.dexscreener, self.gecko, self.gecko_launchpads, self.rpc_basics,
+                     self.launchpad_contracts, self.curve_stage, self.holders, self.goplus):
             try:
                 step()
             except Exception as exc:  # one broken source mustn't hide the others
@@ -236,14 +270,12 @@ class Probe:
                 if p.get("chainId") == "robinhood":
                     pairs[p["pairAddress"]] = p
         listing = sorted(pairs.values(), key=lambda p: -(p.get("pairCreatedAt") or 0))
-        for p in listing[:SAMPLE_TOKENS]:
-            self.new_tokens.setdefault(p["baseToken"]["address"].lower(), "dexscreener")
+        self.ds_tokens = [p["baseToken"]["address"].lower() for p in listing[:10]]
         out = {
             "pairs_found": len(pairs),
-            "by_dex": Counter(f"{p.get('dexId')} {','.join(p.get('labels') or [])}".strip()
-                              for p in pairs.values()).most_common(15),
+            "by_dex": Counter(self._dex_label(p) for p in pairs.values()).most_common(15),
             "by_quote": Counter(p["quoteToken"]["symbol"] for p in pairs.values()).most_common(8),
-            "newest": [self._pair_sample(p) for p in listing[:5]],
+            "newest": [self._pair_sample(p) for p in listing[:3]],
             "errors": errors[:5],
         }
         for kind in ("token-profiles", "token-boosts"):
@@ -253,6 +285,10 @@ class Probe:
                          "robinhood": sum(x.get("chainId") == "robinhood" for x in items),
                          "error": err}
         self.r["dexscreener"] = out
+
+    @staticmethod
+    def _dex_label(p):
+        return f"{p.get('dexId')} {','.join(p.get('labels') or [])}".strip()
 
     def _pair_sample(self, p):
         return {"symbol": p["baseToken"].get("symbol"), "token": p["baseToken"]["address"],
@@ -264,211 +300,223 @@ class Probe:
 
     # ---- GeckoTerminal ----
 
-    def gecko(self):
-        out = {"pages": []}
-        status, body, err = self.http.get(f"{GECKO}/networks/robinhood/dexes", gap=2.2)
-        out["dexes"] = {"status": status, "error": err,
-                        "ids": [d.get("id") for d in (body or {}).get("data") or []]}
+    def _gecko_pools(self, url, params):
+        status, body, err = self.http.get(url, params, gap=2.2)
         pools = []
-        for page in range(1, GECKO_PAGES + 1):
-            status, body, err = self.http.get(
-                f"{GECKO}/networks/robinhood/new_pools",
-                {"page": page, "include": "base_token,dex"}, gap=2.2)
-            out["pages"].append({"page": page, "status": status, "error": err})
-            pools += (body or {}).get("data") or []
-        dex_count, samples = Counter(), []
-        for pool in pools:
+        for pool in (body or {}).get("data") or []:
             a = pool.get("attributes") or {}
             rel = pool.get("relationships") or {}
             dex = ((rel.get("dex") or {}).get("data") or {}).get("id")
             base = ((rel.get("base_token") or {}).get("data") or {}).get("id") or ""
-            dex_count[dex] += 1
-            token = base.split("_", 1)[-1].lower()
-            if token.startswith("0x"):
-                self.new_tokens.setdefault(token, "geckoterminal")
-            if len(samples) < 5:
-                samples.append({"name": a.get("name"), "dex": dex, "token": token,
-                                "created": a.get("pool_created_at"),
-                                "reserve_usd": a.get("reserve_in_usd"),
-                                "pool": a.get("address")})
-        created = sorted(a for a in ((p.get("attributes") or {}).get("pool_created_at")
-                                     for p in pools) if a)
-        out.update({"new_pools": len(pools), "by_dex": dex_count.most_common(15),
+            pools.append({"dex": dex, "launchpad": launchpad_of(dex),
+                          "token": base.split("_", 1)[-1].lower(), "name": a.get("name"),
+                          "pool": (a.get("address") or "").lower(),
+                          "created": a.get("pool_created_at"),
+                          "reserve_usd": a.get("reserve_in_usd")})
+        return status, err, pools
+
+    def gecko(self):
+        out = {"pages": []}
+        status, body, err = self.http.get(f"{GECKO}/networks/robinhood/dexes",
+                                          {"page": 1}, gap=2.2)
+        ids = [d.get("id") for d in (body or {}).get("data") or []]
+        out["dexes"] = {"status": status, "error": err, "count": len(ids), "ids": ids}
+        out["launchpad_like_dexes"] = [i for i in ids if any(w in i for w in LAUNCHPAD_WORDS)]
+        for page in range(1, GECKO_PAGES + 1):
+            status, err, pools = self._gecko_pools(f"{GECKO}/networks/robinhood/new_pools",
+                                                   {"page": page, "include": "base_token,dex"})
+            out["pages"].append({"page": page, "status": status, "error": err})
+            self.pools += pools
+        created = sorted(p["created"] for p in self.pools if p["created"])
+        out.update({"new_pools": len(self.pools),
+                    "by_dex": Counter(p["dex"] for p in self.pools).most_common(15),
                     "created_range": [created[0], created[-1]] if created else None,
-                    "samples": samples})
+                    "samples": self.pools[:4]})
         self.r["geckoterminal"] = out
 
-    # ---- Blockscout: launchpad contracts ----
-
-    def blockscout_search(self):
-        found = {}
+    def gecko_launchpads(self):
+        """Each launchpad's own pools (GeckoTerminal lists launchpads as DEXes)."""
+        ids = (self.r.get("geckoterminal") or {}).get("dexes", {}).get("ids") or []
+        out = {}
         for pad in LAUNCHPADS:
-            status, body, err = self.http.get(f"{BLOCKSCOUT}/search", {"q": pad})
-            items = (body or {}).get("items") or []
-            found[pad] = {"status": status, "error": err, "items": [
-                {"type": i.get("type"), "name": i.get("name"), "address": i.get("address")
-                 or i.get("address_hash"), "verified": i.get("is_smart_contract_verified")}
-                for i in items[:8]]}
-            for i in items:
-                a = addr(i.get("address") or i.get("address_hash"))
-                if a and i.get("type") in ("contract", "address") and launchpad_of(i.get("name")):
-                    self.names[a] = i.get("name")
-        self.r["blockscout_search"] = found
-
-    def token_origins(self):
-        """For new tokens: who created them and which contract did it. The
-        most common creating contracts are the launchpads' factories."""
-        rows = []
-        for token in list(self.new_tokens)[:SAMPLE_TOKENS * 2]:
-            status, info, err = self.http.get(f"{BLOCKSCOUT}/addresses/{token}")
-            if err or not info:
-                rows.append({"token": token, "error": f"HTTP {status} {err}"})
-                continue
-            tx = info.get("creation_transaction_hash") or info.get("creation_tx_hash")
-            row = {"token": token, "token_name": (info.get("token") or {}).get("name"),
-                   "creator": addr(info.get("creator_address_hash")), "creation_tx": tx}
-            if tx:
-                status, t, err = self.http.get(f"{BLOCKSCOUT}/transactions/{tx}")
-                to = (t or {}).get("to") or {}
-                row.update({"created_by_contract": addr(to), "contract_name": to.get("name"),
-                            "method": (t or {}).get("method"),
-                            "timestamp": (t or {}).get("timestamp")})
-                if addr(to):
-                    self.factories[addr(to)] += 1
-                    if to.get("name"):
-                        self.names.setdefault(addr(to), to.get("name"))
-            rows.append(row)
-            if sum("creator" in x for x in rows) >= SAMPLE_TOKENS:
-                break
-        self.r["token_origins"] = {
-            "looked_up": len(rows),
-            "creating_contracts": [{"address": a, "name": self.names.get(a), "tokens": n,
-                                    "launchpad": launchpad_of(self.names.get(a))}
-                                   for a, n in self.factories.most_common(10)],
-            "samples": rows[:8]}
-
-    def _launchpad_contracts(self):
-        """Contracts to read events from: those that created sample tokens,
-        plus contracts Blockscout names after a launchpad."""
-        picks = [a for a, _ in self.factories.most_common(6)]
-        picks += [a for a, n in self.names.items() if launchpad_of(n) and a not in picks]
-        return picks[:10]
+            dexes = [i for i in ids if launchpad_of(i) == pad]
+            out[pad] = {"dex_ids": dexes,
+                        "new_pools": sum(p["launchpad"] == pad for p in self.pools)}
+            for dex in dexes:
+                status, err, pools = self._gecko_pools(
+                    f"{GECKO}/networks/robinhood/dexes/{dex}/pools",
+                    {"page": 1, "include": "base_token,dex"})
+                out[pad][dex] = {"status": status, "error": err, "pools": len(pools),
+                                 "samples": pools[:2]}
+                known = {p["pool"] for p in self.pools}
+                self.pools += [p for p in pools if p["pool"] not in known]
+        self.r["launchpads_on_geckoterminal"] = out
 
     # ---- the public RPC ----
 
-    def rpc_and_events(self):
+    def rpc_basics(self):
         out = {}
         chain, err = self.http.rpc("eth_chainId", [])
         out["chain_id"] = hex_int(chain) if chain else err
         head, err = self.http.rpc("eth_blockNumber", [])
-        head = hex_int(head)
-        out["block_number"] = head if head is not None else err
+        self.head = hex_int(head)
+        out["block_number"] = self.head if self.head is not None else err
+        if self.head is not None:
+            latest = self._block_time_of(self.head)
+            older = self._block_time_of(max(self.head - 10_000, 0))
+            if latest and older and latest > older:
+                self.block_time = (latest - older) / 10_000
+                self.head_time = latest
+        out["seconds_per_block"] = self.block_time
         self.r["rpc"] = out
-        if head is None:
-            return
-        latest, _ = self.http.rpc("eth_getBlockByNumber", [hex(head), False])
-        older, _ = self.http.rpc("eth_getBlockByNumber", [hex(max(head - 10_000, 0)), False])
-        block_time = None
-        if latest and older:
-            span = hex_int(latest["timestamp"]) - hex_int(older["timestamp"])
-            block_time = span / 10_000 if span > 0 else None
-        out["seconds_per_block"] = block_time
-        window = int(LOG_MINUTES * 60 / block_time) if block_time else 5_000
-        events = []
-        for contract in self._launchpad_contracts():
-            events.append(self._contract_events(contract, head, window))
-        out["launchpad_events"] = events
 
-    def _contract_events(self, contract, head, window):
-        """eth_getLogs over the last `window` blocks, halving the window if the
-        RPC refuses a range that big; event names from Blockscout."""
-        row = {"contract": contract, "name": self.names.get(contract),
-               "launchpad": launchpad_of(self.names.get(contract))}
-        logs, err, tries = None, None, 0
-        while tries < 6 and window >= 50:
-            logs, err = self.http.rpc("eth_getLogs", [{
-                "address": contract, "fromBlock": hex(head - window), "toBlock": hex(head)}])
-            if logs is not None:
+    def _block_time_of(self, number):
+        block, _ = self.http.rpc("eth_getBlockByNumber", [hex(number), False])
+        return hex_int((block or {}).get("timestamp"))
+
+    def _block_at(self, when):
+        """The block number at a unix time (estimate, refined twice)."""
+        number = self.head - int((self.head_time - when) / self.block_time)
+        for _ in range(2):
+            ts = self._block_time_of(max(number, 0))
+            if ts is None:
                 break
-            window //= 2
-            tries += 1
-        row.update({"blocks_read": window, "error": None if logs is not None else err})
-        if logs is not None:
-            counts = topic_counts(logs)
-            row["logs"] = len(logs)
-            row["by_topic"] = counts.most_common(8)
-            row["sample_log"] = logs[0] if logs else None
-        status, body, err = self.http.get(f"{BLOCKSCOUT}/addresses/{contract}/logs")
-        names = Counter()
-        for item in (body or {}).get("items") or []:
-            decoded = item.get("decoded") or {}
-            topic0 = (item.get("topics") or [None])[0]
-            names[f"{decoded.get('method_call') or '(not decoded)'} [{(topic0 or '')[:10]}]"] += 1
-        row["blockscout_event_names"] = names.most_common(8) if names else f"HTTP {status} {err}"
-        # Tokens this contract created recently (curve-stage candidates).
-        status, body, err = self.http.get(f"{BLOCKSCOUT}/addresses/{contract}/internal-transactions")
-        created = [addr(i.get("created_contract")) for i in (body or {}).get("items") or []
-                   if i.get("created_contract")]
-        row["recently_created"] = len(created)
-        row["created_sample"] = created[:5]
-        row.setdefault("created", created)
-        return row
+            number += int((when - ts) / self.block_time)
+        return max(min(number, self.head), 0)
+
+    def get_logs(self, flt, start, end):
+        """eth_getLogs over [start, end], splitting the range when the RPC
+        refuses it. Returns (logs, calls, error or None, complete?)."""
+        logs, calls, step, error = [], 0, end - start + 1, None
+        while start <= end and calls < MAX_LOG_CALLS:
+            stop = min(start + step - 1, end)
+            got, err = self.http.rpc("eth_getLogs", [dict(flt, fromBlock=hex(start),
+                                                          toBlock=hex(stop))])
+            calls += 1
+            if got is None:
+                error = err
+                if step <= 25:
+                    break
+                step //= 2
+                continue
+            logs += got
+            start = stop + 1
+        return logs, calls, error, start > end
+
+    def launchpad_contracts(self):
+        """For new tokens of each launchpad: every contract that logged an
+        event naming the token (as a topic) around the pool's creation. The
+        ones seen for every token are the launchpad's contracts; then read
+        their recent events."""
+        if not self.block_time:
+            self.r["launchpad_contracts"] = "skipped: no block time from the RPC"
+            return
+        out = {}
+        for pad in LAUNCHPADS:
+            pools = sorted((p for p in self.pools if p["launchpad"] == pad and p["created"]
+                            and p["token"].startswith("0x")),
+                           key=lambda p: p["created"], reverse=True)[:TOKENS_PER_LAUNCHPAD]
+            emitters, tokens = Counter(), []
+            for p in pools:
+                block = self._block_at(_ts(p["created"]))
+                found = Counter()
+                for position in (1, 2, 3):
+                    topics = [None] * position + [topic_address(p["token"])]
+                    logs, calls, err, done = self.get_logs(
+                        {"topics": topics}, block - CREATION_BLOCKS, block + CREATION_BLOCKS)
+                    for log in logs:
+                        emitter = (log.get("address") or "").lower()
+                        if emitter != p["token"]:
+                            found[(emitter, (log.get("topics") or [""])[0])] += 1
+                mints, _, _, _ = self.get_logs(
+                    {"address": p["token"], "topics": [TRANSFER, topic_address(ZERO)]},
+                    block - CREATION_BLOCKS, block + CREATION_BLOCKS)
+                for emitter in {e for e, _ in found}:
+                    emitters[emitter] += 1
+                row = {"token": p["token"], "dex": p["dex"], "pool": p["pool"],
+                       "created": p["created"], "creation_block": block,
+                       "events_naming_token": [[e, t, n] for (e, t), n in found.most_common(8)],
+                       "minted_to": sorted({topic_to_address((m.get("topics") or [0, 0, 0])[2])
+                                            for m in mints})[:5]}
+                tokens.append(row)
+                self.traced.append(dict(row, launchpad=pad))
+            contracts = []
+            for contract, seen in emitters.most_common(4):
+                start = self.head - int(EVENT_MINUTES * 60 / self.block_time)
+                logs, calls, err, done = self.get_logs({"address": contract}, start, self.head)
+                contracts.append({"contract": contract, "seen_for_tokens": seen,
+                                  "events_last_minutes": EVENT_MINUTES, "logs": len(logs),
+                                  "complete": done, "error": err,
+                                  "by_topic": topic_counts(logs).most_common(6),
+                                  "sample": logs[0] if logs else None})
+            out[pad] = {"tokens_traced": len(tokens), "tokens": tokens,
+                        "contracts": contracts}
+        self.r["launchpad_contracts"] = out
 
     # ---- curve stage: are brand-new launchpad tokens on DexScreener? ----
 
     def curve_stage(self):
-        fresh = []
-        for row in (self.r.get("rpc") or {}).get("launchpad_events") or []:
-            fresh += [a for a in row.pop("created", []) if a and a not in fresh]
-        fresh = fresh[:30]
-        out = {"fresh_tokens_checked": len(fresh)}
-        if fresh:
+        out = {}
+        for pad in LAUNCHPADS:
+            fresh = list(dict.fromkeys(p["token"] for p in self.pools if p["launchpad"] == pad
+                                       and p["token"].startswith("0x")))[:30]
+            if not fresh:
+                out[pad] = "no new launchpad tokens found on GeckoTerminal"
+                continue
             status, body, err = self.http.get(
                 f"{DEXSCREENER}/tokens/v1/robinhood/{','.join(fresh)}")
             pairs = body if isinstance(body, list) else []
             listed = {p["baseToken"]["address"].lower() for p in pairs}
-            out.update({
-                "status": status, "error": err,
-                "listed_on_dexscreener": len(listed & set(fresh)),
-                "by_dex": Counter(f"{p.get('dexId')} {','.join(p.get('labels') or [])}".strip()
-                                  for p in pairs).most_common(10),
-                "samples": [self._pair_sample(p) for p in pairs[:5]]})
-            status, body, err = self.http.get(
-                f"{GECKO}/networks/robinhood/tokens/multi/{','.join(fresh)}", gap=2.2)
-            out["listed_on_geckoterminal"] = len((body or {}).get("data") or [])
-            out["geckoterminal_status"] = status if not err else f"{status} {err}"
+            out[pad] = {"tokens_checked": len(fresh), "status": status, "error": err,
+                        "listed_on_dexscreener": len(listed & set(fresh)),
+                        "by_dex": Counter(self._dex_label(p) for p in pairs).most_common(8),
+                        "gecko_dexes": Counter(p["dex"] for p in self.pools
+                                               if p["token"] in fresh).most_common(5),
+                        "samples": [self._pair_sample(p) for p in pairs[:3]]}
         self.r["curve_stage"] = out
-        for a in fresh[:5]:
-            self.new_tokens.setdefault(a, "launchpad")
 
-    # ---- Blockscout holders ----
+    # ---- holders ----
 
     def holders(self):
-        pro_key = self.env.get("BLOCKSCOUT_API_KEY")
-        rows = []
-        for token in list(self.new_tokens)[:HOLDER_TOKENS]:
-            status, info, err = self.http.get(f"{BLOCKSCOUT}/tokens/{token}")
-            status_h, body, err_h = self.http.get(f"{BLOCKSCOUT}/tokens/{token}/holders")
-            row = {"token": token, "symbol": (info or {}).get("symbol"),
-                   "holders_count": (info or {}).get("holders_count")
-                   or (info or {}).get("holders"),
-                   "status": status_h, "error": err_h}
-            if body:
-                row.update(holder_summary(body.get("items") or [],
-                                          (info or {}).get("total_supply"), self.skip))
-                row["sample_keys"] = sorted((body.get("items") or [{}])[0].keys())
-            if pro_key:
-                status_p, _, err_p = self.http.get(f"{BLOCKSCOUT_PRO}/tokens/{token}/holders",
-                                                   {"apikey": pro_key})
-                row["pro_api"] = f"HTTP {status_p}" + (f" {err_p}" if err_p else "")
-            rows.append(row)
-        self.r["blockscout_holders"] = {"keyless": rows,
-                                        "pro_key": "set" if pro_key else "not set"}
+        tokens = [t["token"] for t in self.traced][:HOLDER_TOKENS] or self.ds_tokens[:2]
+        out = {"blockscout": {}, "from_transfer_logs": []}
+        if tokens:
+            sample = tokens[0]
+            status, _, err = self.http.get(f"{BLOCKSCOUT}/tokens/{sample}/holders")
+            out["blockscout"]["keyless_instance_api"] = f"HTTP {status}" + (
+                f" {err[:80]}" if err else "")
+            status, _, err = self.http.get(f"{BLOCKSCOUT_PRO}/tokens/{sample}/holders")
+            out["blockscout"]["pro_api_without_key"] = f"HTTP {status}" + (
+                f" {err[:80]}" if err else "")
+            key = self.env.get("BLOCKSCOUT_API_KEY")
+            if key:
+                status, body, err = self.http.get(f"{BLOCKSCOUT_PRO}/tokens/{sample}/holders",
+                                                  {"apikey": key})
+                out["blockscout"]["pro_api_with_key"] = {
+                    "status": status, "error": err and err[:80],
+                    "items": len((body or {}).get("items") or [])}
+            else:
+                out["blockscout"]["pro_api_with_key"] = "not tested: BLOCKSCOUT_API_KEY not set"
+        if not self.block_time:
+            self.r["holders"] = out
+            return
+        for t in self.traced[:HOLDER_TOKENS]:
+            logs, calls, err, done = self.get_logs(
+                {"address": t["token"], "topics": [TRANSFER]},
+                t["creation_block"] - CREATION_BLOCKS, self.head)
+            bal = balances_from_transfers(logs)
+            skip = {a for a in [t["pool"]] + t["minted_to"] if a}
+            row = {"token": t["token"], "launchpad": t["launchpad"], "transfers": len(logs),
+                   "rpc_calls": calls, "complete": done, "error": err}
+            row.update(concentration(bal, skip))
+            out["from_transfer_logs"].append(row)
+        self.r["holders"] = out
 
     # ---- GoPlus ----
 
     def goplus(self):
-        tokens = list(self.new_tokens)[:GOPLUS_TOKENS]
+        traced = [t["token"] for t in self.traced]
+        tokens = list(dict.fromkeys(traced[:3] + self.ds_tokens))[:GOPLUS_TOKENS]
         out = {"without_key": [self._goplus_one(t, None) for t in tokens]}
         key, secret = self.env.get("GOPLUS_APP_KEY"), self.env.get("GOPLUS_APP_SECRET")
         if key and secret:
@@ -492,13 +540,16 @@ class Probe:
         keep = ("is_honeypot", "cannot_sell_all", "buy_tax", "sell_tax", "is_mintable",
                 "hidden_owner", "owner_address", "can_take_back_ownership",
                 "owner_change_balance", "is_blacklisted", "is_open_source",
-                "holder_count", "lp_holder_count", "creator_percent", "dex")
-        return {"token": token, "status": status, "code": (body or {}).get("code"),
-                "message": (body or {}).get("message"), "error": err,
+                "holder_count", "lp_holder_count", "creator_percent")
+        return {"token": token, "launchpad": next((t["launchpad"] for t in self.traced
+                                                   if t["token"] == token), None),
+                "status": status, "code": (body or {}).get("code"),
+                "message": (body or {}).get("message"), "error": err and err[:120],
                 "fields_returned": len(result),
                 "values": {k: result[k] for k in keep if k in result},
-                "top_holder_pct": [h.get("percent") for h in (result.get("holders") or [])[:5]],
-                "lp_locked": [h.get("is_locked") for h in (result.get("lp_holders") or [])[:3]]}
+                "holders_listed": len(result.get("holders") or []),
+                "lp_holders_listed": len(result.get("lp_holders") or []),
+                "dex": [d.get("name") for d in result.get("dex") or []]}
 
 
 # ---------------------------------------------------------------------------
@@ -521,39 +572,49 @@ def report(r):
     L += [f"- newest: {_j(p)}" for p in d.get("newest") or []]
     L += [f"- error: {e}" for e in d.get("errors") or []]
     g = r.get("geckoterminal") or {}
-    L += ["", "## GeckoTerminal", f"- DEXes on the network: {_j(g.get('dexes'))}",
+    dexes = g.get("dexes") or {}
+    L += ["", "## GeckoTerminal",
+          f"- DEXes on the network: {dexes.get('count')} (HTTP {dexes.get('status')})",
+          f"- launchpad-like DEX ids: {_j(g.get('launchpad_like_dexes'))}",
           f"- new pools: **{g.get('new_pools')}** (pages: {_j(g.get('pages'))})",
           f"- by DEX: {_j(g.get('by_dex'))}", f"- created between: {_j(g.get('created_range'))}"]
     L += [f"- sample: {_j(s)}" for s in g.get("samples") or []]
-    L += ["", "## Blockscout: launchpad name search"]
-    for pad, res in (r.get("blockscout_search") or {}).items():
-        L.append(f"- {pad}: HTTP {res.get('status')} {res.get('error') or ''} "
-                 f"{_j(res.get('items'))}")
-    o = r.get("token_origins") or {}
-    L += ["", "## Blockscout: which contracts create new tokens",
-          f"- tokens looked up: {o.get('looked_up')}"]
-    L += [f"- creating contract: {_j(c)}" for c in o.get("creating_contracts") or []]
-    L += [f"- sample: {_j(s)}" for s in o.get("samples") or []]
+    L += ["", "## Launchpads on GeckoTerminal"]
+    for pad, res in (r.get("launchpads_on_geckoterminal") or {}).items():
+        L.append(f"- **{pad}**: {_j(res)}")
     rpc = r.get("rpc") or {}
     L += ["", "## Public RPC", f"- chain id: {rpc.get('chain_id')}, block: "
-          f"{rpc.get('block_number')}, seconds per block: {rpc.get('seconds_per_block')}"]
-    for e in rpc.get("launchpad_events") or []:
-        L.append(f"- {e.get('contract')} ({e.get('name')}, launchpad: {e.get('launchpad')}): "
-                 f"{e.get('logs')} logs in the last {e.get('blocks_read')} blocks"
-                 f"{'; error ' + str(e['error']) if e.get('error') else ''}; "
-                 f"by topic {_j(e.get('by_topic'))}; names {_j(e.get('blockscout_event_names'))}; "
-                 f"recently created tokens {e.get('recently_created')} {_j(e.get('created_sample'))}")
-        if e.get("sample_log"):
-            L.append(f"  - sample log: {_j(e['sample_log'])[:600]}")
-    c = r.get("curve_stage") or {}
-    L += ["", "## Curve stage: are brand-new launchpad tokens listed?", f"- {_j(c)}"]
-    h = r.get("blockscout_holders") or {}
-    L += ["", f"## Blockscout holders (Pro API key: {h.get('pro_key')})"]
-    L += [f"- {_j(x)}" for x in h.get("keyless") or []]
+          f"{rpc.get('block_number')}, seconds per block: {rpc.get('seconds_per_block')}",
+          "", "## Launchpad contracts (from events naming new tokens)"]
+    lc = r.get("launchpad_contracts")
+    if isinstance(lc, str):
+        L.append(f"- {lc}")
+    for pad, res in (lc or {}).items() if isinstance(lc, dict) else []:
+        L.append(f"### {pad}: {res['tokens_traced']} new token(s) traced")
+        for t in res["tokens"]:
+            L.append(f"- token {t['token']} ({t['dex']}, created {t['created']}, block "
+                     f"{t['creation_block']}): minted to {_j(t['minted_to'])}; events naming it "
+                     f"[emitter, topic0, count]: {_j(t['events_naming_token'])}")
+        for c in res["contracts"]:
+            L.append(f"- contract {c['contract']} (seen for {c['seen_for_tokens']} token(s)): "
+                     f"{c['logs']} logs in the last {c['events_last_minutes']} min"
+                     f"{'' if c['complete'] else ' (incomplete)'}"
+                     f"{'; error ' + str(c['error']) if c['error'] else ''}; "
+                     f"by topic {_j(c['by_topic'])}")
+            if c.get("sample"):
+                L.append(f"  - sample log: {_j(c['sample'])[:500]}")
+    L += ["", "## Curve stage: are brand-new launchpad tokens on DexScreener?"]
+    for pad, res in (r.get("curve_stage") or {}).items():
+        L.append(f"- **{pad}**: {_j(res)}")
+    h = r.get("holders") or {}
+    L += ["", "## Holders", f"- Blockscout: {_j(h.get('blockscout'))}"]
+    L += [f"- from Transfer logs: {_j(x)}" for x in h.get("from_transfer_logs") or []]
     gp = r.get("goplus") or {}
     L += ["", "## GoPlus token security (chain 4663)", "### Without a key"]
     L += [f"- {_j(x)}" for x in gp.get("without_key") or []]
-    L += ["### With a key", f"- login: {_j(gp.get('key_login'))}" if gp.get("key_login") else ""]
+    L += ["### With a key"]
+    if gp.get("key_login"):
+        L.append(f"- login: {_j(gp['key_login'])}")
     wk = gp.get("with_key")
     L += [f"- {_j(x)}" for x in wk] if isinstance(wk, list) else [f"- {wk}"]
     L += ["", f"Calls per host: {_j(r.get('calls_per_host'))}"]
