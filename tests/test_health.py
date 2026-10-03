@@ -60,13 +60,16 @@ class Base(unittest.TestCase):
             json.dump(data, fh)
 
     def healthy(self):
-        for name in ("main", "early", "convergence", "news"):
+        for name in ("main", "early", "convergence", "news", "robinhood"):
             record_health(self.d, NOW - timedelta(minutes=4), {name: None})
         self.write("convergence/positions.json", {
             "helius": {"used": 1}, "tracked": [{"wallet": f"w{i}"} for i in range(5)],
             "list_updated": ago(days=1)})
         self.write("news/positions.json", {"sources": {
             "PR Newswire crypto": {"ok": True, "items": 20}}})
+        self.write("robinhood/positions.json", {"sources": {
+            name: {"ok": True, "calls": 3, "errors": 0, "rate_limited": 0, "at": ago(minutes=4)}
+            for name in ("geckoterminal", "dexscreener", "goplus", "rpc")}})
         return FakeGitHub([run_("success", 4), run_("success", 9)], pushed=NOW - timedelta(minutes=50))
 
     def lines(self, gh):
@@ -239,6 +242,26 @@ class GitHubApiTests(unittest.TestCase):
         url = req.call_args.args[1]
         self.assertIn("created=2026-09-30T00%3A00%3A00Z..2026-10-01T00%3A00%3A00Z", url)
         self.assertIn("event=schedule&per_page=1", url)
+
+
+class RobinhoodSourceTests(Base):
+    def test_a_row_for_each_data_source(self):
+        gh = self.healthy()
+        self.write("robinhood/positions.json", {"sources": {
+            "geckoterminal": {"ok": True, "calls": 3, "errors": 1, "rate_limited": 1,
+                              "at": ago(minutes=4)},
+            "dexscreener": {"ok": True, "calls": 2, "errors": 0, "rate_limited": 0,
+                            "at": ago(minutes=4)},
+            "goplus": {"ok": False, "calls": 2, "errors": 2, "rate_limited": 0,
+                       "error": "api.gopluslabs.io answered with error 500",
+                       "at": ago(minutes=4)}}})
+        text, rows = self.lines(gh)
+        self.assertIn("✅ 3 call(s), 1 failed, 1 rate-limited", rows["robinhood: geckoterminal"])
+        self.assertIn("✅", rows["robinhood: dexscreener"])
+        self.assertIn("⚠️ failing", rows["robinhood: goplus"])
+        self.assertIn("error 500", rows["robinhood: goplus"])
+        self.assertIn("ℹ️ not used yet", rows["robinhood: rpc"])
+        self.assertIn("1 problem(s)", text)
 
 
 class RecordTests(Base):

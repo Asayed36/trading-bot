@@ -93,6 +93,13 @@ def main():
     if cfg.get("news", {}).get("enabled"):
         strategies.append(("news", os.path.join(folder, "news"),
                            cfg["news"]["paper_trading"]["round_trip_cost_pct"]))
+    if cfg.get("robinhood", {}).get("enabled"):
+        # Open positions are valued after selling costs: slippage plus the
+        # higher of the launchpads' pool fees.
+        rc = cfg["robinhood"]
+        sell_cost = rc["paper_trading"]["slippage_pct"] + max(
+            (lp["pool_fee_pct"] for lp in rc["launchpads"]), default=0)
+        strategies.append(("robinhood", os.path.join(folder, "robinhood"), sell_cost))
     if cfg.get("launch", {}).get("enabled"):
         # Runs on your own server and pushes here about once an hour.
         lp = cfg["launch"]["paper_trading"]
