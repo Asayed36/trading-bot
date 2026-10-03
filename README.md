@@ -509,6 +509,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/convergence.py` | The convergence strategy: Helius reads, credit budget, wallet scoring, signals and exits |
 | `screener/news.py` | The news strategy: feeds, coin matching, the checks, the candidate log and exits |
 | `screener/launch.py`, `launch_bot.py` | The launch strategy and the program that runs it on your server |
+| `robinhood_probe.py` | Research only: reports what each free data source returns for Robinhood Chain (run by the "Robinhood Chain probe" workflow; no trading) |
 | `deploy/` | Server setup guide, systemd services and the hourly push script for the launch bot |
 | `screener/health.py` | The health section of the daily comparison, and `data/health.json` |
 | `screener/compare.py`, `compare.py` | The side-by-side comparison of all strategies, with Helius credit use |
