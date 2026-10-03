@@ -44,6 +44,13 @@
       "token": "0x1bdaa4c99abf32f73d2a1d41063bb886d31afd74",
       "name": "DAZZ",
       "created": "2026-10-03T19:01:28Z"
+    },
+    "0x7ce33b798f58d2ff44fd9af18b43677a0c56be324c6b7d3e5bbbbdd8f2cfbaa6": {
+      "pool": "0x7ce33b798f58d2ff44fd9af18b43677a0c56be324c6b7d3e5bbbbdd8f2cfbaa6",
+      "dex": "pons-v2-dex",
+      "token": "0x6c44cc8102cc1469aa1a24254cdd135ec89d7f67",
+      "name": "SIGH",
+      "created": "2026-10-03T23:02:43Z"
     }
   },
   "names": {
@@ -190,6 +197,10 @@
     "dazz": [
       "2026-10-03T22:26:17.122729+00:00",
       "0x1bdaa4c99abf32f73d2a1d41063bb886d31afd74"
+    ],
+    "sigh": [
+      "2026-10-03T23:50:57.004033+00:00",
+      "0x6c44cc8102cc1469aa1a24254cdd135ec89d7f67"
     ]
   },
   "checked": {
@@ -234,6 +245,13 @@
       "failed": [
         "Liquidity"
       ]
+    },
+    "0x7ce33b798f58d2ff44fd9af18b43677a0c56be324c6b7d3e5bbbbdd8f2cfbaa6": {
+      "at": "2026-10-03T23:50:57.004033+00:00",
+      "passed": false,
+      "failed": [
+        "Not a copycat"
+      ]
     }
   },
   "sources": {
@@ -242,16 +260,16 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-03T23:41:20.745552+00:00",
+      "at": "2026-10-03T23:50:57.004033+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 5,
+      "calls": 3,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-03T23:31:10.109497+00:00",
-      "used_this_run": false
+      "at": "2026-10-03T23:50:57.004033+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -276,6 +294,7 @@
     "0x6cabefd907a486bbd5974ebcfae85d768d19113fc6129ce0e3697bd77bb9ab7f": "FAIL|Not a copycat: 5 other token(s) called FILL in the last 7 days, one with more liquidity ($18,832 vs $50,970: 0x287eadb409aabc4f41b23bf26cdae8970d3e9f49)",
     "0xa605cb8aee6413632097de34a825e01783bad21ee1158db8f53285f56a4de64d": "FAIL|Liquidity: $9,845 (need $10,000+)",
     "0x870152035cfd299785ede30d2fa7d48a2b7c9f012a14d551e5cac4f4d39d6eb4": "FAIL|Not a copycat: 5 other token(s) called HOODAGENTS in the last 7 days, one with more liquidity ($23,569 vs $53,444: 0x8046806d9261c08660af4c9e5efe8890d380199b)",
-    "0x4159d844558b1c9c7f1caed2311d85414f55f2756c9490342669937ae8d34eed": "FAIL|Liquidity: $6,744 (need $10,000+)"
+    "0x4159d844558b1c9c7f1caed2311d85414f55f2756c9490342669937ae8d34eed": "FAIL|Liquidity: $6,744 (need $10,000+)",
+    "0x7ce33b798f58d2ff44fd9af18b43677a0c56be324c6b7d3e5bbbbdd8f2cfbaa6": "FAIL|Not a copycat: 11 other token(s) called SIGH in the last 7 days, one with more liquidity ($74,405 vs $246,756: 0xd4aa998d7dc43b448d2beaa999e9db61be2462b9)"
   }
 }
