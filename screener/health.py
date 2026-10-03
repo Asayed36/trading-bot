@@ -50,11 +50,17 @@ def _at(when, now):
     return f"{when:%Y-%m-%d %H:%M} UTC ({_ago(when, now)})"
 
 
+# Runs that count as "the bot ran": GitHub's schedule, and workflow_dispatch
+# (started by the server's paper-run trigger, deploy/trigger_paper_run.py, or
+# by hand from the Actions tab).
+RUN_EVENTS = ("schedule", "workflow_dispatch")
+
+
 def run_gaps(runs):
-    """Minutes between consecutive scheduled runs (GitHub starts them late
-    when it's busy, so the real gap is often longer than the cron line)."""
+    """Minutes between consecutive runs, scheduled or started by the server
+    (GitHub starts scheduled runs late, or drops them, when it's busy)."""
     starts = sorted(_utc(r.get("run_started_at") or r.get("created_at"))
-                    for r in runs if r.get("event", "schedule") == "schedule"
+                    for r in runs if r.get("event", "schedule") in RUN_EVENTS
                     and (r.get("run_started_at") or r.get("created_at")))
     return [(b - a).total_seconds() / 60 for a, b in zip(starts, starts[1:])]
 
@@ -125,14 +131,17 @@ def health_lines(folder, cfg, now, github=None):
             add("Scheduled runs (last 24h)", WARN if bad else OK, detail)
             gaps = run_gaps(runs)
             every = cfg.get("schedule", {}).get("run_every_minutes")
+            kinds = [r.get("event", "schedule") for r in runs]
+            scheduled, started = kinds.count("schedule"), kinds.count("workflow_dispatch")
             if gaps:
                 add("Time between runs (last 24h)", INFO,
                     f"average {sum(gaps) / len(gaps):.1f} min, median "
                     f"{sorted(gaps)[len(gaps) // 2]:.0f} min, longest {max(gaps):.0f} min "
-                    f"({len(gaps) + 1} scheduled runs"
+                    f"({len(gaps) + 1} runs: {scheduled} scheduled by GitHub, {started} "
+                    "started by the server or by hand"
                     + (f"; the schedule asks for every {every:g} min" if every else "") + ")")
             else:
-                add("Time between runs (last 24h)", INFO, "fewer than 2 scheduled runs")
+                add("Time between runs (last 24h)", INFO, "fewer than 2 runs")
 
     # 2. Each GitHub strategy's last good run (data/health.json).
     record = (_load(os.path.join(folder, "health.json")) or {}).get("strategies", {})

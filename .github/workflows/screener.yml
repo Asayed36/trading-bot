@@ -25,7 +25,9 @@ on:
     # [schedule] run_every_minutes in config.toml the same. The convergence
     # strategy still reads Helius only every 15 minutes (see config.toml).
     - cron: "*/5 * * * *"
-  workflow_dispatch:         # lets you start a run by hand from the Actions tab
+  workflow_dispatch:         # start a run by hand from the Actions tab; the launch-bot
+                             # server also uses this every 10 min when GitHub's schedule
+                             # drops runs (deploy/trigger_paper_run.py)
 
 permissions:
   contents: write            # needed to commit data/ back to the repository

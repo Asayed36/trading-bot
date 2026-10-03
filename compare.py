@@ -19,7 +19,7 @@ from run import HERE, load_config
 from screener.compare import (MARKER, actual_intervals, helius_lines, report,
                               schedule_lines)
 from screener.github_issues import GitHubError, GitHubIssues
-from screener.health import health_lines
+from screener.health import RUN_EVENTS, health_lines
 from screener.paper_trader import now_utc
 
 LABEL = "daily-comparison"
@@ -86,7 +86,8 @@ def main():
         workflow = cfg.get("health", {}).get("workflow", "screener.yml")
         try:
             actual = actual_intervals(
-                schedule_path, lambda a, b: gh.count_runs(workflow, a, b), now_utc())
+                schedule_path, lambda a, b: sum(gh.count_runs(workflow, a, b, event=e)
+                                                for e in RUN_EVENTS), now_utc())
         except GitHubError as exc:
             print(f"(Couldn't get the real run intervals from GitHub: {exc})", file=sys.stderr)
     extra += schedule_lines(strategies, schedule_path, actual) + [""]
