@@ -6,14 +6,15 @@ How to run it:
     python run.py --github-issues   <- also open/close GitHub issues for tokens
                                        that pass (used by the GitHub workflow)
 
-Each run paper-trades four strategies side by side: "main" (the filters in
+Each run paper-trades five strategies side by side: "main" (the filters in
 [filters]), "early" (young tokens bought on a pullback, see [early] and
 screener/early.py), "convergence" (3+ proven traders buying the same
 token, see [convergence] and screener/convergence.py; needs a free Helius
-API key in the HELIUS_API_KEY environment variable) and "news" (official
+API key in the HELIUS_API_KEY environment variable), "news" (official
 news about established coins, see [news] and screener/news.py; a free
-CoinGecko key in COINGECKO_API_KEY is recommended). Compare them with
-`python compare.py`.
+CoinGecko key in COINGECKO_API_KEY is recommended), and "robinhood"
+(graduated memecoins on Robinhood Chain, see [robinhood] and
+screener/robinhood.py). Compare them with `python compare.py`.
 
 This program is READ-ONLY. It never connects to a wallet or exchange, never
 asks for keys or seed phrases, and never places a real order.
@@ -33,6 +34,7 @@ from screener.github_issues import GitHubIssues, issue_details, sync
 from screener.health import record_health
 from screener.news import NewsHttp, NewsStrategy
 from screener.paper_trader import PaperTrader, now_utc
+from screener.robinhood import RobinhoodHttp, RobinhoodStrategy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 LINE = "=" * 78
@@ -110,7 +112,7 @@ def record_schedule(data_folder, every, now, out=print):
 
 
 def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_factory=None,
-        news_http=None, coingecko_key=None):
+        news_http=None, coingecko_key=None, robinhood_http=None):
     f, pt = cfg["filters"], cfg["paper_trading"]
     trader = PaperTrader(pt, data_folder)
 
@@ -151,6 +153,18 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
             news_plan = news.fetch()
         except ApiError as exc:
             news_skipped = f"{exc}"
+
+    # And "robinhood" (graduated memecoins on Robinhood Chain). Like news, it
+    # only runs when given a way to read the web (main() passes the real one).
+    rh, rh_plan, rh_skipped = None, None, None
+    if cfg.get("robinhood", {}).get("enabled") and robinhood_http is not None:
+        rh = RobinhoodStrategy(cfg, data_folder, robinhood_http)
+        try:
+            rh_plan = rh.fetch()
+        except ApiError as exc:
+            rh_skipped = f"{exc}"
+        except Exception as exc:  # the newest strategy: a bug there mustn't stop the others
+            rh_skipped = f"unexpected error: {exc!r}"[:300]
 
     # ---- Step 1: check the pretend trades we already hold ----
     out(LINE)
@@ -246,6 +260,23 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
                      strategy="news")
                 news.trader.save()
 
+    # ---- Step 8: the "robinhood" strategy ----
+    if rh:
+        out("")
+        out(LINE)
+        out("STEP 8: Robinhood strategy (graduated Robinhood Chain memecoins)")
+        out(LINE)
+        if rh_skipped:
+            out(f"  Skipped this run, nothing changed: {rh_skipped}")
+        else:
+            rh.apply(rh_plan, out)
+            if issues:
+                out("")
+                out("  GitHub issues (robinhood):")
+                sync(issues, rh.trader, rh.pt, cfg["github_issues"]["note"], out,
+                     strategy="robinhood")
+                rh.trader.save()
+
     # ---- Summary ----
     out("")
     out(LINE)
@@ -294,11 +325,23 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
         out(f"  Total realized paper P&L: ${nt.state['running_total_pnl_usd']:+.2f}")
         out(f"  Journal: {nt.journal_path}")
         out(f"  Candidates: {news.candidates_path}")
+    if rh:
+        rt = rh.trader
+        out("")
+        out("SUMMARY (robinhood strategy)" + ("  - skipped this run" if rh_skipped else ""))
+        out(f"  Open paper positions: {len(rt.open_positions)}")
+        for pos in rt.open_positions:
+            change = (pos["last_price"] / pos["entry_price"] - 1) * 100
+            out(f"    {pos['symbol']:<10} entry ${pos['entry_price']:.10g}  now {change:+.1f}%  "
+                f"holding {pos['remaining_fraction'] * 100:.0f}%")
+        out(f"  Total realized paper P&L: ${rt.state['running_total_pnl_usd']:+.2f}")
+        out(f"  Journal: {rt.journal_path}")
+        out(f"  Candidates: {rh.candidates_path}")
     # For the health section of the daily comparison: which strategies ran
     # fine this run, and why any were skipped.
     outcomes = {"main": None}
     for name, ran, skipped in (("early", early, early_skipped), ("convergence", conv, conv_skipped),
-                               ("news", news, news_skipped)):
+                               ("news", news, news_skipped), ("robinhood", rh, rh_skipped)):
         if ran:
             outcomes[name] = skipped
     record_health(data_folder, now_utc(), outcomes)
@@ -335,14 +378,17 @@ def main():
         api, folder = DemoApi(), os.path.join(HERE, "demo_data")
         helius_key, rpc_factory = None, demo_rpc_factory()
         news_http, coingecko_key = DemoNewsHttp(), None
+        robinhood_http = None   # no made-up Robinhood Chain data: skipped in the demo
     else:
         api = PublicApi(cfg["api"]["timeout_seconds"], cfg["api"]["rugcheck_delay_seconds"])
         folder = os.path.join(HERE, cfg["files"]["data_folder"])
         news_http = NewsHttp(cfg["api"]["timeout_seconds"])
+        robinhood_http = (RobinhoodHttp.from_config(cfg["robinhood"], cfg["api"]["timeout_seconds"])
+                          if cfg.get("robinhood", {}).get("enabled") else None)
 
     try:
         run(api, cfg, folder, issues=issues, helius_key=helius_key, rpc_factory=rpc_factory,
-            news_http=news_http, coingecko_key=coingecko_key)
+            news_http=news_http, coingecko_key=coingecko_key, robinhood_http=robinhood_http)
     except RateLimited as exc:
         print(f"\nRate limited: {exc}")
         print("Skipping this run. Nothing was traded; try again later.")

@@ -1,7 +1,8 @@
 # Robinhood Chain data probe: asks each free data source a few questions and
 # reports what it actually returns (robinhood_probe.py). Research only: it
-# doesn't trade, paper trade or save anything to the repository. The report
-# is in the run's summary and in the "robinhood-probe" artifact (JSON).
+# doesn't trade or save anything to the repository. The report is in the
+# run's summary and in the "robinhood-probe" artifact (JSON). It also does one
+# dry run of the robinhood paper strategy in a temporary folder (nothing kept).
 #
 # Read-only: no wallets or private keys. The optional secrets are free
 # sign-up keys with no wallet involved: GOPLUS_APP_KEY + GOPLUS_APP_SECRET
@@ -12,9 +13,15 @@ name: Robinhood Chain probe
 
 on:
   workflow_dispatch:         # start it by hand from the Actions tab
+    inputs:
+      holders_token:
+        description: "Optional: a Pons token address to run only the holder check on"
+        required: false
+        default: ""
   push:                      # and once whenever the probe itself changes
     paths:
       - robinhood_probe.py
+      - screener/robinhood.py
       - .github/workflows/robinhood-probe.yml
 
 permissions:
@@ -41,6 +48,19 @@ jobs:
           GOPLUS_APP_SECRET: ${{ secrets.GOPLUS_APP_SECRET }}
           BLOCKSCOUT_API_KEY: ${{ secrets.BLOCKSCOUT_API_KEY }}
         run: python robinhood_probe.py --json robinhood-probe.json
+
+      # One run of the robinhood paper strategy against the real sources, in
+      # a temporary folder: nothing is saved or committed.
+      - name: Robinhood strategy dry run
+        if: always()
+        env:
+          HOLDERS_TOKEN: ${{ inputs.holders_token }}
+        run: |
+          if [ -n "$HOLDERS_TOKEN" ]; then
+            python -m screener.robinhood --holders "$HOLDERS_TOKEN"
+          else
+            python -m screener.robinhood
+          fi
 
       - uses: actions/upload-artifact@v4
         if: always()

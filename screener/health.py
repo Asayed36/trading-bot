@@ -8,7 +8,8 @@ Sources:
   - GitHub's commits API (or data/launch/stats.json): the launch bot's last
     push from your server;
   - the strategies' own files: convergence's tracked wallets and Helius
-    pause, the news strategy's source status.
+    pause, the news strategy's source status, the robinhood strategy's data
+    sources (GeckoTerminal, DexScreener, GoPlus, the Robinhood Chain RPC).
 
 Read-only: nothing here trades or changes any setting.
 """
@@ -19,7 +20,7 @@ from datetime import datetime, timedelta, timezone
 
 OK, WARN, INFO = "✅", "⚠️", "ℹ️"
 FAILED = ("failure", "timed_out", "startup_failure")
-GITHUB_STRATEGIES = ("main", "early", "convergence", "news")
+GITHUB_STRATEGIES = ("main", "early", "convergence", "news", "robinhood")
 
 
 def _utc(text):
@@ -187,7 +188,25 @@ def health_lines(folder, cfg, now, github=None):
             else:
                 add(f"news: {name}", WARN, f"failing: {s.get('error', 'unknown error')[:120]}")
 
-    # 5. The launch bot on your server.
+    # 5. The robinhood strategy's data sources (the last run that used each).
+    if cfg.get("robinhood", {}).get("enabled"):
+        rh = _load(os.path.join(folder, "robinhood", "positions.json")) or {}
+        sources = rh.get("sources") or {}
+        for name in ("geckoterminal", "dexscreener", "goplus", "rpc"):
+            s = sources.get(name) or {}
+            if not s.get("at"):
+                add(f"robinhood: {name}", INFO, "not used yet")
+                continue
+            detail = (f"{s.get('calls', 0)} call(s), {s.get('errors', 0)} failed"
+                      + (f", {s['rate_limited']} rate-limited" if s.get("rate_limited") else "")
+                      + f" (last used {_at(_utc(s['at']), now)})")
+            if s.get("ok"):
+                add(f"robinhood: {name}", OK, detail)
+            else:
+                add(f"robinhood: {name}", WARN, f"failing: {detail}: "
+                    f"{s.get('error', 'unknown error')[:120]}")
+
+    # 6. The launch bot on your server.
     if cfg.get("launch", {}).get("enabled"):
         launch_stale = timedelta(hours=h.get("launch_stale_hours", 3))
         pushed, source = None, ""

@@ -1,7 +1,8 @@
 """Opens a GitHub issue for each token that passes every filter, and closes it
-when the paper position closes. Each paper strategy ("main", "early", "news") gets
-its own issues, told apart by title, a "strategy: ..." label and a hidden
-marker, so the same token can have one issue per strategy but never two.
+when the paper position closes. Each paper strategy ("main", "early", "news",
+"robinhood") gets its own issues, told apart by title, a "strategy: ..." label
+and a hidden marker, so the same token can have one issue per strategy but
+never two.
 
 Only used by the scheduled GitHub Actions run (`python run.py --github-issues`),
 which provides the repository name and a short-lived token. It only creates,
@@ -281,6 +282,9 @@ STRATEGIES = {
     "news": {"title": "PASSED (news): {symbol}",
              "about": "official news about an established coin, rule-based checks",
              "exit_rows": _news_exit_rows, "color": "0052cc"},
+    "robinhood": {"title": "PASSED (robinhood): {symbol}",
+                  "about": "graduated Pons and Pools.trade memecoins on Robinhood Chain",
+                  "exit_rows": _main_exit_rows, "color": "00c805"},
 }
 
 

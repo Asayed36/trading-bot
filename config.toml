@@ -485,6 +485,101 @@ allow_rebuy = true
 round_trip_cost_pct = 1
 
 # ---------------------------------------------------------------------
+# ROBINHOOD STRATEGY: graduated memecoins on Robinhood Chain (chain 4663),
+# see screener/robinhood.py. Its own positions and journal in
+# data/robinhood/. Paper trading only: no wallet, no keys, no real orders.
+# Data: GeckoTerminal (new pools), DexScreener (prices), GoPlus (contract
+# checks) and the chain's public RPC (holders). All free, no key.
+# ---------------------------------------------------------------------
+[robinhood]
+enabled = true
+rpc_url = "https://rpc.mainnet.chain.robinhood.com"
+
+# Pools from 30 minutes to 6 hours old are checked; each pool at most every
+# recheck_minutes, and at most max_candidates_per_run pools a run.
+min_pool_age_minutes = 30
+max_pool_age_hours = 6
+recheck_minutes = 60
+max_candidates_per_run = 10
+# Minimum liquidity in the pool (DexScreener), in USD.
+min_liquidity_usd = 10000
+# Copycats: another Robinhood Chain token with the same name or symbol
+# (DexScreener search, or seen by this strategy in the last N days).
+copycat_window_days = 7
+
+# GeckoTerminal allows only a few calls a minute from GitHub's runners (it
+# said 429 after about 7 in the probe), so at most this many a run, spaced
+# out. The pools seen are kept on a watchlist for later runs.
+gecko_calls_per_run = 3
+gecko_gap_seconds = 6.5
+# GoPlus token security (no key): at most this many tokens a run, spaced out.
+goplus_max_per_run = 8
+goplus_gap_seconds = 2.0
+
+# Holder checks (Pons tokens), rebuilt from the token's Transfer events on
+# the public RPC. The creator is whoever sent the transaction that minted
+# the token. Pools, launchpad contracts and burn addresses are left out of
+# the top 10 (excluded_holders, plus the token, its curve and its pool).
+max_creator_pct = 5
+max_top10_pct = 30
+# A cluster: cluster_min_size or more wallets, each holding at least
+# cluster_min_holder_pct of the supply, whose balances are within
+# cluster_tolerance_pct of each other (bundled buys).
+cluster_min_size = 3
+cluster_min_holder_pct = 0.1
+cluster_tolerance_pct = 0.5
+holder_checks_per_run = 4
+holder_lookback_hours = 72     # how far before graduation to look for the mint
+holder_rpc_calls = 40          # eth_getLogs calls per token at most
+rpc_log_blocks = 200000        # blocks per eth_getLogs call (halved if refused)
+# Found by robinhood_probe.py: Uniswap v4's PoolManager on Robinhood Chain
+# (holds every v4 pool's tokens), the two Pons launch contracts, and the
+# contract Pools.trade mints new tokens to.
+excluded_holders = [
+  "0x8366a39cc670b4001a1121b8f6a443a643e40951",
+  "0x7ed598bcef8bd9edd8c97a195c6d13f40801ec7e",
+  "0xe33e9e479df8802cb0866d5d05258bec4cf62948",
+  "0x0000ffffbe8efe702c8703ae3477ff5de3d319c0",
+]
+
+# Only tokens on these launchpads, once they trade in a Uniswap pool.
+# "dex" is GeckoTerminal's id for the launchpad's graduated pools.
+# pool_fee_pct is charged on every buy and every sell: Pools.trade pools
+# charge 0.25%; the fee of Pons' graduated pools isn't published, so 1% is
+# assumed (the Pons curve's fee). holder_checks: rebuild holders on the RPC.
+[[robinhood.launchpads]]
+name = "Pons"
+dex = "pons-v2-dex"
+pool_fee_pct = 1.0
+holder_checks = true
+
+[[robinhood.launchpads]]
+name = "Pools.trade"
+dex = "uniswap-pools-trade"
+pool_fee_pct = 0.25
+holder_checks = false
+
+[robinhood.paper_trading]
+# Pretend dollars per buy.
+buy_amount_usd = 10
+# The same exits as the main strategy: sell half at +50%; everything left at
+# -30% from entry, 40% below the highest price since entry, or after 48
+# hours if the price is still within 10% of entry.
+take_profit_pct = 50
+take_profit_sell_fraction = 0.5
+stop_loss_pct = 30
+trailing_stop_pct = 40
+max_hold_hours = 48
+stale_move_pct = 10
+allow_rebuy = false
+max_open_positions = 20
+# Costs on every buy and every sell (on top of the pool fee above): extra
+# slippage (%), and gas per transaction in USD (Robinhood Chain is an
+# Arbitrum Orbit chain: gas is usually a fraction of a cent; 0.05 is generous).
+slippage_pct = 2
+gas_usd_per_trade = 0.05
+
+# ---------------------------------------------------------------------
 # GITHUB ISSUES: only used by the scheduled GitHub run
 # ---------------------------------------------------------------------
 [github_issues]

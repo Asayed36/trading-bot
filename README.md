@@ -32,6 +32,9 @@ spends real money.
 - **Official news feeds** (PR Newswire, GlobeNewswire, Business Wire, project
   blogs, Binance and Kraken announcements) and **CoinGecko** (free plan): for
   the news strategy only (below).
+- **GoPlus** (`api.gopluslabs.io`, no key) and **Robinhood Chain's public RPC**
+  (`rpc.mainnet.chain.robinhood.com`, no key): for the robinhood strategy only
+  (below), with GeckoTerminal and DexScreener.
 
 ## How to run it
 
@@ -433,6 +436,54 @@ will skip them. Keyword checks can't understand nuance: a real deal can fail
 for the wording it uses, and hype can slip through. The candidate log is there
 so you can see which.
 
+## The "robinhood" strategy (a sixth paper strategy, Robinhood Chain)
+
+Robinhood Chain (chain 4663, live since July 2026) is an EVM chain with its
+own memecoin launchpads. This strategy only trades tokens from **Pons** and
+**Pools.trade** once they trade in a **Uniswap pool that is 30 minutes to 6
+hours old**: graduated tokens, not the Pons bonding curve. What the free
+sources return was measured first with `robinhood_probe.py` (below). Its
+results are in `data/robinhood/` and its column in the daily comparison;
+issues are titled **PASSED (robinhood): SYMBOL** with the label
+`strategy: robinhood`.
+
+- **New pools:** GeckoTerminal lists the launchpads as DEXes
+  (`pons-v2-dex` = graduated Pons pools, `uniswap-pools-trade` = Pools.trade).
+  It answers "too many requests" after a few calls a minute from GitHub, so
+  each run makes at most 3 calls, 6.5 seconds apart. Pools it lists go on a
+  watchlist and are checked once they're 30 minutes old, so a pool missed one
+  run is still caught later.
+- **Prices:** DexScreener, from the same pool (DexScreener doesn't list the
+  Pons curve itself, so it's only used once a token has a Uniswap pool).
+- **Checks** (each pool at most once an hour; a later check only runs when the
+  ones before it passed, to stay within the free limits; anything unknown
+  counts as a fail):
+  - pool age 30 min to 6 h, liquidity at least $10,000
+  - not a copycat: no other Robinhood Chain token with the same name or symbol
+    (DexScreener search, or seen by the strategy in the last 7 days)
+  - GoPlus: not a honeypot, not mintable, no hidden owner, the owner can't
+    change balances, no blacklist
+  - Pons tokens: holders rebuilt from the token's own Transfer events on the
+    public RPC (the whole history since it was minted): the creator (whoever
+    sent the transaction that minted it) holds under 5%; the top 10 hold under
+    30%, leaving out pools (Uniswap v4's PoolManager), the launchpad's
+    contracts, the curve and burn addresses; and no cluster of 3+ wallets with
+    near-identical balances (bundled buys). Pools.trade tokens skip these.
+- **Costs** on every buy and sell: the pool fee (Pools.trade 0.25%; Pons 1%,
+  assumed: its graduated pools' fee isn't published), 2% slippage and $0.05 of
+  gas per transaction.
+- **Exits:** the same as the main strategy: sell half at +50%; the rest at
+  -30%, 40% below the peak, or after 48h if it's still within ±10% of entry.
+- **Records:** `entries.csv` (every check value at the buy: pool, age,
+  liquidity, GoPlus fields, creator, creator %, top 10 %, holders, the biggest
+  equal-balance cluster, and the fee, slippage and gas used; blank = unknown)
+  and `candidates.csv` (every pool checked, PASS/FAIL and why; a new row only
+  when a pool's result changes). The health section has a row for each data
+  source.
+- **Try it:** `python -m screener.robinhood` does one run against the real
+  sources with the results in a temporary folder (nothing is saved). The
+  "Robinhood Chain probe" workflow does the same on GitHub.
+
 ## Running automatically on GitHub
 
 `.github/workflows/screener.yml` runs the screener every 5 minutes on GitHub
@@ -509,6 +560,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/convergence.py` | The convergence strategy: Helius reads, credit budget, wallet scoring, signals and exits |
 | `screener/news.py` | The news strategy: feeds, coin matching, the checks, the candidate log and exits |
 | `screener/launch.py`, `launch_bot.py` | The launch strategy and the program that runs it on your server |
+| `screener/robinhood.py` | The robinhood strategy: GeckoTerminal watchlist, DexScreener prices, GoPlus and RPC holder checks, costs and exits |
 | `robinhood_probe.py` | Research only: reports what each free data source returns for Robinhood Chain (run by the "Robinhood Chain probe" workflow; no trading) |
 | `deploy/` | Server setup guide, systemd services and the hourly push script for the launch bot |
 | `screener/health.py` | The health section of the daily comparison, and `data/health.json` |

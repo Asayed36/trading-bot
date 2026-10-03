@@ -1,6 +1,7 @@
-# Runs the paper strategies ("main", "early", "convergence" and "news") every
-# 5 minutes and saves their results (data/journal.csv, data/positions.json and
-# the same files in data/early/, data/convergence/ and data/news/) back to
+# Runs the paper strategies ("main", "early", "convergence", "news" and
+# "robinhood") every 5 minutes and saves their results (data/journal.csv,
+# data/positions.json and the same files in data/early/, data/convergence/,
+# data/news/ and data/robinhood/) back to
 # the repository, so each run picks up the pretend positions left by the
 # previous one. The news strategy only checks the news every 15 minutes.
 #
@@ -104,18 +105,22 @@ jobs:
           # has to be saved so the monthly limit is never passed.
           journal_changed=$(git status --porcelain -- data/journal.csv data/early/journal.csv \
             data/convergence/journal.csv data/news/journal.csv data/news/candidates.csv \
-            data/news/unmatched.csv data/schedule.json)
+            data/news/unmatched.csv data/robinhood/journal.csv data/robinhood/candidates.csv \
+            data/schedule.json)
           if [ -z "$journal_changed" ] && python - <<'PY'
           import json, os, subprocess, sys
 
-          def strip(text):
+          def strip(text, path):
               state = json.loads(text)
               for pos in state.get("open_positions", []):
                   pos.pop("last_price", None)
+              if path == "data/robinhood/positions.json":
+                  state.pop("sources", None)  # call counts and times: every run
               return state
 
           for path in ("data/positions.json", "data/early/positions.json",
-                       "data/convergence/positions.json", "data/news/positions.json"):
+                       "data/convergence/positions.json", "data/news/positions.json",
+                       "data/robinhood/positions.json"):
               if not os.path.exists(path):
                   continue
               old = subprocess.run(["git", "show", f"HEAD:{path}"],
@@ -123,7 +128,7 @@ jobs:
               if old.returncode != 0:
                   sys.exit(1)  # not in the repository yet, so it's new
               with open(path) as fh:
-                  if strip(old.stdout) != strip(fh.read()):
+                  if strip(old.stdout, path) != strip(fh.read(), path):
                       sys.exit(1)
           # data/health.json (each strategy's last good run, for the daily
           # comparison's health section) changes every run: save it at least
@@ -150,8 +155,10 @@ jobs:
                    data/early/journal.csv data/early/positions.json \
                    data/convergence/journal.csv data/convergence/positions.json \
                    data/news/journal.csv data/news/positions.json data/news/entries.csv \
-                   data/news/candidates.csv data/news/unmatched.csv data/schedule.json \
-                   data/health.json; do
+                   data/news/candidates.csv data/news/unmatched.csv \
+                   data/robinhood/journal.csv data/robinhood/positions.json \
+                   data/robinhood/entries.csv data/robinhood/candidates.csv \
+                   data/schedule.json data/health.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           git commit -m "Paper trading run $(date -u '+%Y-%m-%d %H:%M UTC')"
