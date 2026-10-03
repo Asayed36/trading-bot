@@ -22,8 +22,9 @@ Each run:
   3. Each pool aged 30 min - 6 h is checked, cheap checks first (each one
      only when the ones before passed, so a run stays within the free limits):
        - Pool age and minimum liquidity (DexScreener, the same pool)
-       - Not a copycat: no other Robinhood Chain token (DexScreener search, or
-         seen by this strategy) with the same name or symbol
+       - Not a copycat: of all Robinhood Chain tokens with the same name or
+         symbol in the last 7 days (DexScreener search), it has the most
+         liquidity (the early strategy's rule)
        - GoPlus: not a honeypot, not mintable, no hidden owner, owner can't
          change balances, no blacklist (unknown counts as a fail)
        - Pons tokens only: holders rebuilt from the token's Transfer events on
@@ -508,34 +509,57 @@ class RobinhoodStrategy:
         return cand
 
     def _copycat(self, plan, now, cand, add):
-        v, token = cand["values"], cand["values"]["token_address"]
-        name = ((cand["pair"] or {}).get("baseToken") or {}).get("name") or ""
-        keys = {name_key(v["symbol"]), name_key(name)} - {""}
-        mine = (cand["pair"] or {}).get("pairCreatedAt") or now.timestamp() * 1000
-        other = None
-        for key in keys:                                 # tokens this strategy has seen
-            seen = plan["names"].get(key)
-            if seen and seen[1] != token:
-                other = seen[1]
-        if other is None:
-            try:
+        """The early strategy's rule: other Robinhood Chain tokens with the
+        same symbol or name in the last copycat_window_days (DexScreener
+        search; unknown age counts as new) are allowed only if this token has
+        the most liquidity of them all."""
+        v, token, pair = cand["values"], cand["values"]["token_address"], cand["pair"] or {}
+        base = pair.get("baseToken") or {}
+        symbol = (base.get("symbol") or v["symbol"] or "").strip()
+        title = (base.get("name") or "").strip()
+        days = f"{self.c['copycat_window_days']:g}"
+        if not symbol:
+            return add("Not a copycat", False, "token has no symbol")
+        pairs = []
+        try:
+            for query in dict.fromkeys(q for q in (symbol, title) if q):
                 found = self._get(plan, "dexscreener", f"{DEXSCREENER}/latest/dex/search",
-                                  {"q": v["symbol"] or name})
-            except ApiError as exc:
-                return add("Not a copycat", False, f"couldn't search DexScreener: {exc}")
-            for p in (found or {}).get("pairs") or []:
-                base = p.get("baseToken") or {}
-                addr = (base.get("address") or "").lower()
-                if (p.get("chainId") == "robinhood" and addr != token
-                        and keys & {name_key(base.get("symbol")), name_key(base.get("name"))}
-                        and (p.get("pairCreatedAt") or 0) < mine):
-                    other = addr
-                    break
-        for key in keys:
-            plan["names"].setdefault(key, [now.isoformat(), token])
-        v["copycat_of"] = other or ""
-        return add("Not a copycat", other is None,
-                   f"same name or symbol as {other}" if other else "name and symbol are new")
+                                  {"q": query})
+                pairs += (found or {}).get("pairs") or []
+        except ApiError as exc:
+            return add("Not a copycat", False, f"couldn't search DexScreener: {exc}")
+        since = now - timedelta(days=self.c["copycat_window_days"])
+        others = {}  # address -> highest liquidity seen for that token (0 if unknown)
+        own = to_float((pair.get("liquidity") or {}).get("usd"))
+        for p in pairs:
+            other = p.get("baseToken") or {}
+            addr = (other.get("address") or "").lower()
+            liq = to_float((p.get("liquidity") or {}).get("usd"))
+            if p.get("chainId") != "robinhood" or not addr:
+                continue
+            if addr == token:
+                if liq is not None:
+                    own = max(own or 0.0, liq)
+                continue
+            same = ((other.get("symbol") or "").strip().lower() == symbol.lower()
+                    or (title and (other.get("name") or "").strip().lower() == title.lower()))
+            created = (datetime.fromtimestamp(p["pairCreatedAt"] / 1000, timezone.utc)
+                       if p.get("pairCreatedAt") else None)
+            if same and (created is None or created >= since):
+                others[addr] = max(others.get(addr, 0.0), liq or 0.0)
+        if not others:
+            v["copycat_of"] = ""
+            return add("Not a copycat", True, f"no other {symbol} in the last {days} days")
+        top_addr = max(others, key=others.get)
+        top = others[top_addr]
+        if own is not None and own > top:
+            v["copycat_of"] = ""
+            return add("Not a copycat", True, f"most liquidity of {len(others) + 1} tokens called "
+                       f"{symbol} in the last {days} days ({money(own)} vs {money(top)})")
+        v["copycat_of"] = top_addr
+        return add("Not a copycat", False, f"{len(others)} other token(s) called {symbol} in the "
+                   f"last {days} days, one with more liquidity ({money(own)} vs {money(top)}: "
+                   f"{top_addr})")
 
     def _goplus(self, plan, cand, add, budget):
         v, token = cand["values"], cand["values"]["token_address"]

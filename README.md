@@ -459,8 +459,9 @@ issues are titled **PASSED (robinhood): SYMBOL** with the label
   ones before it passed, to stay within the free limits; anything unknown
   counts as a fail):
   - pool age 30 min to 6 h, liquidity at least $10,000
-  - not a copycat: no other Robinhood Chain token with the same name or symbol
-    (DexScreener search, or seen by the strategy in the last 7 days)
+  - not a copycat (the early strategy's rule): of all Robinhood Chain tokens
+    with the same name or symbol from the last 7 days (DexScreener search),
+    it has the most liquidity
   - GoPlus: not a honeypot, not mintable, no hidden owner, the owner can't
     change balances, no blacklist
   - Pons tokens: holders rebuilt from the token's own Transfer events on the

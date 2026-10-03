@@ -292,14 +292,45 @@ class CheckTests(Base):
                  for c in self.http.calls if c[0] == "rpc" and c[1] == "eth_getLogs"}
         self.assertLessEqual(min(sizes), 30_000)
 
-    def test_copycat_from_dexscreener_search(self):
-        older = pair("0x" + "9" * 40, "0x" + "5" * 64, "FROG", 60 * 24)
-        self.http.search = [older]
+    def test_copycat_with_as_much_liquidity_is_skipped(self):
+        other = pair("0x" + "9" * 40, "0x" + "5" * 64, "FROG", 60 * 24)   # also $25k
+        self.http.search = [other]
         self.run_once()
         frog = self.candidate("FROG")
-        self.assertIn("Not a copycat", frog["failed_checks"])
+        self.assertIn("Not a copycat: 1 other token(s) called FROG in the last 7 days",
+                      frog["failed_checks"])
         self.assertEqual(frog["copycat_of"], "0x" + "9" * 40)
         self.assertEqual(frog["goplus_is_honeypot"], "")      # later checks not reached
+
+    def test_same_name_allowed_for_the_token_with_the_most_liquidity(self):
+        # Like SPORE: another token shares the name, but this one has the most
+        # liquidity of all of them in the last 7 days.
+        self.http.search = [pair("0x" + "9" * 40, "0x" + "5" * 64, "FROG", 60, liquidity=3_000),
+                            pair("0x" + "8" * 40, "0x" + "6" * 64, "frog", 30, liquidity=9_000)]
+        _, bought, text = self.run_once()
+        self.assertIn(PONS, [p["address"] for p in bought])
+        self.assertIn("most liquidity of 3 tokens called FROG in the last 7 days "
+                      "($25,000 vs $9,000)", text)
+        self.assertEqual(self.candidate("FROG")["copycat_of"], "")
+        queries = [c[2]["q"] for c in self.http.calls if c[0] == "dexscreener"
+                   and "/search" in c[1]]
+        self.assertIn("FROG", queries)
+        self.assertIn("Frog", queries)                       # the name is searched too
+
+    def test_same_name_older_than_the_window_or_other_chains_is_ignored(self):
+        old = pair("0x" + "9" * 40, "0x" + "5" * 64, "FROG", 8 * 24 * 60, liquidity=10**6)
+        elsewhere = dict(pair("0x" + "8" * 40, "0x" + "6" * 64, "FROG", 30, liquidity=10**6),
+                         chainId="solana")
+        self.http.search = [old, elsewhere]
+        _, _, text = self.run_once()
+        self.assertIn("no other FROG in the last 7 days", text)
+
+    def test_same_name_counts_even_with_another_symbol(self):
+        other = pair("0x" + "9" * 40, "0x" + "5" * 64, "FRG", 60, liquidity=50_000)
+        other["baseToken"]["name"] = "Frog"
+        self.http.search = [other]
+        self.run_once()
+        self.assertEqual(self.candidate("FROG")["copycat_of"], "0x" + "9" * 40)
 
     def test_low_liquidity_fails_before_goplus(self):
         self.http.pairs[PONS] = [pair(PONS, PONS_POOL, "FROG", 120, liquidity=2_000)]
