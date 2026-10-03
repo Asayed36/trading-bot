@@ -1,0 +1,50 @@
+# Robinhood Chain data probe: asks each free data source a few questions and
+# reports what it actually returns (robinhood_probe.py). Research only: it
+# doesn't trade, paper trade or save anything to the repository. The report
+# is in the run's summary and in the "robinhood-probe" artifact (JSON).
+#
+# Read-only: no wallets or private keys. The optional secrets are free
+# sign-up keys with no wallet involved: GOPLUS_APP_KEY + GOPLUS_APP_SECRET
+# (GoPlus) and BLOCKSCOUT_API_KEY (Blockscout's Pro API). Without them those
+# checks only run without a key.
+
+name: Robinhood Chain probe
+
+on:
+  workflow_dispatch:         # start it by hand from the Actions tab
+  push:                      # and once whenever the probe itself changes
+    paths:
+      - robinhood_probe.py
+      - .github/workflows/robinhood-probe.yml
+
+permissions:
+  contents: read             # it only reads the code; nothing is written back
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Probe
+        env:
+          GOPLUS_APP_KEY: ${{ secrets.GOPLUS_APP_KEY }}
+          GOPLUS_APP_SECRET: ${{ secrets.GOPLUS_APP_SECRET }}
+          BLOCKSCOUT_API_KEY: ${{ secrets.BLOCKSCOUT_API_KEY }}
+        run: python robinhood_probe.py --json robinhood-probe.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: robinhood-probe
+          path: robinhood-probe.json
+          if-no-files-found: ignore
