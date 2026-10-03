@@ -770,15 +770,37 @@ class RobinhoodStrategy:
 
 def dry_run(argv=None):
     """`python -m screener.robinhood`: one run against the real sources, with
-    results in a temporary folder that's deleted afterwards (nothing saved)."""
+    results in a temporary folder that's deleted afterwards (nothing saved).
+    `--holders TOKEN` only runs the holder check on one Pons token."""
+    import argparse
     import tempfile
 
     from run import load_config
+    parser = argparse.ArgumentParser(description=dry_run.__doc__.splitlines()[0])
+    parser.add_argument("--holders", metavar="TOKEN", help="only check this token's holders")
+    args = parser.parse_args(argv)
     cfg = load_config()
     with tempfile.TemporaryDirectory() as folder:
         strategy = RobinhoodStrategy(cfg, folder)
         print("Dry run: real data, results in a temporary folder (nothing is saved).\n")
-        strategy.apply(strategy.fetch(), print)
+        if not args.holders:
+            strategy.apply(strategy.fetch(), print)
+            return 0
+        now = now_utc()
+        token = args.holders.lower()
+        plan = {"now": now, "sources": {}}
+        cand = {"values": dict.fromkeys(VALUE_COLUMNS, None), "pair": None, "top10": [],
+                "watch": {"created": now.isoformat()}}
+        cand["values"]["token_address"] = token
+        checks = []
+        strategy._holders(plan, cand, lambda n, ok, d: checks.append((n, ok, d)) or ok,
+                          {"holders": 1})
+        for name, ok, detail in checks:
+            print(f"  {'ok  ' if ok else 'FAIL'}  {name:<26} {detail}")
+        v = cand["values"]
+        print(f"  creator {v['creator']}, holders {v['holders']}, complete "
+              f"{v['holders_complete']}, RPC calls {plan['sources'].get('rpc', {})}")
+        print(f"  top 10: {cand['top10']}")
     return 0
 
 

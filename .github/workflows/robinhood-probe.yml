@@ -13,6 +13,11 @@ name: Robinhood Chain probe
 
 on:
   workflow_dispatch:         # start it by hand from the Actions tab
+    inputs:
+      holders_token:
+        description: "Optional: a Pons token address to run only the holder check on"
+        required: false
+        default: ""
   push:                      # and once whenever the probe itself changes
     paths:
       - robinhood_probe.py
@@ -48,7 +53,14 @@ jobs:
       # a temporary folder: nothing is saved or committed.
       - name: Robinhood strategy dry run
         if: always()
-        run: python -m screener.robinhood
+        env:
+          HOLDERS_TOKEN: ${{ inputs.holders_token }}
+        run: |
+          if [ -n "$HOLDERS_TOKEN" ]; then
+            python -m screener.robinhood --holders "$HOLDERS_TOKEN"
+          else
+            python -m screener.robinhood
+          fi
 
       - uses: actions/upload-artifact@v4
         if: always()
