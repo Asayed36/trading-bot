@@ -59,8 +59,10 @@ class Base(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def make(self, cfg=CFG):
-        engine = LaunchEngine(cfg, self.tmp.name, clock=lambda: T0)
+    def make(self, cfg=CFG, trade_feed=True):
+        # Most checks feed made-up trades, as if the trade feed were on; the
+        # bot itself runs without it (NoTradeFeedTests).
+        engine = LaunchEngine(cfg, self.tmp.name, clock=lambda: T0, trade_feed=trade_feed)
         engine.set_sol_price(SOL)
         return engine
 
@@ -261,13 +263,51 @@ class PriceSourceTests(Base):
         self.assertFalse(again.traders["5s"].open_positions)
 
 
+class NoTradeFeedTests(Base):
+    """How the bot runs: new tokens and migrations only, no trades."""
+
+    def setUp(self):
+        super().setUp()
+        self.engine = self.make(trade_feed=False)
+
+    def test_nothing_subscribed_and_unknowns_saved_blank(self):
+        self.assertEqual(self.at(0, create("m1", initial=20_000_000)), ([], []))
+        self.assertEqual(self.engine.subscriptions(), [])
+        self.run_through(seconds=10)
+        (launch,) = self.launches()
+        self.assertEqual((launch["dev_buy_pct"], launch["first_block_buyers"], launch["flagged"]),
+                         ("2.00", "", "yes"))           # the creator's buy is still known
+        (entry,) = rows(os.path.join(self.tmp.name, "launch", "5s", "entries.csv"))
+        self.assertEqual({k: entry[k] for k in ("buys_so_far", "sells_so_far",
+                                                "first_block_buyers", "price_change_5m_pct",
+                                                "price_change_1h_pct")},
+                         dict.fromkeys(("buys_so_far", "sells_so_far", "first_block_buyers",
+                                        "price_change_5m_pct", "price_change_1h_pct"), ""))
+        self.assertEqual(entry["price_usd"], "3e-06")   # the curve price at creation
+        pos = self.engine.traders["5s"].open_positions[0]
+        self.assertIsNone(pos["launch"]["buys"])
+
+    def test_same_trading_rules_with_dexscreener_prices(self):
+        self.at(0, create("m1"))
+        self.run_through(seconds=91)
+        buys = {s: [r for r in self.journal(s) if r["action"] == "BUY"]
+                for s in ("5s", "30s", "90s")}
+        self.assertEqual({s: len(b) for s, b in buys.items()}, {"5s": 1, "30s": 1, "90s": 1})
+        stale = L["stale_price_seconds"]
+        self.assertEqual(self.engine.needs_external(T0 + stale + 1), ["m1"])
+        self.engine.set_external_prices({"m1": 6.3e-6}, T0 + stale + 2)      # 2.1x
+        self.assertIn("take profit", self.journal("5s")[-1]["reason"])
+        self.engine.set_external_prices({"m1": 2e-6}, T0 + stale + 30)       # -33%
+        self.assertIn("stop loss", self.journal("5s")[-1]["reason"])
+        _, drop = self.at(stale + 31)
+        self.assertEqual(drop, [])                      # nothing to unsubscribe
+
+
 class PaperOnlyTests(unittest.TestCase):
     def test_runner_only_sends_read_only_requests(self):
         import launch_bot
-        self.assertEqual(launch_bot.ALLOWED_METHODS, {"subscribeNewToken", "subscribeMigration",
-                                                      "subscribeTokenTrade",
-                                                      "unsubscribeTokenTrade"})
-        for method in ("trade", "sell", "buy", "subscribeAccountTrade"):
+        self.assertEqual(launch_bot.ALLOWED_METHODS, {"subscribeNewToken", "subscribeMigration"})
+        for method in ("trade", "sell", "buy", "subscribeAccountTrade", "subscribeTokenTrade"):
             with self.assertRaises(ValueError):
                 launch_bot.request(method)
 
@@ -314,8 +354,7 @@ class RunnerTests(unittest.TestCase):
                     await ws.send(json.dumps({"message": "Successfully subscribed to token "
                                                          "creation events."}))
                     await ws.send(json.dumps(create("live1")))
-                if msg["method"] == "subscribeTokenTrade":
-                    await ws.send(json.dumps(price_msg("live1", 2e-6)))
+                    await ws.send(json.dumps({"errors": "made-up reply"}))
 
         speeds = [dict(s, delay_seconds=d) for s, d in zip(L["speeds"], (0.6, 1.2, 1.8))]
 
@@ -331,15 +370,20 @@ class RunnerTests(unittest.TestCase):
                     await asyncio.sleep(3.5)
                     runner.stop.set()
                     await asyncio.wait_for(task, 10)
+                    return runner
 
-        with tempfile.TemporaryDirectory() as d:
-            asyncio.run(scenario(d))
+        with tempfile.TemporaryDirectory() as d, self.assertLogs("launch_bot", "INFO") as logs:
+            runner = asyncio.run(scenario(d))
             buys = {s: [r for r in rows(os.path.join(d, "launch", s, "journal.csv"))
                         if r["action"] == "BUY"] for s in ("5s", "30s", "90s")}
             self.assertTrue(os.path.exists(os.path.join(d, "launch", "state.json")))
         methods = [m["method"] for m in received]
         self.assertEqual(methods[:2], ["subscribeNewToken", "subscribeMigration"])
-        self.assertIn({"method": "subscribeTokenTrade", "keys": ["live1"]}, received)
-        self.assertTrue(set(methods) <= launch_bot.ALLOWED_METHODS)
+        self.assertEqual(len(methods), 2)                   # no trade subscriptions
+        self.assertTrue(any("PumpPortal says: {'errors': 'made-up reply'}" in line
+                            for line in logs.output))
+        self.assertEqual(runner.kinds, {"reply": 2, "create": 1})
+        self.assertIn("feed messages by type: create 1, reply 2",
+                      launch_bot.test_summary(runner.engine, runner.kinds))
         self.assertEqual({s: len(b) for s, b in buys.items()}, {"5s": 1, "30s": 1, "90s": 1})
-        self.assertEqual(buys["5s"][0]["price_usd"], "2e-06")
+        self.assertEqual(buys["5s"][0]["price_usd"], "3e-06")  # the curve price at creation

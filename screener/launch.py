@@ -1,9 +1,13 @@
 """The "launch" paper strategy: would sniping brand-new pump.fun tokens work?
 
 It runs on a small always-on server (see deploy/LAUNCH_SERVER_SETUP.md), fed
-by PumpPortal's free real-time data WebSocket. It is PAPER trading only: it
-only READS public data. It never connects to a wallet, never uses a private
-key and never uses PumpPortal's trading API.
+by PumpPortal's free real-time data WebSocket: new tokens and migrations.
+PumpPortal's token-trade stream needs an API key and a funded wallet, so the
+bot doesn't use it: it never sees individual buys and sells (trade_feed is
+off), and the buy/sell counts, first-block buyers and price change since
+creation are saved blank. It is PAPER trading only: it only READS public
+data. It never connects to a wallet, never uses a private key and never uses
+PumpPortal's trading API.
 
 For every new pump.fun token:
   1. Instant checks (skip if any fails):
@@ -14,9 +18,9 @@ For every new pump.fun token:
      - the hourly cap (10 selected launches an hour) isn't used up
   2. First block (the first ~1 second): the launch is FLAGGED if the creator
      bought in the creation transaction or other wallets bought in the first
-     block. PumpPortal's free feed doesn't tell snipers from wallets linked
-     to the creator, so any early buyer counts. Flags are recorded for every
-     launch; skip_flagged decides whether flagged launches are skipped.
+     block. Without the trade feed only the creator's buy is known (it's in
+     the creation message). Flags are recorded for every launch;
+     skip_flagged decides whether flagged launches are skipped.
   3. The same launch is paper-bought by three "speeds", each with its own
      journal: 5 seconds after creation (sniper-bot speed), 30 seconds and 90
      seconds (human speed), at the bonding-curve price at that moment, plus
@@ -25,9 +29,9 @@ For every new pump.fun token:
   4. Exits: sell half at 2x; sell everything left at -30% or 30 minutes after
      the buy, whichever comes first.
 
-Prices come from the bonding curve (PumpPortal trades). If a token graduates
-to PumpSwap, PumpPortal's free feed stops covering it and prices come from
-DexScreener instead.
+Prices: the bonding-curve price in the creation message, then DexScreener
+once that price is older than stale_price_seconds or the token graduates.
+(With the trade feed, every trade would update the curve price.)
 """
 
 import csv
@@ -43,7 +47,9 @@ from screener.paper_trader import PaperTrader, append_row, pct
 # The 5-minute and 1-hour price change at each buy, like the other strategies'
 # entries.csv. Launches are bought at most 90 seconds old, before DexScreener
 # reliably lists them, so both are the change since creation measured from the
-# PumpPortal feed: for a token younger than 5 minutes that's the whole window.
+# PumpPortal trade feed: for a token younger than 5 minutes that's the whole
+# window. Without the trade feed they, the buy/sell counts and the first-block
+# buyers are blank (not known), never 0.
 LAUNCH_ENTRY_COLUMNS = [
     "time_utc", "symbol", "token_address", "price_usd", "seconds_after_creation",
     "buys_so_far", "sells_so_far", "dev_buy_pct", "first_block_buyers", "flagged",
@@ -70,6 +76,11 @@ def change_pct(before, after):
     if not before or not after:
         return None
     return round((after / before - 1) * 100, 2)
+
+
+def cell(value):
+    """A CSV cell; blank when the value isn't known."""
+    return "" if value is None else value
 
 
 def _atomic_json(path, data):
@@ -149,8 +160,8 @@ class LaunchTrader(PaperTrader):
         append_row(self.entries_path, LAUNCH_ENTRY_COLUMNS, [
             when.strftime("%Y-%m-%d %H:%M:%S"), pos["symbol"], pos["address"],
             f"{pos['entry_price']:.10g}", f"{info['seconds_after_creation']:.1f}",
-            info["buys"], info["sells"], f"{info['dev_buy_pct']:.2f}",
-            info["first_block_buyers"], "yes" if info["flagged"] else "no",
+            cell(info["buys"]), cell(info["sells"]), f"{info['dev_buy_pct']:.2f}",
+            cell(info["first_block_buyers"]), "yes" if info["flagged"] else "no",
             pct(info.get("change_since_creation_pct")),
             pct(info.get("change_since_creation_pct"))])
 
@@ -158,10 +169,16 @@ class LaunchTrader(PaperTrader):
 class LaunchEngine:
     """All decisions, driven by feed messages and the clock. No network here:
     the runner (launch_bot.py) feeds it and carries out its requests to
-    subscribe to or drop a token's trades."""
+    subscribe to or drop a token's trades.
 
-    def __init__(self, cfg, data_folder, clock=time.time):
+    trade_feed: whether the runner receives each token's trades. The bot runs
+    without them (PumpPortal's trade stream needs an API key and a funded
+    wallet); then nothing is subscribed and what only trades could tell is
+    saved blank. The tests turn it on to check the trade-driven logic."""
+
+    def __init__(self, cfg, data_folder, clock=time.time, trade_feed=False):
         self.c = cfg["launch"]
+        self.trade_feed = trade_feed
         self.pt = self.c["paper_trading"]
         self.clock = clock
         self.folder = os.path.join(data_folder, "launch")
@@ -231,7 +248,8 @@ class LaunchEngine:
                               "first_block_buyers", "flagged", "decision", "reason"])
             out.writerow([utc(t).strftime("%Y-%m-%d %H:%M:%S"), w["mint"], w["symbol"],
                           w.get("name", ""), w["creator"], f"{w['dev_buy_pct']:.2f}",
-                          len(w["first_block_buyers"]), "yes" if w.get("flagged") else "no",
+                          cell(self._known(len(w["first_block_buyers"]))),
+                          "yes" if w.get("flagged") else "no",
                           decision, reason])
 
     # ---- the feed ----------------------------------------------------
@@ -279,7 +297,7 @@ class LaunchEngine:
             "buys": 0, "sells": 0, "entered": set(),
         }
         self._reserve(t)
-        return [mint], []
+        return ([mint] if self.trade_feed else []), []
 
     def _instant_skip(self, mint, creator, name, symbol, t):
         c, mem = self.c, self.memory
@@ -408,12 +426,13 @@ class LaunchEngine:
                         self._count(t, f"{name}: skipped, {c['max_open_per_speed']} open")
                         continue
                     price = self._current_usd(mint, t)
-                    info = {"seconds_after_creation": age, "buys": w["buys"],
-                            "sells": w["sells"], "dev_buy_pct": w["dev_buy_pct"],
-                            "first_block_buyers": len(w["first_block_buyers"]),
+                    info = {"seconds_after_creation": age, "buys": self._known(w["buys"]),
+                            "sells": self._known(w["sells"]),
+                            "dev_buy_pct": w["dev_buy_pct"],
+                            "first_block_buyers": self._known(len(w["first_block_buyers"])),
                             "flagged": w.get("flagged", False), "creator": w["creator"],
-                            "change_since_creation_pct": change_pct(
-                                w.get("created_price_sol"), w.get("price_sol"))}
+                            "change_since_creation_pct": self._known(change_pct(
+                                w.get("created_price_sol"), w.get("price_sol")))}
                     if trader.buy_launch(mint, w["symbol"], price, self.sol_usd, utc(t), info):
                         trader.save()
                 if w["entered"] >= set(self.speeds):
@@ -428,7 +447,7 @@ class LaunchEngine:
             self.watch.pop(mint, None)
             self.migrated.discard(mint)
             self.external.pop(mint, None)
-        return [], drop
+        return [], (drop if self.trade_feed else [])
 
     def prune(self, t=None):
         """Forget launches older than the memory window (run hourly)."""
@@ -444,4 +463,10 @@ class LaunchEngine:
 
     def subscriptions(self):
         """Mints whose trades are needed (after a reconnect)."""
+        if not self.trade_feed:
+            return []
         return [m for m in self.watch if m not in self.migrated]
+
+    def _known(self, value):
+        """A value only the trade feed can tell, or None without it."""
+        return value if self.trade_feed else None

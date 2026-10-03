@@ -276,15 +276,18 @@ creator_memory_days = 7
 
 # Flag a launch if the creator bought in the creation transaction, or other
 # wallets bought within first_block_seconds (or in the same block, if the
-# feed says which block). The free feed can't tell snipers from wallets
-# linked to the creator, so every early buyer counts. With skip_flagged =
+# feed says which block). The bot doesn't get the trade feed (it needs an
+# API key and a funded wallet), so only the creator's buy is known: flagged
+# means the creator bought. With skip_flagged =
 # false, flagged launches are still traded and the flag is recorded, so you
 # can compare flagged and clean launches later.
 first_block_seconds = 1.0
 skip_flagged = false
 
 # If a held token's price hasn't moved on the feed for this long (or it
-# graduated), its price is read from DexScreener instead.
+# graduated), its price is read from DexScreener instead. Without the trade
+# feed the only feed price is the one at creation, so after this long every
+# held token is priced from DexScreener.
 stale_price_seconds = 60
 
 [launch.paper_trading]
