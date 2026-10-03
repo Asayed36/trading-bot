@@ -519,7 +519,10 @@ class Probe:
                 {"address": t["token"], "topics": [TRANSFER]},
                 t["creation_block"] - CREATION_BLOCKS, self.head)
             bal = balances_from_transfers(logs)
+            # Leave out the curve/pool and every contract that logged an event
+            # naming the token (e.g. Uniswap v4's PoolManager holds all v4 pools).
             skip = {a for a in [t["pool"]] + t["minted_to"] if a}
+            skip |= {e for e, _, _ in t["events_naming_token"]}
             row = {"token": t["token"], "launchpad": t["launchpad"], "transfers": len(logs),
                    "rpc_calls": calls, "complete": done, "error": err}
             row.update(concentration(bal, skip))
