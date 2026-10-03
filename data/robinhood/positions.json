@@ -241,6 +241,13 @@
       "failed": [
         "Not a copycat"
       ]
+    },
+    "0x4159d844558b1c9c7f1caed2311d85414f55f2756c9490342669937ae8d34eed": {
+      "at": "2026-10-03T23:01:21.242142+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
     }
   },
   "sources": {
@@ -249,15 +256,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-03T22:51:09.855181+00:00",
+      "at": "2026-10-03T23:01:21.242142+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 3,
+      "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-03T22:51:09.855181+00:00",
+      "at": "2026-10-03T23:01:21.242142+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -284,6 +291,7 @@
     "0x1c4311cf55eb1e1fa7fa1c7cda09b11b5b1348b19b6c14ae5cbad4aea9643a2e": "FAIL|Holders: unknown: couldn't read the token's transfers (Robinhood Chain RPC said 'too many requests' (HTTP 429))",
     "0x6cabefd907a486bbd5974ebcfae85d768d19113fc6129ce0e3697bd77bb9ab7f": "FAIL|Not a copycat: 5 other token(s) called FILL in the last 7 days, one with more liquidity ($11,143 vs $50,970: 0x287eadb409aabc4f41b23bf26cdae8970d3e9f49)",
     "0xa605cb8aee6413632097de34a825e01783bad21ee1158db8f53285f56a4de64d": "FAIL|Not a copycat: 10 other token(s) called ASTRAL in the last 7 days, one with more liquidity ($27,579 vs $77,778: 0x79378e0ce59bed9db4d26ff612a1d5fae5951737)",
-    "0x870152035cfd299785ede30d2fa7d48a2b7c9f012a14d551e5cac4f4d39d6eb4": "FAIL|Not a copycat: 5 other token(s) called HOODAGENTS in the last 7 days, one with more liquidity ($23,569 vs $53,444: 0x8046806d9261c08660af4c9e5efe8890d380199b)"
+    "0x870152035cfd299785ede30d2fa7d48a2b7c9f012a14d551e5cac4f4d39d6eb4": "FAIL|Not a copycat: 5 other token(s) called HOODAGENTS in the last 7 days, one with more liquidity ($23,569 vs $53,444: 0x8046806d9261c08660af4c9e5efe8890d380199b)",
+    "0x4159d844558b1c9c7f1caed2311d85414f55f2756c9490342669937ae8d34eed": "FAIL|Liquidity: $6,744 (need $10,000+)"
   }
 }
