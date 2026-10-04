@@ -464,3 +464,45 @@ journalctl -u trade-feed-probe -n 15 --no-pager    # the final summary
 Within the next hour the push puts `data/trade-feed-probe/summary.json` on
 GitHub, so it can be read there. To stop it early:
 `sudo systemctl stop trade-feed-probe` (the summary so far is kept).
+
+---
+
+## Part I. Run the momentum strategy (optional)
+
+The **momentum** strategy paper-buys a new pump.fun launch only when it
+rises fast in its first minutes on real buying. It reads every pump.fun
+trade live from Solana's **free public RPC** (the 2-hour measurement in
+Part H showed it works: a few short disconnects, about 1.4 s delay, little
+CPU and memory). Three variants run side by side, each with its own journal
+in `data/momentum/`: **+30% within 2 minutes**, **+50% within 3 minutes** and
+**+100% within 5 minutes**. Costs and exits are the launch bot's. No key, no
+wallet, no new token. It uses about 1 GB of bandwidth an hour (the feed).
+
+### I1. Get the new files and test it for 2 minutes
+
+```
+sudo systemctl start launch-push
+cd ~/trading-bot && git log -1 --oneline
+.venv/bin/python momentum_bot.py --test
+```
+
+It prints `connected to wss://api.mainnet-beta.solana.com; subscribed to
+pump.fun's events` and, after 2 minutes, a summary (launches seen, trades,
+signals, near misses). A test saves **nothing**.
+
+### I2. Turn it on
+
+```
+sudo cp ~/trading-bot/deploy/momentum-bot.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now momentum-bot
+systemctl status momentum-bot --no-pager
+journalctl -u momentum-bot -n 20 --no-pager
+```
+
+`status` should say **active (running)**. Every 10 minutes the log gets a
+line with the feed's state and the hour's counts. Like the other bots, it
+restarts itself when the hourly push brings new code it uses
+(`journalctl -u momentum-bot | grep "automatic restart"`). Pause it with
+`sudo systemctl stop momentum-bot`; turn it off for good with
+`sudo systemctl disable --now momentum-bot`.

@@ -38,7 +38,7 @@ class FakeGitHub:
         return self.runs
 
     def last_commit_time(self, path):
-        assert path in ("data/launch", "data/main-1min")
+        assert path in ("data/launch", "data/main-1min", "data/momentum")
         return self.pushed if path == "data/launch" else self.pushed_1min
 
 
@@ -75,6 +75,10 @@ class Base(unittest.TestCase):
             "last_ok": ago(minutes=50),
             "calls_per_hour": {"2026-10-01T23:00": {"runs": 60, "dexscreener": 250,
                                                     "rugcheck": 31}}})
+        self.write("momentum/health.json", {"last_ok": ago(minutes=49), "feed_up": True})
+        self.write("momentum/stats.json", {
+            "2026-10-01 23:00": {"feed disconnects": 2, "launches seen": 1800,
+                                 "30pct-2min: signals": 4, "30pct-2min: buys": 3}})
         return FakeGitHub([run_("success", 4), run_("success", 9)],
                           pushed=NOW - timedelta(minutes=50),
                           pushed_1min=NOW - timedelta(minutes=48))
@@ -217,6 +221,27 @@ class MainOneMinuteHealthTests(Base):
         cfg = dict(CFG, main_1min=dict(CFG["main_1min"], enabled=False))
         text = "\n".join(health_lines(self.d, cfg, NOW, self.healthy()))
         self.assertNotIn("main (1 min)", text)
+
+
+class MomentumHealthTests(Base):
+    def test_ok_with_feed_disconnects_signals_and_buys(self):
+        row = self.lines(self.healthy())[1]["momentum: server"]
+        self.assertIn(OK, row)
+        self.assertIn("feed last up 2026-10-01 23:18 UTC (49 min ago); last 24 h: 2 "
+                      "disconnect(s), 1800 launches, 4 signal(s), 3 buy(s); last push", row)
+
+    def test_never_pushed_or_late(self):
+        gh = self.healthy()
+        os.remove(os.path.join(self.d, "momentum", "health.json"))
+        row = self.lines(gh)[1]["momentum: server"]
+        self.assertIn(WARN, row)
+        self.assertIn("Part I", row)
+        gh = self.healthy()
+        self.write("momentum/health.json", {"last_ok": ago(hours=4), "feed_up": False})
+        row = self.lines(gh)[1]["momentum: server"]
+        self.assertIn(WARN, row)
+        self.assertIn("(older than 3 h)", row)
+        self.assertIn("the feed was down at the last save", row)
 
 
 class RunIntervalTests(Base):

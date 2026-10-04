@@ -96,6 +96,48 @@ def record_health(data_folder, now, outcomes):
 # The report
 # ---------------------------------------------------------------------
 
+def add_momentum(add, folder, cfg, now, github):
+    """One row: the momentum bot's live feed (the last time it was up, from
+    its pushed health.json), its disconnects, signals and buys over 24 h
+    (stats.json), and its last push. A warning when the feed's last good
+    moment or the last push is older than [health] launch_stale_hours."""
+    name = "momentum: server"
+    sub = cfg["momentum"]["folder"]
+    late_after = timedelta(hours=cfg.get("health", {}).get("launch_stale_hours", 3))
+    data = _load(os.path.join(folder, sub, "health.json")) or {}
+    stats = _load(os.path.join(folder, sub, "stats.json")) or {}
+    ok = _utc(data.get("last_ok"))
+    pushed = None
+    if github is not None:
+        try:
+            pushed = github.last_commit_time(f"data/{sub}")
+        except Exception:
+            pushed = None
+    if not ok:
+        add(name, WARN, "no results pushed yet: is it set up (deploy/LAUNCH_SERVER_SETUP.md, "
+            "Part I)?", "momentum has never pushed results")
+        return
+    day = {}
+    for hour, counts in stats.items():
+        when = _utc(hour.replace(" ", "T"))
+        if when and now - when <= timedelta(hours=24):
+            for key, n in counts.items():
+                day[key] = day.get(key, 0) + n
+    signals = sum(n for k, n in day.items() if k.endswith(": signals"))
+    buys = sum(n for k, n in day.items() if k.endswith(": buys"))
+    detail = (f"feed last up {_at(ok, now)}; last 24 h: {day.get('feed disconnects', 0)} "
+              f"disconnect(s), {day.get('launches seen', 0)} launches, {signals} signal(s), "
+              f"{buys} buy(s)")
+    if pushed:
+        detail += f"; last push {_at(pushed, now)}"
+    if data.get("feed_up") is False:
+        detail += "; the feed was down at the last save"
+    late = now - ok > late_after or (pushed is not None and now - pushed > late_after)
+    if late:
+        detail += f" (older than {late_after.total_seconds() / 3600:.0f} h)"
+    add(name, WARN if late else OK, detail)
+
+
 def add_main_1min(add, folder, cfg, now, github):
     """One row: the main (1 min) strategy's last good run (from its pushed
     health.json), runs and requests per hour over the last 24 h, and its
@@ -286,6 +328,10 @@ def health_lines(folder, cfg, now, github=None):
     # 7. The main (1 min) strategy on your server.
     if cfg.get("main_1min", {}).get("enabled"):
         add_main_1min(add, folder, cfg, now, github)
+
+    # 8. The momentum strategy on your server.
+    if cfg.get("momentum", {}).get("enabled"):
+        add_momentum(add, folder, cfg, now, github)
 
     head = [f"### Health ({now:%Y-%m-%d %H:%M} UTC)", ""]
     if problems:

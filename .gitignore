@@ -55,3 +55,15 @@ data/main-1min/*
 !data/trade-feed-probe/
 data/trade-feed-probe/*
 !data/trade-feed-probe/summary.json
+# The momentum strategy (run on your own server) pushes these; its state.json
+# (memory of recent launches) stays on the server.
+!data/momentum/
+data/momentum/*
+!data/momentum/near_misses.csv
+!data/momentum/stats.json
+!data/momentum/health.json
+!data/momentum/*/
+data/momentum/*/*
+!data/momentum/*/journal.csv
+!data/momentum/*/positions.json
+!data/momentum/*/entries.csv

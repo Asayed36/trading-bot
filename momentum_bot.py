@@ -1,0 +1,259 @@
+"""Runs the "momentum" paper strategy around the clock (on your own server).
+
+    python momentum_bot.py            <- run for good (the momentum-bot service does this)
+    python momentum_bot.py --test     <- try it for 2 minutes; saves nothing
+
+It listens to the free Solana public RPC for pump.fun's live events (every
+trade, launch and graduation: screener/pumpfeed.py) and paper-trades three
+momentum variants side by side (screener/momentum.py). Results go to
+data/momentum/ and are pushed to GitHub by deploy/push_results.sh. When that
+push brings new code the bot uses, it saves everything and exits by itself,
+and systemd starts it again with the new code ("automatic restart" in
+journalctl -u momentum-bot).
+
+PAPER TRADING ONLY. It only READS public data: one read-only subscription
+("logsSubscribe") to the RPC, plus DexScreener (SOL's price, and held
+tokens' prices once they leave the curve) and Jupiter (the organic score at
+each buy). It never connects to a wallet, never uses a private key, never
+signs or sends anything.
+"""
+
+import argparse
+import asyncio
+import json
+import logging
+import os
+import signal
+import sys
+import tempfile
+import time
+
+import websockets
+
+from screener.api import ApiError, PublicApi
+from screener.autorestart import CodeWatcher, restart_message
+from screener.jupiter import JupiterOrganic
+from screener.launch import sol_price, token_prices
+from screener.momentum import MomentumEngine
+from screener.pumpfeed import subscribe_request
+from screener.settings import HERE, load_config
+
+# The config.toml sections the bot reads: only changes there restart it.
+CONFIG_SECTIONS = ("momentum", "launch", "files")
+CODE_CHECK_SECONDS = 30
+
+log = logging.getLogger("momentum_bot")
+
+
+class Runner:
+    def __init__(self, cfg, data_folder, watcher=None, connect=websockets.connect,
+                 api=None, jupiter=None):
+        self.cfg, self.c = cfg, cfg["momentum"]
+        self.engine = MomentumEngine(cfg, data_folder)
+        self.connect = connect
+        self.api = api or PublicApi(timeout=15)
+        self.jupiter = jupiter if jupiter is not None else JupiterOrganic(timeout=5)
+        self.watcher = watcher
+        self.restarting = None
+        self.stop = asyncio.Event()
+
+    def health(self):
+        """data/momentum/health.json (pushed): is the feed up, the last
+        time it was, and this hour's counts."""
+        path = os.path.join(self.engine.folder, "health.json")
+        try:
+            with open(path) as fh:
+                data = json.load(fh)
+        except (OSError, ValueError):
+            data = {}
+        now = time.time()
+        last_ok = data.get("last_ok")
+        data.update(self.engine.health(now))
+        data["last_ok"] = data["last_ok"] or last_ok      # kept across restarts
+        tmp = path + ".tmp"
+        with open(tmp, "w") as fh:
+            json.dump(data, fh, indent=1)
+        os.replace(tmp, path)
+
+    async def feed(self):
+        pause = 2
+        while not self.stop.is_set():
+            try:
+                async with self.connect(self.c["ws_url"], ping_interval=20, ping_timeout=20,
+                                        max_size=2**22, open_timeout=20) as ws:
+                    await ws.send(subscribe_request())
+                    self.engine.connected(time.time())
+                    log.info("connected to %s; subscribed to pump.fun's events", self.c["ws_url"])
+                    pause = 2
+                    while not self.stop.is_set():
+                        try:
+                            raw = await asyncio.wait_for(ws.recv(), self.c["watchdog_seconds"])
+                        except asyncio.TimeoutError:
+                            raise ConnectionError(
+                                f"no message for {self.c['watchdog_seconds']} s") from None
+                        self.on_raw(raw)
+            except (OSError, ConnectionError, asyncio.TimeoutError,
+                    websockets.WebSocketException) as exc:
+                if self.stop.is_set():
+                    break
+                log.warning("feed disconnected (%s); no new buys until it's back; retrying "
+                            "in %ss", str(exc)[:120], pause)
+            finally:
+                self.engine.disconnected(time.time())
+            if self.stop.is_set():
+                break
+            try:
+                await asyncio.wait_for(self.stop.wait(), pause)
+            except asyncio.TimeoutError:
+                pass
+            pause = min(pause * 2, 30)
+
+    def on_raw(self, raw):
+        try:
+            msg = json.loads(raw)
+        except ValueError:
+            return
+        if msg.get("method") != "logsNotification":
+            if "error" in msg:
+                log.warning("RPC says: %s", str(msg["error"])[:200])
+            return
+        value = ((msg.get("params") or {}).get("result") or {}).get("value") or {}
+        self.engine.on_logs(value.get("logs"), value.get("err") is not None, time.time())
+
+    async def clock(self):
+        last_save = last_prune = last_status = time.time()
+        while not self.stop.is_set():
+            try:
+                await asyncio.wait_for(self.stop.wait(), 0.5)
+                return
+            except asyncio.TimeoutError:
+                pass
+            now = time.time()
+            self.engine.tick(now)
+            if now - last_save >= 30:
+                self.engine.save()
+                self.health()
+                last_save = now
+            if now - last_prune >= 3600:
+                self.engine.prune(now)
+                last_prune = now
+            if now - last_status >= 600:
+                h = self.engine.health(now)
+                log.info("feed %s; following %d launch(es); open %s; this hour %s",
+                         "up" if h["feed_up"] else "DOWN", h["following"], h["open"],
+                         h["this_hour"])
+                last_status = now
+
+    async def prices(self):
+        """SOL every 5 minutes; DexScreener for held tokens the feed no
+        longer prices, every 20 seconds."""
+        last_sol = 0.0
+        while not self.stop.is_set():
+            now = time.time()
+            try:
+                if now - last_sol >= 300 or not self.engine.sol_usd:
+                    price = await asyncio.to_thread(sol_price, self.api)
+                    if price:
+                        self.engine.set_sol_price(price)
+                        last_sol = now
+                mints = self.engine.needs_external(now)
+                if mints:
+                    found = await asyncio.to_thread(token_prices, self.api, mints)
+                    self.engine.set_external_prices(found, time.time())
+            except ApiError as exc:
+                log.warning("DexScreener: %s", exc)
+            try:
+                await asyncio.wait_for(self.stop.wait(), 20)
+            except asyncio.TimeoutError:
+                pass
+
+    async def organic(self):
+        """Jupiter's organic score for launches with a signal (logging only:
+        it goes into entries.csv; a failed lookup leaves it blank)."""
+        while not self.stop.is_set():
+            for mint in self.engine.jupiter_due():
+                values = await asyncio.to_thread(self.jupiter, mint) if self.jupiter else {}
+                self.engine.set_jupiter(mint, values, time.time())
+            try:
+                await asyncio.wait_for(self.stop.wait(), 1)
+            except asyncio.TimeoutError:
+                pass
+
+    async def watch_code(self):
+        while self.watcher is not None and not self.stop.is_set():
+            try:
+                await asyncio.wait_for(self.stop.wait(), CODE_CHECK_SECONDS)
+                return
+            except asyncio.TimeoutError:
+                pass
+            changed = self.watcher.changed()
+            if changed:
+                self.restarting = changed
+                log.warning(restart_message(changed))
+                self.stop.set()
+
+    async def main(self, stop_after=None):
+        loop = asyncio.get_running_loop()
+        if stop_after:
+            loop.call_later(stop_after, self.stop.set)
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            try:
+                loop.add_signal_handler(sig, self.stop.set)
+            except NotImplementedError:
+                pass
+        tasks = [asyncio.create_task(x) for x in (self.feed(), self.clock(), self.prices(),
+                                                  self.organic(), self.watch_code())]
+        await self.stop.wait()
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+        self.engine.save()
+        self.health()
+        log.info("stopped; everything saved"
+                 + ("; systemd starts the new code in about 10 s" if self.restarting else ""))
+
+
+def test_summary(engine):
+    totals = {}
+    for hour in engine.stats.values():
+        for key, n in hour.items():
+            totals[key] = totals.get(key, 0) + n
+    lines = ["", "Test run summary (nothing was saved to data/momentum):"]
+    lines += [f"  {key}: {n}" for key, n in sorted(totals.items())]
+    for name, trader in engine.traders.items():
+        lines.append(f"  paper buys at {name}: {len(trader.state['ever_bought'])}")
+    path = os.path.join(engine.folder, "near_misses.csv")
+    if os.path.exists(path):
+        with open(path) as fh:
+            near = fh.read().splitlines()
+        lines.append(f"  near misses logged: {len(near) - 1}")
+        lines += [f"    {row[:200]}" for row in near[:6]]
+    return "\n".join(lines)
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--test", nargs="?", const=120, type=int, metavar="SECONDS",
+                        help="try it: run for SECONDS (default 120) with results in a temporary "
+                             "folder, then print a summary")
+    args = parser.parse_args(argv)
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    cfg = load_config()
+    if not cfg.get("momentum", {}).get("enabled"):
+        print("The momentum strategy is turned off ([momentum] enabled = false).")
+        return 0
+    if args.test:
+        with tempfile.TemporaryDirectory() as folder:
+            runner = Runner(cfg, folder)
+            asyncio.run(runner.main(stop_after=args.test))
+            print(test_summary(runner.engine))
+        return 0
+    watcher = CodeWatcher(HERE, CONFIG_SECTIONS)
+    log.info("watching %d code file(s) and config.toml %s for updates",
+             len(watcher.files), ", ".join(f"[{s}]" for s in CONFIG_SECTIONS))
+    asyncio.run(Runner(cfg, os.path.join(HERE, cfg["files"]["data_folder"]), watcher).main())
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
