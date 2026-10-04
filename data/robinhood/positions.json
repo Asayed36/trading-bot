@@ -128,16 +128,6 @@
   ],
   "running_total_pnl_usd": -14.016775685855112,
   "watch": {
-    "0xf210c2f18eebb37176b9c3f62b629c39648c9c57225cd0b0d0993dff94982d43": {
-      "pool": "0xf210c2f18eebb37176b9c3f62b629c39648c9c57225cd0b0d0993dff94982d43",
-      "dex": "uniswap-pools-trade",
-      "token": "0x2c59cc1b4a40977200cc0c1e5358ed7228167b8e",
-      "name": "PAYR",
-      "title": "PAYR",
-      "created": "2026-10-04T06:14:44Z",
-      "liquidity_usd": 16186.7042,
-      "market_cap_usd": 24123.10281
-    },
     "0x9103c042ae23fbcc5141b202dee6d9016d57b649bdc6e9c2a5764b0ad9f2cf9c": {
       "pool": "0x9103c042ae23fbcc5141b202dee6d9016d57b649bdc6e9c2a5764b0ad9f2cf9c",
       "dex": "pons-v2-dex",
@@ -200,11 +190,6 @@
     }
   },
   "checked": {
-    "0xf210c2f18eebb37176b9c3f62b629c39648c9c57225cd0b0d0993dff94982d43": {
-      "at": "2026-10-04T06:51:27.496917+00:00",
-      "passed": true,
-      "failed": []
-    },
     "0x9103c042ae23fbcc5141b202dee6d9016d57b649bdc6e9c2a5764b0ad9f2cf9c": {
       "at": "2026-10-04T12:11:20.256458+00:00",
       "passed": false,
@@ -213,7 +198,7 @@
       ]
     },
     "0x4b31a3ba8847ea4489588b4e7072aa9872b3fcb23184b0cb52535e072c622796": {
-      "at": "2026-10-04T11:11:39.530491+00:00",
+      "at": "2026-10-04T12:21:33.845880+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -221,7 +206,7 @@
       ]
     },
     "0x2bf59f53955aa8b92ffe09673638e4cfaa0823c23550d2fdfcf1d2b7ea02bc6e": {
-      "at": "2026-10-04T11:11:39.530491+00:00",
+      "at": "2026-10-04T12:21:33.845880+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -229,7 +214,7 @@
       ]
     },
     "0x7ee4e283eea6f956d37451f534f7d3a345c8a79e0f9c4afb23b52203726275f2": {
-      "at": "2026-10-04T11:11:39.530491+00:00",
+      "at": "2026-10-04T12:21:33.845880+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -237,7 +222,7 @@
       ]
     },
     "0x7a0e4b69f3de8ec6587719bb346fdc335f7d86e9364614a326dc9b3a3a1fcc11": {
-      "at": "2026-10-04T11:11:39.530491+00:00",
+      "at": "2026-10-04T12:21:33.845880+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -245,7 +230,7 @@
       ]
     },
     "0xe7c8022efd66593dd215d8aa5b2b84c97d3246f5389979294a3d72f47aea94bb": {
-      "at": "2026-10-04T11:11:39.530491+00:00",
+      "at": "2026-10-04T12:21:33.845880+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -256,10 +241,11 @@
   "sources": {
     "geckoterminal": {
       "calls": 3,
-      "errors": 0,
-      "rate_limited": 0,
+      "errors": 1,
+      "rate_limited": 1,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
       "ok": true,
-      "at": "2026-10-04T12:11:20.256458+00:00",
+      "at": "2026-10-04T12:21:33.845880+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -267,7 +253,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-04T12:11:20.256458+00:00",
+      "at": "2026-10-04T12:21:33.845880+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -276,7 +262,7 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-10-04T12:11:20.256458+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "rpc": {
       "calls": 16,
@@ -284,22 +270,15 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-10-04T12:11:20.256458+00:00",
-      "used_this_run": true
+      "used_this_run": false
     }
   },
   "logged": {
-    "0x4ea8bff5c50e4d2904e2c070c03da5e347a06030e292f78c8b2e74dcf5b7943b": "FAIL|Top 10 holders: 33.1% (need under 30%; pools, launchpad and burn addresses left out)",
-    "0x21c88926a3eddadd4625508c92cf4cb261c0314136cda6da295012df1176ff36": "FAIL|Market cap: $6,800 (need $25,000+); Not down >50% in 24h: -85% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "0xba3ee2d6e437370268ea568a449bb583f1a5d24076b1adc489686c9a6ecb30d6": "PASS|",
-    "0x5ec0fe0500c38625cf454b11c5b21c79bb40441298140925d744693c5a0aa15a": "FAIL|Market cap: $6,781 (need $25,000+); Not down >50% in 24h: -61% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "0x7418b783a4cc025c532821a14c1187868531c36683c5c915d7d713378f9577b6": "FAIL|Market cap: $6,799 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "0x1af4e266cc3f1cbb4fa75e429e1ea2ece1b5be7026c0b9395347509a4ccacd75": "FAIL|Market cap: $6,849 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "0xf210c2f18eebb37176b9c3f62b629c39648c9c57225cd0b0d0993dff94982d43": "PASS|",
     "0x9103c042ae23fbcc5141b202dee6d9016d57b649bdc6e9c2a5764b0ad9f2cf9c": "FAIL|Top 10 holders: 36.6% (need under 30%; pools, launchpad and burn addresses left out)",
-    "0x4b31a3ba8847ea4489588b4e7072aa9872b3fcb23184b0cb52535e072c622796": "FAIL|Market cap: $6,787 (need $25,000+); More buys than sells (1h): 1 buys vs 3 sells",
-    "0x2bf59f53955aa8b92ffe09673638e4cfaa0823c23550d2fdfcf1d2b7ea02bc6e": "FAIL|Market cap: $6,788 (need $25,000+); More buys than sells (1h): 2 buys vs 4 sells",
-    "0x7ee4e283eea6f956d37451f534f7d3a345c8a79e0f9c4afb23b52203726275f2": "FAIL|Market cap: $6,973 (need $25,000+); More buys than sells (1h): 0 buys vs 1 sells",
-    "0x7a0e4b69f3de8ec6587719bb346fdc335f7d86e9364614a326dc9b3a3a1fcc11": "FAIL|Market cap: $6,864 (need $25,000+); More buys than sells (1h): 0 buys vs 1 sells",
+    "0x4b31a3ba8847ea4489588b4e7072aa9872b3fcb23184b0cb52535e072c622796": "FAIL|Market cap: $6,787 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
+    "0x2bf59f53955aa8b92ffe09673638e4cfaa0823c23550d2fdfcf1d2b7ea02bc6e": "FAIL|Market cap: $6,788 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
+    "0x7ee4e283eea6f956d37451f534f7d3a345c8a79e0f9c4afb23b52203726275f2": "FAIL|Market cap: $6,973 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
+    "0x7a0e4b69f3de8ec6587719bb346fdc335f7d86e9364614a326dc9b3a3a1fcc11": "FAIL|Market cap: $6,864 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
     "0xe7c8022efd66593dd215d8aa5b2b84c97d3246f5389979294a3d72f47aea94bb": "FAIL|Market cap: $6,955 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells"
   },
   "launchpad_tokens": {
@@ -389,7 +368,7 @@
       "graduated": "2026-10-03T15:14:06Z",
       "symbol": "swordcat",
       "title": "swordcat",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 45940.6846,
       "market_cap_usd": 6779.400789
     },
@@ -398,7 +377,7 @@
       "graduated": "2026-10-03T14:53:57Z",
       "symbol": "ROO",
       "title": "ROO",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 38997.2489,
       "market_cap_usd": 6736.477326
     },
@@ -434,7 +413,7 @@
       "graduated": "2026-10-03T14:28:45Z",
       "symbol": "SORA",
       "title": "SORA LABS",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 10864.6284,
       "market_cap_usd": 6757.343786
     },
@@ -614,7 +593,7 @@
       "graduated": "2026-10-03T21:45:56Z",
       "symbol": "HOODAGENT",
       "title": "HoodAgent",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 7073.0529,
       "market_cap_usd": 10252.71912
     },
@@ -632,7 +611,7 @@
       "graduated": "2026-10-03T14:47:21Z",
       "symbol": "swordcat",
       "title": "swordcat",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 39210.5774,
       "market_cap_usd": 6753.993945
     },
@@ -641,7 +620,7 @@
       "graduated": "2026-10-03T13:35:23Z",
       "symbol": "OPENHARNESS",
       "title": "OpenHarness",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 17305.2571,
       "market_cap_usd": 6754.539763
     },
@@ -650,7 +629,7 @@
       "graduated": "2026-10-03T14:40:00Z",
       "symbol": "ZERO",
       "title": "ZERO",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 39224.6397,
       "market_cap_usd": 6735.208271
     },
@@ -659,7 +638,7 @@
       "graduated": "2026-10-03T15:11:28Z",
       "symbol": "swordcat",
       "title": "swordcat",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 43102.8763,
       "market_cap_usd": 6737.549391
     },
@@ -668,7 +647,7 @@
       "graduated": "2026-10-03T14:39:55Z",
       "symbol": "Four You",
       "title": "For You",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 18634.6443,
       "market_cap_usd": 6742.21149
     },
@@ -740,7 +719,7 @@
       "graduated": "2026-10-04T05:42:38Z",
       "symbol": "PAYR",
       "title": "PAYR",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 44565.1212,
       "market_cap_usd": 6785.46851
     },
@@ -749,7 +728,7 @@
       "graduated": "2026-10-04T05:55:38Z",
       "symbol": "PAYR",
       "title": "PAYR",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 18219.869,
       "market_cap_usd": 6782.453244
     },
@@ -758,7 +737,7 @@
       "graduated": "2026-10-04T05:52:38Z",
       "symbol": "PAYR",
       "title": "PAYR",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 17565.0317,
       "market_cap_usd": 6765.313968
     },
@@ -767,7 +746,7 @@
       "graduated": "2026-10-04T06:03:17Z",
       "symbol": "PAYR",
       "title": "PAYR",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 18273.2014,
       "market_cap_usd": 6832.402009
     },
@@ -776,8 +755,8 @@
       "graduated": "2026-10-04T06:14:44Z",
       "symbol": "PAYR",
       "title": "PAYR",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
-      "liquidity_usd": 18792.9828,
+      "seen": "2026-10-04T12:21:33.845880+00:00",
+      "liquidity_usd": 18783.3085,
       "market_cap_usd": 7301.774234
     },
     "0x2b79a071a75dd40f1aca68146d7978204efd156a": {
@@ -803,7 +782,7 @@
       "graduated": "2026-10-04T09:26:14Z",
       "symbol": "SI",
       "title": "SPACex inu",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 14745.695,
       "market_cap_usd": 6957.023576
     },
@@ -830,7 +809,7 @@
       "graduated": "2026-10-04T09:35:22Z",
       "symbol": "SI",
       "title": "SPacex3 inu",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 14243.6944,
       "market_cap_usd": 6939.319106
     },
@@ -839,7 +818,7 @@
       "graduated": "2026-10-04T09:32:48Z",
       "symbol": "SI",
       "title": "SPacex2 inu",
-      "seen": "2026-10-04T12:11:20.256458+00:00",
+      "seen": "2026-10-04T12:21:33.845880+00:00",
       "liquidity_usd": 26002.2291,
       "market_cap_usd": 6848.399425
     }
