@@ -133,13 +133,6 @@
       "name": "VOID",
       "created": "2026-10-03T22:21:29Z"
     },
-    "0x870152035cfd299785ede30d2fa7d48a2b7c9f012a14d551e5cac4f4d39d6eb4": {
-      "pool": "0x870152035cfd299785ede30d2fa7d48a2b7c9f012a14d551e5cac4f4d39d6eb4",
-      "dex": "pons-v2-dex",
-      "token": "0x58201f2f5f033aea9a352d10a4d143e8a102199b",
-      "name": "HOODAGENTS",
-      "created": "2026-10-03T22:14:06Z"
-    },
     "0x7ce33b798f58d2ff44fd9af18b43677a0c56be324c6b7d3e5bbbbdd8f2cfbaa6": {
       "pool": "0x7ce33b798f58d2ff44fd9af18b43677a0c56be324c6b7d3e5bbbbdd8f2cfbaa6",
       "dex": "pons-v2-dex",
@@ -173,22 +166,12 @@
     }
   },
   "checked": {
-    "0x870152035cfd299785ede30d2fa7d48a2b7c9f012a14d551e5cac4f4d39d6eb4": {
-      "at": "2026-10-04T03:21:16.324119+00:00",
-      "passed": false,
-      "failed": [
-        "Top 10 holders"
-      ]
-    },
     "0x4159d844558b1c9c7f1caed2311d85414f55f2756c9490342669937ae8d34eed": {
-      "at": "2026-10-04T03:21:16.324119+00:00",
+      "at": "2026-10-04T04:21:26.773639+00:00",
       "passed": false,
       "failed": [
-        "Not a honeypot",
-        "Not mintable",
-        "No hidden owner",
-        "Owner can't change balances",
-        "No blacklist"
+        "Market cap",
+        "More buys than sells (1h)"
       ]
     },
     "0x7ce33b798f58d2ff44fd9af18b43677a0c56be324c6b7d3e5bbbbdd8f2cfbaa6": {
@@ -222,18 +205,19 @@
   "sources": {
     "geckoterminal": {
       "calls": 3,
-      "errors": 0,
-      "rate_limited": 0,
+      "errors": 1,
+      "rate_limited": 1,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
       "ok": true,
-      "at": "2026-10-04T04:12:31.727028+00:00",
+      "at": "2026-10-04T04:21:26.773639+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 1,
+      "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-04T04:12:31.727028+00:00",
+      "at": "2026-10-04T04:21:26.773639+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -254,12 +238,10 @@
     }
   },
   "logged": {
-    "0x870152035cfd299785ede30d2fa7d48a2b7c9f012a14d551e5cac4f4d39d6eb4": "FAIL|Top 10 holders: 31.1% (need under 30%; pools, launchpad and burn addresses left out)",
-    "0x4159d844558b1c9c7f1caed2311d85414f55f2756c9490342669937ae8d34eed": "FAIL|Not a honeypot: unknown: GoPlus gave no is_honeypot; Not mintable: unknown: GoPlus gave no is_mintable; No hidden owner: unknown: GoPlus gave no hidden_owner; Owner can't change balances: unknown: GoPlus gave no owner_change_balance; No blacklist: unknown: GoPlus gave no is_blacklisted",
+    "0x4159d844558b1c9c7f1caed2311d85414f55f2756c9490342669937ae8d34eed": "FAIL|Market cap: $6,744 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
     "0x7ce33b798f58d2ff44fd9af18b43677a0c56be324c6b7d3e5bbbbdd8f2cfbaa6": "PASS|",
     "0x2149ca8c91f3a38f881ad6c39cd77daf6832902f9c987e06a6f9fe5b6256ec7b": "FAIL|Pool age: 19954 min (need 30 min - 6 h)",
     "0xee8fba8cfb29c510449a9eed99b8c728315cf79e9b9afd4f3b0edc02cc0ad8f4": "FAIL|Liquidity: $7,816 (need $10,000+ on Pons)",
-    "0x0225888bf7d77688b316cca22c462901b510fe9189fbb8f773c0afa5b1881e04": "FAIL|Not a honeypot: unknown: GoPlus gave no is_honeypot; Not mintable: unknown: GoPlus gave no is_mintable; No hidden owner: unknown: GoPlus gave no hidden_owner; Owner can't change balances: unknown: GoPlus gave no owner_change_balance; No blacklist: unknown: GoPlus gave no is_blacklisted",
     "0x874a2363bb34dfe02844a90a35da851edc3b3c3339142a9889e012267dd53be1": "FAIL|Market cap: $7,293 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells"
   },
   "launchpad_tokens": {
@@ -277,7 +259,7 @@
       "graduated": "2026-10-03T04:19:36Z",
       "symbol": "MCP",
       "title": "Pons MCP",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 23059.6339,
       "market_cap_usd": 6837.057215
     },
@@ -286,7 +268,7 @@
       "graduated": "2026-10-03T03:42:04Z",
       "symbol": "ZERO",
       "title": "ZERO",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 41374.6423,
       "market_cap_usd": 6833.973826
     },
@@ -322,7 +304,7 @@
       "graduated": "2026-10-03T04:21:33Z",
       "symbol": "ZERO",
       "title": "ZERO",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 38886.272,
       "market_cap_usd": 16108.60128
     },
@@ -349,7 +331,7 @@
       "graduated": "2026-10-03T15:14:06Z",
       "symbol": "swordcat",
       "title": "swordcat",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 45811.2172,
       "market_cap_usd": 6779.400789
     },
@@ -358,7 +340,7 @@
       "graduated": "2026-10-03T14:53:57Z",
       "symbol": "ROO",
       "title": "ROO",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 38887.3491,
       "market_cap_usd": 6736.477326
     },
@@ -376,7 +358,7 @@
       "graduated": "2026-10-03T04:07:58Z",
       "symbol": "GLITCH",
       "title": "GLITCH",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 24104.6902,
       "market_cap_usd": 6722.4644
     },
@@ -394,7 +376,7 @@
       "graduated": "2026-10-03T14:28:45Z",
       "symbol": "SORA",
       "title": "SORA LABS",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 10834.0104,
       "market_cap_usd": 6757.343786
     },
@@ -574,8 +556,8 @@
       "graduated": "2026-10-03T21:45:56Z",
       "symbol": "HOODAGENT",
       "title": "HoodAgent",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
-      "liquidity_usd": 7083.0842,
+      "seen": "2026-10-04T04:21:26.773639+00:00",
+      "liquidity_usd": 7085.4507,
       "market_cap_usd": 10392.26542
     },
     "0xd242bd33753f23395cc5bdc3a9085d683cc0d561": {
@@ -583,7 +565,7 @@
       "graduated": "2026-10-03T04:15:46Z",
       "symbol": "ZERO",
       "title": "ZERO",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 38871.7312,
       "market_cap_usd": 6726.739673
     },
@@ -592,7 +574,7 @@
       "graduated": "2026-10-03T14:47:21Z",
       "symbol": "swordcat",
       "title": "swordcat",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 39100.0764,
       "market_cap_usd": 6753.993945
     },
@@ -601,7 +583,7 @@
       "graduated": "2026-10-03T13:35:23Z",
       "symbol": "OPENHARNESS",
       "title": "OpenHarness",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 17256.4884,
       "market_cap_usd": 6754.539763
     },
@@ -610,7 +592,7 @@
       "graduated": "2026-10-03T14:40:00Z",
       "symbol": "ZERO",
       "title": "ZERO",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 39113.8094,
       "market_cap_usd": 6735.208271
     },
@@ -619,7 +601,7 @@
       "graduated": "2026-10-03T15:11:28Z",
       "symbol": "swordcat",
       "title": "swordcat",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 42981.4062,
       "market_cap_usd": 6737.549391
     },
@@ -628,7 +610,7 @@
       "graduated": "2026-10-03T14:39:55Z",
       "symbol": "Four You",
       "title": "For You",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 18582.1292,
       "market_cap_usd": 6742.21149
     },
@@ -637,7 +619,7 @@
       "graduated": "2026-10-03T22:27:04Z",
       "symbol": "NEPTUNE",
       "title": "Neptune",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 6780.4659,
       "market_cap_usd": 7295.656114
     },
@@ -646,7 +628,7 @@
       "graduated": "2026-10-03T13:26:03Z",
       "symbol": "GLASS",
       "title": "Hourglass",
-      "seen": "2026-10-04T04:12:31.727028+00:00",
+      "seen": "2026-10-04T04:21:26.773639+00:00",
       "liquidity_usd": 17262.1432,
       "market_cap_usd": 6740.493556
     }
