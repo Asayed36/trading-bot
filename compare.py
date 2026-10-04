@@ -91,6 +91,12 @@ def main():
         except GitHubError as exc:
             print(f"(Couldn't get the real run intervals from GitHub: {exc})", file=sys.stderr)
     extra += schedule_lines(strategies, schedule_path, actual) + [""]
+    if cfg.get("main_1min", {}).get("enabled"):
+        # Main's checks every minute, on your server (pushed about once an
+        # hour): next to main. Not in the schedule split above, which is
+        # about the GitHub schedule.
+        strategies.insert(1, ("main (1 min)", os.path.join(folder, cfg["main_1min"]["folder"]),
+                              cfg["paper_trading"]["round_trip_cost_pct"]))
     if cfg.get("news", {}).get("enabled"):
         strategies.append(("news", os.path.join(folder, "news"),
                            cfg["news"]["paper_trading"]["round_trip_cost_pct"]))

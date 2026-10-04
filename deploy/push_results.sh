@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Pushes the launch strategy's results (data/launch) to GitHub.
+# Pushes the server's paper results to GitHub: the launch strategy
+# (data/launch) and the main (1 min) strategy (data/main-1min).
 # It uses the fine-grained GitHub token saved in ~/.git-credentials, which
 # can only read and write this repository's contents. Nothing else.
 #
 # How: fetch GitHub's main, move this checkout's main onto it (code files
-# that changed on GitHub are updated; data/launch is never touched, because
-# the bot keeps writing there and its files are always the newest), then
-# commit data/launch on top and push. No rebase, so nothing can be left
+# that changed on GitHub are updated; data/launch and data/main-1min are
+# never touched, because the bots keep writing there and their files are
+# always the newest), then commit them on top and push. No rebase, so nothing can be left
 # half-done; and if an older version of this script left a rebase or
 # cherry-pick stuck, it's cleared first.
 set -euo pipefail
@@ -17,13 +18,20 @@ cd "$(dirname "$0")/.."
 export GIT_AUTHOR_NAME="launch-bot" GIT_AUTHOR_EMAIL="launch-bot@users.noreply.github.com"
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME" GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
-if [ ! -d data/launch ]; then
-  echo "No launch results yet."
+RESULTS=()
+for dir in data/launch data/main-1min; do
+  if [ -d "$dir" ]; then RESULTS+=("$dir"); fi
+done
+if [ ${#RESULTS[@]} -eq 0 ]; then
+  echo "No server results yet."
   exit 0
 fi
+# Each results folder is left out when bringing code files up to date.
+KEEP=()
+for dir in data/launch data/main-1min; do KEEP+=(":(exclude)$dir"); done
 
 # Clear anything left half-done. "--quit" forgets the operation without
-# touching any files, so the newest results in data/launch are kept.
+# touching any files, so the newest results are kept.
 gitdir=$(git rev-parse --git-dir)
 if [ -d "$gitdir/rebase-merge" ] || [ -d "$gitdir/rebase-apply" ]; then
   echo "Clearing an unfinished rebase."
@@ -48,22 +56,23 @@ for attempt in 1 2 3 4; do
   git reset -q --mixed origin/main
   # ...except code files that changed on GitHub, which are brought up to
   # date like "git pull" would (restart the bot to use new code).
-  git diff -z --name-only --diff-filter=d "$before" origin/main -- . ':(exclude)data/launch' \
+  git diff -z --name-only --diff-filter=d "$before" origin/main -- . "${KEEP[@]}" \
     | xargs -0 -r git checkout -q origin/main --
-  git diff -z --name-only --diff-filter=D "$before" origin/main -- . ':(exclude)data/launch' \
+  git diff -z --name-only --diff-filter=D "$before" origin/main -- . "${KEEP[@]}" \
     | xargs -0 -r rm -f --
-  git add data/launch
+  # Only the finished files: never a half-written *.tmp.
+  git add -- "${RESULTS[@]}" ':(exclude,glob)**/*.tmp'
   if git diff --cached --quiet; then
-    echo "No new launch results."
+    echo "No new server results."
     exit 0
   fi
-  git commit -q -m "Launch paper results $(date -u '+%Y-%m-%d %H:%M UTC')"
+  git commit -q -m "Server paper results $(date -u '+%Y-%m-%d %H:%M UTC')"
   if git push -q origin HEAD:main; then
-    echo "Pushed launch results."
+    echo "Pushed server results (${RESULTS[*]})."
     exit 0
   fi
   # Someone (the GitHub workflow) pushed in between: start again from theirs.
   sleep $((attempt * 15))
 done
-echo "Could not push the launch results after 4 attempts." >&2
+echo "Could not push the server results after 4 attempts." >&2
 exit 1

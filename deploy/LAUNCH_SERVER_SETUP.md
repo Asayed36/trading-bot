@@ -3,7 +3,8 @@
 This puts the **launch** paper strategy (`launch_bot.py`) on a small cloud
 server that runs all the time. It listens to PumpPortal's free data feed,
 paper-trades new pump.fun launches at three speeds, and pushes the results to
-this repository about once an hour.
+this repository about once an hour. Optionally it also runs the **main (1
+min)** strategy (Part G): the main strategy's checks every minute.
 
 **Paper trading only.** Nothing here uses a wallet, a private key or a seed
 phrase, and nothing can buy or sell anything. **Never put a wallet or a private
@@ -255,8 +256,9 @@ Within an hour or two you should see commits called **"Launch paper results
 
 - **Get bot updates** (after a pull request is merged): the hourly push
   already brings the code on the server up to date with GitHub (like
-  `git pull`), so you only need to restart the bot to use it:
-  `sudo systemctl restart launch-bot`. (Any of your own edits to a file that
+  `git pull`), so you only need to restart the bots to use it:
+  `sudo systemctl restart launch-bot main-1min` (leave out `main-1min` if
+  you haven't set up Part G). (Any of your own edits to a file that
   also changed on GitHub are replaced by GitHub's version.)
 - **Test the push by hand:** `~/trading-bot/deploy/push_results.sh`. It
   never uses a rebase, and if an older version left a rebase or cherry-pick
@@ -277,6 +279,9 @@ Within an hour or two you should see commits called **"Launch paper results
   expired or lacks permission": make a new one (F1) and repeat F2. It also
   starts the Daily strategy comparison when yesterday's issue is missing
   after 00:30 UTC (`started Daily strategy comparison ...` in the log).
+- **Main (1 min)** (Part G): `journalctl -u main-1min -n 30 --no-pager`
+  shows one line a minute. Pause it with `sudo systemctl stop main-1min`;
+  turn it off for good with `sudo systemctl disable --now main-1min`.
 - **Stop paying:** in Vultr, **destroy** the server. Just stopping it keeps
   billing.
 - **Never** install a wallet, paste a private key or seed phrase, or use
@@ -364,3 +369,48 @@ journalctl -u paper-run-trigger -n 20 --no-pager
 
 The daily comparison's **Time between runs** row counts both kinds of runs
 and says how many GitHub scheduled and how many the server started.
+
+---
+
+## Part G. Run the main strategy every minute (optional)
+
+The **main (1 min)** strategy is the main strategy with exactly the same
+entry checks, exits and costs ($10 buys; sell half at +50%; everything left
+at -30%, 40% below the peak, or after 48 hours if the price is still within
+10% of entry; 3% costs), checked **every minute** instead of every few
+minutes on GitHub. Its results go to `data/main-1min/` only: it never
+touches the GitHub main strategy's files and opens no GitHub issues. The
+hourly push (Part D) sends them to GitHub, and the daily comparison shows
+them as **main (1 min)** next to **main**, with a health row.
+
+It needs no new token or key. It only reads DexScreener, RugCheck and
+Jupiter's free data, and stays within their free limits: about 4–6
+DexScreener requests a minute, and RugCheck only for tokens that pass the
+market checks, once per token per 10 minutes, at most 10 a minute.
+
+### G1. Get the new files and test once
+
+```
+sudo systemctl start launch-push
+cd ~/trading-bot && git log -1 --oneline
+.venv/bin/python main_1min.py --test
+```
+
+The test does one run against the real sites and saves **nothing** (a
+temporary folder). It prints one line like
+`12:01 43 candidate(s), 43 checked, 2 passed; 2 open; P&L $+0.00`, plus a
+`BUY` line for each token that passed.
+
+### G2. Turn it on
+
+```
+sudo cp ~/trading-bot/deploy/main-1min.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now main-1min
+systemctl status main-1min --no-pager
+journalctl -u main-1min -n 20 --no-pager
+```
+
+`status` should say **active (running)**; the log gets one line a minute.
+Within about an hour the push commits `data/main-1min/` (commits called
+**"Server paper results …"**).

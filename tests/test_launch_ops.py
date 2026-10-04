@@ -120,7 +120,7 @@ class PushScriptTests(unittest.TestCase):
         result = self.push()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Clearing an unfinished rebase.", result.stdout)
-        self.assertIn("Pushed launch results.", result.stdout)
+        self.assertIn("Pushed server results (data/launch).", result.stdout)
         self.dev("pull", "-q", "origin", "main")
         self.assertEqual(self.read("dev/data/launch/journal.csv"), "row1\nrow2\nrow3\n")
         self.assertEqual(self.read("server/code.py"), "v2\n")       # code updated like a pull
@@ -128,11 +128,11 @@ class PushScriptTests(unittest.TestCase):
         self.assertEqual(self.read("server/local.txt"), "mine\n")
         self.assertFalse(os.path.isdir(self.path("server/.git/rebase-merge")))
         log = self.server("log", "--format=%an %s", "-3", "origin/main").stdout.splitlines()
-        self.assertTrue(log[0].startswith("launch-bot Launch paper results"))
+        self.assertTrue(log[0].startswith("launch-bot Server paper results"))
         self.assertEqual(log[1], "dev code update")
 
         # Nothing new: nothing pushed.
-        self.assertIn("No new launch results.", self.push().stdout)
+        self.assertIn("No new server results.", self.push().stdout)
 
     def test_clears_a_stuck_cherry_pick(self):
         self.write("server/data/launch/journal.csv", "row2\n", "a")
@@ -146,6 +146,29 @@ class PushScriptTests(unittest.TestCase):
         self.assertIn("Clearing an unfinished cherry-pick.", result.stdout)
         self.dev("pull", "-q", "origin", "main")
         self.assertEqual(self.read("dev/data/launch/journal.csv"), "row1\nrow2\n")
+
+    def test_pushes_main_1min_results_and_keeps_the_servers_copy(self):
+        os.makedirs(self.path("server/data/main-1min"))
+        self.write("server/data/main-1min/journal.csv", "buy1\n")
+        self.write("server/data/main-1min/positions.json.tmp", "half-written")
+        # GitHub's main moved on (the scheduled run committed main's files).
+        self.write("dev/data/journal.csv", "main row\n")
+        self.dev("add", "-A")
+        self.dev("commit", "-qm", "Paper trading run")
+        self.dev("push", "-q", "origin", "main")
+        result = self.push()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Pushed server results (data/launch data/main-1min).", result.stdout)
+        self.dev("pull", "-q", "origin", "main")
+        self.assertEqual(self.read("dev/data/main-1min/journal.csv"), "buy1\n")
+        self.assertFalse(os.path.exists(self.path("dev/data/main-1min/positions.json.tmp")))
+        self.assertEqual(self.read("dev/data/journal.csv"), "main row\n")   # main's untouched
+        # The bot keeps writing; the next push carries its newest rows.
+        self.write("server/data/main-1min/journal.csv", "sell1\n", "a")
+        self.assertEqual(self.push().returncode, 0)
+        self.dev("pull", "-q", "origin", "main")
+        self.assertEqual(self.read("dev/data/main-1min/journal.csv"), "buy1\nsell1\n")
+        self.assertEqual(self.read("server/data/main-1min/journal.csv"), "buy1\nsell1\n")
 
 
 if __name__ == "__main__":
