@@ -504,6 +504,12 @@ max_candidates_per_run = 10
 # Minimum liquidity in the pool (DexScreener), in USD, for a launchpad
 # without its own min_liquidity_usd (see the launchpads below).
 min_liquidity_usd = 10000
+# The main strategy's market checks, with this chain's numbers (DexScreener,
+# the same pool; unknown counts as a fail): a market cap of at least this
+# (USD), not down more than this % in 24 hours, and more buys than sells in
+# the last hour.
+min_market_cap_usd = 25000
+max_drop_24h_pct = 50
 # Copycats: a token fails when another Pons or Pools.trade token with the
 # same name or symbol graduated before it in the last N days. Ignored: ones
 # that graduated after it, and clones whose liquidity is
