@@ -132,7 +132,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 0.0001199,
+      "last_price": 9.123e-05,
       "issue_details": {
         "extra": [
           [
@@ -260,16 +260,6 @@
   ],
   "running_total_pnl_usd": -14.788256905810856,
   "watch": {
-    "0xf4be5e9a7a2c21784857fa43e2fc4cafaf31926e23b6756d8e197c9e424d3979": {
-      "pool": "0xf4be5e9a7a2c21784857fa43e2fc4cafaf31926e23b6756d8e197c9e424d3979",
-      "dex": "uniswap-pools-trade",
-      "token": "0xdfd754c5f0a88e5fd60f848570d335b3fc4c5bd4",
-      "name": "EXTREMISM",
-      "title": "Extremism",
-      "created": "2026-10-04T15:19:15Z",
-      "liquidity_usd": 17616.4947,
-      "market_cap_usd": 31696.15052
-    },
     "0xddc30709002e268d820bda2b6f8b59675e7e9b2f42c3bc5c80caa123f77336f3": {
       "pool": "0xddc30709002e268d820bda2b6f8b59675e7e9b2f42c3bc5c80caa123f77336f3",
       "dex": "pons-v2-dex",
@@ -322,15 +312,6 @@
     }
   },
   "checked": {
-    "0xf4be5e9a7a2c21784857fa43e2fc4cafaf31926e23b6756d8e197c9e424d3979": {
-      "at": "2026-10-04T20:21:21.908232+00:00",
-      "passed": false,
-      "failed": [
-        "Market cap",
-        "Not down >50% in 24h",
-        "More buys than sells (1h)"
-      ]
-    },
     "0xddc30709002e268d820bda2b6f8b59675e7e9b2f42c3bc5c80caa123f77336f3": {
       "at": "2026-10-04T21:01:28.280775+00:00",
       "passed": false,
@@ -358,6 +339,13 @@
       "at": "2026-10-04T21:18:25.068359+00:00",
       "passed": true,
       "failed": []
+    },
+    "0xcd0b0278779c0416afc68854622fc267fd86a3a2032217bc91d48013554062de": {
+      "at": "2026-10-04T21:31:56.894921+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
     }
   },
   "sources": {
@@ -366,15 +354,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-04T21:18:25.068359+00:00",
+      "at": "2026-10-04T21:31:56.894921+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 3,
+      "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-04T21:18:25.068359+00:00",
+      "at": "2026-10-04T21:31:56.894921+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -383,23 +371,23 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-10-04T21:18:25.068359+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "rpc": {
-      "calls": 6,
+      "calls": 4,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-04T21:18:25.068359+00:00",
+      "at": "2026-10-04T21:31:56.894921+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0xf4be5e9a7a2c21784857fa43e2fc4cafaf31926e23b6756d8e197c9e424d3979": "FAIL|Market cap: $6,881 (need $25,000+); Not down >50% in 24h: -60% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0xddc30709002e268d820bda2b6f8b59675e7e9b2f42c3bc5c80caa123f77336f3": "FAIL|Top 10 holders: 45.4% (need under 30%; pools, launchpad and burn addresses left out)",
     "0xe4fd8903aa2dcdd1e839ec4c3d49fbdd5532b79573ba4a4ea377f47758ac48cc": "PASS|",
     "0xaf386494baf742e9e4b1deda062954c8999897b3e3e20327658aeec8fe82dbf8": "FAIL|Not a honeypot: unknown: GoPlus gave no is_honeypot; Not mintable: unknown: GoPlus gave no is_mintable; No hidden owner: unknown: GoPlus gave no hidden_owner; Owner can't change balances: unknown: GoPlus gave no owner_change_balance; No blacklist: unknown: GoPlus gave no is_blacklisted",
-    "0xf8f9e2aed8476285c2ac7e74f2d9d18fdd86ff2ca6c6e60b5cc0e4922ea315ec": "PASS|"
+    "0xf8f9e2aed8476285c2ac7e74f2d9d18fdd86ff2ca6c6e60b5cc0e4922ea315ec": "PASS|",
+    "0xcd0b0278779c0416afc68854622fc267fd86a3a2032217bc91d48013554062de": "FAIL|Liquidity: $5,207 (need $10,000+ on Pons)"
   },
   "launchpad_tokens": {
     "0xe5906b57234b921bdb5854557c649024bbbd05c3": {
@@ -560,27 +548,27 @@
       "graduated": "2026-10-02T22:59:07Z",
       "symbol": "ZERO",
       "title": "zerotrace",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 62372.5106,
-      "market_cap_usd": 1224191.606
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 61294.2443,
+      "market_cap_usd": 1162962.636
     },
     "0x986c2f2f7881cc1767a22919a6543f9ce291e62c": {
       "dex": "pons-v2-dex",
       "graduated": "2026-10-03T17:25:29Z",
       "symbol": "SETTLE",
       "title": "Settle",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 24560.837,
-      "market_cap_usd": 30551.83941
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 25050.0533,
+      "market_cap_usd": 28451.35001
     },
     "0x285a9ddf53bef60ebcc55f5752724a30ef7b2d17": {
       "dex": "pons-v2-dex",
       "graduated": "2026-10-02T12:06:15Z",
       "symbol": "CRADLE",
       "title": "cradle",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 44172.3288,
-      "market_cap_usd": 711469.022006053
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 44064.6096,
+      "market_cap_usd": 707515.370036659
     },
     "0xb88bcc87bd9eba5687e1635ce19750ad176adfc7": {
       "dex": "pons-v2-dex",
@@ -605,8 +593,8 @@
       "graduated": "2026-10-03T22:14:06Z",
       "symbol": "HOODAGENTS",
       "title": "HoodAgents",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 33511.3848,
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 33466.5833,
       "market_cap_usd": 14502.71766
     },
     "0x6c44cc8102cc1469aa1a24254cdd135ec89d7f67": {
@@ -614,8 +602,8 @@
       "graduated": "2026-10-03T23:02:43Z",
       "symbol": "SIGH",
       "title": "Sighduck",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 130016.1363,
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 129842.3173,
       "market_cap_usd": 8284.755158
     },
     "0x7706c18ee62f64452e779db29a70c32f97e69f49": {
@@ -677,9 +665,9 @@
       "graduated": "2026-10-03T19:01:28Z",
       "symbol": "DAZZ",
       "title": "DAZZEL",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 22088.4305,
-      "market_cap_usd": 56167.36862
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 22077.6806,
+      "market_cap_usd": 47208.96951
     },
     "0xaee4b47e17da55741f5276f858a53fa9aab70dd4": {
       "dex": "pons-v2-dex",
@@ -704,17 +692,17 @@
       "graduated": "2026-10-03T20:59:01Z",
       "symbol": "INC",
       "title": "incorporate.fun",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 23812.6221,
-      "market_cap_usd": 20454.79571
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 22514.3373,
+      "market_cap_usd": 30283.24793
     },
     "0xf64d8388d522a28e481c2161fb104bfbf0143856": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-03T21:45:56Z",
       "symbol": "HOODAGENT",
       "title": "HoodAgent",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 7192.3256,
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 7182.7101,
       "market_cap_usd": 10964.70772
     },
     "0xd242bd33753f23395cc5bdc3a9085d683cc0d561": {
@@ -776,9 +764,9 @@
       "graduated": "2026-10-03T22:27:04Z",
       "symbol": "NEPTUNE",
       "title": "Neptune",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 6818.3853,
-      "market_cap_usd": 7394.848525
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 6809.5587,
+      "market_cap_usd": 7427.407165
     },
     "0x6c3a02ff19330d54ffbabf475742b9eea8c69c0d": {
       "dex": "uniswap-pools-trade",
@@ -794,7 +782,7 @@
       "graduated": "2026-10-03T22:31:26Z",
       "symbol": "VRAX",
       "title": "Commander Vrax",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 7295.745,
       "market_cap_usd": 7467.140387
     },
@@ -803,7 +791,7 @@
       "graduated": "2026-10-03T22:14:22Z",
       "symbol": "HOODCAT",
       "title": "HOODCAT",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 7585.0625,
       "market_cap_usd": 7070.493973
     },
@@ -812,9 +800,9 @@
       "graduated": "2026-10-02T19:05:39Z",
       "symbol": "ORE",
       "title": "Hollowfall",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 34795.4604,
-      "market_cap_usd": 401286.06
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 42808.6995,
+      "market_cap_usd": 561047.7432
     },
     "0xa8aff28dbf02c8783db22e34402df4e8bde63061": {
       "dex": "pons-v2-dex",
@@ -830,16 +818,16 @@
       "graduated": "2026-10-04T05:46:06Z",
       "symbol": "SOMALABS",
       "title": "SOMA Labs",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 24189.1947,
-      "market_cap_usd": 24158.76399
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 23475.8973,
+      "market_cap_usd": 29709.90565
     },
     "0x5898a45bf6e7052269f81dd0949f63ead38b57ec": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-04T05:42:38Z",
       "symbol": "PAYR",
       "title": "PAYR",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 44641.532,
       "market_cap_usd": 6785.46851
     },
@@ -848,7 +836,7 @@
       "graduated": "2026-10-04T05:55:38Z",
       "symbol": "PAYR",
       "title": "PAYR",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 18251.1085,
       "market_cap_usd": 6782.453244
     },
@@ -857,7 +845,7 @@
       "graduated": "2026-10-04T05:52:38Z",
       "symbol": "PAYR",
       "title": "PAYR",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 17595.1485,
       "market_cap_usd": 6765.313968
     },
@@ -866,7 +854,7 @@
       "graduated": "2026-10-04T06:03:17Z",
       "symbol": "PAYR",
       "title": "PAYR",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 18304.3968,
       "market_cap_usd": 6832.402009
     },
@@ -875,7 +863,7 @@
       "graduated": "2026-10-04T06:14:44Z",
       "symbol": "PAYR",
       "title": "PAYR",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 18792.918,
       "market_cap_usd": 7542.195384
     },
@@ -893,7 +881,7 @@
       "graduated": "2026-10-04T00:47:03Z",
       "symbol": "HYPERHOOKS",
       "title": "HYPER HOOKS",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 46495.5321,
       "market_cap_usd": 3671.193995
     },
@@ -902,7 +890,7 @@
       "graduated": "2026-10-04T09:26:14Z",
       "symbol": "SI",
       "title": "SPACex inu",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 14770.8684,
       "market_cap_usd": 6957.023576
     },
@@ -929,7 +917,7 @@
       "graduated": "2026-10-04T09:35:22Z",
       "symbol": "SI",
       "title": "SPacex3 inu",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 14273.9617,
       "market_cap_usd": 6915.877203
     },
@@ -938,7 +926,7 @@
       "graduated": "2026-10-04T09:32:48Z",
       "symbol": "SI",
       "title": "SPacex2 inu",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 26046.6192,
       "market_cap_usd": 6848.399425
     },
@@ -947,9 +935,9 @@
       "graduated": "2026-10-04T03:50:23Z",
       "symbol": "AI CABAL",
       "title": "Ai Cabal",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 22570.1527,
-      "market_cap_usd": 34187.64615
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 22535.386,
+      "market_cap_usd": 34303.79936
     },
     "0x77ddef7879b778e72a957392e9de846aebffa207": {
       "dex": "pons-v2-dex",
@@ -965,7 +953,7 @@
       "graduated": "2026-10-04T15:19:15Z",
       "symbol": "EXTREMISM",
       "title": "Extremism",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 19437.2466,
       "market_cap_usd": 6863.41455
     },
@@ -983,7 +971,7 @@
       "graduated": "2026-10-04T12:54:43Z",
       "symbol": "COSM",
       "title": "Cosmic",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 55312.988,
       "market_cap_usd": 2958.581076
     },
@@ -992,7 +980,7 @@
       "graduated": "2026-10-03T22:10:21Z",
       "symbol": "HOODCAT",
       "title": "HoodCat",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
+      "seen": "2026-10-04T21:31:56.894921+00:00",
       "liquidity_usd": 7096.0003,
       "market_cap_usd": 6828.068849
     },
@@ -1001,9 +989,9 @@
       "graduated": "2026-10-04T14:11:12Z",
       "symbol": "SHOOKS",
       "title": "SuperHooks",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 20865.9074,
-      "market_cap_usd": 61298.84301
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 21780.6567,
+      "market_cap_usd": 89328.69604
     },
     "0xa4ddf89a40a35264e9d7f896a1ef01c59b1e977a": {
       "dex": "pons-v2-dex",
@@ -1028,18 +1016,18 @@
       "graduated": "2026-10-04T18:42:38Z",
       "symbol": "MONDO",
       "title": "Mondo Network",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 23917.6326,
-      "market_cap_usd": 122159.9142
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 23045.2219,
+      "market_cap_usd": 82496.43251
     },
     "0x749c38972ff8f4bc313bf343a4011eeb0a9b0480": {
       "dex": "pons-v2-dex",
       "graduated": "2026-10-04T20:27:55Z",
       "symbol": "GRAPHITEBOOM",
       "title": "graphiteboom",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 20928.7068,
-      "market_cap_usd": 23221.44451
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 21692.0703,
+      "market_cap_usd": 18699.62637
     },
     "0x1246abc0e1fbdfe004ddc5d5f45330f8e8fec335": {
       "dex": "pons-v2-dex",
@@ -1055,24 +1043,26 @@
       "graduated": "2026-10-04T20:45:13Z",
       "symbol": "graphite-boom",
       "title": "graphite-boom",
-      "seen": "2026-10-04T21:18:25.068359+00:00",
-      "liquidity_usd": 21259.2156,
-      "market_cap_usd": 95236.65658
+      "seen": "2026-10-04T21:31:56.894921+00:00",
+      "liquidity_usd": 20102.8472,
+      "market_cap_usd": 78735.62756
     }
   },
   "graduations": {
-    "at": "2026-10-04T20:21:21.908232+00:00",
+    "at": "2026-10-04T21:31:56.894921+00:00",
     "hours": 24,
     "tokens": [
       "0x0563c747f795c4edb2f3ceaf432ac57cca38aca3",
+      "0x1246abc0e1fbdfe004ddc5d5f45330f8e8fec335",
       "0x2b79a071a75dd40f1aca68146d7978204efd156a",
       "0x478c6a694dec70af1690e39adb882d56a6d5e940",
       "0x4aa95372bc34238dfead7dfc8821882bde1d0bf2",
-      "0x4c54d6b395c0917bf42f4f46e39a3b2f1e94b65d",
       "0x58201f2f5f033aea9a352d10a4d143e8a102199b",
       "0x6352065405abb27c71d9b109a7fd3934743671f7",
+      "0x67ffeef0508e328c43ef36e0cb198451c83bcee6",
       "0x68c18579a2f2bd462594acb506b0e161feeaf75a",
       "0x6c44cc8102cc1469aa1a24254cdd135ec89d7f67",
+      "0x749c38972ff8f4bc313bf343a4011eeb0a9b0480",
       "0x74ba1a163081dcbc6a9f9fa8eff7c817288ecb83",
       "0x77ddef7879b778e72a957392e9de846aebffa207",
       "0x7da090fba0ba1e448684bdf97cb094d6e834f7b8",
@@ -1088,12 +1078,10 @@
       "0xc2b6e21f005d99e64e161b7e23daff443743eb56",
       "0xce501d886cd4ab211a40e39e1a564ffc5f81e8b6",
       "0xd0c70390e967e699a59853efe91a9bbf2d1cac55",
-      "0xd1a3704cbfcc4a7ed8893f66d789768754d41737",
       "0xdd1d7be3c2364a006e6c83f5e0f0345af36ed349",
       "0xe1838f0dff03a9327dea87b2a2285850791297ec",
       "0xe829f4699826c363d3bb3878a2cdb1f34d0d0456",
-      "0xf55a7efd4f5597388c2067cc82b4dd491b9d6be6",
-      "0xfc326381d41ff00f299755830aec7e2254964fab"
+      "0xf55a7efd4f5597388c2067cc82b4dd491b9d6be6"
     ],
     "complete": true
   },
