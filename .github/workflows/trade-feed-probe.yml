@@ -1,0 +1,44 @@
+# A short run of the trade feed probe (trade_feed_probe.py) on GitHub, to
+# check it works before the 2-hour measurement on your server. Research
+# only: no trading, no keys, no wallet; nothing is saved to the repository
+# (the summary is shown on the run's page).
+
+name: Trade feed probe (short test)
+
+on:
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: "Minutes to measure (at most 120)"
+        required: false
+        default: "5"
+  push:
+    paths:
+      - trade_feed_probe.py
+      - .github/workflows/trade-feed-probe.yml
+
+permissions:
+  contents: read             # it only reads the code; nothing is written back
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 130
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt -r requirements-launch.txt
+
+      - name: Measure
+        env:
+          MINUTES: ${{ github.event.inputs.minutes || '5' }}
+        run: |
+          python trade_feed_probe.py --minutes "$MINUTES" --out "$RUNNER_TEMP/probe" | tee report.txt
+          { echo '```'; cat report.txt; echo '```'; echo; echo '```json';
+            cat "$RUNNER_TEMP/probe/summary.json"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

@@ -339,6 +339,20 @@ service; setup: Part G of
   and a health row with its last good run, runs and busiest-hour requests,
   and its last push.
 
+## Trade feed probe (a 2-hour measurement, no trading)
+
+`trade_feed_probe.py` checks whether Solana's **free public RPC** can be the
+live trade feed for a planned "momentum on launches" strategy (PumpPortal's
+trade feed now needs a wallet). It subscribes read-only to pump.fun's
+program logs and records only numbers: trades per second, bandwidth (and
+what Helius would charge for it), disconnects, silent gaps, the feed's
+delay, and DexScreener's listing delay and price lag for a few sampled
+launches, plus its own CPU and memory. No trades are made and no trade data
+is kept: only `data/trade-feed-probe/summary.json`. It stops by itself after
+2 hours. Run it on your server (Part H of
+[`deploy/LAUNCH_SERVER_SETUP.md`](deploy/LAUNCH_SERVER_SETUP.md)); the
+"Trade feed probe (short test)" workflow runs it for 5 minutes on GitHub.
+
 ## The "launch" strategy (a fourth paper strategy, on your own server)
 
 It tests whether **sniping** brand-new pump.fun tokens could work. Because a
@@ -627,6 +641,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/convergence.py` | The convergence strategy: Helius reads, credit budget, wallet scoring, signals and exits |
 | `screener/news.py` | The news strategy: feeds, coin matching, the checks, the candidate log and exits |
 | `screener/launch.py`, `launch_bot.py` | The launch strategy and the program that runs it on your server |
+| `trade_feed_probe.py` | A 2-hour, read-only measurement of the free Solana RPC as a pump.fun trade feed (no trading) |
 | `main_1min.py` | The main (1 min) strategy: main's checks and exits every minute, on your server |
 | `screener/robinhood.py` | The robinhood strategy: GeckoTerminal watchlist, DexScreener prices, GoPlus and RPC holder checks, costs and exits |
 | `robinhood_probe.py` | Research only: reports what each free data source returns for Robinhood Chain (run by the "Robinhood Chain probe" workflow; no trading) |
