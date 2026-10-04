@@ -114,6 +114,14 @@ def main():
             sell_cost = lp["bot_fee_pct"] + lp["platform_fee_pct"] + speed["extra_slippage_pct"]
             strategies.append((f"launch {speed['name']}",
                                os.path.join(folder, "launch", speed["name"]), sell_cost))
+    if cfg.get("momentum", {}).get("enabled"):
+        # Runs on your server too: the launch bot's costs, one column per variant.
+        lp, m = cfg["launch"]["paper_trading"], cfg["momentum"]
+        speed = next(s for s in cfg["launch"]["speeds"] if s["name"] == m["costs_like_speed"])
+        sell_cost = lp["bot_fee_pct"] + lp["platform_fee_pct"] + speed["extra_slippage_pct"]
+        for v in m["variants"]:
+            strategies.append((f"momentum {v['name']}",
+                               os.path.join(folder, m["folder"], v["name"]), sell_cost))
     if cfg.get("convergence", {}).get("enabled"):
         extra += helius_lines(os.path.join(folder, "convergence"), day)
     health = health_lines(folder, cfg, now_utc(), gh)

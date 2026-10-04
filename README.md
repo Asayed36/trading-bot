@@ -339,6 +339,54 @@ service; setup: Part G of
   and a health row with its last good run, runs and busiest-hour requests,
   and its last push.
 
+## The "momentum" strategy (new launches rising fast, on your own server)
+
+It tests whether buying a brand-new pump.fun launch **after** it starts
+rising fast on real buying works better than sniping it at creation.
+`momentum_bot.py` runs all the time on the launch bot's server (the
+`momentum-bot` service; setup: Part I of
+[`deploy/LAUNCH_SERVER_SETUP.md`](deploy/LAUNCH_SERVER_SETUP.md)).
+
+- **Data:** every pump.fun trade, launch and graduation, live from Solana's
+  **free public RPC** (one read-only `logsSubscribe`; no key, no wallet;
+  `screener/pumpfeed.py`). Prices: each trade's bonding-curve price;
+  DexScreener once a held token stops trading for a minute or graduates.
+  SOL's price: DexScreener.
+- **Three variants, side by side**, each with its own journal in
+  `data/momentum/<name>/`: a rise of **+30% within 2 minutes**, **+50% within
+  3 minutes**, **+100% within 5 minutes** (from the window's lowest price).
+- **The other entry rules** (in the same window, numbers in `[momentum]`):
+  at least **15 buys** from at least **10 different wallets**, buys
+  outnumbering sells at least **1.5 to 1**, at least **3 SOL of net
+  buying**, **no wallet over 30%** of the SOL bought, the **creator hasn't
+  sold**, the launch is **1-10 minutes old**, still on the curve and under
+  80% of the way to graduating, and not skipped by the launch bot's
+  **copycat-name** and **dead-creator** rules (from launches this bot has
+  seen).
+- **The fill:** at the first trade at least **5 seconds** after the signal,
+  at that trade's price (no trade within a minute = no buy). **No new buys
+  while the feed is down**, nor on a signal whose window or wait for the fill
+  overlaps a feed outage (missed trades would make the counts wrong).
+- **Limits per variant:** at most **10 buys an hour** and **20 open**.
+- **Costs and exits: the launch bot's** (`[launch.paper_trading]` and its
+  90s speed's priority fee and slippage): **$5** buys, 1% bot fee,
+  pump.fun's fee, 5% slippage and a priority fee on every trade; sell half
+  at **2x**, everything left at **-30%** or **30 minutes** after the buy.
+- **Records:** each variant's `journal.csv`, `positions.json` and
+  `entries.csv` (the rise, buys, sells, buyers, net SOL, biggest wallet's
+  share, curve progress, seconds after creation and after the signal, and
+  Jupiter's organic score, read at the signal), `near_misses.csv` (once per
+  launch and variant: the rise came but another rule failed, or everything
+  else passed and the rise reached 80% of the target, with every value and
+  what failed, for tuning), `stats.json` (hourly counts) and `health.json`.
+  The hourly push sends them; the daily comparison shows **momentum
+  30pct-2min / 50pct-3min / 100pct-5min** and a health row.
+- **Updates itself** like the other server bots ("automatic restart" in
+  `journalctl -u momentum-bot`).
+- **Caveat:** first-minute pumps are often bots buying their own launch or
+  bundled buys, and paper fills here are generous: expect real results to
+  be worse than paper.
+
 ## Trade feed probe (a 2-hour measurement, no trading)
 
 `trade_feed_probe.py` checks whether Solana's **free public RPC** can be the
@@ -641,6 +689,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/convergence.py` | The convergence strategy: Helius reads, credit budget, wallet scoring, signals and exits |
 | `screener/news.py` | The news strategy: feeds, coin matching, the checks, the candidate log and exits |
 | `screener/launch.py`, `launch_bot.py` | The launch strategy and the program that runs it on your server |
+| `screener/momentum.py`, `screener/pumpfeed.py`, `momentum_bot.py` | The momentum strategy, pump.fun's on-chain events, and the program that runs it on your server |
 | `trade_feed_probe.py` | A 2-hour, read-only measurement of the free Solana RPC as a pump.fun trade feed (no trading) |
 | `main_1min.py` | The main (1 min) strategy: main's checks and exits every minute, on your server |
 | `screener/robinhood.py` | The robinhood strategy: GeckoTerminal watchlist, DexScreener prices, GoPlus and RPC holder checks, costs and exits |

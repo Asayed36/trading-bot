@@ -347,6 +347,73 @@ priority_fee_sol = 0.0005
 extra_slippage_pct = 5
 
 # ---------------------------------------------------------------------
+# MOMENTUM STRATEGY: buy a new pump.fun launch only when it rises fast in its
+# first minutes, on real buying (momentum_bot.py on your server; see
+# screener/momentum.py). Fed by the free Solana public RPC (read-only, no
+# key). Costs and exits are the launch bot's ([launch.paper_trading], with
+# the priority fee and slippage of its costs_like_speed). Paper trading only.
+# ---------------------------------------------------------------------
+[momentum]
+enabled = true
+folder = "momentum"
+ws_url = "wss://api.mainnet-beta.solana.com"
+costs_like_speed = "90s"
+# Launches 1-10 minutes old, on the bonding curve, less than this far to
+# graduating.
+min_age_seconds = 60
+max_age_seconds = 600
+max_curve_progress_pct = 80
+# In each variant's window: at least this many buys, from this many
+# different wallets; buys outnumbering sells this many to 1; this much net
+# SOL buying; no wallet over this share of the SOL bought; the creator
+# hasn't sold.
+min_buys = 15
+min_unique_buyers = 10
+min_buy_sell_ratio = 1.5
+min_net_sol = 3
+max_wallet_buy_share_pct = 30
+# The launch bot's skips (copycat names, creators with a dead token), from
+# launches this bot has seen.
+copycat_window_days = 7
+dead_after_minutes = 60
+creator_memory_days = 7
+# The fill: the first trade at least this long after the signal (none within
+# fill_timeout_seconds = no buy).
+fill_delay_seconds = 5
+fill_timeout_seconds = 60
+# Per variant.
+max_buys_per_hour = 10
+max_open = 20
+# The feed counts as down when nothing arrived for feed_stale_seconds (no
+# new buys then, nor for a window that overlaps it); after watchdog_seconds
+# of silence it reconnects.
+feed_stale_seconds = 10
+watchdog_seconds = 30
+# Held tokens are priced from DexScreener once the feed has no trade for
+# this long (or they graduate).
+stale_price_seconds = 60
+# Near-misses logged: the rise came but another rule failed, or everything
+# else passed and the rise reached this fraction of the variant's.
+near_miss_rise_fraction = 0.8
+
+# The three variants, side by side, each with its own journal in
+# data/momentum/<name>/: a rise of rise_pct within window_minutes.
+[[momentum.variants]]
+name = "30pct-2min"
+rise_pct = 30
+window_minutes = 2
+
+[[momentum.variants]]
+name = "50pct-3min"
+rise_pct = 50
+window_minutes = 3
+
+[[momentum.variants]]
+name = "100pct-5min"
+rise_pct = 100
+window_minutes = 5
+
+# ---------------------------------------------------------------------
 # NEWS STRATEGY: buy a coin right after real, official news (paper only)
 # ---------------------------------------------------------------------
 # Reads official sources only (press-release wires, project blogs, exchange

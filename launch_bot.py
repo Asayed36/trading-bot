@@ -33,12 +33,10 @@ import websockets
 
 from screener.api import ApiError, PublicApi
 from screener.autorestart import CodeWatcher, restart_message
-from screener.filters import best_pair, to_float
 from screener.jupiter import JupiterOrganic
-from screener.launch import LaunchEngine
+from screener.launch import LaunchEngine, sol_price, token_prices
 from screener.settings import HERE, load_config
 
-WSOL = "So11111111111111111111111111111111111111112"
 # The config.toml sections the bot reads: only changes there restart it.
 CONFIG_SECTIONS = ("launch", "files")
 CODE_CHECK_SECONDS = 30
@@ -56,27 +54,6 @@ def request(method, keys=None):
     if keys is not None:
         msg["keys"] = list(keys)
     return json.dumps(msg)
-
-
-def sol_price(api):
-    """SOL in USD from DexScreener's most liquid SOL/USDC or SOL/USDT pool."""
-    pairs = [p for p in api.pairs_for_tokens([WSOL])
-             if (p.get("baseToken") or {}).get("address") == WSOL
-             and (p.get("quoteToken") or {}).get("symbol") in ("USDC", "USDT")]
-    pair = max(pairs, key=lambda p: to_float((p.get("liquidity") or {}).get("usd")) or 0,
-               default=None)
-    return to_float((pair or {}).get("priceUsd"))
-
-
-def token_prices(api, mints):
-    pairs = api.pairs_for_tokens(mints) if mints else []
-    out = {}
-    for mint in mints:
-        pair = best_pair(pairs, mint, [])
-        price = to_float((pair or {}).get("priceUsd"))
-        if price:
-            out[mint] = price
-    return out
 
 
 class Runner:

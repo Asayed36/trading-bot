@@ -1,0 +1,46 @@
+# A short run of the momentum bot (momentum_bot.py --test) on GitHub, to
+# check it on the real feed before (or after) changes. Research only: paper
+# trading in a temporary folder, no keys, no wallet; nothing is saved to the
+# repository (the summary is shown on the run's page).
+
+name: Momentum bot (short test)
+
+on:
+  workflow_dispatch:
+    inputs:
+      seconds:
+        description: "Seconds to run (at most 3600)"
+        required: false
+        default: "600"
+  push:
+    paths:
+      - momentum_bot.py
+      - screener/momentum.py
+      - screener/pumpfeed.py
+      - .github/workflows/momentum-test.yml
+
+permissions:
+  contents: read             # it only reads the code; nothing is written back
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt -r requirements-launch.txt
+
+      - name: Run
+        env:
+          SECONDS_TO_RUN: ${{ github.event.inputs.seconds || '600' }}
+        run: |
+          s=$(( SECONDS_TO_RUN > 3600 ? 3600 : SECONDS_TO_RUN ))
+          python momentum_bot.py --test "$s" 2>&1 | tee report.txt
+          { echo '```'; tail -n 40 report.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

@@ -41,7 +41,7 @@ import time
 from collections import deque
 from datetime import datetime, timezone
 
-from screener.filters import to_float
+from screener.filters import best_pair, to_float
 from screener.jupiter import COLUMNS as JUPITER_COLUMNS
 from screener.paper_trader import PaperTrader, append_row, pct
 
@@ -65,6 +65,28 @@ LAUNCH_ENTRY_COLUMNS = [
 JUPITER_EVERY_SECONDS = 10
 
 TOTAL_SUPPLY = 1_000_000_000  # every pump.fun token
+WSOL = "So11111111111111111111111111111111111111112"
+
+
+def sol_price(api):
+    """SOL in USD from DexScreener's most liquid SOL/USDC or SOL/USDT pool."""
+    pairs = [p for p in api.pairs_for_tokens([WSOL])
+             if (p.get("baseToken") or {}).get("address") == WSOL
+             and (p.get("quoteToken") or {}).get("symbol") in ("USDC", "USDT")]
+    pair = max(pairs, key=lambda p: to_float((p.get("liquidity") or {}).get("usd")) or 0,
+               default=None)
+    return to_float((pair or {}).get("priceUsd"))
+
+
+def token_prices(api, mints):
+    pairs = api.pairs_for_tokens(mints) if mints else []
+    out = {}
+    for mint in mints:
+        pair = best_pair(pairs, mint, [])
+        price = to_float((pair or {}).get("priceUsd"))
+        if price:
+            out[mint] = price
+    return out
 
 
 def utc(ts):
