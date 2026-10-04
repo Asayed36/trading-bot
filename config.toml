@@ -501,12 +501,17 @@ min_pool_age_minutes = 30
 max_pool_age_hours = 6
 recheck_minutes = 60
 max_candidates_per_run = 10
-# Minimum liquidity in the pool (DexScreener), in USD.
+# Minimum liquidity in the pool (DexScreener), in USD, for a launchpad
+# without its own min_liquidity_usd (see the launchpads below).
 min_liquidity_usd = 10000
-# Copycats (the early strategy's rule): of all Robinhood Chain tokens with
-# the same name or symbol from the last N days (DexScreener search), only the
-# one with the most liquidity is allowed.
+# Copycats: a token fails when another Pons or Pools.trade token with the
+# same name or symbol graduated before it in the last N days. Ignored: ones
+# that graduated after it, and clones whose liquidity is
+# copycat_clone_liquidity_pct% or more of their market cap (real graduations
+# have 30-60%). Of the rest, the earliest graduation is the original. The
+# launchpad tokens are the ones GeckoTerminal has listed, remembered N days.
 copycat_window_days = 7
+copycat_clone_liquidity_pct = 90
 
 # GeckoTerminal allows only a few calls a minute from GitHub's runners (it
 # said 429 after about 7 in the probe), so at most this many a run, spaced
@@ -525,14 +530,36 @@ max_creator_pct = 5
 max_top10_pct = 30
 # A cluster: cluster_min_size or more wallets, each holding at least
 # cluster_min_holder_pct of the supply, whose balances are within
-# cluster_tolerance_pct of each other (bundled buys).
-cluster_min_size = 3
+# cluster_tolerance_pct of each other (bundled buys), and that together hold
+# cluster_min_share_pct% of the supply or more.
+cluster_min_size = 5
+cluster_min_share_pct = 3
 cluster_min_holder_pct = 0.1
 cluster_tolerance_pct = 0.5
 holder_checks_per_run = 4
 holder_lookback_hours = 72     # how far before graduation to look for the mint
 holder_rpc_calls = 40          # eth_getLogs calls per token at most
 rpc_log_blocks = 200000        # blocks per eth_getLogs call (halved if refused)
+# When the RPC says 429 (too many requests): wait and try again, this many
+# times, rpc_retry_seconds longer each time (5 s, 10 s, 15 s), waiting no
+# more than rpc_retry_budget_seconds in all in a run.
+rpc_retries = 3
+rpc_retry_seconds = 5
+rpc_retry_budget_seconds = 120
+# Pons graduations on chain (read-only, for the run log): how many tokens
+# graduated in the last graduation_count_hours, from the graduation event's
+# logs, against how many this strategy saw in GeckoTerminal's lists. Counted
+# at most every graduation_count_minutes, in at most graduation_rpc_calls
+# eth_getLogs calls. The contract and event were found with
+# robinhood_probe.py: in a day of logs the event named every Pons token
+# GeckoTerminal listed as graduating that day, with the token at topic
+# pons_graduation_token_topic.
+graduation_count_hours = 24
+graduation_count_minutes = 60
+graduation_rpc_calls = 30
+pons_graduation_contract = "0xc7819b64a1daecd7ec19856d026cb14efbd89046"
+pons_graduation_topic = "0x80a5a2ff8b8c5533e5862e4e161bbcade9af6fd9d67bef56a590b062107f027f"
+pons_graduation_token_topic = 1
 # Found by robinhood_probe.py: Uniswap v4's PoolManager on Robinhood Chain
 # (holds every v4 pool's tokens), the two Pons launch contracts, and the
 # contract Pools.trade mints new tokens to.
@@ -548,17 +575,20 @@ excluded_holders = [
 # pool_fee_pct is charged on every buy and every sell: Pools.trade pools
 # charge 0.25%; the fee of Pons' graduated pools isn't published, so 1% is
 # assumed (the Pons curve's fee). holder_checks: rebuild holders on the RPC.
+# min_liquidity_usd: this launchpad's minimum liquidity in USD.
 [[robinhood.launchpads]]
 name = "Pons"
 dex = "pons-v2-dex"
 pool_fee_pct = 1.0
 holder_checks = true
+min_liquidity_usd = 10000
 
 [[robinhood.launchpads]]
 name = "Pools.trade"
 dex = "uniswap-pools-trade"
 pool_fee_pct = 0.25
 holder_checks = false
+min_liquidity_usd = 5000
 
 [robinhood.paper_trading]
 # Pretend dollars per buy.

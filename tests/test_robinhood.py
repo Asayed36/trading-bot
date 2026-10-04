@@ -32,6 +32,8 @@ CURVE = "0x" + "c" * 40          # where the Pons token was minted (its curve)
 MANAGER = C["excluded_holders"][0]   # Uniswap v4 PoolManager: holds the pool's tokens
 DEV = "0x" + "d" * 40
 WALLETS = ["0x" + str(i) * 40 for i in range(1, 6)]
+BUNDLE = ["0x" + f"{i:040x}" for i in range(100, 106)]     # bundled-buy wallets
+RIVAL, RIVAL2 = "0x" + "9" * 40, "0x" + "8" * 40            # other launchpad tokens
 
 
 def ago(**kw):
@@ -42,10 +44,21 @@ def block_at(when):
     return HEAD - int((NOW - when).total_seconds() / BLOCK_TIME)
 
 
-def gecko(dex, token, pool, created, name):
-    return {"attributes": {"address": pool, "name": f"{name} / WETH", "pool_created_at": created},
+def gecko(dex, token, pool, created, name, liquidity=20_000, market_cap=60_000):
+    return {"attributes": {"address": pool, "name": f"{name} / WETH", "pool_created_at": created,
+                           "reserve_in_usd": str(liquidity), "market_cap_usd": str(market_cap)},
             "relationships": {"dex": {"data": {"id": dex}},
                               "base_token": {"data": {"id": f"robinhood_{token}"}}}}
+
+
+def gecko_token(token, name):
+    return {"id": f"robinhood_{token}", "type": "token", "attributes": {"name": name}}
+
+
+def graduation(token, block):
+    return {"address": C["pons_graduation_contract"],
+            "topics": [C["pons_graduation_topic"], rh.topic_address(token), "0x" + "0" * 64],
+            "data": "0x1", "blockNumber": hex(block), "logIndex": "0x0", "transactionHash": "0xg"}
 
 
 def pair(token, pool, symbol, created_min_ago, liquidity=25_000, price=0.0001):
@@ -87,6 +100,10 @@ class FakeHttp:
         self.pairs = {PONS: [pair(PONS, PONS_POOL, "FROG", 120)],
                       POOLS: [pair(POOLS, POOLS_POOL, "GLITCH", 60)]}
         self.search = []            # DexScreener search pairs
+        self.search_down = False
+        self.more = {}              # GeckoTerminal dex -> extra pools in its list
+        self.included = []          # GeckoTerminal "included" base tokens
+        self.rate_limits = 0        # this many eth_getLogs calls answer 429 first
         self.logs = pons_history()
         self.gecko_status = {}      # url part -> exception to raise
         self.dex_down = False
@@ -99,10 +116,12 @@ class FakeHttp:
                 if part in url:
                     raise exc
             if "pons-v2-dex" in url:
-                return {"data": [gecko("pons-v2-dex", PONS, PONS_POOL, ago(hours=2), "FROG")]}
+                return {"data": [gecko("pons-v2-dex", PONS, PONS_POOL, ago(hours=2), "FROG")]
+                        + self.more.get("pons-v2-dex", []), "included": self.included}
             if "uniswap-pools-trade" in url:
                 return {"data": [gecko("uniswap-pools-trade", POOLS, POOLS_POOL, ago(hours=1),
-                                       "GLITCH")]}
+                                       "GLITCH")] + self.more.get("uniswap-pools-trade", []),
+                        "included": self.included}
             return {"data": [  # newest pools: one too young, one on a plain Uniswap pool
                 gecko("pons-v2-dex", "0x" + "e" * 40, "0x" + "3" * 64, ago(minutes=5), "NEW"),
                 gecko("uniswap-v4-robinhood", "0x" + "f" * 40, "0x" + "4" * 64, ago(hours=1),
@@ -111,6 +130,8 @@ class FakeHttp:
             if self.dex_down:
                 raise ApiError("api.dexscreener.com answered with error 503")
             if "/search" in url:
+                if self.search_down:
+                    raise ApiError("api.dexscreener.com answered with error 503")
                 return {"pairs": self.search}
             tokens = url.rsplit("/", 1)[1].split(",")
             return [p for t in tokens for p in self.pairs.get(t, [])]
@@ -134,10 +155,14 @@ class FakeHttp:
             return {"timestamp": hex(int(NOW.timestamp() - (HEAD - number) * BLOCK_TIME))}
         if method == "eth_getLogs":
             f = params[0]
+            if self.rate_limits:
+                self.rate_limits -= 1
+                raise RateLimited("Robinhood Chain RPC said 'too many requests' (HTTP 429)")
             lo, hi = int(f["fromBlock"], 16), int(f["toBlock"], 16)
             if hi - lo + 1 > self.max_log_range:
                 raise ApiError("Robinhood Chain RPC: block range too large")
             return [x for x in self.logs if x["address"] == f["address"]
+                    and x["topics"][0] in f["topics"][0:1]
                     and lo <= int(x["blockNumber"], 16) <= hi]
         if method == "eth_getTransactionByHash":
             return {"from": DEV if params[0] == "0xmint" else WALLETS[0]}
@@ -160,7 +185,8 @@ class Base(unittest.TestCase):
         self.tmp.cleanup()
 
     def strategy(self, cfg=CFG):
-        return rh.RobinhoodStrategy(cfg, self.tmp.name, self.http)
+        self.sleeps = []
+        return rh.RobinhoodStrategy(cfg, self.tmp.name, self.http, sleep=self.sleeps.append)
 
     def run_once(self, now=NOW, cfg=CFG):
         s = self.strategy(cfg)
@@ -269,13 +295,68 @@ class CheckTests(Base):
         self.assertIn("Top 10 holders: 31.0%", self.candidate("FROG")["failed_checks"])
         self.assertEqual(self.candidate("FROG")["top10_pct"], "31")
 
-    def test_equal_balance_cluster(self):
-        self.http.logs = pons_history({DEV: 5_000, WALLETS[0]: 20_000, WALLETS[1]: 20_050,
-                                       WALLETS[2]: 19_980, WALLETS[3]: 3_000})
+    def cluster(self, amounts):
+        self.http.logs = pons_history(dict({DEV: 5_000}, **dict(zip(BUNDLE, amounts))))
+        _, bought, _ = self.run_once()
+        return self.candidate("FROG"), PONS in [p["address"] for p in bought]
+
+    def test_equal_balance_cluster_of_5_holding_3_pct(self):
+        frog, bought = self.cluster([7_000, 7_010, 6_990, 7_020, 7_000])    # 3.5% together
+        self.assertFalse(bought)
+        self.assertIn("No equal-balance cluster: 5 wallets hold the same amount (3.5% together;"
+                      " fails at 5+ wallets holding 3%+ together)", frog["failed_checks"])
+        self.assertEqual((frog["equal_group_size"], frog["equal_group_pct"]), ("5", "3.502"))
+
+    def test_small_or_light_clusters_pass(self):
+        frog, bought = self.cluster([20_000, 20_050, 19_980, 20_010])       # 4 wallets, 8%
+        self.assertTrue(bought)
+        self.assertEqual(frog["equal_group_size"], "4")
+        self.tmp.cleanup()
+        self.tmp = tempfile.TemporaryDirectory()
+        frog, bought = self.cluster([3_000, 3_001, 2_999, 3_002, 3_000, 3_001])   # 6, 1.8%
+        self.assertTrue(bought)
+        self.assertEqual((frog["equal_group_size"], frog["equal_group_pct"]), ("6", "1.8"))
+
+    def test_the_heaviest_big_enough_cluster_counts(self):
+        # Six wallets at 0.2% each (1.2%) and five at 0.7% each (3.5%).
+        self.http.logs = pons_history(dict(
+            {DEV: 5_000}, **{f"0x{i:040x}": 2_000 for i in range(200, 206)},
+            **{f"0x{i:040x}": 7_000 for i in range(300, 305)}))
         self.run_once()
         frog = self.candidate("FROG")
-        self.assertIn("No equal-balance cluster: 3 wallets", frog["failed_checks"])
-        self.assertEqual(frog["equal_group_size"], "3")
+        self.assertEqual((frog["equal_group_size"], frog["equal_group_pct"]), ("5", "3.5"))
+        self.assertIn("No equal-balance cluster: 5 wallets", frog["failed_checks"])
+
+    def test_rpc_429_is_retried_after_a_pause(self):
+        self.http.rate_limits = 2
+        _, bought, text = self.run_once()
+        self.assertIn(PONS, [p["address"] for p in bought])
+        self.assertEqual(self.sleeps, [C["rpc_retry_seconds"], 2 * C["rpc_retry_seconds"]])
+        self.assertEqual(self.candidate("FROG")["holders_complete"], "yes")
+        self.assertIn("2 rate-limited", text)
+
+    def test_rpc_429_inside_the_json_answer_is_a_rate_limit(self):
+        with self.assertRaises(RateLimited):
+            rh.rpc_result({"jsonrpc": "2.0", "id": 1,
+                           "error": {"code": 429, "message": "Too Many Requests"}})
+        with self.assertRaises(ApiError) as ctx:
+            rh.rpc_result({"error": {"code": -32000, "message": "block range too large"}})
+        self.assertNotIsInstance(ctx.exception, RateLimited)
+        self.assertEqual(rh.rpc_result({"result": "0x10"}), "0x10")
+
+    def test_waiting_for_the_rpc_is_capped_per_run(self):
+        cfg = dict(CFG, robinhood=dict(C, rpc_retry_budget_seconds=20))
+        self.http.rate_limits = 100
+        self.run_once(cfg=cfg)
+        # Holders: 5 + 10 s, then 15 s more would pass 20 s; the graduation
+        # count still has room for one 5 s wait.
+        self.assertEqual(self.sleeps, [5, 10, 5])
+
+    def test_rpc_429_after_every_retry_leaves_holders_unknown(self):
+        self.http.rate_limits = C["rpc_retries"] + 1
+        self.run_once()
+        self.assertEqual(self.sleeps, [5, 10, 15])
+        self.assertIn("Holders: unknown", self.candidate("FROG")["failed_checks"])
 
     def test_holders_unknown_when_the_mint_isnt_found(self):
         self.http.logs = [x for x in pons_history() if x["transactionHash"] != "0xmint"]
@@ -292,45 +373,114 @@ class CheckTests(Base):
                  for c in self.http.calls if c[0] == "rpc" and c[1] == "eth_getLogs"}
         self.assertLessEqual(min(sizes), 30_000)
 
-    def test_copycat_with_as_much_liquidity_is_skipped(self):
-        other = pair("0x" + "9" * 40, "0x" + "5" * 64, "FROG", 60 * 24)   # also $25k
-        self.http.search = [other]
-        self.run_once()
+    def rival(self, token, hours_ago, name="FROG", dex="pons-v2-dex", **kw):
+        pool = "0x" + token[2:4] * 32
+        self.http.more.setdefault(dex, []).append(
+            gecko(dex, token, pool, ago(hours=hours_ago), name, **kw))
+
+    def test_an_earlier_launchpad_token_with_the_same_name_makes_a_copycat(self):
+        self.rival(RIVAL, 24)
+        _, bought, _ = self.run_once()
+        self.assertNotIn(PONS, [p["address"] for p in bought])
         frog = self.candidate("FROG")
-        self.assertIn("Not a copycat: 1 other token(s) called FROG in the last 7 days",
+        self.assertIn("Not a copycat: 1 earlier Pons/Pools.trade token(s) called FROG in the "
+                      f"last 7 days; the first, {RIVAL}, graduated 22.0 h before this one",
                       frog["failed_checks"])
-        self.assertEqual(frog["copycat_of"], "0x" + "9" * 40)
+        self.assertEqual(frog["copycat_of"], RIVAL)
         self.assertEqual(frog["goplus_is_honeypot"], "")      # later checks not reached
 
-    def test_same_name_allowed_for_the_token_with_the_most_liquidity(self):
-        # Like SPORE: another token shares the name, but this one has the most
-        # liquidity of all of them in the last 7 days.
-        self.http.search = [pair("0x" + "9" * 40, "0x" + "5" * 64, "FROG", 60, liquidity=3_000),
-                            pair("0x" + "8" * 40, "0x" + "6" * 64, "frog", 30, liquidity=9_000)]
+    def test_the_earliest_graduation_is_the_original(self):
+        self.rival(RIVAL2, 24)
+        self.rival(RIVAL, 72, dex="uniswap-pools-trade")
+        self.run_once()
+        frog = self.candidate("FROG")
+        self.assertEqual(frog["copycat_of"], RIVAL)
+        self.assertIn("2 earlier Pons/Pools.trade token(s)", frog["failed_checks"])
+
+    def test_same_named_tokens_created_later_are_ignored(self):
+        self.rival(RIVAL, 1)                                  # graduated after FROG (2 h ago)
         _, bought, text = self.run_once()
         self.assertIn(PONS, [p["address"] for p in bought])
-        self.assertIn("most liquidity of 3 tokens called FROG in the last 7 days "
-                      "($25,000 vs $9,000)", text)
+        self.assertIn("no earlier Pons/Pools.trade token called FROG in the last 7 days "
+                      "(ignored: 1 graduated later)", text)
         self.assertEqual(self.candidate("FROG")["copycat_of"], "")
-        queries = [c[2]["q"] for c in self.http.calls if c[0] == "dexscreener"
-                   and "/search" in c[1]]
-        self.assertIn("FROG", queries)
-        self.assertIn("Frog", queries)                       # the name is searched too
 
-    def test_same_name_older_than_the_window_or_other_chains_is_ignored(self):
-        old = pair("0x" + "9" * 40, "0x" + "5" * 64, "FROG", 8 * 24 * 60, liquidity=10**6)
-        elsewhere = dict(pair("0x" + "8" * 40, "0x" + "6" * 64, "FROG", 30, liquidity=10**6),
-                         chainId="solana")
-        self.http.search = [old, elsewhere]
-        _, _, text = self.run_once()
-        self.assertIn("no other FROG in the last 7 days", text)
+    def test_clones_with_liquidity_near_their_market_cap_are_ignored(self):
+        self.rival(RIVAL, 24, liquidity=55_000, market_cap=60_000)          # 92%
+        self.rival(RIVAL2, 30, liquidity=10_000, market_cap=100_000)        # 10% on GT ...
+        self.http.search = [pair(RIVAL2, "0x" + "6" * 64, "FROG", 60 * 30, liquidity=90_000)]
+        self.http.search[0]["marketCap"] = 90_000                           # ... 100% now
+        _, bought, text = self.run_once()
+        self.assertIn(PONS, [p["address"] for p in bought])
+        self.assertIn("(ignored: 2 with liquidity 90%+ of market cap)", text)
+        # Just under 90% counts as a real earlier token.
+        self.tmp.cleanup()
+        self.tmp = tempfile.TemporaryDirectory()
+        self.http.more, self.http.search = {}, []
+        self.rival(RIVAL, 24, liquidity=53_000, market_cap=60_000)          # 88%
+        self.run_once()
+        self.assertEqual(self.candidate("FROG")["copycat_of"], RIVAL)
+
+    def test_tokens_from_other_launchpads_or_chains_are_ignored(self):
+        # Only on DexScreener (not a Pons or Pools.trade token GeckoTerminal
+        # listed), or on another DEX or chain: not compared.
+        self.http.search = [pair(RIVAL, "0x" + "5" * 64, "FROG", 60 * 24, liquidity=10**6)]
+        self.http.more = {"uniswap-v4-robinhood": [
+            gecko("uniswap-v4-robinhood", RIVAL2, "0x" + "6" * 64, ago(hours=24), "FROG")]}
+        _, bought, text = self.run_once()
+        self.assertIn(PONS, [p["address"] for p in bought])
+        self.assertIn("no earlier Pons/Pools.trade token called FROG", text)
+        searches = [c for c in self.http.calls if c[0] == "dexscreener" and "/search" in c[1]]
+        self.assertEqual(searches, [])                     # nothing to compare: no search
 
     def test_same_name_counts_even_with_another_symbol(self):
-        other = pair("0x" + "9" * 40, "0x" + "5" * 64, "FRG", 60, liquidity=50_000)
-        other["baseToken"]["name"] = "Frog"
-        self.http.search = [other]
+        self.rival(RIVAL, 24, name="FRG")
+        self.http.included = [gecko_token(RIVAL, "Frog")]
         self.run_once()
-        self.assertEqual(self.candidate("FROG")["copycat_of"], "0x" + "9" * 40)
+        self.assertEqual(self.candidate("FROG")["copycat_of"], RIVAL)
+
+    def test_a_failed_search_falls_back_to_geckoterminals_numbers(self):
+        self.rival(RIVAL, 24)
+        self.http.search_down = True
+        self.run_once()
+        frog = self.candidate("FROG")
+        self.assertEqual(frog["copycat_of"], RIVAL)
+        self.assertIn("DexScreener search failed, GeckoTerminal's numbers used",
+                      frog["failed_checks"])
+
+    def test_launchpad_tokens_are_remembered_for_the_copycat_window(self):
+        self.rival(RIVAL, 3)
+        self.run_once()
+        self.assertIn(RIVAL, self.strategy().trader.state["launchpad_tokens"])
+        # GeckoTerminal stops listing it; a FROG graduating 2 days later is
+        # still compared with it ...
+        self.http.more = {}
+        later = NOW + timedelta(days=2)
+        self.http.more = {"pons-v2-dex": [gecko("pons-v2-dex", RIVAL2, "0x" + "7" * 64,
+                                                (later - timedelta(hours=2)).isoformat(), "FROG")]}
+        self.http.pairs[RIVAL2] = [pair(RIVAL2, "0x" + "7" * 64, "FROG", 120 - 2 * 24 * 60)]
+        s = self.strategy()
+        s.apply(s.fetch(later), lambda *_: None)
+        rows_ = [r for r in rows(self.path("candidates.csv")) if r["token_address"] == RIVAL2]
+        self.assertEqual(rows_[0]["copycat_of"], RIVAL)
+        # ... and forgotten after 7 days (plus the 6 h a pool is watched).
+        s = self.strategy()
+        s.apply(s.fetch(NOW + timedelta(days=7, hours=7)), lambda *_: None)
+        self.assertNotIn(RIVAL, s.trader.state["launchpad_tokens"])
+
+    def test_liquidity_minimum_per_launchpad(self):
+        self.http.pairs[PONS] = [pair(PONS, PONS_POOL, "FROG", 120, liquidity=6_000)]
+        self.http.pairs[POOLS] = [pair(POOLS, POOLS_POOL, "GLITCH", 60, liquidity=6_000)]
+        _, bought, _ = self.run_once()
+        self.assertEqual([p["symbol"] for p in bought], ["GLITCH"])
+        self.assertIn("Liquidity: $6,000 (need $10,000+ on Pons)",
+                      self.candidate("FROG")["failed_checks"])
+        self.tmp.cleanup()
+        self.tmp = tempfile.TemporaryDirectory()
+        self.http.pairs[POOLS] = [pair(POOLS, POOLS_POOL, "GLITCH", 60, liquidity=4_999)]
+        self.run_once()
+        self.assertIn("Liquidity: $4,999 (need $5,000+ on Pools.trade)",
+                      self.candidate("GLITCH")["failed_checks"])
 
     def test_low_liquidity_fails_before_goplus(self):
         self.http.pairs[PONS] = [pair(PONS, PONS_POOL, "FROG", 120, liquidity=2_000)]
@@ -343,6 +493,39 @@ class CheckTests(Base):
         self.http.pairs[PONS] = [pair(PONS, PONS_POOL, "FROG", 7 * 60)]   # GT said 2h
         self.run_once()
         self.assertIn("Pool age: 420 min", self.candidate("FROG")["failed_checks"])
+
+
+class GraduationCountTests(Base):
+    def test_graduations_on_chain_vs_seen(self):
+        missed = ["0x" + "7" * 40, "0x" + "6" * 40]
+        self.http.logs += [graduation(t, block_at(NOW - timedelta(hours=h)))
+                           for t, h in ((PONS, 2), (missed[0], 5), (missed[1], 20))]
+        self.http.logs.append(graduation("0x" + "5" * 40, block_at(NOW - timedelta(hours=30))))
+        s, _, text = self.run_once()
+        self.assertIn("Pons graduations on chain, last 24 h: 3; seen by this strategy: 1; "
+                      "missed: 2 (counted 0 min ago)", text)
+        self.assertIn(f"missed: {missed[1]}, {missed[0]}", text)
+        g = s.trader.state["graduations"]
+        self.assertEqual((g["tokens"], g["complete"]), (sorted([PONS] + missed), True))
+        # Only read-only calls, filtered to the graduation event.
+        reads = [c[2][0] for c in self.http.calls if c[0] == "rpc" and c[1] == "eth_getLogs"
+                 and c[2][0]["address"] == C["pons_graduation_contract"]]
+        self.assertTrue(reads)
+        self.assertTrue(all(f["topics"] == [C["pons_graduation_topic"]] for f in reads))
+        # Counted again only after graduation_count_minutes; reported meanwhile.
+        self.http.calls.clear()
+        _, _, text = self.run_once(NOW + timedelta(minutes=20))
+        self.assertIn("last 24 h: 3;", text)
+        self.assertIn("(counted 20 min ago)", text)
+        self.assertFalse([c for c in self.http.calls if c[0] == "rpc" and c[1] == "eth_getLogs"
+                          and c[2][0]["address"] == C["pons_graduation_contract"]])
+
+    def test_a_failed_count_is_a_note_not_a_failed_run(self):
+        self.http.rate_limits = 100
+        s, bought, text = self.run_once()
+        self.assertIn("Pons graduations on chain: couldn't count them", text)
+        self.assertIn("Pons graduations on chain: not counted yet", text)
+        self.assertEqual(len(rows(self.path("candidates.csv"))), 2)
 
 
 class ExitTests(Base):
@@ -382,6 +565,16 @@ class SafetyTests(unittest.TestCase):
                        "personal_sign", "eth_signTypedData_v4"):
             with self.assertRaises(ValueError):
                 rh.rpc_request(method, [])
+
+    def test_gecko_pools_reads_names_liquidity_and_market_cap(self):
+        body = {"data": [gecko("pons-v2-dex", PONS, PONS_POOL, ago(hours=2), "FROG",
+                               liquidity=12_345.6, market_cap=50_000)],
+                "included": [gecko_token(PONS, "Frog Coin")]}
+        (p,) = rh.gecko_pools(body, {"pons-v2-dex"})
+        self.assertEqual((p["name"], p["title"], p["liquidity_usd"], p["market_cap_usd"]),
+                         ("FROG", "Frog Coin", 12_345.6, 50_000))
+        body["data"][0]["attributes"].update(market_cap_usd=None, fdv_usd="70000")
+        self.assertEqual(rh.gecko_pools(body, {"pons-v2-dex"})[0]["market_cap_usd"], 70_000)
 
     def test_equal_groups(self):
         self.assertEqual([len(g) for g in rh.equal_groups([100, 100.2, 100.4, 5, 5, 70], 0.005)],

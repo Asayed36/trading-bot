@@ -67,6 +67,12 @@ CREATION_BLOCKS = 600      # blocks either side of a pool's creation time to sea
 EVENT_MINUTES = 5          # recent events read from each launchpad contract
 MAX_LOG_CALLS = 30         # eth_getLogs calls allowed per scan
 HOLDER_TOKENS = 4
+# Contracts seen at Pons graduations (earlier probe runs); a day of their
+# events, by topic, shows which event marks a graduation.
+GRADUATION_CONTRACTS = ("0xbb75f6e4bde3dfa3716239e02274175f37892cc7",
+                        "0xc7819b64a1daecd7ec19856d026cb14efbd89046")
+GRADUATION_HOURS = 24
+GRADUATION_LOG_CALLS = 120
 GOPLUS_TOKENS = 6
 
 
@@ -253,7 +259,8 @@ class Probe:
         # the launchpads' own pools come before the general new-pools pages.
         for step in (self.dexscreener, self.gecko_dexes, self.gecko_launchpads,
                      self.gecko_new_pools, self.rpc_basics,
-                     self.launchpad_contracts, self.curve_stage, self.holders, self.goplus):
+                     self.graduation_events, self.launchpad_contracts, self.curve_stage,
+                     self.holders, self.goplus):
             try:
                 step()
             except Exception as exc:  # one broken source mustn't hide the others
@@ -398,17 +405,21 @@ class Probe:
             number += int((when - ts) / self.block_time)
         return max(min(number, self.head), 0)
 
-    def get_logs(self, flt, start, end):
+    def get_logs(self, flt, start, end, max_calls=MAX_LOG_CALLS):
         """eth_getLogs over [start, end], splitting the range when the RPC
-        refuses it. Returns (logs, calls, error or None, complete?)."""
+        refuses it (and pausing when it says 429). Returns (logs, calls,
+        error or None, complete?)."""
         logs, calls, step, error = [], 0, end - start + 1, None
-        while start <= end and calls < MAX_LOG_CALLS:
+        while start <= end and calls < max_calls:
             stop = min(start + step - 1, end)
             got, err = self.http.rpc("eth_getLogs", [dict(flt, fromBlock=hex(start),
                                                           toBlock=hex(stop))])
             calls += 1
             if got is None:
                 error = err
+                if "429" in str(err) or "Too Many" in str(err):
+                    time.sleep(5)
+                    continue
                 if step <= 25:
                     break
                 step //= 2
@@ -426,8 +437,13 @@ class Probe:
             self.r["launchpad_contracts"] = "skipped: no block time from the RPC"
             return
         out = {}
-        for pad in LAUNCHPADS:
-            pools = sorted((p for p in self.pools if p["launchpad"] == pad and p["created"]
+        # Each launchpad's newest pools, plus Pons' newest GRADUATED pools
+        # ("pons-v2-dex"): the events around a graduation show which
+        # contract and event mark it.
+        groups = [(pad, lambda p, pad=pad: p["launchpad"] == pad) for pad in LAUNCHPADS]
+        groups.append(("pons graduated", lambda p: p["dex"] == "pons-v2-dex"))
+        for pad, wanted in groups:
+            pools = sorted((p for p in self.pools if wanted(p) and p["created"]
                             and p["token"].startswith("0x")),
                            key=lambda p: p["created"], reverse=True)[:TOKENS_PER_LAUNCHPAD]
             emitters, tokens = Counter(), []
@@ -466,6 +482,61 @@ class Probe:
             out[pad] = {"tokens_traced": len(tokens), "tokens": tokens,
                         "contracts": contracts}
         self.r["launchpad_contracts"] = out
+
+    def graduation_events(self):
+        """A day of events from the contracts seen at Pons graduations, by
+        topic0: how many, and how many of GeckoTerminal's graduated Pons
+        tokens (pons-v2-dex pools) each event names in its topics."""
+        if not self.block_time:
+            self.r["graduation_events"] = "skipped: no block time from the RPC"
+            return
+        since = self.head_time - GRADUATION_HOURS * 3600
+        graduated = {p["token"]: p["created"] for p in self.pools
+                     if p["dex"] == "pons-v2-dex" and p["token"].startswith("0x")}
+        recent = {t for t, c in graduated.items() if c and _ts(c) >= since + 3600}
+        out = {"hours": GRADUATION_HOURS, "geckoterminal_pons_graduated": len(graduated),
+               "of_them_in_window": len(recent), "contracts": {}}
+        start = self.head - int(GRADUATION_HOURS * 3600 / self.block_time)
+        for contract in GRADUATION_CONTRACTS:
+            logs, calls, err, done = self.get_logs({"address": contract}, start, self.head,
+                                                   GRADUATION_LOG_CALLS)
+            topics = {}
+            for log in logs:
+                t = log.get("topics") or ["(none)"]
+                row = topics.setdefault(t[0], {"logs": 0, "topic_lengths": Counter(),
+                                               "names": set(), "sample": log})
+                row["logs"] += 1
+                row["topic_lengths"][len(t)] += 1
+                for position in range(1, len(t)):
+                    a = topic_to_address(t[position])
+                    if a in graduated:
+                        row["names"].add((position, a))
+            summary = []
+            for t0, row in sorted(topics.items(), key=lambda kv: -kv[1]["logs"]):
+                named = {a for _, a in row["names"]}
+                mine = [x for x in logs if (x.get("topics") or [""])[0] == t0]
+                per_slot = {}
+                for position in (1, 2, 3):
+                    values = Counter(topic_to_address(x["topics"][position]) for x in mine
+                                     if len(x["topics"]) > position)
+                    if values:
+                        per_slot[position] = {
+                            "distinct": len(values), "most_common": values.most_common(3),
+                            "graduated_tokens": len(set(values) & set(graduated)),
+                            "logs_per_value": Counter(values.values()).most_common(4)}
+                row["per_slot"] = per_slot
+                row["transactions"] = len({x.get("transactionHash") for x in mine})
+                summary.append({"topic0": t0, "logs": row["logs"],
+                                "topic_lengths": dict(row["topic_lengths"]),
+                                "graduated_tokens_named": len(named),
+                                "of_recent": len(named & recent),
+                                "positions": sorted({pos for pos, _ in row["names"]}),
+                                "per_slot": row["per_slot"],
+                                "transactions": row["transactions"],
+                                "sample": row["sample"]})
+            out["contracts"][contract] = {"logs": len(logs), "calls": calls, "complete": done,
+                                          "error": err, "by_topic": summary}
+        self.r["graduation_events"] = out
 
     # ---- curve stage: are brand-new launchpad tokens on DexScreener? ----
 
@@ -620,6 +691,25 @@ def report(r):
                      f"by topic {_j(c['by_topic'])}")
             if c.get("sample"):
                 L.append(f"  - sample log: {_j(c['sample'])[:500]}")
+    ge = r.get("graduation_events")
+    L += ["", "## Pons graduation events (a day of logs, by topic)"]
+    if isinstance(ge, dict):
+        L.append(f"- GeckoTerminal's graduated Pons tokens: {ge['geckoterminal_pons_graduated']}"
+                 f", graduated inside the window: {ge['of_them_in_window']}")
+        for contract, c in ge["contracts"].items():
+            L.append(f"### {contract}: {c['logs']} logs in {ge['hours']} h, {c['calls']} calls"
+                     f"{'' if c['complete'] else ' (incomplete)'}"
+                     f"{'; error ' + str(c['error']) if c['error'] else ''}")
+            for t in c["by_topic"]:
+                L.append(f"- {t['topic0']}: {t['logs']} logs, topics {_j(t['topic_lengths'])}, "
+                         f"names {t['graduated_tokens_named']} graduated token(s) "
+                         f"({t['of_recent']} recent) at topic {_j(t['positions'])}, "
+                         f"{t['transactions']} transaction(s)")
+                for position, slot in t["per_slot"].items():
+                    L.append(f"  - topic {position}: {_j(slot)}")
+                L.append(f"  - sample: {_j(t['sample'])[:600]}")
+    elif ge:
+        L.append(f"- {ge}")
     L += ["", "## Curve stage: are brand-new launchpad tokens on DexScreener?"]
     for pad, res in (r.get("curve_stage") or {}).items():
         L.append(f"- **{pad}**: {_j(res)}")
