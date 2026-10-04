@@ -206,7 +206,7 @@
   },
   "checked": {
     "0xa605cb8aee6413632097de34a825e01783bad21ee1158db8f53285f56a4de64d": {
-      "at": "2026-10-04T00:41:25.732771+00:00",
+      "at": "2026-10-04T01:41:29.445028+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
@@ -251,19 +251,20 @@
   "sources": {
     "geckoterminal": {
       "calls": 3,
-      "errors": 0,
-      "rate_limited": 0,
+      "errors": 1,
+      "rate_limited": 1,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
       "ok": true,
-      "at": "2026-10-04T01:31:14.120848+00:00",
+      "at": "2026-10-04T01:41:29.445028+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 3,
+      "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-04T01:21:36.286224+00:00",
-      "used_this_run": false
+      "at": "2026-10-04T01:41:29.445028+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -283,8 +284,7 @@
     }
   },
   "logged": {
-    "0x6cabefd907a486bbd5974ebcfae85d768d19113fc6129ce0e3697bd77bb9ab7f": "FAIL|Not a copycat: 5 other token(s) called FILL in the last 7 days, one with more liquidity ($19,064 vs $50,970: 0x287eadb409aabc4f41b23bf26cdae8970d3e9f49)",
-    "0xa605cb8aee6413632097de34a825e01783bad21ee1158db8f53285f56a4de64d": "FAIL|Liquidity: $7,765 (need $10,000+)",
+    "0xa605cb8aee6413632097de34a825e01783bad21ee1158db8f53285f56a4de64d": "FAIL|Liquidity: $7,386 (need $10,000+)",
     "0x870152035cfd299785ede30d2fa7d48a2b7c9f012a14d551e5cac4f4d39d6eb4": "FAIL|Liquidity: $9,370 (need $10,000+)",
     "0x4159d844558b1c9c7f1caed2311d85414f55f2756c9490342669937ae8d34eed": "FAIL|Liquidity: $6,744 (need $10,000+)",
     "0x7ce33b798f58d2ff44fd9af18b43677a0c56be324c6b7d3e5bbbbdd8f2cfbaa6": "FAIL|Not a copycat: 12 other token(s) called SIGH in the last 7 days, one with more liquidity ($17,901 vs $58,339: 0x0fb6d77a6330b010adaa4ec63848fde54a047f67)",
