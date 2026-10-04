@@ -514,11 +514,25 @@ class Probe:
             summary = []
             for t0, row in sorted(topics.items(), key=lambda kv: -kv[1]["logs"]):
                 named = {a for _, a in row["names"]}
+                mine = [x for x in logs if (x.get("topics") or [""])[0] == t0]
+                per_slot = {}
+                for position in (1, 2, 3):
+                    values = Counter(topic_to_address(x["topics"][position]) for x in mine
+                                     if len(x["topics"]) > position)
+                    if values:
+                        per_slot[position] = {
+                            "distinct": len(values), "most_common": values.most_common(3),
+                            "graduated_tokens": len(set(values) & set(graduated)),
+                            "logs_per_value": Counter(values.values()).most_common(4)}
+                row["per_slot"] = per_slot
+                row["transactions"] = len({x.get("transactionHash") for x in mine})
                 summary.append({"topic0": t0, "logs": row["logs"],
                                 "topic_lengths": dict(row["topic_lengths"]),
                                 "graduated_tokens_named": len(named),
                                 "of_recent": len(named & recent),
                                 "positions": sorted({pos for pos, _ in row["names"]}),
+                                "per_slot": row["per_slot"],
+                                "transactions": row["transactions"],
                                 "sample": row["sample"]})
             out["contracts"][contract] = {"logs": len(logs), "calls": calls, "complete": done,
                                           "error": err, "by_topic": summary}
@@ -689,7 +703,10 @@ def report(r):
             for t in c["by_topic"]:
                 L.append(f"- {t['topic0']}: {t['logs']} logs, topics {_j(t['topic_lengths'])}, "
                          f"names {t['graduated_tokens_named']} graduated token(s) "
-                         f"({t['of_recent']} recent) at topic {_j(t['positions'])}")
+                         f"({t['of_recent']} recent) at topic {_j(t['positions'])}, "
+                         f"{t['transactions']} transaction(s)")
+                for position, slot in t["per_slot"].items():
+                    L.append(f"  - topic {position}: {_j(slot)}")
                 L.append(f"  - sample: {_j(t['sample'])[:600]}")
     elif ge:
         L.append(f"- {ge}")
