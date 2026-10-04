@@ -468,6 +468,9 @@ issues are titled **PASSED (robinhood): SYMBOL** with the label
   counts as a fail):
   - pool age 30 min to 6 h; liquidity at least $10,000 on Pons, $5,000 on
     Pools.trade
+  - market (the main strategy's checks, with this chain's numbers): market
+    cap at least $25,000, not down more than 50% in 24 hours, and more buys
+    than sells in the last hour
   - not a copycat: no other Pons or Pools.trade token with the same name or
     symbol graduated before it in the last 7 days. Ignored: tokens that
     graduated after it, and clones whose liquidity is 90% or more of their

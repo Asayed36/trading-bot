@@ -23,6 +23,9 @@ Each run:
      only when the ones before passed, so a run stays within the free limits):
        - Pool age and minimum liquidity (DexScreener, the same pool; the
          minimum is per launchpad)
+       - Market (DexScreener, the same pool): market cap at least $25,000,
+         not down more than 50% in 24 hours, more buys than sells in the
+         last hour
        - Not a copycat: no other Pons or Pools.trade token with the same name
          or symbol graduated before it in the last 7 days (ignoring later
          ones, and clones with liquidity of 90%+ of their market cap)
@@ -83,7 +86,7 @@ GOPLUS_INFO = ("buy_tax", "sell_tax", "cannot_sell_all", "is_open_source", "owne
 VALUE_COLUMNS = [
     "symbol", "token_address", "launchpad", "pool_address", "price_usd", "pool_age_minutes",
     "liquidity_usd", "market_cap_usd", "buys_1h", "sells_1h", "price_change_5m_pct",
-    "price_change_1h_pct", "copycat_of",
+    "price_change_1h_pct", "price_change_24h_pct", "copycat_of",
     *(f"goplus_{k}" for k, _ in GOPLUS_FLAGS), *(f"goplus_{k}" for k in GOPLUS_INFO),
     "creator", "creator_pct", "top10_pct", "holders", "equal_group_size", "equal_group_pct",
     "holders_complete",
@@ -546,7 +549,8 @@ class RobinhoodStrategy:
                      market_cap_usd=to_float(pair.get("marketCap")) or to_float(pair.get("fdv")),
                      buys_1h=tx.get("buys"), sells_1h=tx.get("sells"),
                      price_change_5m_pct=to_float(change.get("m5")),
-                     price_change_1h_pct=to_float(change.get("h1")))
+                     price_change_1h_pct=to_float(change.get("h1")),
+                     price_change_24h_pct=to_float(change.get("h24")))
             v["pool_address"] = (pair.get("pairAddress") or pool).lower()
         created = (datetime.fromtimestamp(pair["pairCreatedAt"] / 1000, timezone.utc)
                    if pair and pair.get("pairCreatedAt") else _utc(w["created"]))
@@ -564,6 +568,8 @@ class RobinhoodStrategy:
         ok = ok and add("Liquidity", (v["liquidity_usd"] or 0) >= floor,
                         f"{money(v['liquidity_usd'])} (need {money(floor)}+ on {pad['name']})")
         if ok:
+            ok = self._market(v, add)
+        if ok:
             ok = self._copycat(plan, now, cand, add)
         if ok:
             ok = self._goplus(plan, cand, add, budget)
@@ -572,6 +578,25 @@ class RobinhoodStrategy:
         cand["passed"] = ok and all(ch.status == PASS for ch in checks)
         cand["failed"] = [ch.name for ch in checks if ch.status != PASS]
         return cand
+
+    def _market(self, v, add):
+        """The main strategy's market checks, with this chain's numbers
+        (DexScreener, the same pool; unknown counts as a fail): a market cap
+        of at least min_market_cap_usd, not down more than
+        max_drop_24h_pct in 24 hours, more buys than sells in the last hour."""
+        c = self.c
+        cap, change = v["market_cap_usd"], v["price_change_24h_pct"]
+        buys, sells = v["buys_1h"], v["sells_1h"]
+        ok = add("Market cap", cap is not None and cap >= c["min_market_cap_usd"],
+                 f"{money(cap)} (need {money(c['min_market_cap_usd'])}+)"
+                 if cap is not None else "unknown")
+        ok = add(f"Not down >{c['max_drop_24h_pct']:g}% in 24h",
+                 change is not None and change >= -c["max_drop_24h_pct"],
+                 f"{change:+.0f}% in 24h" if change is not None else "unknown") and ok
+        ok = add("More buys than sells (1h)", buys is not None and sells is not None
+                 and buys > sells, f"{buys} buys vs {sells} sells"
+                 if buys is not None and sells is not None else "unknown") and ok
+        return ok
 
     def _copycat(self, plan, now, cand, add):
         """Other Pons and Pools.trade tokens with the same name or symbol
@@ -926,6 +951,8 @@ class RobinhoodStrategy:
             ("Pool age", f"{v['pool_age_minutes']:.0f} min"),
             ("Buys / sells (1h)", f"{cell(v['buys_1h']) or '?'} / {cell(v['sells_1h']) or '?'}"),
         ]
+        extra += [(name, by[name]) for name in by
+                  if name == "Market cap" or name.startswith("Not down >")]
         extra += [(name, by[name]) for _, name in GOPLUS_FLAGS if name in by]
         for name in ("Creator share", "Top 10 holders", "No equal-balance cluster"):
             if name in by:

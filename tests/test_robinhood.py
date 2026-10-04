@@ -489,6 +489,77 @@ class CheckTests(Base):
         goplus = [c[2]["contract_addresses"] for c in self.http.calls if c[0] == "goplus"]
         self.assertNotIn(PONS, goplus)
 
+    def market(self, symbol="FROG", **changes):
+        p = pair(PONS, PONS_POOL, symbol, 120)
+        for key, value in changes.items():
+            if key == "buys_sells":
+                p["txns"]["h1"] = value
+            elif key == "change_24h":
+                p["priceChange"]["h24"] = value
+            else:
+                p[key] = value
+        self.http.pairs[PONS] = [p]
+        _, bought, _ = self.run_once()
+        return self.candidate(symbol), PONS in [x["address"] for x in bought]
+
+    def test_a_token_like_sigh_fails_every_market_check(self):
+        # SIGH when it was bought: $9.5k market cap, -93% in 24h, 4 buys vs 14 sells.
+        frog, bought = self.market(marketCap=9_532, change_24h=-93,
+                                   buys_sells={"buys": 4, "sells": 14})
+        self.assertFalse(bought)
+        for text in ("Market cap: $9,532 (need $25,000+)", "Not down >50% in 24h: -93% in 24h",
+                     "More buys than sells (1h): 4 buys vs 14 sells"):
+            self.assertIn(text, frog["failed_checks"])
+        self.assertEqual(frog["price_change_24h_pct"], "-93")
+        self.assertEqual(frog["goplus_is_honeypot"], "")          # later checks not reached
+        self.assertNotIn(PONS, [c[2]["contract_addresses"] for c in self.http.calls
+                                if c[0] == "goplus"])
+
+    def test_each_market_check_on_its_own(self):
+        cases = [({"marketCap": 24_999, "fdv": None}, "Market cap: $24,999"),
+                 ({"change_24h": -51}, "Not down >50% in 24h: -51% in 24h"),
+                 ({"buys_sells": {"buys": 20, "sells": 20}},
+                  "More buys than sells (1h): 20 buys vs 20 sells")]
+        for changes, text in cases:
+            with self.subTest(changes=changes):
+                self.tmp.cleanup()
+                self.tmp = tempfile.TemporaryDirectory()
+                frog, bought = self.market(**changes)
+                self.assertFalse(bought)
+                self.assertEqual(frog["failed_checks"].count(";"), 0, frog["failed_checks"])
+                self.assertIn(text, frog["failed_checks"])
+
+    def test_market_check_limits_and_unknowns(self):
+        frog, bought = self.market(marketCap=25_000, change_24h=-50,
+                                   buys_sells={"buys": 15, "sells": 14})
+        self.assertTrue(bought)                                   # the limits themselves pass
+        self.tmp.cleanup()
+        self.tmp = tempfile.TemporaryDirectory()
+        frog, bought = self.market(marketCap=None, change_24h=None, buys_sells={})
+        self.assertFalse(bought)
+        for text in ("Market cap: unknown", "Not down >50% in 24h: unknown",
+                     "More buys than sells (1h): unknown"):
+            self.assertIn(text, frog["failed_checks"])
+
+    def test_market_cap_falls_back_to_fdv(self):
+        frog, bought = self.market(marketCap=None, fdv=40_000)
+        self.assertTrue(bought)
+        self.assertEqual(frog["market_cap_usd"], "40000")
+
+    def test_an_open_position_is_kept_when_the_market_turns(self):
+        # Like SIGH: bought before these checks existed. Its position stays
+        # and only main's exits can sell it.
+        s, _, _ = self.run_once()
+        self.http.pairs[PONS] = [pair(PONS, PONS_POOL, "FROG", 150, price=0.000095)]
+        self.http.pairs[PONS][0].update(marketCap=9_000)
+        self.http.pairs[PONS][0]["priceChange"]["h24"] = -93
+        s2 = self.strategy()
+        s2.apply(s2.fetch(NOW + timedelta(hours=1)), lambda *_: None)
+        pos = s2.trader.position(PONS)
+        self.assertEqual(pos["remaining_fraction"], 1.0)
+        self.assertEqual([r["action"] for r in rows(self.path("journal.csv"))
+                          if r["symbol"] == "FROG"], ["BUY"])
+
     def test_pool_age_comes_from_dexscreener(self):
         self.http.pairs[PONS] = [pair(PONS, PONS_POOL, "FROG", 7 * 60)]   # GT said 2h
         self.run_once()
