@@ -424,3 +424,43 @@ journalctl -u main-1min -n 20 --no-pager
 `status` should say **active (running)**; the log gets one line a minute.
 Within about an hour the push commits `data/main-1min/` (commits called
 **"Server paper results …"**).
+
+---
+
+## Part H. Measure the free trade feed for 2 hours (one-off, optional)
+
+Before building a "momentum on launches" strategy, this checks whether
+Solana's free public RPC is good enough as a live feed of pump.fun trades.
+It **doesn't trade** and keeps **no trade data**: it only counts trades per
+second, bandwidth, disconnects, silent gaps, the feed's delay, and how
+quickly DexScreener lists new launches and how far behind its price is. It
+writes only `data/trade-feed-probe/summary.json` (the hourly push sends it
+to GitHub), and **stops by itself after 2 hours** (systemd also stops it at
+2 h 5 min, whatever happens). No key, no wallet, no new token.
+
+### H1. Get the new files and start it
+
+```
+sudo systemctl start launch-push
+cd ~/trading-bot && git log -1 --oneline
+sudo cp ~/trading-bot/deploy/trade-feed-probe.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl start trade-feed-probe
+journalctl -u trade-feed-probe -n 5 --no-pager
+```
+
+The log should say `connected to wss://api.mainnet-beta.solana.com;
+subscribed to pump.fun's logs`. Every 10 minutes it adds one progress line
+(trades, megabytes, disconnects). It is never started again by itself:
+don't `enable` it.
+
+### H2. After 2 hours
+
+```
+systemctl status trade-feed-probe --no-pager      # "inactive (dead)" = finished
+journalctl -u trade-feed-probe -n 15 --no-pager    # the final summary
+```
+
+Within the next hour the push puts `data/trade-feed-probe/summary.json` on
+GitHub, so it can be read there. To stop it early:
+`sudo systemctl stop trade-feed-probe` (the summary so far is kept).
