@@ -274,7 +274,9 @@ Within an hour or two you should see commits called **"Launch paper results
   `journalctl -u paper-run-trigger -n 20 --no-pager`. Pause it with
   `sudo systemctl disable --now paper-run-trigger.timer` (GitHub's own
   schedule keeps running). When its token expires the log says "the token has
-  expired or lacks permission": make a new one (F1) and repeat F2.
+  expired or lacks permission": make a new one (F1) and repeat F2. It also
+  starts the Daily strategy comparison when yesterday's issue is missing
+  after 00:30 UTC (`started Daily strategy comparison ...` in the log).
 - **Stop paying:** in Vultr, **destroy** the server. Just stopping it keeps
   billing.
 - **Never** install a wallet, paste a private key or seed phrase, or use
@@ -293,6 +295,13 @@ schedule did its job and nothing happens). GitHub's schedule stays on as a
 backup. The run itself is the normal one, on GitHub: nothing about the
 strategies changes.
 
+The same trigger also watches the **Daily strategy comparison**: after 00:30
+UTC, if yesterday's "Daily comparison: YYYY-MM-DD" issue isn't on GitHub yet
+(GitHub skipped its 00:07 run), it starts that workflow, at most once an hour
+and never while one is queued or running. The issue lookup needs no extra
+permission: if the token isn't allowed to read issues, it asks again
+without a token, which works because the repository is public.
+
 ### F1. Make a second GitHub token (start workflows only)
 
 Keep it separate from the Part C token, so each can be revoked on its own.
@@ -307,7 +316,8 @@ Keep it separate from the Part C token, so each can be revoked on its own.
 5. Click **Generate token** and copy it (it starts with `github_pat_`).
 
 This token can start, re-run or cancel this repository's workflow runs and
-read their logs. It **can't** change any file or workflow, read or change
+read their logs (it starts the Paper trading run and, when needed, the Daily
+strategy comparison). It **can't** change any file or workflow, read or change
 secrets, open issues, or touch any other repository. (GitHub has no narrower
 permission that can start a workflow.)
 
@@ -336,7 +346,10 @@ cd ~/trading-bot && git log -1 --oneline
 
 It prints either `started Paper trading run on main (...)` (a new run
 appears in the **Actions** tab within a minute or so) or `skipped: a run
-started N min ago`. Either means it works. `could not start ...` says why
+started N min ago`. Either means it works. After 00:30 UTC, when yesterday's
+comparison issue is missing, it also prints `started Daily strategy
+comparison on main (the issue for YYYY-MM-DD wasn't posted)`; when the issue
+is there it says nothing about it. `could not start ...` says why
 (for example a missing or expired token).
 
 ### F4. Turn on the 10-minute timer

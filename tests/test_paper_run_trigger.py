@@ -10,6 +10,7 @@ import os
 import sys
 import tempfile
 import unittest
+import unittest.mock
 import urllib.error
 from datetime import datetime, timedelta, timezone
 
@@ -42,16 +43,29 @@ class FakeResponse:
         return False
 
 
+def issue(day, number=1):
+    return {"number": number, "title": f"Daily comparison: {day}",
+            "body": f"<!-- daily-comparison: {day} -->\n# Daily comparison"}
+
+
 class FakeGitHub:
-    def __init__(self, runs, fail=None):
+    def __init__(self, runs, fail=None, issues=(), daily_runs=(), issues_need_no_token=False):
         self.runs, self.fail, self.requests = runs, fail, []
+        self.issues, self.daily_runs = list(issues), list(daily_runs)
+        self.issues_need_no_token = issues_need_no_token
 
     def __call__(self, req, timeout=None):
         self.requests.append(req)
         if self.fail:
             raise self.fail
+        if req.get_method() == "GET" and "/issues?" in req.full_url:
+            if self.issues_need_no_token and req.get_header("Authorization"):
+                raise urllib.error.HTTPError(req.full_url, 403, "Resource not accessible by "
+                                             "personal access token", {}, io.BytesIO(b""))
+            return FakeResponse(200, self.issues)
         if req.get_method() == "GET":
-            return FakeResponse(200, {"workflow_runs": self.runs})
+            daily = "daily-comparison.yml" in req.full_url
+            return FakeResponse(200, {"workflow_runs": self.daily_runs if daily else self.runs})
         return FakeResponse(204)
 
 
@@ -114,6 +128,83 @@ class TriggerTests(unittest.TestCase):
             with open(path, "w") as fh:
                 fh.write(f"{TOKEN}\n")
             self.assertEqual(tr.read_token(path), TOKEN)
+
+
+class DailyComparisonTests(unittest.TestCase):
+    AFTER = datetime(2026, 10, 4, 0, 40, tzinfo=timezone.utc)
+
+    def posts(self, gh):
+        return [r for r in gh.requests if r.get_method() == "POST"]
+
+    def test_starts_the_comparison_when_yesterdays_issue_is_missing(self):
+        gh, lines = FakeGitHub([], issues=[issue("2026-10-02")]), []
+        self.assertTrue(tr.trigger_daily(TOKEN, self.AFTER, gh, lines.append))
+        (post,) = self.posts(gh)
+        self.assertEqual((post.full_url, json.loads(post.data)),
+                         ("https://api.github.com/repos/Asayed36/trading-bot/actions/workflows/"
+                          "daily-comparison.yml/dispatches", {"ref": "main"}))
+        self.assertEqual(post.get_header("Authorization"), f"Bearer {TOKEN}")
+        self.assertEqual(lines, ["started Daily strategy comparison on main "
+                                 "(the issue for 2026-10-03 wasn't posted)"])
+        lookup = gh.requests[0].full_url
+        self.assertIn("/issues?labels=daily-comparison&state=all", lookup)
+
+    def test_nothing_when_the_issue_is_posted_or_before_0030(self):
+        gh, lines = FakeGitHub([], issues=[issue("2026-10-03"), issue("2026-10-02")]), []
+        self.assertFalse(tr.trigger_daily(TOKEN, self.AFTER, gh, lines.append))
+        self.assertEqual((self.posts(gh), lines), ([], []))
+        gh = FakeGitHub([])
+        early = datetime(2026, 10, 4, 0, 29, tzinfo=timezone.utc)
+        self.assertFalse(tr.trigger_daily(TOKEN, early, gh, lines.append))
+        self.assertEqual(gh.requests, [])                     # doesn't even ask GitHub
+        late = datetime(2026, 10, 4, 23, 55, tzinfo=timezone.utc)
+        self.assertTrue(tr.trigger_daily(TOKEN, late, FakeGitHub([]), lines.append))
+
+    def test_a_running_or_recent_comparison_run_is_left_alone(self):
+        def at(minutes_ago, status="completed"):
+            when = (self.AFTER - timedelta(minutes=minutes_ago)).isoformat()
+            return {"status": status, "created_at": when, "run_started_at": when}
+
+        for runs, why in (([at(5, "queued")], "a run is already queued"),
+                          ([at(30)], "a run started 30 min ago")):
+            gh, lines = FakeGitHub([], daily_runs=runs), []
+            self.assertFalse(tr.trigger_daily(TOKEN, self.AFTER, gh, lines.append))
+            self.assertEqual(self.posts(gh), [])
+            self.assertIn(why, lines[0])
+        # An hour after a run that didn't post it: try again.
+        gh = FakeGitHub([], daily_runs=[at(61)])
+        self.assertTrue(tr.trigger_daily(TOKEN, self.AFTER, gh, lambda *_: None))
+
+    def test_issue_lookup_without_the_token_when_github_refuses_it(self):
+        gh = FakeGitHub([], issues=[issue("2026-10-03")], issues_need_no_token=True)
+        self.assertFalse(tr.trigger_daily(TOKEN, self.AFTER, gh, lambda *_: None))
+        first, second = gh.requests
+        self.assertEqual(first.get_header("Authorization"), f"Bearer {TOKEN}")
+        self.assertIsNone(second.get_header("Authorization"))
+        self.assertEqual(self.posts(gh), [])
+
+    def test_marker_matches_compare(self):
+        sys.path.insert(0, HERE)
+        from screener.compare import MARKER
+        self.assertEqual(tr.DAILY_MARKER, MARKER)
+        self.assertEqual(tr.DAILY_LABEL, __import__("compare").LABEL)
+
+    def test_main_runs_both_and_one_failure_doesnt_stop_the_other(self):
+        calls = []
+        real = tr.trigger, tr.trigger_daily, tr.read_token
+
+        def broken(token):
+            calls.append("paper")
+            raise tr.TriggerError("GitHub said 500")
+        try:
+            tr.trigger, tr.read_token = broken, lambda: TOKEN
+            tr.trigger_daily = lambda token: calls.append("daily")
+            with unittest.mock.patch("sys.stderr", io.StringIO()) as err:
+                self.assertEqual(tr.main(), 1)
+            self.assertEqual(calls, ["paper", "daily"])
+            self.assertIn("could not start Paper trading run: GitHub said 500", err.getvalue())
+        finally:
+            tr.trigger, tr.trigger_daily, tr.read_token = real
 
 
 class UnitFileTests(unittest.TestCase):
