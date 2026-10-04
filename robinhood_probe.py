@@ -426,8 +426,13 @@ class Probe:
             self.r["launchpad_contracts"] = "skipped: no block time from the RPC"
             return
         out = {}
-        for pad in LAUNCHPADS:
-            pools = sorted((p for p in self.pools if p["launchpad"] == pad and p["created"]
+        # Each launchpad's newest pools, plus Pons' newest GRADUATED pools
+        # ("pons-v2-dex"): the events around a graduation show which
+        # contract and event mark it.
+        groups = [(pad, lambda p, pad=pad: p["launchpad"] == pad) for pad in LAUNCHPADS]
+        groups.append(("pons graduated", lambda p: p["dex"] == "pons-v2-dex"))
+        for pad, wanted in groups:
+            pools = sorted((p for p in self.pools if wanted(p) and p["created"]
                             and p["token"].startswith("0x")),
                            key=lambda p: p["created"], reverse=True)[:TOKENS_PER_LAUNCHPAD]
             emitters, tokens = Counter(), []
