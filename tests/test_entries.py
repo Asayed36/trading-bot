@@ -1,6 +1,7 @@
 """Checks that every paper buy, in every strategy, saves buys vs sells over
 the last hour, insider-network status and DexScreener's 5-minute and 1-hour
-price change to entries.csv, without changing any trade. Run with:  python -m unittest -v
+price change to entries.csv, without changing any trade (Jupiter's organic
+score: tests/test_jupiter.py). Run with:  python -m unittest -v
 """
 
 import copy

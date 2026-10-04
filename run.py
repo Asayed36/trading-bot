@@ -32,6 +32,7 @@ from screener.convergence import ConvergenceStrategy
 from screener.early import EarlyStrategy
 from screener.github_issues import GitHubIssues, issue_details, sync
 from screener.health import record_health
+from screener.jupiter import JupiterOrganic
 from screener.news import NewsHttp, NewsStrategy
 from screener.paper_trader import PaperTrader, now_utc
 from screener.robinhood import RobinhoodHttp, RobinhoodStrategy
@@ -112,9 +113,12 @@ def record_schedule(data_folder, every, now, out=print):
 
 
 def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_factory=None,
-        news_http=None, coingecko_key=None, robinhood_http=None):
+        news_http=None, coingecko_key=None, robinhood_http=None, jupiter=None):
     f, pt = cfg["filters"], cfg["paper_trading"]
     trader = PaperTrader(pt, data_folder)
+    # Jupiter's organic score at each buy, for entries.csv (logging only; the
+    # news strategy's coins aren't Solana tokens, so it has none).
+    trader.organic = jupiter
 
     # Fetch everything from the internet BEFORE changing any paper trades, so
     # a failed or rate-limited run leaves positions and journal untouched.
@@ -128,6 +132,7 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
     early, early_plan, early_skipped = None, None, None
     if cfg.get("early", {}).get("enabled"):
         early = EarlyStrategy(cfg, data_folder)
+        early.trader.organic = jupiter
         try:
             early_plan = early.fetch(api)
         except ApiError as exc:
@@ -138,6 +143,7 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
     conv, conv_plan, conv_skipped = None, None, None
     if cfg.get("convergence", {}).get("enabled"):
         conv = ConvergenceStrategy(cfg, data_folder, helius_key, rpc_factory)
+        conv.trader.organic = jupiter
         try:
             conv_plan = conv.fetch(api)
         except ApiError as exc:
@@ -379,16 +385,19 @@ def main():
         helius_key, rpc_factory = None, demo_rpc_factory()
         news_http, coingecko_key = DemoNewsHttp(), None
         robinhood_http = None   # no made-up Robinhood Chain data: skipped in the demo
+        jupiter = None          # no Jupiter lookups in the demo: those columns stay blank
     else:
         api = PublicApi(cfg["api"]["timeout_seconds"], cfg["api"]["rugcheck_delay_seconds"])
         folder = os.path.join(HERE, cfg["files"]["data_folder"])
         news_http = NewsHttp(cfg["api"]["timeout_seconds"])
         robinhood_http = (RobinhoodHttp.from_config(cfg["robinhood"], cfg["api"]["timeout_seconds"])
                           if cfg.get("robinhood", {}).get("enabled") else None)
+        jupiter = JupiterOrganic()
 
     try:
         run(api, cfg, folder, issues=issues, helius_key=helius_key, rpc_factory=rpc_factory,
-            news_http=news_http, coingecko_key=coingecko_key, robinhood_http=robinhood_http)
+            news_http=news_http, coingecko_key=coingecko_key, robinhood_http=robinhood_http,
+            jupiter=jupiter)
     except RateLimited as exc:
         print(f"\nRate limited: {exc}")
         print("Skipping this run. Nothing was traded; try again later.")

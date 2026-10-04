@@ -31,6 +31,7 @@ import websockets
 from run import HERE, load_config
 from screener.api import ApiError, PublicApi
 from screener.filters import best_pair, to_float
+from screener.jupiter import JupiterOrganic
 from screener.launch import LaunchEngine
 
 WSOL = "So11111111111111111111111111111111111111112"
@@ -72,6 +73,8 @@ def token_prices(api, mints):
 
 
 class Runner:
+    ORGANIC_POLL_SECONDS = 2     # how often to look for launches due a Jupiter reading
+
     def __init__(self, cfg, data_folder):
         self.cfg = cfg
         self.engine = LaunchEngine(cfg, data_folder)
@@ -79,6 +82,7 @@ class Runner:
         self.stop = asyncio.Event()
         self.ws = None
         self.kinds = {}          # feed messages received, by type (for --test)
+        self.jupiter = JupiterOrganic(timeout=5)   # organic score for entries.csv (logging)
 
     async def send(self, method, keys=None):
         if self.ws is not None:
@@ -168,6 +172,19 @@ class Runner:
             except asyncio.TimeoutError:
                 pass
 
+    async def organic(self):
+        """Jupiter's organic score for selected launches, every couple of
+        seconds until their last speed has bought. Logging only: the readings
+        only go into entries.csv, and a failed lookup leaves them blank."""
+        while not self.stop.is_set():
+            for mint in self.engine.jupiter_due(time.time()):
+                values = await asyncio.to_thread(self.jupiter, mint)
+                self.engine.set_jupiter(mint, values, time.time())
+            try:
+                await asyncio.wait_for(self.stop.wait(), self.ORGANIC_POLL_SECONDS)
+            except asyncio.TimeoutError:
+                pass
+
     async def main(self, stop_after=None):
         loop = asyncio.get_running_loop()
         if stop_after:
@@ -177,7 +194,8 @@ class Runner:
                 loop.add_signal_handler(sig, self.stop.set)
             except NotImplementedError:  # Windows
                 pass
-        tasks = [asyncio.create_task(x) for x in (self.feed(), self.clock(), self.prices())]
+        tasks = [asyncio.create_task(x)
+                 for x in (self.feed(), self.clock(), self.prices(), self.organic())]
         await self.stop.wait()
         if self.ws is not None:
             await self.ws.close()
