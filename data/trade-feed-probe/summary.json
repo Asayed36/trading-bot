@@ -1,63 +1,89 @@
 {
   "finished": false,
   "started_utc": "2026-10-04T07:14:56.211001+00:00",
-  "updated_utc": "2026-10-04T07:59:59.089913+00:00",
-  "minutes_measured": 45.0,
+  "updated_utc": "2026-10-04T09:00:04.112183+00:00",
+  "minutes_measured": 105.1,
   "feed": "wss://api.mainnet-beta.solana.com",
   "trades": {
-    "total": 103653,
-    "buys": 55095,
-    "sells": 48558,
-    "per_second_average": 38.35,
-    "per_second_median": 35,
-    "per_second_p95": 70,
+    "total": 231311,
+    "buys": 125242,
+    "sells": 106069,
+    "per_second_average": 36.67,
+    "per_second_median": 34,
+    "per_second_p95": 67,
     "per_second_max": 329,
-    "busiest_minute": 3384,
-    "launches_seen": 1209,
-    "notifications": 233686,
-    "failed_transactions": 115097
+    "busiest_minute": 3962,
+    "launches_seen": 2681,
+    "notifications": 471022,
+    "failed_transactions": 202624
   },
   "bandwidth": {
-    "messages": 233687,
-    "bytes": 572702667,
-    "megabytes": 572.7,
-    "megabytes_per_hour": 762.8,
-    "gigabytes_per_day_projected": 18.31,
-    "average_message_bytes": 2451,
-    "helius_credits_per_month_projected": 10984179,
+    "messages": 471028,
+    "bytes": 1249008615,
+    "megabytes": 1249.01,
+    "megabytes_per_hour": 712.8,
+    "gigabytes_per_day_projected": 17.11,
+    "average_message_bytes": 2652,
+    "helius_credits_per_month_projected": 10264683,
     "compression_negotiated": false
   },
   "connection": {
-    "disconnects": 0,
+    "disconnects": 5,
     "watchdog_reconnects": 0,
-    "seconds_disconnected": 0,
-    "recent_disconnects": [],
+    "seconds_disconnected": 10.0,
+    "recent_disconnects": [
+      {
+        "at": "08:06:50",
+        "reason": "sent 1002 (protocol error) invalid status code; no close frame received",
+        "down_seconds": 2.0
+      },
+      {
+        "at": "08:29:30",
+        "reason": "sent 1002 (protocol error) invalid status code; no close frame received",
+        "down_seconds": 2.0
+      },
+      {
+        "at": "08:30:15",
+        "reason": "sent 1002 (protocol error) invalid status code; no close frame received",
+        "down_seconds": 2.0
+      },
+      {
+        "at": "08:38:21",
+        "reason": "sent 1002 (protocol error) invalid status code; no close frame received",
+        "down_seconds": 2.0
+      },
+      {
+        "at": "08:41:40",
+        "reason": "sent 1002 (protocol error) invalid status code; no close frame received",
+        "down_seconds": 2.0
+      }
+    ],
     "silent_gaps": {},
     "longest_silent_gap_seconds": 0.0,
     "slot_jumps_over_limit": 0
   },
   "feed_delay_seconds": {
-    "median": 1.5,
-    "p95": 3.6,
-    "max": 6.1,
+    "median": 1.4,
+    "p95": 3.1,
+    "max": 4.9,
     "samples": 20000,
     "note": "receive time minus on-chain time (whole seconds on chain)"
   },
   "dexscreener": {
-    "launches_sampled": 42,
-    "listing_delay_seconds_median": 59.2,
-    "listing_delay_seconds_p95": 67.5,
-    "not_listed_within_limit": 1,
-    "price_lag_seconds_median": 209.9,
-    "price_lag_seconds_p95": 552.4,
-    "price_checks": 1976,
-    "price_unmatched": 0,
-    "requests": 265,
+    "launches_sampled": 100,
+    "listing_delay_seconds_median": 57.2,
+    "listing_delay_seconds_p95": 71.5,
+    "not_listed_within_limit": 2,
+    "price_lag_seconds_median": 216.4,
+    "price_lag_seconds_p95": 564.8,
+    "price_checks": 5204,
+    "price_unmatched": 90,
+    "requests": 619,
     "errors": 0
   },
   "own_load": {
-    "cpu_seconds": 66.8,
-    "cpu_percent_of_one_core": 2.5,
-    "max_memory_mb": 48.3
+    "cpu_seconds": 149.2,
+    "cpu_percent_of_one_core": 2.4,
+    "max_memory_mb": 50.2
   }
 }
