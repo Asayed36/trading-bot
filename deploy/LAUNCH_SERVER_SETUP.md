@@ -254,12 +254,22 @@ Within an hour or two you should see commits called **"Launch paper results
 
 ## Part E. Looking after it
 
-- **Get bot updates** (after a pull request is merged): the hourly push
-  already brings the code on the server up to date with GitHub (like
-  `git pull`), so you only need to restart the bots to use it:
-  `sudo systemctl restart launch-bot main-1min` (leave out `main-1min` if
-  you haven't set up Part G). (Any of your own edits to a file that
-  also changed on GitHub are replaced by GitHub's version.)
+- **Bot updates are automatic** (after a pull request is merged): the hourly
+  push brings the code on the server up to date with GitHub (like
+  `git pull`). Each bot notices when that changed code it uses (its own
+  files, or its own settings in `config.toml`), saves everything, exits by
+  itself, and systemd starts it again with the new code about 10 seconds
+  later. You don't need to do anything. Changes to other strategies' code
+  or settings don't restart them. See every automatic restart with:
+  `journalctl -u launch-bot -u main-1min --no-pager | grep "automatic restart"`.
+  (Any of your own edits to a file that also changed on GitHub are replaced
+  by GitHub's version.)
+- **Two things still need you, and the pull request will say so when they
+  happen:** a change to a `.service` file (copy it and run
+  `sudo systemctl daemon-reload`, as in Part D/G), or a new Python package
+  in `requirements*.txt` (`.venv/bin/pip install -r requirements.txt -r
+  requirements-launch.txt`). The bots never get sudo rights to do these
+  themselves.
 - **Test the push by hand:** `~/trading-bot/deploy/push_results.sh`. It
   never uses a rebase, and if an older version left a rebase or cherry-pick
   stuck, it clears it first and still pushes the newest results. Check the

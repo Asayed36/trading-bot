@@ -308,3 +308,19 @@ def format_report(result):
     for c in result.checks:
         lines.append(f"   {icon[c.status]}  {c.name:<30} {c.detail}")
     return "\n".join(lines)
+
+
+def current_prices(api, positions, allowed_dexes):
+    """Latest price for each open position, from the same pool we 'bought' in."""
+    if not positions:
+        return {}
+    pairs = api.pairs_for_tokens([p["address"] for p in positions])
+    prices = {}
+    for pos in positions:
+        pair = next((p for p in pairs if p.get("pairAddress") == pos["pair_address"]), None)
+        pair = pair or best_pair(pairs, pos["address"], allowed_dexes)
+        try:
+            prices[pos["address"]] = float(pair["priceUsd"])
+        except (TypeError, KeyError, ValueError):
+            pass
+    return prices

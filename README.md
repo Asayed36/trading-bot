@@ -326,6 +326,9 @@ service; setup: Part G of
   `entries.csv`, `health.json`). It never reads or writes the GitHub main
   strategy's files and opens no GitHub issues. The hourly push
   (`deploy/push_results.sh`) sends the folder here.
+- **Updates itself:** when the hourly push brings new code it uses, it
+  saves, exits and is started again by systemd with the new code (like the
+  launch bot; "automatic restart" in `journalctl -u main-1min`).
 - **Free limits:** about 4–6 DexScreener requests a minute (its limits are 60
   a minute for the lists and 300 for pairs). RugCheck is asked only about
   tokens that pass the market checks, and only when a token is new or its
@@ -384,6 +387,11 @@ step: [`deploy/LAUNCH_SERVER_SETUP.md`](deploy/LAUNCH_SERVER_SETUP.md).
   and why) and `stats.json` (hourly counts: launches seen, skipped by reason,
   flagged, traded). The daily comparison shows **launch 5s / 30s / 90s** next
   to the other strategies.
+- **Updates itself:** when the hourly push brings new code the bot uses
+  (`screener/autorestart.py`), it saves everything, exits and is started
+  again by systemd with the new code, so nobody has to restart it after a
+  merge. Each one is logged as "automatic restart" (`journalctl -u
+  launch-bot`). Changes to other strategies don't restart it.
 - **Caveat:** the simulation is still generous. A real buy at 5 seconds can
   fail or land later, and real slippage in the first seconds can be far
   worse than 5%.
