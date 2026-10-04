@@ -10,7 +10,11 @@ and main's exits and costs ([paper_trading]: $10 buys, sell half at +50%,
 costs). Only the timing differs, so the two can be compared. Its own
 positions, journal and entries are in data/main-1min/: it never reads or
 writes the GitHub main strategy's files, and it opens no GitHub issues.
-deploy/push_results.sh pushes data/main-1min to GitHub once an hour.
+deploy/push_results.sh pushes data/main-1min to GitHub once an hour. When
+that push brings new code the bot uses, it exits by itself between two runs
+(everything is saved after each run) and systemd starts it again with the
+new code (screener/autorestart.py; "automatic restart" in
+journalctl -u main-1min).
 
 Staying within the free limits, every minute:
   - DexScreener: the latest profiles and boosts, the candidates' pairs (30
@@ -37,14 +41,18 @@ import tempfile
 import time
 from datetime import datetime, timedelta, timezone
 
-from run import HERE, current_prices, load_config
 from screener.api import ApiError, PublicApi, RateLimited
-from screener.filters import PASS, best_pair, evaluate, find_candidates, market_checks
+from screener.autorestart import CodeWatcher, restart_message
+from screener.filters import (PASS, best_pair, current_prices, evaluate, find_candidates,
+                              market_checks)
 from screener.jupiter import JupiterOrganic
 from screener.paper_trader import PaperTrader, now_utc
+from screener.settings import HERE, load_config
 
 log = logging.getLogger("main_1min")
 HOURS_KEPT = 48            # call counts per hour kept in health.json
+# The config.toml sections the bot reads: only changes there restart it.
+CONFIG_SECTIONS = ("filters", "paper_trading", "main_1min", "api", "files")
 
 
 class SafeTrader(PaperTrader):
@@ -199,9 +207,12 @@ class MainOneMinute:
         os.replace(tmp, path)
 
 
-def forever(bot, every=60, clock=time.time, sleep=time.sleep, out=print, stop=None):
-    """A run at the start of every minute until `stop()` says so. A crash in
-    one run is logged and the next minute runs as normal."""
+def forever(bot, every=60, clock=time.time, sleep=time.sleep, out=print, stop=None,
+            watcher=None):
+    """A run at the start of every minute until `stop()` says so, or until
+    `watcher` (a CodeWatcher) sees new code: then it returns what changed,
+    so the bot exits and systemd starts the new version. A crash in one run
+    is logged and the next minute runs as normal."""
     stop = stop or (lambda: False)
     while not stop():
         try:
@@ -210,7 +221,12 @@ def forever(bot, every=60, clock=time.time, sleep=time.sleep, out=print, stop=No
             log.exception("run failed")
         if stop():
             break
+        changed = watcher.changed() if watcher is not None else None
+        if changed:
+            log.warning(restart_message(changed))
+            return changed
         sleep(every - clock() % every)
+    return None
 
 
 def main(argv=None):
@@ -252,8 +268,12 @@ def main(argv=None):
 
     print(f"main (1 min): paper trading every {cfg['main_1min']['every_seconds']} s into "
           f"{bot.folder}", flush=True)
-    forever(Guarded(), cfg["main_1min"]["every_seconds"], out=lambda s: print(s, flush=True),
-            stop=lambda: bool(stopping))
+    watcher = CodeWatcher(HERE, CONFIG_SECTIONS)
+    log.info("watching %d code file(s) and config.toml %s for updates",
+             len(watcher.files), ", ".join(f"[{s}]" for s in CONFIG_SECTIONS))
+    if forever(Guarded(), cfg["main_1min"]["every_seconds"],
+               out=lambda s: print(s, flush=True), stop=lambda: bool(stopping), watcher=watcher):
+        log.info("stopped; everything saved; systemd starts the new code in about 10 s")
     return 0
 
 

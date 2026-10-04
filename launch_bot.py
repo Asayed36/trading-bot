@@ -8,7 +8,10 @@ and migrations, and paper-trades them at three speeds (see
 screener/launch.py). It doesn't subscribe to the tokens' trades: PumpPortal's
 trade stream needs an API key and a funded wallet. Prices after creation
 come from DexScreener. Results are written to data/launch/ and
-pushed to GitHub by deploy/push_results.sh.
+pushed to GitHub by deploy/push_results.sh. When that push brings new code
+the bot uses, it saves everything and exits by itself, and systemd starts it
+again with the new code (screener/autorestart.py; "automatic restart" in
+journalctl -u launch-bot).
 
 PAPER TRADING ONLY. This program only READS public data. It never connects
 to a wallet, never uses a private key, never signs anything and never calls
@@ -28,13 +31,17 @@ import time
 
 import websockets
 
-from run import HERE, load_config
 from screener.api import ApiError, PublicApi
+from screener.autorestart import CodeWatcher, restart_message
 from screener.filters import best_pair, to_float
 from screener.jupiter import JupiterOrganic
 from screener.launch import LaunchEngine
+from screener.settings import HERE, load_config
 
 WSOL = "So11111111111111111111111111111111111111112"
+# The config.toml sections the bot reads: only changes there restart it.
+CONFIG_SECTIONS = ("launch", "files")
+CODE_CHECK_SECONDS = 30
 # The only things this program ever asks PumpPortal for (read-only data).
 ALLOWED_METHODS = {"subscribeNewToken", "subscribeMigration"}
 
@@ -75,8 +82,10 @@ def token_prices(api, mints):
 class Runner:
     ORGANIC_POLL_SECONDS = 2     # how often to look for launches due a Jupiter reading
 
-    def __init__(self, cfg, data_folder):
+    def __init__(self, cfg, data_folder, watcher=None):
         self.cfg = cfg
+        self.watcher = watcher   # CodeWatcher: restart when the push brings new code
+        self.restarting = None
         self.engine = LaunchEngine(cfg, data_folder)
         self.api = PublicApi(timeout=15)
         self.stop = asyncio.Event()
@@ -185,6 +194,21 @@ class Runner:
             except asyncio.TimeoutError:
                 pass
 
+    async def watch_code(self):
+        """Every CODE_CHECK_SECONDS: if the hourly push changed the bot's
+        code, stop (everything is saved below) so systemd restarts it."""
+        while self.watcher is not None and not self.stop.is_set():
+            try:
+                await asyncio.wait_for(self.stop.wait(), CODE_CHECK_SECONDS)
+                return
+            except asyncio.TimeoutError:
+                pass
+            changed = self.watcher.changed()
+            if changed:
+                self.restarting = changed
+                log.warning(restart_message(changed))
+                self.stop.set()
+
     async def main(self, stop_after=None):
         loop = asyncio.get_running_loop()
         if stop_after:
@@ -195,7 +219,8 @@ class Runner:
             except NotImplementedError:  # Windows
                 pass
         tasks = [asyncio.create_task(x)
-                 for x in (self.feed(), self.clock(), self.prices(), self.organic())]
+                 for x in (self.feed(), self.clock(), self.prices(), self.organic(),
+                           self.watch_code())]
         await self.stop.wait()
         if self.ws is not None:
             await self.ws.close()
@@ -203,7 +228,8 @@ class Runner:
             task.cancel()
         await asyncio.gather(*tasks, return_exceptions=True)
         self.engine.save()
-        log.info("stopped; everything saved")
+        log.info("stopped; everything saved"
+                 + ("; systemd starts the new code in about 10 s" if self.restarting else ""))
 
 
 def test_summary(engine, kinds=None):
@@ -242,7 +268,11 @@ def main(argv=None):
             print(test_summary(runner.engine, runner.kinds))
         return 0
     folder = os.path.join(HERE, cfg["files"]["data_folder"])
-    asyncio.run(Runner(cfg, folder).main())
+    # Watch the code it loaded (everything is imported by now).
+    watcher = CodeWatcher(HERE, CONFIG_SECTIONS)
+    log.info("watching %d code file(s) and config.toml %s for updates",
+             len(watcher.files), ", ".join(f"[{s}]" for s in CONFIG_SECTIONS))
+    asyncio.run(Runner(cfg, folder, watcher).main())
     return 0
 
 

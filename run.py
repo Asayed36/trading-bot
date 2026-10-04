@@ -24,10 +24,10 @@ import argparse
 import json
 import os
 import sys
-import tomllib
 
 from screener.api import ApiError, PublicApi, RateLimited
-from screener.filters import best_pair, evaluate, find_candidates, format_report, market_checks
+from screener.filters import (best_pair, current_prices, evaluate,  # noqa: F401
+                              find_candidates, format_report, market_checks)
 from screener.convergence import ConvergenceStrategy
 from screener.early import EarlyStrategy
 from screener.github_issues import GitHubIssues, issue_details, sync
@@ -36,34 +36,13 @@ from screener.jupiter import JupiterOrganic
 from screener.news import NewsHttp, NewsStrategy
 from screener.paper_trader import PaperTrader, now_utc
 from screener.robinhood import RobinhoodHttp, RobinhoodStrategy
+from screener.settings import HERE, load_config  # noqa: F401  (others import them from here)
 
-HERE = os.path.dirname(os.path.abspath(__file__))
 LINE = "=" * 78
 
 # Exit code for "rate limited, run skipped" (EX_TEMPFAIL). The GitHub workflow
 # treats it as a skipped run, not a failure, and saves nothing.
 EXIT_RATE_LIMITED = 75
-
-
-def load_config(path=os.path.join(HERE, "config.toml")):
-    with open(path, "rb") as fh:
-        return tomllib.load(fh)
-
-
-def current_prices(api, positions, allowed_dexes):
-    """Latest price for each open position, from the same pool we 'bought' in."""
-    if not positions:
-        return {}
-    pairs = api.pairs_for_tokens([p["address"] for p in positions])
-    prices = {}
-    for pos in positions:
-        pair = next((p for p in pairs if p.get("pairAddress") == pos["pair_address"]), None)
-        pair = pair or best_pair(pairs, pos["address"], allowed_dexes)
-        try:
-            prices[pos["address"]] = float(pair["priceUsd"])
-        except (TypeError, KeyError, ValueError):
-            pass
-    return prices
 
 
 def screen(api, cfg, out):
