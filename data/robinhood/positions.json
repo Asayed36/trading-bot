@@ -31,13 +31,6 @@
       "name": "HOODAGENTS",
       "created": "2026-10-03T22:14:06Z"
     },
-    "0x1c4311cf55eb1e1fa7fa1c7cda09b11b5b1348b19b6c14ae5cbad4aea9643a2e": {
-      "pool": "0x1c4311cf55eb1e1fa7fa1c7cda09b11b5b1348b19b6c14ae5cbad4aea9643a2e",
-      "dex": "pons-v2-dex",
-      "token": "0x1bdaa4c99abf32f73d2a1d41063bb886d31afd74",
-      "name": "DAZZ",
-      "created": "2026-10-03T19:01:28Z"
-    },
     "0x7ce33b798f58d2ff44fd9af18b43677a0c56be324c6b7d3e5bbbbdd8f2cfbaa6": {
       "pool": "0x7ce33b798f58d2ff44fd9af18b43677a0c56be324c6b7d3e5bbbbdd8f2cfbaa6",
       "dex": "pons-v2-dex",
@@ -219,13 +212,6 @@
     ]
   },
   "checked": {
-    "0x1c4311cf55eb1e1fa7fa1c7cda09b11b5b1348b19b6c14ae5cbad4aea9643a2e": {
-      "at": "2026-10-04T00:41:25.732771+00:00",
-      "passed": false,
-      "failed": [
-        "No equal-balance cluster"
-      ]
-    },
     "0x6cabefd907a486bbd5974ebcfae85d768d19113fc6129ce0e3697bd77bb9ab7f": {
       "at": "2026-10-04T00:41:25.732771+00:00",
       "passed": false,
@@ -241,14 +227,14 @@
       ]
     },
     "0x870152035cfd299785ede30d2fa7d48a2b7c9f012a14d551e5cac4f4d39d6eb4": {
-      "at": "2026-10-04T00:01:26.159653+00:00",
+      "at": "2026-10-04T01:13:24.896651+00:00",
       "passed": false,
       "failed": [
-        "Not a copycat"
+        "Liquidity"
       ]
     },
     "0x4159d844558b1c9c7f1caed2311d85414f55f2756c9490342669937ae8d34eed": {
-      "at": "2026-10-04T00:01:26.159653+00:00",
+      "at": "2026-10-04T01:13:24.896651+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
@@ -272,19 +258,20 @@
   "sources": {
     "geckoterminal": {
       "calls": 3,
-      "errors": 0,
-      "rate_limited": 0,
+      "errors": 1,
+      "rate_limited": 1,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
       "ok": true,
-      "at": "2026-10-04T01:01:02.388899+00:00",
+      "at": "2026-10-04T01:13:24.896651+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 3,
+      "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-04T00:51:12.632193+00:00",
-      "used_this_run": false
+      "at": "2026-10-04T01:13:24.896651+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -304,10 +291,9 @@
     }
   },
   "logged": {
-    "0x1c4311cf55eb1e1fa7fa1c7cda09b11b5b1348b19b6c14ae5cbad4aea9643a2e": "FAIL|No equal-balance cluster: 3 wallets hold the same amount (0.9% together)",
     "0x6cabefd907a486bbd5974ebcfae85d768d19113fc6129ce0e3697bd77bb9ab7f": "FAIL|Not a copycat: 5 other token(s) called FILL in the last 7 days, one with more liquidity ($19,064 vs $50,970: 0x287eadb409aabc4f41b23bf26cdae8970d3e9f49)",
     "0xa605cb8aee6413632097de34a825e01783bad21ee1158db8f53285f56a4de64d": "FAIL|Liquidity: $7,765 (need $10,000+)",
-    "0x870152035cfd299785ede30d2fa7d48a2b7c9f012a14d551e5cac4f4d39d6eb4": "FAIL|Not a copycat: 6 other token(s) called HOODAGENTS in the last 7 days, one with more liquidity ($11,092 vs $53,444: 0x8046806d9261c08660af4c9e5efe8890d380199b)",
+    "0x870152035cfd299785ede30d2fa7d48a2b7c9f012a14d551e5cac4f4d39d6eb4": "FAIL|Liquidity: $9,370 (need $10,000+)",
     "0x4159d844558b1c9c7f1caed2311d85414f55f2756c9490342669937ae8d34eed": "FAIL|Liquidity: $6,744 (need $10,000+)",
     "0x7ce33b798f58d2ff44fd9af18b43677a0c56be324c6b7d3e5bbbbdd8f2cfbaa6": "FAIL|Not a copycat: 12 other token(s) called SIGH in the last 7 days, one with more liquidity ($17,901 vs $58,339: 0x0fb6d77a6330b010adaa4ec63848fde54a047f67)",
     "0x2149ca8c91f3a38f881ad6c39cd77daf6832902f9c987e06a6f9fe5b6256ec7b": "FAIL|Pool age: 19754 min (need 30 min - 6 h)"
