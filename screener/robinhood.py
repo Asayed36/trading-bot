@@ -18,7 +18,10 @@ Each run:
      Pools.trade). GeckoTerminal only allows a few calls a minute from
      GitHub's runners, so at most gecko_calls_per_run calls, spaced out; the
      pools seen are kept in a watchlist so later runs can check them once
-     they're old enough.
+     they're old enough. GeckoTerminal's lists miss about half of Pons'
+     graduations, so the graduations read from the chain (step 5) that it
+     hasn't listed go on the watchlist too, with their pool from DexScreener:
+     every graduation gets the same checks.
   3. Each pool aged 30 min - 6 h is checked, cheap checks first (each one
      only when the ones before passed, so a run stays within the free limits):
        - Pool age and minimum liquidity (DexScreener, the same pool; the
@@ -38,9 +41,10 @@ Each run:
          buys). A 429 from the RPC is retried after a pause.
   4. A token that passes everything is paper-bought, with the pool fee,
      slippage and gas on the buy and on every sell. Exits are main's.
-  5. Read-only, for the run log: how many Pons tokens graduated on the chain
-     in the last 24 hours (the graduation event's logs, once an hour) and how
-     many of them this strategy saw.
+  5. Read-only: the Pons tokens that graduated on the chain in the last 24
+     hours (the graduation event's logs: the whole day once, then only the
+     new blocks each run, usually one call, never waiting on a 429), for
+     step 2 and the run log.
 
 Every check value at the moment of a buy goes to entries.csv (blank =
 unknown); every checked candidate to candidates.csv (when its result
@@ -70,6 +74,9 @@ HEADERS = {"User-Agent": "memecoin-screener/1.0 (read-only paper trading)"}
 RPC_METHODS = {"eth_blockNumber", "eth_getBlockByNumber", "eth_getLogs",
                "eth_getTransactionByHash"}
 TRANSFER = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+# Watchlist key of a graduation found on the chain (its pool comes from
+# DexScreener when it's checked).
+ONCHAIN = "onchain:"
 ZERO = "0x" + "0" * 40
 BURN = {ZERO, "0x000000000000000000000000000000000000dead"}
 SOURCES = ("geckoterminal", "dexscreener", "goplus", "rpc")
@@ -391,18 +398,20 @@ class RobinhoodStrategy:
     def _get(self, plan, source, url, params=None):
         return self._call(plan, source, self.http.get, source, url, params)
 
-    def _rpc(self, plan, method, params):
+    def _rpc(self, plan, method, params, retry=True):
         """A read-only RPC call. When the RPC says 429 (too many requests),
         wait and try again: rpc_retries times, rpc_retry_seconds longer each
-        time, and no more than rpc_retry_budget_seconds of waiting a run."""
+        time, and no more than rpc_retry_budget_seconds of waiting a run.
+        retry=False: no waiting (the caller carries on next run instead)."""
         c = self.c
-        for attempt in range(c["rpc_retries"] + 1):
+        for attempt in range(c["rpc_retries"] + 1 if retry else 1):
             try:
                 return self._call(plan, "rpc", self.http.rpc, method, params)
             except RateLimited:
                 pause = c["rpc_retry_seconds"] * (attempt + 1)
                 waited = plan.get("rpc_waited", 0)
-                if attempt >= c["rpc_retries"] or waited + pause > c["rpc_retry_budget_seconds"]:
+                if not retry or attempt >= c["rpc_retries"] \
+                        or waited + pause > c["rpc_retry_budget_seconds"]:
                     raise
                 plan["rpc_waited"] = waited + pause
                 self.sleep(pause)
@@ -439,8 +448,14 @@ class RobinhoodStrategy:
                 if price:
                     plan["prices"][pos["address"]] = price
 
-        # 2. New launchpad pools from GeckoTerminal, into the watchlist.
+        # 2. New launchpad pools from GeckoTerminal, and the Pons graduations
+        # read from the chain that GeckoTerminal hasn't listed, into the
+        # watchlist.
+        # Before the checks only a few calls (the new blocks since the last
+        # run usually take one); a first full read goes on after them.
         self._discover(plan, now)
+        self._graduations(plan, now, c["graduation_calls_before_checks"])
+        self._discover_onchain(plan, now)
 
         # 3. Pools old enough to check, and not checked too recently.
         lo = timedelta(minutes=c["min_pool_age_minutes"])
@@ -460,7 +475,8 @@ class RobinhoodStrategy:
         due = due[:c["max_candidates_per_run"]]
         if not due:
             plan["notes"].append(f"{len(plan['watch'])} pool(s) on the watchlist, none due a check")
-            self._graduations(plan, now)
+            self._graduations(plan, now, c["graduation_rpc_calls"], again=True)
+            self._discover_onchain(plan, now)        # checked from the next run
             return plan
 
         pairs = self._dex_pairs(plan, [w["token"] for _, w in due])
@@ -470,7 +486,8 @@ class RobinhoodStrategy:
             plan["candidates"].append(cand)
             plan["checked"][pool] = {"at": now.isoformat(), "passed": cand["passed"],
                                      "failed": cand["failed"]}
-        self._graduations(plan, now)       # last: the holder checks get the RPC first
+        self._graduations(plan, now, c["graduation_rpc_calls"], again=True)
+        self._discover_onchain(plan, now)            # checked from the next run
         return plan
 
     def _discover(self, plan, now):
@@ -497,6 +514,9 @@ class RobinhoodStrategy:
                 continue
             for p in gecko_pools(body, self.launchpads):
                 found += 1
+                # Found on the chain earlier: GeckoTerminal's pool replaces it.
+                if plan["watch"].pop(ONCHAIN + p["token"], None) is not None:
+                    plan["checked"].pop(ONCHAIN + p["token"], None)
                 plan["watch"].setdefault(p["pool"], p)
                 self._register(plan, p, now)
         # Forget pools too old to trade, and launchpad tokens that graduated
@@ -531,7 +551,8 @@ class RobinhoodStrategy:
         c = self.c
         pad = self.launchpads[w["dex"]]
         v = dict.fromkeys(VALUE_COLUMNS)
-        v.update(token_address=w["token"], launchpad=pad["name"], pool_address=pool,
+        v.update(token_address=w["token"], launchpad=pad["name"],
+                 pool_address=None if pool.startswith(ONCHAIN) else pool,
                  symbol=w["name"])
         checks = []
 
@@ -551,7 +572,8 @@ class RobinhoodStrategy:
                      price_change_5m_pct=to_float(change.get("m5")),
                      price_change_1h_pct=to_float(change.get("h1")),
                      price_change_24h_pct=to_float(change.get("h24")))
-            v["pool_address"] = (pair.get("pairAddress") or pool).lower()
+            v["pool_address"] = (pair.get("pairAddress") or v["pool_address"] or "").lower() \
+                or None
         created = (datetime.fromtimestamp(pair["pairCreatedAt"] / 1000, timezone.utc)
                    if pair and pair.get("pairCreatedAt") else _utc(w["created"]))
         age = (now - created).total_seconds() / 60
@@ -750,44 +772,95 @@ class RobinhoodStrategy:
             plan["head"] = head
         return head
 
-    def _graduations(self, plan, now):
+    def _graduations(self, plan, now, max_calls, again=False):
         """Read-only: Pons graduations on the chain in the last
         graduation_count_hours (the graduation event's logs, one token each),
-        to compare with how many this strategy saw. Counted at most every
-        graduation_count_minutes; the count is kept in the state between."""
+        with when each happened (from its block). The first time, the whole
+        window is read (at most graduation_rpc_calls eth_getLogs calls; an
+        unfinished read carries on next run); after that only the blocks
+        since the last read, at most every graduation_scan_minutes (usually
+        one call). Kept in the state between runs. A 429 isn't waited for
+        (the holder checks need the RPC's patience more): the read just
+        carries on next run. again=True: only to finish this run's read,
+        within max_calls in all."""
         c = self.c
-        last = plan["graduations"]
-        if last.get("at") and now - _utc(last["at"]) < timedelta(
-                minutes=c["graduation_count_minutes"]):
+        g = plan["graduations"]
+        if again:
+            if g.get("complete", True) or g.get("at") != now.isoformat() or \
+                    plan.get("graduation_error"):
+                return
+        elif g.get("at") and now - _utc(g["at"]) < timedelta(
+                minutes=c["graduation_scan_minutes"]):
             return
+        max_calls -= plan.get("graduation_calls", 0)
         flt = {"address": c["pons_graduation_contract"], "topics": [c["pons_graduation_topic"]]}
         slot = c["pons_graduation_token_topic"]
+        seen = dict(g.get("seen") or {})          # token -> when it graduated
         try:
             head = self._clock(plan)
-            start = max(head - int(c["graduation_count_hours"] * 3600 / plan["block_time"]), 0)
-            logs, calls, step = [], 0, head - start + 1
-            while start <= head and calls < c["graduation_rpc_calls"]:
-                stop = min(start + step - 1, head)
-                calls += 1
-                try:
-                    got = self._rpc(plan, "eth_getLogs", [dict(flt, fromBlock=hex(start),
-                                                               toBlock=hex(stop))])
-                except RateLimited:
-                    raise
-                except ApiError:
-                    if step <= 1000:
-                        raise
-                    step //= 2
-                    continue
-                logs += got or []
-                start = stop + 1
         except (ApiError, KeyError, TypeError, ValueError) as exc:
-            plan["notes"].append(f"Pons graduations on chain: couldn't count them ({exc})")
+            plan["notes"].append(f"Pons graduations on chain: couldn't read them ({exc})")
             return
-        tokens = {topic_to_address((x.get("topics") or [])[slot])
-                  for x in logs if len(x.get("topics") or []) > slot} - {None, ZERO}
+        bt = plan["block_time"]
+        window_start = max(head - int(c["graduation_count_hours"] * 3600 / bt), 0)
+        scanned = g.get("scanned_to")
+        start = scanned + 1 if "seen" in g and scanned is not None and scanned >= window_start \
+            else window_start
+        calls, step, error = 0, head - start + 1, None
+        while start <= head and calls < max_calls:
+            stop = min(start + step - 1, head)
+            calls += 1
+            try:
+                got = self._rpc(plan, "eth_getLogs", [dict(flt, fromBlock=hex(start),
+                                                           toBlock=hex(stop))], retry=False)
+            except RateLimited as exc:
+                error = exc                         # keep what was read; go on next run
+                break
+            except ApiError as exc:
+                if step <= 1000:
+                    error = exc
+                    break
+                step //= 2
+                continue
+            for log in got or []:
+                topics = log.get("topics") or []
+                token = topic_to_address(topics[slot]) if len(topics) > slot else None
+                block = hex_int(log.get("blockNumber"))
+                if token and token != ZERO and block is not None:
+                    # head_time is the time of the run's first head block.
+                    when = datetime.fromtimestamp(
+                        plan["head_time"] - (plan["head"] - block) * bt, timezone.utc)
+                    seen.setdefault(token, when.isoformat())
+            start = stop + 1
+        plan["graduation_calls"] = plan.get("graduation_calls", 0) + calls
+        if error is not None:
+            plan["graduation_error"] = True
+            plan["notes"].append(f"Pons graduations on chain: read up to block {start - 1} "
+                                 f"of {head} this run ({error})")
+        oldest = now - timedelta(hours=c["graduation_count_hours"])
+        seen = {t: w for t, w in seen.items() if _utc(w) >= oldest}
         plan["graduations"] = {"at": now.isoformat(), "hours": c["graduation_count_hours"],
-                               "tokens": sorted(tokens), "complete": start > head}
+                               "seen": seen, "tokens": sorted(seen), "scanned_to": start - 1,
+                               "complete": start > head}
+
+    def _discover_onchain(self, plan, now):
+        """The Pons graduations read from the chain that GeckoTerminal's lists
+        haven't shown, onto the watchlist as well (so every graduation is
+        checked). Their pool is found on DexScreener when they're checked;
+        the checks are the same as for every other pool."""
+        hi = timedelta(hours=self.c["max_pool_age_hours"])
+        watched = {w["token"] for w in plan["watch"].values()}
+        added = 0
+        for token, when in (plan["graduations"].get("seen") or {}).items():
+            if token in watched or now - _utc(when) > hi:
+                continue
+            plan["watch"][ONCHAIN + token] = {"pool": None, "dex": "pons-v2-dex",
+                                              "token": token, "name": "?", "created": when,
+                                              "source": "chain"}
+            added += 1
+        if added:
+            plan["notes"].append(f"Pons graduations on chain: {added} new token(s) GeckoTerminal "
+                                 "hasn't listed, added to the watchlist")
 
     def _transfers(self, plan, token, created):
         """Every Transfer of the token since it was minted: backwards from the
@@ -905,21 +978,23 @@ class RobinhoodStrategy:
         return bought
 
     def graduation_line(self, plan):
-        """How many Pons graduations the chain had, and how many of them this
-        strategy saw (in GeckoTerminal's lists)."""
+        """How many Pons graduations the chain had, how many of them
+        GeckoTerminal's lists showed, and how many only the chain did (those
+        are put on the watchlist from the chain, so all of them are checked)."""
         g = plan["graduations"]
         if not g.get("at"):
-            return "Pons graduations on chain: not counted yet"
+            return "Pons graduations on chain: not read yet"
         seen = {t for t, r in plan["registry"].items() if r.get("dex") == "pons-v2-dex"}
         tokens = g["tokens"]
-        missed = [t for t in tokens if t not in seen]
+        chain_only = [t for t in tokens if t not in seen]
         age = (plan["now"] - _utc(g["at"])).total_seconds() / 60
         text = (f"Pons graduations on chain, last {g['hours']:g} h: {len(tokens)}"
-                f"{'' if g['complete'] else '+ (count incomplete)'}; seen by this strategy: "
-                f"{len(tokens) - len(missed)}; missed: {len(missed)}"
-                f" (counted {age:.0f} min ago)")
-        if missed:
-            text += f"\n    missed: {', '.join(missed[:10])}{' ...' if len(missed) > 10 else ''}"
+                f"{'' if g['complete'] else '+ (still reading)'}; listed by GeckoTerminal: "
+                f"{len(tokens) - len(chain_only)}; found only on chain (checked from the "
+                f"chain): {len(chain_only)} (read {age:.0f} min ago)")
+        if chain_only:
+            text += (f"\n    found only on chain: {', '.join(chain_only[:10])}"
+                     f"{' ...' if len(chain_only) > 10 else ''}")
         return text
 
     def _log(self, now, cand):
