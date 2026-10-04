@@ -21,18 +21,23 @@ Each run:
      they're old enough.
   3. Each pool aged 30 min - 6 h is checked, cheap checks first (each one
      only when the ones before passed, so a run stays within the free limits):
-       - Pool age and minimum liquidity (DexScreener, the same pool)
-       - Not a copycat: of all Robinhood Chain tokens with the same name or
-         symbol in the last 7 days (DexScreener search), it has the most
-         liquidity (the early strategy's rule)
+       - Pool age and minimum liquidity (DexScreener, the same pool; the
+         minimum is per launchpad)
+       - Not a copycat: no other Pons or Pools.trade token with the same name
+         or symbol graduated before it in the last 7 days (ignoring later
+         ones, and clones with liquidity of 90%+ of their market cap)
        - GoPlus: not a honeypot, not mintable, no hidden owner, owner can't
          change balances, no blacklist (unknown counts as a fail)
        - Pons tokens only: holders rebuilt from the token's Transfer events on
          the public RPC: the creator holds under 5%, the top 10 hold under
          30% (pools, launchpad contracts and burn addresses left out), and no
-         cluster of near-equal balances (bundled buys)
+         cluster of 5+ near-equal balances holding 3%+ together (bundled
+         buys). A 429 from the RPC is retried after a pause.
   4. A token that passes everything is paper-bought, with the pool fee,
      slippage and gas on the buy and on every sell. Exits are main's.
+  5. Read-only, for the run log: how many Pons tokens graduated on the chain
+     in the last 24 hours (the graduation event's logs, once an hour) and how
+     many of them this strategy saw.
 
 Every check value at the moment of a buy goes to entries.csv (blank =
 unknown); every checked candidate to candidates.csv (when its result
@@ -94,6 +99,19 @@ def rpc_request(method, params, request_id=1):
     return {"jsonrpc": "2.0", "id": request_id, "method": method, "params": params}
 
 
+def rpc_result(body):
+    """The result of a JSON-RPC answer. Raises RateLimited when the error
+    is "too many requests" (the RPC sends {"code": 429, ...} with HTTP 200),
+    ApiError for any other error."""
+    error = (body or {}).get("error") if isinstance(body, dict) else "not a JSON-RPC answer"
+    if error is None:
+        return body.get("result")
+    if (isinstance(error, dict) and error.get("code") == 429) \
+            or "too many requests" in str(error).lower():
+        raise RateLimited(f"Robinhood Chain RPC said 'too many requests': {str(error)[:120]}")
+    raise ApiError(f"Robinhood Chain RPC: {str(error)[:160]}")
+
+
 class RobinhoodHttp:
     """GET requests and read-only JSON-RPC calls, spaced out per source.
     Raises ApiError (RateLimited for HTTP 429); 404 returns None."""
@@ -139,14 +157,15 @@ class RobinhoodHttp:
         try:
             resp = requests.post(self.rpc_url, json=payload, headers=HEADERS,
                                  timeout=self.timeout)
-            body = resp.json()
-        except (requests.RequestException, ValueError) as exc:
+        except requests.RequestException as exc:
             raise ApiError(f"Robinhood Chain RPC: {exc}") from exc
         if resp.status_code == 429:
             raise RateLimited("Robinhood Chain RPC said 'too many requests' (HTTP 429)")
-        if "error" in body:
-            raise ApiError(f"Robinhood Chain RPC: {str(body['error'])[:160]}")
-        return body.get("result")
+        try:
+            body = resp.json()
+        except ValueError as exc:
+            raise ApiError(f"Robinhood Chain RPC: {exc}") from exc
+        return rpc_result(body)
 
 
 # ---------------------------------------------------------------------
@@ -215,14 +234,17 @@ def equal_groups(balances, tolerance):
 
 
 def holder_stats(balances, supply, exclude, creator, c):
-    """Creator share, top-10 share and the biggest equal-balance cluster,
+    """Creator share, top-10 share and the equal-balance cluster that counts,
     with pools, launchpad contracts and burn addresses left out."""
     supply = supply or sum(balances.values()) or 1
     rows = sorted(((a, v) for a, v in balances.items() if a not in exclude),
                   key=lambda r: -r[1])
     floor = supply * c["cluster_min_holder_pct"] / 100       # ignore dust wallets
     groups = equal_groups([v for _, v in rows if v >= floor], c["cluster_tolerance_pct"] / 100)
-    biggest = groups[0] if groups else []
+    # The cluster that counts: of the groups big enough, the one holding the
+    # most; with none big enough, the biggest group (shown, never a fail).
+    big = [g for g in groups if len(g) >= c["cluster_min_size"]]
+    biggest = max(big, key=sum) if big else (groups[0] if groups else [])
     return {
         "holders": len(rows),
         "creator_pct": round(100 * balances.get(creator, 0) / supply, 3) if creator else None,
@@ -234,7 +256,11 @@ def holder_stats(balances, supply, exclude, creator, c):
 
 
 def gecko_pools(body, allowed):
-    """Pools from a GeckoTerminal pools list, only on the allowed DEXes."""
+    """Pools from a GeckoTerminal pools list, only on the allowed DEXes, with
+    the token's name (from the included base tokens), the pool's liquidity
+    and the token's market cap (FDV when GeckoTerminal has no market cap)."""
+    included = {t.get("id"): t.get("attributes") or {}
+                for t in (body or {}).get("included") or [] if t.get("type") == "token"}
     out = []
     for pool in (body or {}).get("data") or []:
         a = pool.get("attributes") or {}
@@ -243,9 +269,14 @@ def gecko_pools(body, allowed):
         base = ((rel.get("base_token") or {}).get("data") or {}).get("id") or ""
         token = base.split("_", 1)[-1].lower()
         if dex in allowed and token.startswith("0x") and a.get("address"):
+            info = included.get(base) or {}
             out.append({"pool": a["address"].lower(), "dex": dex, "token": token,
                         "name": (a.get("name") or "").split(" / ")[0].strip(),
-                        "created": a.get("pool_created_at")})
+                        "title": (info.get("name") or "").strip(),
+                        "created": a.get("pool_created_at"),
+                        "liquidity_usd": to_float(a.get("reserve_in_usd")),
+                        "market_cap_usd": to_float(a.get("market_cap_usd"))
+                        or to_float(a.get("fdv_usd"))})
     return out
 
 
@@ -330,7 +361,7 @@ def cell(value):
 # ---------------------------------------------------------------------
 
 class RobinhoodStrategy:
-    def __init__(self, cfg, data_folder, http=None):
+    def __init__(self, cfg, data_folder, http=None, sleep=time.sleep):
         self.c = cfg["robinhood"]
         self.pt = self.c["paper_trading"]
         self.folder = os.path.join(data_folder, "robinhood")
@@ -339,6 +370,7 @@ class RobinhoodStrategy:
         self.candidates_path = os.path.join(self.folder, "candidates.csv")
         self.launchpads = {d["dex"]: d for d in self.c["launchpads"]}
         self.exclude = {a.lower() for a in self.c["excluded_holders"]} | BURN
+        self.sleep = sleep
 
     # ---- talking to the sources (every call recorded for the health check) ----
 
@@ -357,7 +389,20 @@ class RobinhoodStrategy:
         return self._call(plan, source, self.http.get, source, url, params)
 
     def _rpc(self, plan, method, params):
-        return self._call(plan, "rpc", self.http.rpc, method, params)
+        """A read-only RPC call. When the RPC says 429 (too many requests),
+        wait and try again: rpc_retries times, rpc_retry_seconds longer each
+        time, and no more than rpc_retry_budget_seconds of waiting a run."""
+        c = self.c
+        for attempt in range(c["rpc_retries"] + 1):
+            try:
+                return self._call(plan, "rpc", self.http.rpc, method, params)
+            except RateLimited:
+                pause = c["rpc_retry_seconds"] * (attempt + 1)
+                waited = plan.get("rpc_waited", 0)
+                if attempt >= c["rpc_retries"] or waited + pause > c["rpc_retry_budget_seconds"]:
+                    raise
+                plan["rpc_waited"] = waited + pause
+                self.sleep(pause)
 
     def _dex_pairs(self, plan, tokens):
         pairs = []
@@ -375,7 +420,9 @@ class RobinhoodStrategy:
         c, trader = self.c, self.trader
         state = copy.deepcopy(trader.state)
         plan = {"now": now, "notes": [], "sources": {}, "prices": {}, "candidates": [],
-                "watch": dict(state.get("watch") or {}), "names": dict(state.get("names") or {}),
+                "watch": dict(state.get("watch") or {}),
+                "registry": copy.deepcopy(state.get("launchpad_tokens") or {}),
+                "graduations": dict(state.get("graduations") or {}),
                 "checked": dict(state.get("checked") or {})}
 
         # 1. Prices for open positions (from the pool they were bought in).
@@ -410,6 +457,7 @@ class RobinhoodStrategy:
         due = due[:c["max_candidates_per_run"]]
         if not due:
             plan["notes"].append(f"{len(plan['watch'])} pool(s) on the watchlist, none due a check")
+            self._graduations(plan, now)
             return plan
 
         pairs = self._dex_pairs(plan, [w["token"] for _, w in due])
@@ -419,6 +467,7 @@ class RobinhoodStrategy:
             plan["candidates"].append(cand)
             plan["checked"][pool] = {"at": now.isoformat(), "passed": cand["passed"],
                                      "failed": cand["failed"]}
+        self._graduations(plan, now)       # last: the holder checks get the RPC first
         return plan
 
     def _discover(self, plan, now):
@@ -446,17 +495,32 @@ class RobinhoodStrategy:
             for p in gecko_pools(body, self.launchpads):
                 found += 1
                 plan["watch"].setdefault(p["pool"], p)
-                for key in {name_key(p["name"])} - {""}:
-                    plan["names"].setdefault(key, [now.isoformat(), p["token"]])
-        # Forget pools too old to trade, and names past the copycat window.
+                self._register(plan, p, now)
+        # Forget pools too old to trade, and launchpad tokens that graduated
+        # too long ago to matter to the copycat check.
         hi = timedelta(hours=c["max_pool_age_hours"])
         plan["watch"] = {k: v for k, v in plan["watch"].items()
                          if _utc(v.get("created")) and now - _utc(v["created"]) <= hi}
         plan["checked"] = {k: v for k, v in plan["checked"].items() if k in plan["watch"]}
-        window = timedelta(days=c["copycat_window_days"])
-        plan["names"] = {k: v for k, v in plan["names"].items() if now - _utc(v[0]) <= window}
+        keep = timedelta(days=c["copycat_window_days"]) + hi
+        plan["registry"] = {k: v for k, v in plan["registry"].items()
+                            if now - _utc(v.get("graduated") or v["seen"]) <= keep}
         plan["notes"].append(f"GeckoTerminal: {found} launchpad pool(s) listed; "
                              f"{len(plan['watch'])} on the watchlist")
+
+    @staticmethod
+    def _register(plan, p, now):
+        """Remember a Pons or Pools.trade token (for the copycat check): its
+        names, when it graduated (its launchpad pool's creation, the earliest
+        seen) and its latest liquidity and market cap."""
+        r = plan["registry"].setdefault(p["token"], {"dex": p["dex"], "graduated": None})
+        if p["created"] and (not r["graduated"] or _utc(p["created"]) < _utc(r["graduated"])):
+            r["graduated"] = p["created"]
+        r.update(symbol=p["name"] or r.get("symbol") or "",
+                 title=p.get("title") or r.get("title") or "", seen=now.isoformat())
+        for key in ("liquidity_usd", "market_cap_usd"):
+            if p.get(key) is not None:
+                r[key] = p[key]
 
     # ---- the checks ----
 
@@ -496,8 +560,9 @@ class RobinhoodStrategy:
         ok = ok and add("Pool age", c["min_pool_age_minutes"] <= age
                         <= c["max_pool_age_hours"] * 60, f"{age:.0f} min (need "
                         f"{c['min_pool_age_minutes']} min - {c['max_pool_age_hours']} h)")
-        ok = ok and add("Liquidity", (v["liquidity_usd"] or 0) >= c["min_liquidity_usd"],
-                        f"{money(v['liquidity_usd'])} (need {money(c['min_liquidity_usd'])}+)")
+        floor = pad.get("min_liquidity_usd", c["min_liquidity_usd"])
+        ok = ok and add("Liquidity", (v["liquidity_usd"] or 0) >= floor,
+                        f"{money(v['liquidity_usd'])} (need {money(floor)}+ on {pad['name']})")
         if ok:
             ok = self._copycat(plan, now, cand, add)
         if ok:
@@ -509,57 +574,76 @@ class RobinhoodStrategy:
         return cand
 
     def _copycat(self, plan, now, cand, add):
-        """The early strategy's rule: other Robinhood Chain tokens with the
-        same symbol or name in the last copycat_window_days (DexScreener
-        search; unknown age counts as new) are allowed only if this token has
-        the most liquidity of them all."""
-        v, token, pair = cand["values"], cand["values"]["token_address"], cand["pair"] or {}
+        """Other Pons and Pools.trade tokens with the same name or symbol
+        (the launchpad tokens GeckoTerminal has listed, kept for
+        copycat_window_days) make this token a copycat, except ones that
+        graduated after it and clones whose liquidity is
+        copycat_clone_liquidity_pct% or more of their market cap. Of the ones
+        left, the earliest graduation is the original (copycat_of).
+        Liquidity and market cap are DexScreener's when its search has them,
+        else GeckoTerminal's."""
+        c, v = self.c, cand["values"]
+        token, pair = v["token_address"], cand["pair"] or {}
         base = pair.get("baseToken") or {}
         symbol = (base.get("symbol") or v["symbol"] or "").strip()
         title = (base.get("name") or "").strip()
-        days = f"{self.c['copycat_window_days']:g}"
+        days = f"{c['copycat_window_days']:g}"
         if not symbol:
             return add("Not a copycat", False, "token has no symbol")
-        pairs = []
-        try:
-            for query in dict.fromkeys(q for q in (symbol, title) if q):
-                found = self._get(plan, "dexscreener", f"{DEXSCREENER}/latest/dex/search",
-                                  {"q": query})
-                pairs += (found or {}).get("pairs") or []
-        except ApiError as exc:
-            return add("Not a copycat", False, f"couldn't search DexScreener: {exc}")
-        since = now - timedelta(days=self.c["copycat_window_days"])
-        others = {}  # address -> highest liquidity seen for that token (0 if unknown)
-        own = to_float((pair.get("liquidity") or {}).get("usd"))
-        for p in pairs:
-            other = p.get("baseToken") or {}
-            addr = (other.get("address") or "").lower()
-            liq = to_float((p.get("liquidity") or {}).get("usd"))
-            if p.get("chainId") != "robinhood" or not addr:
-                continue
-            if addr == token:
-                if liq is not None:
-                    own = max(own or 0.0, liq)
-                continue
-            same = ((other.get("symbol") or "").strip().lower() == symbol.lower()
-                    or (title and (other.get("name") or "").strip().lower() == title.lower()))
-            created = (datetime.fromtimestamp(p["pairCreatedAt"] / 1000, timezone.utc)
-                       if p.get("pairCreatedAt") else None)
-            if same and (created is None or created >= since):
-                others[addr] = max(others.get(addr, 0.0), liq or 0.0)
-        if not others:
+        keys = {name_key(symbol), name_key(title)} - {""}
+        reg = plan["registry"]
+        ours = _utc((reg.get(token) or {}).get("graduated") or cand["watch"]["created"])
+        since = ours - timedelta(days=c["copycat_window_days"])
+        rivals = {a: dict(r) for a, r in reg.items() if a != token
+                  and keys & {name_key(r.get("symbol")), name_key(r.get("title"))}}
+        rivals = {a: r for a, r in rivals.items()
+                  if not r.get("graduated") or _utc(r["graduated"]) >= since}
+        searched = ""
+        if rivals:
+            try:
+                found = []
+                for query in dict.fromkeys(q for q in (symbol, title) if q):
+                    got = self._get(plan, "dexscreener", f"{DEXSCREENER}/latest/dex/search",
+                                    {"q": query})
+                    found += (got or {}).get("pairs") or []
+                best = {}
+                for p in found:
+                    addr = ((p.get("baseToken") or {}).get("address") or "").lower()
+                    liq = to_float((p.get("liquidity") or {}).get("usd"))
+                    if p.get("chainId") == "robinhood" and addr in rivals and liq is not None \
+                            and liq >= best.get(addr, (-1, None))[0]:
+                        best[addr] = (liq, to_float(p.get("marketCap")) or to_float(p.get("fdv")))
+                for addr, (liq, cap) in best.items():
+                    rivals[addr].update(liquidity_usd=liq, market_cap_usd=cap)
+            except ApiError as exc:
+                searched = f" (DexScreener search failed, GeckoTerminal's numbers used: {exc})"
+        later, clones, left = 0, 0, []
+        share = c["copycat_clone_liquidity_pct"] / 100
+        for addr, r in rivals.items():
+            when = _utc(r.get("graduated"))
+            liq, cap = r.get("liquidity_usd"), r.get("market_cap_usd")
+            if when and when > ours:
+                later += 1
+            elif liq is not None and cap and liq >= share * cap:
+                clones += 1
+            else:
+                left.append((when or datetime.max.replace(tzinfo=timezone.utc), addr))
+        ignored = ", ".join(x for x in (
+            f"{later} graduated later" if later else "",
+            f"{clones} with liquidity {c['copycat_clone_liquidity_pct']:g}%+ of market cap"
+            if clones else "") if x)
+        ignored = f" (ignored: {ignored})" if ignored else ""
+        if not left:
             v["copycat_of"] = ""
-            return add("Not a copycat", True, f"no other {symbol} in the last {days} days")
-        top_addr = max(others, key=others.get)
-        top = others[top_addr]
-        if own is not None and own > top:
-            v["copycat_of"] = ""
-            return add("Not a copycat", True, f"most liquidity of {len(others) + 1} tokens called "
-                       f"{symbol} in the last {days} days ({money(own)} vs {money(top)})")
-        v["copycat_of"] = top_addr
-        return add("Not a copycat", False, f"{len(others)} other token(s) called {symbol} in the "
-                   f"last {days} days, one with more liquidity ({money(own)} vs {money(top)}: "
-                   f"{top_addr})")
+            return add("Not a copycat", True, f"no earlier Pons/Pools.trade token called "
+                       f"{symbol} in the last {days} days{ignored}{searched}")
+        when, first = min(left)
+        v["copycat_of"] = first
+        graduated = (f"graduated {(ours - when).total_seconds() / 3600:.1f} h before this one"
+                     if when.year < 9999 else "graduation time unknown")
+        return add("Not a copycat", False, f"{len(left)} earlier Pons/Pools.trade token(s) "
+                   f"called {symbol} in the last {days} days; the first, {first}, "
+                   f"{graduated}{ignored}{searched}")
 
     def _goplus(self, plan, cand, add, budget):
         v, token = cand["values"], cand["values"]["token_address"]
@@ -619,17 +703,18 @@ class RobinhoodStrategy:
         ok = add("Top 10 holders", s["top10_pct"] < c["max_top10_pct"],
                  f"{s['top10_pct']:.1f}% (need under {c['max_top10_pct']:g}%; pools, "
                  "launchpad and burn addresses left out)") and ok
-        size = s["equal_group_size"]
-        ok = add("No equal-balance cluster", size < c["cluster_min_size"],
-                 f"{size} wallets hold the same amount ({s['equal_group_pct']:.1f}% together)"
-                 if size > 1 else "none") and ok
+        size, share = s["equal_group_size"], s["equal_group_pct"]
+        rule = (f"fails at {c['cluster_min_size']}+ wallets holding "
+                f"{c['cluster_min_share_pct']:g}%+ together")
+        ok = add("No equal-balance cluster", size < c["cluster_min_size"]
+                 or share < c["cluster_min_share_pct"],
+                 f"{size} wallets hold the same amount ({share:.1f}% together; {rule})"
+                 if size > 1 else f"none ({rule})") and ok
         return ok
 
-    def _transfers(self, plan, token, created):
-        """Every Transfer of the token since it was minted: backwards from the
-        pool's creation until the mint, then forwards to now. Returns (logs,
-        complete, the first mint log)."""
-        c = self.c
+    def _clock(self, plan):
+        """The latest block, and (once a run) seconds per block over the
+        last 10,000 blocks."""
         head = hex_int(self._rpc(plan, "eth_blockNumber", []))
         if "block_time" not in plan:
             now_block = self._rpc(plan, "eth_getBlockByNumber", [hex(head), False])
@@ -638,6 +723,53 @@ class RobinhoodStrategy:
                                    - hex_int(old_block["timestamp"])) / 10_000) or 0.1
             plan["head_time"] = hex_int(now_block["timestamp"])
             plan["head"] = head
+        return head
+
+    def _graduations(self, plan, now):
+        """Read-only: Pons graduations on the chain in the last
+        graduation_count_hours (the graduation event's logs, one token each),
+        to compare with how many this strategy saw. Counted at most every
+        graduation_count_minutes; the count is kept in the state between."""
+        c = self.c
+        last = plan["graduations"]
+        if last.get("at") and now - _utc(last["at"]) < timedelta(
+                minutes=c["graduation_count_minutes"]):
+            return
+        flt = {"address": c["pons_graduation_contract"], "topics": [c["pons_graduation_topic"]]}
+        slot = c["pons_graduation_token_topic"]
+        try:
+            head = self._clock(plan)
+            start = max(head - int(c["graduation_count_hours"] * 3600 / plan["block_time"]), 0)
+            logs, calls, step = [], 0, head - start + 1
+            while start <= head and calls < c["graduation_rpc_calls"]:
+                stop = min(start + step - 1, head)
+                calls += 1
+                try:
+                    got = self._rpc(plan, "eth_getLogs", [dict(flt, fromBlock=hex(start),
+                                                               toBlock=hex(stop))])
+                except RateLimited:
+                    raise
+                except ApiError:
+                    if step <= 1000:
+                        raise
+                    step //= 2
+                    continue
+                logs += got or []
+                start = stop + 1
+        except (ApiError, KeyError, TypeError, ValueError) as exc:
+            plan["notes"].append(f"Pons graduations on chain: couldn't count them ({exc})")
+            return
+        tokens = {topic_to_address((x.get("topics") or [])[slot])
+                  for x in logs if len(x.get("topics") or []) > slot} - {None, ZERO}
+        plan["graduations"] = {"at": now.isoformat(), "hours": c["graduation_count_hours"],
+                               "tokens": sorted(tokens), "complete": start > head}
+
+    def _transfers(self, plan, token, created):
+        """Every Transfer of the token since it was minted: backwards from the
+        pool's creation until the mint, then forwards to now. Returns (logs,
+        complete, the first mint log)."""
+        c = self.c
+        head = self._clock(plan)
         bt = plan["block_time"]
         start_block = min(head - int((plan["head_time"] - created.timestamp()) / bt), head)
         floor = max(start_block - int(c["holder_lookback_hours"] * 3600 / bt), 0)
@@ -689,7 +821,10 @@ class RobinhoodStrategy:
     def apply(self, plan, out=print):
         trader, now = self.trader, plan["now"]
         st = trader.state
-        st["watch"], st["names"], st["checked"] = plan["watch"], plan["names"], plan["checked"]
+        st["watch"], st["checked"] = plan["watch"], plan["checked"]
+        st["launchpad_tokens"] = plan["registry"]
+        st["graduations"] = plan["graduations"]
+        st.pop("names", None)             # the old copycat memory
         sources = {}
         for name in SOURCES:
             s = plan["sources"].get(name)
@@ -703,6 +838,7 @@ class RobinhoodStrategy:
 
         for note in plan["notes"]:
             out(f"  ({note})")
+        out(f"  {self.graduation_line(plan)}")
         for name in SOURCES:
             s = plan["sources"].get(name)
             if s:
@@ -742,6 +878,24 @@ class RobinhoodStrategy:
             out("  No candidate passed every check, so nothing was bought.")
         trader.save()
         return bought
+
+    def graduation_line(self, plan):
+        """How many Pons graduations the chain had, and how many of them this
+        strategy saw (in GeckoTerminal's lists)."""
+        g = plan["graduations"]
+        if not g.get("at"):
+            return "Pons graduations on chain: not counted yet"
+        seen = {t for t, r in plan["registry"].items() if r.get("dex") == "pons-v2-dex"}
+        tokens = g["tokens"]
+        missed = [t for t in tokens if t not in seen]
+        age = (plan["now"] - _utc(g["at"])).total_seconds() / 60
+        text = (f"Pons graduations on chain, last {g['hours']:g} h: {len(tokens)}"
+                f"{'' if g['complete'] else '+ (count incomplete)'}; seen by this strategy: "
+                f"{len(tokens) - len(missed)}; missed: {len(missed)}"
+                f" (counted {age:.0f} min ago)")
+        if missed:
+            text += f"\n    missed: {', '.join(missed[:10])}{' ...' if len(missed) > 10 else ''}"
+        return text
 
     def _log(self, now, cand):
         """candidates.csv: every check result, when it differs from the last

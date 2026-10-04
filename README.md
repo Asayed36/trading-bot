@@ -466,29 +466,42 @@ issues are titled **PASSED (robinhood): SYMBOL** with the label
 - **Checks** (each pool at most once an hour; a later check only runs when the
   ones before it passed, to stay within the free limits; anything unknown
   counts as a fail):
-  - pool age 30 min to 6 h, liquidity at least $10,000
-  - not a copycat (the early strategy's rule): of all Robinhood Chain tokens
-    with the same name or symbol from the last 7 days (DexScreener search),
-    it has the most liquidity
+  - pool age 30 min to 6 h; liquidity at least $10,000 on Pons, $5,000 on
+    Pools.trade
+  - not a copycat: no other Pons or Pools.trade token with the same name or
+    symbol graduated before it in the last 7 days. Ignored: tokens that
+    graduated after it, and clones whose liquidity is 90% or more of their
+    market cap (real graduations have about 30-60%). Of the ones left, the
+    earliest graduation is the original (`copycat_of`). The launchpad tokens
+    are the ones GeckoTerminal has listed, remembered for 7 days; liquidity
+    and market cap are DexScreener's (search) when it has them, else
+    GeckoTerminal's
   - GoPlus: not a honeypot, not mintable, no hidden owner, the owner can't
     change balances, no blacklist
   - Pons tokens: holders rebuilt from the token's own Transfer events on the
     public RPC (the whole history since it was minted): the creator (whoever
     sent the transaction that minted it) holds under 5%; the top 10 hold under
     30%, leaving out pools (Uniswap v4's PoolManager), the launchpad's
-    contracts, the curve and burn addresses; and no cluster of 3+ wallets with
-    near-identical balances (bundled buys). Pools.trade tokens skip these.
+    contracts, the curve and burn addresses; and no cluster of 5+ wallets with
+    near-identical balances holding 3%+ of the supply together (bundled buys).
+    When the RPC says "too many requests" (429) it waits and tries again (5,
+    10, 15 seconds) before calling the holders unknown. Pools.trade tokens
+    skip these.
 - **Costs** on every buy and sell: the pool fee (Pools.trade 0.25%; Pons 1%,
   assumed: its graduated pools' fee isn't published), 2% slippage and $0.05 of
   gas per transaction.
 - **Exits:** the same as the main strategy: sell half at +50%; the rest at
   -30%, 40% below the peak, or after 48h if it's still within ±10% of entry.
 - **Records:** `entries.csv` (every check value at the buy: pool, age,
-  liquidity, GoPlus fields, creator, creator %, top 10 %, holders, the biggest
+  liquidity, GoPlus fields, creator, creator %, top 10 %, holders, the heaviest
   equal-balance cluster, and the fee, slippage and gas used; blank = unknown)
   and `candidates.csv` (every pool checked, PASS/FAIL and why; a new row only
   when a pool's result changes). The health section has a row for each data
   source.
+- **Missed graduations:** the run log shows how many Pons tokens graduated on
+  the chain in the last 24 hours (read-only `eth_getLogs` of Pons' graduation
+  event, counted once an hour) and how many of them this strategy saw in
+  GeckoTerminal's lists, with the missed tokens' addresses.
 - **Try it:** `python -m screener.robinhood` does one run against the real
   sources with the results in a temporary folder (nothing is saved). The
   "Robinhood Chain probe" workflow does the same on GitHub.
