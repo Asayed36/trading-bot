@@ -1,0 +1,31 @@
+# A one-off 2-hour measurement of the free Solana public RPC as a live feed
+# of pump.fun trades (trade_feed_probe.py). No trading, no keys, no wallet;
+# it only writes a summary to data/trade-feed-probe/summary.json, which the
+# hourly push sends to GitHub.
+# Start it by hand (deploy/LAUNCH_SERVER_SETUP.md, Part H); it never starts
+# by itself, never restarts, and stops after 2 hours. RuntimeMaxSec is a
+# second safety: systemd stops it at 2 h 5 min whatever happens.
+[Unit]
+Description=Trade feed probe (2-hour measurement, read-only, no trading)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=bot
+WorkingDirectory=/home/bot/trading-bot
+ExecStart=/home/bot/trading-bot/.venv/bin/python trade_feed_probe.py --minutes 120
+Restart=no
+RuntimeMaxSec=7500
+# Lock it down: it can only write to its data folder.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/bot/trading-bot/data
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryMax=200M

@@ -638,6 +638,30 @@ gas_usd_per_trade = 0.05
 # ---------------------------------------------------------------------
 # GITHUB ISSUES: only used by the scheduled GitHub run
 # ---------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# TRADE FEED PROBE: a 2-hour measurement, no trading (trade_feed_probe.py,
+# deploy/trade-feed-probe.service). It checks whether the free Solana public
+# RPC works as a live feed of pump.fun trades, for a planned strategy.
+# ---------------------------------------------------------------------
+[trade_feed_probe]
+ws_url = "wss://api.mainnet-beta.solana.com"
+# A silent gap: no message for this long while connected...
+silent_gap_seconds = 5
+# ...and after this long without a message, reconnect.
+watchdog_seconds = 30
+# Notifications whose slots jump by more than this count as a "slot jump".
+slot_jump = 50
+# DexScreener: one request every check_seconds for the sampled launches: a
+# new launch every sample_every_seconds (at most max_sampled followed at
+# once), until it's listed or listing_limit_seconds pass; then its price is
+# compared for price_follow_seconds (a match = within price_match_pct).
+check_seconds = 10
+sample_every_seconds = 60
+max_sampled = 10
+listing_limit_seconds = 600
+price_follow_seconds = 600
+price_match_pct = 2
+
 [github_issues]
 # Each token that passes every filter gets one issue titled "PASSED: SYMBOL"
 # with this label. It is closed with the result when the paper position closes.
