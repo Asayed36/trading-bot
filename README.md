@@ -557,7 +557,10 @@ issues are titled **PASSED (robinhood): SYMBOL** with the label
   It answers "too many requests" after a few calls a minute from GitHub, so
   each run makes at most 3 calls, 6.5 seconds apart. Pools it lists go on a
   watchlist and are checked once they're 30 minutes old, so a pool missed one
-  run is still caught later.
+  run is still caught later. GeckoTerminal's lists miss about half of Pons'
+  graduations, so the graduations read from the chain (below) that it hasn't
+  listed go on the watchlist too, their pool found on DexScreener: every Pons
+  graduation gets the same checks.
 - **Prices:** DexScreener, from the same pool (DexScreener doesn't list the
   Pons curve itself, so it's only used once a token has a Uniswap pool).
 - **Checks** (each pool at most once an hour; a later check only runs when the
@@ -598,10 +601,13 @@ issues are titled **PASSED (robinhood): SYMBOL** with the label
   and `candidates.csv` (every pool checked, PASS/FAIL and why; a new row only
   when a pool's result changes). The health section has a row for each data
   source.
-- **Missed graduations:** the run log shows how many Pons tokens graduated on
-  the chain in the last 24 hours (read-only `eth_getLogs` of Pons' graduation
-  event, counted once an hour) and how many of them this strategy saw in
-  GeckoTerminal's lists, with the missed tokens' addresses.
+- **Graduations from the chain:** the Pons tokens that graduated in the last
+  24 hours, from Pons' graduation event (read-only `eth_getLogs`: the whole
+  day the first time, then only the new blocks each run, usually one call; a
+  "too many requests" is never waited for, the read just carries on next
+  run, so the holder checks keep the RPC's patience). The run log shows how
+  many graduated, how many GeckoTerminal listed, and the ones found only on
+  the chain (which are checked from there).
 - **Try it:** `python -m screener.robinhood` does one run against the real
   sources with the results in a temporary folder (nothing is saved). The
   "Robinhood Chain probe" workflow does the same on GitHub.

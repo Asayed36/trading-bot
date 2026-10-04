@@ -638,16 +638,21 @@ rpc_log_blocks = 200000        # blocks per eth_getLogs call (halved if refused)
 rpc_retries = 3
 rpc_retry_seconds = 5
 rpc_retry_budget_seconds = 120
-# Pons graduations on chain (read-only, for the run log): how many tokens
-# graduated in the last graduation_count_hours, from the graduation event's
-# logs, against how many this strategy saw in GeckoTerminal's lists. Counted
-# at most every graduation_count_minutes, in at most graduation_rpc_calls
-# eth_getLogs calls. The contract and event were found with
+# Pons graduations on chain (read-only): the tokens that graduated in the
+# last graduation_count_hours, from the graduation event's logs. The run log
+# compares them with GeckoTerminal's lists, and the ones GeckoTerminal hasn't
+# listed are put on the watchlist too, so every graduation gets the same
+# checks. The first read covers the whole window in at most
+# graduation_rpc_calls eth_getLogs calls (an unfinished read carries on next
+# run); after that only the new blocks are read, at most every
+# graduation_scan_minutes (usually one call). The contract and event were
+# found with
 # robinhood_probe.py: in a day of logs the event named every Pons token
 # GeckoTerminal listed as graduating that day, with the token at topic
 # pons_graduation_token_topic.
 graduation_count_hours = 24
-graduation_count_minutes = 60
+graduation_scan_minutes = 5
+graduation_calls_before_checks = 3
 graduation_rpc_calls = 30
 pons_graduation_contract = "0xc7819b64a1daecd7ec19856d026cb14efbd89046"
 pons_graduation_topic = "0x80a5a2ff8b8c5533e5862e4e161bbcade9af6fd9d67bef56a590b062107f027f"

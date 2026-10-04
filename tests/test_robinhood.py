@@ -328,12 +328,14 @@ class CheckTests(Base):
         self.assertIn("No equal-balance cluster: 5 wallets", frog["failed_checks"])
 
     def test_rpc_429_is_retried_after_a_pause(self):
-        self.http.rate_limits = 2
+        # The first 429 goes to the graduation read (which never waits), the
+        # next two to the holder check, which waits and tries again.
+        self.http.rate_limits = 3
         _, bought, text = self.run_once()
         self.assertIn(PONS, [p["address"] for p in bought])
         self.assertEqual(self.sleeps, [C["rpc_retry_seconds"], 2 * C["rpc_retry_seconds"]])
         self.assertEqual(self.candidate("FROG")["holders_complete"], "yes")
-        self.assertIn("2 rate-limited", text)
+        self.assertIn("3 rate-limited", text)        # one graduation read + two holder calls
 
     def test_rpc_429_inside_the_json_answer_is_a_rate_limit(self):
         with self.assertRaises(RateLimited):
@@ -348,12 +350,14 @@ class CheckTests(Base):
         cfg = dict(CFG, robinhood=dict(C, rpc_retry_budget_seconds=20))
         self.http.rate_limits = 100
         self.run_once(cfg=cfg)
-        # Holders: 5 + 10 s, then 15 s more would pass 20 s; the graduation
-        # count still has room for one 5 s wait.
-        self.assertEqual(self.sleeps, [5, 10, 5])
+        # Holders: 5 + 10 s, then 15 s more would pass 20 s. The graduation
+        # read never waits.
+        self.assertEqual(self.sleeps, [5, 10])
 
     def test_rpc_429_after_every_retry_leaves_holders_unknown(self):
-        self.http.rate_limits = C["rpc_retries"] + 1
+        # The first 429 goes to the graduation read (which doesn't wait),
+        # the rest to the holder check's call and its retries.
+        self.http.rate_limits = C["rpc_retries"] + 2
         self.run_once()
         self.assertEqual(self.sleeps, [5, 10, 15])
         self.assertIn("Holders: unknown", self.candidate("FROG")["failed_checks"])
@@ -567,36 +571,89 @@ class CheckTests(Base):
 
 
 class GraduationCountTests(Base):
-    def test_graduations_on_chain_vs_seen(self):
-        missed = ["0x" + "7" * 40, "0x" + "6" * 40]
+    def reads(self):
+        return [c[2][0] for c in self.http.calls if c[0] == "rpc" and c[1] == "eth_getLogs"
+                and c[2][0]["address"] == C["pons_graduation_contract"]]
+
+    def test_graduations_on_chain_vs_geckoterminal(self):
+        chain_only = ["0x" + "7" * 40, "0x" + "6" * 40]
         self.http.logs += [graduation(t, block_at(NOW - timedelta(hours=h)))
-                           for t, h in ((PONS, 2), (missed[0], 5), (missed[1], 20))]
+                           for t, h in ((PONS, 2), (chain_only[0], 5), (chain_only[1], 20))]
         self.http.logs.append(graduation("0x" + "5" * 40, block_at(NOW - timedelta(hours=30))))
         s, _, text = self.run_once()
-        self.assertIn("Pons graduations on chain, last 24 h: 3; seen by this strategy: 1; "
-                      "missed: 2 (counted 0 min ago)", text)
-        self.assertIn(f"missed: {missed[1]}, {missed[0]}", text)
+        self.assertIn("Pons graduations on chain, last 24 h: 3; listed by GeckoTerminal: 1; "
+                      "found only on chain (checked from the chain): 2 (read 0 min ago)", text)
+        self.assertIn(f"found only on chain: {chain_only[1]}, {chain_only[0]}", text)
         g = s.trader.state["graduations"]
-        self.assertEqual((g["tokens"], g["complete"]), (sorted([PONS] + missed), True))
+        self.assertEqual((g["tokens"], g["complete"]), (sorted([PONS] + chain_only), True))
+        when = rh._utc(g["seen"][chain_only[0]])
+        self.assertLess(abs((when - (NOW - timedelta(hours=5))).total_seconds()), 1)
         # Only read-only calls, filtered to the graduation event.
-        reads = [c[2][0] for c in self.http.calls if c[0] == "rpc" and c[1] == "eth_getLogs"
-                 and c[2][0]["address"] == C["pons_graduation_contract"]]
-        self.assertTrue(reads)
-        self.assertTrue(all(f["topics"] == [C["pons_graduation_topic"]] for f in reads))
-        # Counted again only after graduation_count_minutes; reported meanwhile.
-        self.http.calls.clear()
-        _, _, text = self.run_once(NOW + timedelta(minutes=20))
-        self.assertIn("last 24 h: 3;", text)
-        self.assertIn("(counted 20 min ago)", text)
-        self.assertFalse([c for c in self.http.calls if c[0] == "rpc" and c[1] == "eth_getLogs"
-                          and c[2][0]["address"] == C["pons_graduation_contract"]])
+        self.assertTrue(self.reads())
+        self.assertTrue(all(f["topics"] == [C["pons_graduation_topic"]] for f in self.reads()))
 
-    def test_a_failed_count_is_a_note_not_a_failed_run(self):
+    def test_only_new_blocks_are_read_after_the_first_time(self):
+        self.run_once()
+        self.assertEqual(self.strategy().trader.state["graduations"]["scanned_to"], HEAD)
+        self.http.calls.clear()
+        self.run_once(NOW + timedelta(minutes=C["graduation_scan_minutes"] - 1))
+        self.assertEqual(self.reads(), [])                  # read too recently
+        # 500 blocks arrived since: one call, for just those.
+        s = self.strategy()
+        s.trader.state["graduations"]["scanned_to"] = HEAD - 500
+        s.trader.save()
+        self.run_once(NOW + timedelta(minutes=C["graduation_scan_minutes"] + 1))
+        (read,) = self.reads()
+        self.assertEqual((int(read["fromBlock"], 16), int(read["toBlock"], 16)),
+                         (HEAD - 499, HEAD))
+
+    def test_a_graduation_geckoterminal_missed_gets_the_same_checks(self):
+        new = "0x" + "7" * 40
+        new_pool = "0x" + "9" * 64
+        self.http.logs.append(graduation(new, block_at(NOW - timedelta(hours=1))))
+        self.http.pairs[new] = [pair(new, new_pool, "LIZARD", 60)]
+        s, _, text = self.run_once()                         # the first, full read
+        self.assertIn("1 new token(s) GeckoTerminal hasn't listed", text)
+        self.assertIn(rh.ONCHAIN + new, s.trader.state["watch"])
+        _, _, text = self.run_once(NOW + timedelta(minutes=1))   # its first check
+        lizard = self.candidate("LIZARD")
+        self.assertEqual((lizard["launchpad"], lizard["pool_address"]), ("Pons", new_pool))
+        self.assertIn("[FAIL] LIZARD (Pons)", text)
+        # Every check ran, the same as for any Pons pool; only its holders
+        # (no transfers in this made-up chain) are unknown.
+        self.assertEqual(lizard["failed_checks"].split(":")[0], "Holders")
+        self.assertEqual(lizard["goplus_is_honeypot"], "0")
+
+    def test_geckoterminal_listing_it_later_replaces_the_chain_entry(self):
+        self.http.logs.append(graduation(PONS, block_at(NOW - timedelta(hours=2))))
+        self.http.gecko_status = {"pons-v2-dex": ApiError("down"), "new_pools": ApiError("x"),
+                                  "uniswap-pools-trade": ApiError("x")}
+        s, _, _ = self.run_once()
+        self.assertIn(rh.ONCHAIN + PONS, s.trader.state["watch"])
+        self.http.gecko_status = {}
+        s, _, _ = self.run_once(NOW + timedelta(minutes=C["recheck_minutes"] + 1))
+        watch = s.trader.state["watch"]
+        self.assertNotIn(rh.ONCHAIN + PONS, watch)
+        self.assertEqual([k for k, w in watch.items() if w["token"] == PONS], [PONS_POOL])
+
+    def test_old_graduations_and_watched_tokens_arent_added(self):
+        self.http.logs += [graduation("0x" + "6" * 40, block_at(NOW - timedelta(hours=7))),
+                           graduation(PONS, block_at(NOW - timedelta(hours=2)))]
+        s, _, _ = self.run_once()
+        self.assertEqual([k for k in s.trader.state["watch"] if k.startswith(rh.ONCHAIN)], [])
+
+    def test_a_429_doesnt_wait_or_fail_the_run(self):
         self.http.rate_limits = 100
         s, bought, text = self.run_once()
-        self.assertIn("Pons graduations on chain: couldn't count them", text)
-        self.assertIn("Pons graduations on chain: not counted yet", text)
+        self.assertIn("Pons graduations on chain: read up to block", text)
         self.assertEqual(len(rows(self.path("candidates.csv"))), 2)
+        g = s.trader.state["graduations"]
+        self.assertFalse(g["complete"])
+        # The read carries on from there next time.
+        self.http.rate_limits = 0
+        self.http.calls.clear()
+        s, _, text = self.run_once(NOW + timedelta(minutes=C["graduation_scan_minutes"] + 1))
+        self.assertTrue(s.trader.state["graduations"]["complete"])
 
 
 class ExitTests(Base):
