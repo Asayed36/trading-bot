@@ -99,7 +99,7 @@ class StatsTests(unittest.TestCase):
         self.assertEqual(s["trades"]["per_second_max"], 2)
         self.assertEqual(s["connection"]["silent_gaps"], {"10-30 s": 1})
         self.assertEqual(s["connection"]["slot_jumps_over_limit"], 1)
-        self.assertEqual(s["feed_delay_seconds"]["median"], 2)
+        self.assertEqual(s["feed_delay_seconds"]["median"], 2.0)
         self.assertGreater(s["bandwidth"]["bytes"], 11 * 300)     # every message counted
         self.assertEqual(s["bandwidth"]["messages"], 11)
 

@@ -116,6 +116,10 @@ def percentile(values, p):
     return values[min(len(values) - 1, int(round(p / 100 * (len(values) - 1))))]
 
 
+def _round(value, digits=1):
+    return None if value is None else round(value, digits)
+
+
 class Stats:
     """Counts only: nothing per trade is kept beyond the current second."""
 
@@ -232,8 +236,8 @@ class Stats:
                 "slot_jumps_over_limit": self.slot_jumps,
             },
             "feed_delay_seconds": {
-                "median": percentile(delays, 50), "p95": percentile(delays, 95),
-                "max": max(delays, default=None), "samples": len(delays),
+                "median": _round(percentile(delays, 50)), "p95": _round(percentile(delays, 95)),
+                "max": _round(max(delays, default=None)), "samples": len(delays),
                 "note": "receive time minus on-chain time (whole seconds on chain)",
             },
             "dexscreener": {
