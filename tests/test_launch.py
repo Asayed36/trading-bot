@@ -303,6 +303,34 @@ class NoTradeFeedTests(Base):
         self.assertEqual(drop, [])                      # nothing to unsubscribe
 
 
+class JupiterTests(Base):
+    """Jupiter's organic score in the launch entries (logging only)."""
+
+    def test_due_while_selected_then_saved_with_its_age(self):
+        self.at(0, create("m1"))
+        self.assertEqual(self.engine.jupiter_due(T0 + 0.5), [])          # still evaluating
+        self.at(1.5)                                                      # selected
+        self.assertEqual(self.engine.jupiter_due(T0 + 1.5), ["m1"])
+        values = {"jupiter_organic_score": 12.0, "jupiter_organic_label": "low",
+                  "jupiter_organic_volume_1h_pct": 3.0, "jupiter_organic_buyers_1h_pct": 1.0}
+        self.engine.set_jupiter("m1", values, T0 + 2)
+        self.assertEqual(self.engine.jupiter_due(T0 + 5), [])            # fresh enough
+        self.run_through(seconds=91, start=2)
+        e5 = rows(os.path.join(self.tmp.name, "launch", "5s", "entries.csv"))[0]
+        self.assertEqual((e5["jupiter_organic_label"],
+                          e5["jupiter_checked_seconds_after_creation"]), ("low", "2.0"))
+        self.assertEqual(self.engine.jupiter_due(T0 + 92), [])           # every speed bought
+
+    def test_no_reading_means_blank(self):
+        self.at(0, create("m1"))
+        self.run_through(seconds=10)
+        (e,) = rows(os.path.join(self.tmp.name, "launch", "5s", "entries.csv"))
+        self.assertEqual({k: e[k] for k in ("jupiter_organic_score", "jupiter_organic_label",
+                                            "jupiter_checked_seconds_after_creation")},
+                         dict.fromkeys(("jupiter_organic_score", "jupiter_organic_label",
+                                        "jupiter_checked_seconds_after_creation"), ""))
+
+
 class PaperOnlyTests(unittest.TestCase):
     def test_runner_only_sends_read_only_requests(self):
         import launch_bot
@@ -363,8 +391,14 @@ class RunnerTests(unittest.TestCase):
                 port = server.sockets[0].getsockname()[1]
                 cfg = cfg_with(ws_url=f"ws://127.0.0.1:{port}", first_block_seconds=0.3,
                                speeds=speeds)
+                fake_jupiter = mock.Mock(return_value={
+                    "jupiter_organic_score": 42.5, "jupiter_organic_label": "medium",
+                    "jupiter_organic_volume_1h_pct": None, "jupiter_organic_buyers_1h_pct": 7.5})
                 with mock.patch.object(launch_bot, "sol_price", return_value=SOL), \
-                        mock.patch.object(launch_bot, "token_prices", return_value={}):
+                        mock.patch.object(launch_bot, "token_prices", return_value={}), \
+                        mock.patch.object(launch_bot, "JupiterOrganic",
+                                          return_value=fake_jupiter), \
+                        mock.patch.object(launch_bot.Runner, "ORGANIC_POLL_SECONDS", 0.1):
                     runner = launch_bot.Runner(cfg, folder)
                     task = asyncio.create_task(runner.main())
                     await asyncio.sleep(3.5)
@@ -377,6 +411,8 @@ class RunnerTests(unittest.TestCase):
             buys = {s: [r for r in rows(os.path.join(d, "launch", s, "journal.csv"))
                         if r["action"] == "BUY"] for s in ("5s", "30s", "90s")}
             self.assertTrue(os.path.exists(os.path.join(d, "launch", "state.json")))
+            entries = {s: rows(os.path.join(d, "launch", s, "entries.csv"))[0]
+                       for s in ("5s", "30s", "90s")}
         methods = [m["method"] for m in received]
         self.assertEqual(methods[:2], ["subscribeNewToken", "subscribeMigration"])
         self.assertEqual(len(methods), 2)                   # no trade subscriptions
@@ -387,3 +423,11 @@ class RunnerTests(unittest.TestCase):
                       launch_bot.test_summary(runner.engine, runner.kinds))
         self.assertEqual({s: len(b) for s, b in buys.items()}, {"5s": 1, "30s": 1, "90s": 1})
         self.assertEqual(buys["5s"][0]["price_usd"], "3e-06")  # the curve price at creation
+        # Jupiter's organic score, looked up in the background (logging only).
+        for e in entries.values():
+            self.assertEqual((e["jupiter_organic_score"], e["jupiter_organic_label"],
+                              e["jupiter_organic_volume_1h_pct"],
+                              e["jupiter_organic_buyers_1h_pct"]), ("42.5", "medium", "", "7.5"))
+            self.assertLess(float(e["jupiter_checked_seconds_after_creation"]),
+                            float(e["seconds_after_creation"]) + 0.01)
+        runner.jupiter.assert_called_with("live1")

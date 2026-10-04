@@ -11,6 +11,7 @@ import os
 from datetime import datetime, timezone
 
 from screener.filters import to_float
+from screener.jupiter import COLUMNS as JUPITER_COLUMNS
 
 JOURNAL_COLUMNS = [
     "time_utc", "action", "symbol", "token_address", "reason", "price_usd",
@@ -20,11 +21,13 @@ JOURNAL_COLUMNS = [
 # entries.csv: one row per paper buy with what the market looked like at that
 # moment, for later analysis. Rows are only ever added, never removed.
 # price_change_5m_pct / price_change_1h_pct are DexScreener's price change over
-# the last 5 minutes / hour at the moment of the buy.
+# the last 5 minutes / hour at the moment of the buy. The jupiter_* columns
+# are Jupiter's organic score at the buy (screener/jupiter.py; logging only,
+# blank when unknown or for non-Solana coins).
 ENTRY_COLUMNS = [
     "time_utc", "symbol", "token_address", "price_usd", "buys_1h", "sells_1h",
     "insider_flagged", "insider_networks", "insider_linked_wallets", "insider_top_holders",
-    "price_change_5m_pct", "price_change_1h_pct",
+    "price_change_5m_pct", "price_change_1h_pct", *JUPITER_COLUMNS,
 ]
 
 
@@ -63,6 +66,10 @@ def now_utc():
 
 
 class PaperTrader:
+    # Optional: a callable mint -> Jupiter organic-score values, saved in
+    # entries.csv at each buy (screener/jupiter.JupiterOrganic). None = blank.
+    organic = None
+
     def __init__(self, cfg, data_folder):
         self.cfg = cfg
         os.makedirs(data_folder, exist_ok=True)
@@ -139,9 +146,9 @@ class PaperTrader:
         return pos
 
     def _entry(self, when, pos, result):
-        """Save buys vs sells over the last hour, insider-network status and
-        DexScreener's 5-minute and 1-hour price change at the moment of the
-        buy. Blank means the data wasn't available."""
+        """Save buys vs sells over the last hour, insider-network status,
+        DexScreener's 5-minute and 1-hour price change and Jupiter's organic
+        score at the moment of the buy. Blank means the data wasn't available."""
         tx = ((result.pair or {}).get("txns") or {}).get("h1") or {}
         change = (result.pair or {}).get("priceChange") or {}
         ins = getattr(result, "insider", None)
@@ -149,6 +156,7 @@ class PaperTrader:
             flagged = "unknown"
         else:
             flagged = "yes" if any(ins.get(k) for k in ins) else "no"
+        jup = self.organic(pos["address"]) if self.organic else {}
         append_row(self.entries_path, ENTRY_COLUMNS, [
             when.strftime("%Y-%m-%d %H:%M:%S"), pos["symbol"], pos["address"],
             f"{pos['entry_price']:.10g}",
@@ -158,6 +166,7 @@ class PaperTrader:
             *(("", "", "") if ins is None else
               (ins["networks"], ins["linked_wallets"], ins["insider_top_holders"])),
             pct(change.get("m5")), pct(change.get("h1")),
+            *("" if jup.get(k) is None else jup[k] for k in JUPITER_COLUMNS),
         ])
 
     # ---- selling ----

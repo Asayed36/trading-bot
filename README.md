@@ -106,8 +106,13 @@ market check aren't sent to RugCheck (they show `skip Safety checks`). Set
   like at that moment, for later analysis: buys and sells over the last hour
   (DexScreener), insider-network status (RugCheck: whether any insider
   flag was set, the number of networks, linked wallets and insider top
-  holders), and the price change over the last 5 minutes and the last hour
-  (DexScreener, `price_change_5m_pct` / `price_change_1h_pct`). Blank or
+  holders), the price change over the last 5 minutes and the last hour
+  (DexScreener, `price_change_5m_pct` / `price_change_1h_pct`), and
+  Jupiter's organic score at the buy (`jupiter_organic_score` 0-100,
+  `jupiter_organic_label` low/medium/high, and the share of the last hour's
+  buy volume and traders Jupiter counts as organic; from Jupiter's free
+  Tokens API, logging only; the news strategy's coins aren't Solana tokens,
+  so its rows leave these blank). Blank or
   `unknown` means the data wasn't available; buys from before a column was
   added have it blank. Rows are never removed, even after the position
   closes. Nothing here affects trading.
@@ -345,7 +350,10 @@ step: [`deploy/LAUNCH_SERVER_SETUP.md`](deploy/LAUNCH_SERVER_SETUP.md).
   `entries.csv` (when it bought, dev buy %, flag; the buys/sells so far,
   first-block buyers and price change since creation, in the 5-minute/1-hour
   columns, need the trade feed, so they're blank. Before October 2026 they
-  were saved as 0, which meant "not known", too), plus `data/launch/launches.csv` (every launch it considered
+  were saved as 0, which meant "not known", too; Jupiter's organic score,
+  looked up every 10 seconds from when a launch is selected, with
+  `jupiter_checked_seconds_after_creation` saying how old the token was at
+  that reading), plus `data/launch/launches.csv` (every launch it considered
   and why) and `stats.json` (hourly counts: launches seen, skipped by reason,
   flagged, traded). The daily comparison shows **launch 5s / 30s / 90s** next
   to the other strategies.

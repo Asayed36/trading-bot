@@ -42,6 +42,7 @@ from collections import deque
 from datetime import datetime, timezone
 
 from screener.filters import to_float
+from screener.jupiter import COLUMNS as JUPITER_COLUMNS
 from screener.paper_trader import PaperTrader, append_row, pct
 
 # The 5-minute and 1-hour price change at each buy, like the other strategies'
@@ -50,11 +51,18 @@ from screener.paper_trader import PaperTrader, append_row, pct
 # PumpPortal trade feed: for a token younger than 5 minutes that's the whole
 # window. Without the trade feed they, the buy/sell counts and the first-block
 # buyers are blank (not known), never 0.
+# jupiter_*: Jupiter's organic score (screener/jupiter.py; logging only). The
+# runner looks it up in the background once a launch is selected and every
+# JUPITER_EVERY_SECONDS after, so each buy saves the latest reading and
+# jupiter_checked_seconds_after_creation says how old the token was then.
+# Blank = no reading yet (a launch a few seconds old usually has none).
 LAUNCH_ENTRY_COLUMNS = [
     "time_utc", "symbol", "token_address", "price_usd", "seconds_after_creation",
     "buys_so_far", "sells_so_far", "dev_buy_pct", "first_block_buyers", "flagged",
-    "price_change_5m_pct", "price_change_1h_pct",
+    "price_change_5m_pct", "price_change_1h_pct", *JUPITER_COLUMNS,
+    "jupiter_checked_seconds_after_creation",
 ]
+JUPITER_EVERY_SECONDS = 10
 
 TOTAL_SUPPLY = 1_000_000_000  # every pump.fun token
 
@@ -163,7 +171,9 @@ class LaunchTrader(PaperTrader):
             cell(info["buys"]), cell(info["sells"]), f"{info['dev_buy_pct']:.2f}",
             cell(info["first_block_buyers"]), "yes" if info["flagged"] else "no",
             pct(info.get("change_since_creation_pct")),
-            pct(info.get("change_since_creation_pct"))])
+            pct(info.get("change_since_creation_pct")),
+            *(cell((info.get("jupiter") or {}).get(k)) for k in JUPITER_COLUMNS),
+            cell(info.get("jupiter_checked_seconds_after_creation"))])
 
 
 class LaunchEngine:
@@ -189,6 +199,7 @@ class LaunchEngine:
         self.sol_usd = None
         self.watch = {}          # mint -> launch being evaluated, entered or held
         self.external = {}       # mint -> latest USD price after graduation (DexScreener)
+        self.jupiter = {}        # mint -> (organic-score values, unix time read): logging only
         self.migrated = set()
         self.selected = deque()  # times of selected launches (hourly cap)
         self.memory = {"names": {}, "creators": {}, "migrated": {}}
@@ -362,6 +373,23 @@ class LaunchEngine:
         self._update_prices({m: p for m, p in prices.items()
                              if p and self._uses_external(m, t)}, t)
 
+    def jupiter_due(self, t=None):
+        """Selected launches still waiting for a speed's buy whose Jupiter
+        reading is missing or older than JUPITER_EVERY_SECONDS."""
+        t = t or self.clock()
+        due = []
+        for mint, w in self.watch.items():
+            if w["status"] != "selected" or w["entered"] >= set(self.speeds):
+                continue
+            last = self.jupiter.get(mint)
+            if last is None or t - last[1] >= JUPITER_EVERY_SECONDS:
+                due.append(mint)
+        return due
+
+    def set_jupiter(self, mint, values, t=None):
+        if mint in self.watch:
+            self.jupiter[mint] = (values, t or self.clock())
+
     def needs_external(self, t=None):
         """Held tokens to look up on DexScreener."""
         t = t or self.clock()
@@ -433,6 +461,11 @@ class LaunchEngine:
                             "flagged": w.get("flagged", False), "creator": w["creator"],
                             "change_since_creation_pct": self._known(change_pct(
                                 w.get("created_price_sol"), w.get("price_sol")))}
+                    reading = self.jupiter.get(mint)
+                    if reading:
+                        info["jupiter"] = reading[0]
+                        info["jupiter_checked_seconds_after_creation"] = round(
+                            reading[1] - w["created"], 1)
                     if trader.buy_launch(mint, w["symbol"], price, self.sol_usd, utc(t), info):
                         trader.save()
                 if w["entered"] >= set(self.speeds):
@@ -444,6 +477,7 @@ class LaunchEngine:
         if prices:
             self._update_prices(prices, t)
         for mint in drop:
+            self.jupiter.pop(mint, None)
             self.watch.pop(mint, None)
             self.migrated.discard(mint)
             self.external.pop(mint, None)
