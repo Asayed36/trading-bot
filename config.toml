@@ -81,6 +81,25 @@ round_trip_cost_pct = 3
 allow_rebuy = false
 
 # ---------------------------------------------------------------------
+# MAIN (1 MIN): the main strategy checked every minute, on your own server
+# (main_1min.py, deploy/main-1min.service). It uses exactly [filters] and
+# [paper_trading] above, so only the timing differs from main. Its own
+# results are in data/main-1min/ (pushed by deploy/push_results.sh once an
+# hour). Paper trading only: no wallet, no keys, no real orders.
+# ---------------------------------------------------------------------
+[main_1min]
+enabled = true
+folder = "main-1min"
+every_seconds = 60
+# RugCheck is only asked about tokens that pass the market checks, and only
+# when they're new or their report (kept in memory) is older than this...
+rugcheck_recheck_minutes = 10
+# ...at most this many a minute (the rest wait for the next minute)...
+rugcheck_max_per_run = 10
+# ...and not at all for this long after it says "too many requests".
+rugcheck_pause_minutes = 5
+
+# ---------------------------------------------------------------------
 # EARLY STRATEGY: a second paper strategy that runs alongside the one above
 # (its own positions and journal in data/early/). It looks for tokens under
 # 6 hours old and buys them on a pullback after their first spike.

@@ -309,6 +309,33 @@ safe). Commit that change.
 To stop using Helius, delete the secret (Settings, Secrets and variables,
 Actions), or set `enabled = false` under `[convergence]`.
 
+## The "main (1 min)" strategy (the main strategy every minute, on your own server)
+
+The same strategy as **main**, checked **every minute** instead of every few
+minutes, to see whether checking more often changes the results. It runs all
+the time on the launch bot's server (`main_1min.py`, the `main-1min`
+service; setup: Part G of
+[`deploy/LAUNCH_SERVER_SETUP.md`](deploy/LAUNCH_SERVER_SETUP.md)).
+
+- **Exactly main's rules:** it reads `[filters]` and `[paper_trading]` in
+  `config.toml` and uses main's own code for the checks and the paper trades,
+  so the two can't drift apart: the same entry checks, **$10** buys, **3%**
+  costs, and the same exits (sell half at +50%; everything left at -30%, 40%
+  below the peak, or after 48 hours if it's still within ±10% of entry).
+- **Its own files:** `data/main-1min/` (`journal.csv`, `positions.json`,
+  `entries.csv`, `health.json`). It never reads or writes the GitHub main
+  strategy's files and opens no GitHub issues. The hourly push
+  (`deploy/push_results.sh`) sends the folder here.
+- **Free limits:** about 4–6 DexScreener requests a minute (its limits are 60
+  a minute for the lists and 300 for pairs). RugCheck is asked only about
+  tokens that pass the market checks, and only when a token is new or its
+  report is more than 10 minutes old, at most 10 a minute; after a "too many
+  requests" it isn't asked for 5 minutes (tokens waiting for RugCheck are
+  checked the next minute, never bought without it). Settings: `[main_1min]`.
+- **In the daily comparison:** the **main (1 min)** column, next to main,
+  and a health row with its last good run, runs and busiest-hour requests,
+  and its last push.
+
 ## The "launch" strategy (a fourth paper strategy, on your own server)
 
 It tests whether **sniping** brand-new pump.fun tokens could work. Because a
@@ -592,6 +619,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/convergence.py` | The convergence strategy: Helius reads, credit budget, wallet scoring, signals and exits |
 | `screener/news.py` | The news strategy: feeds, coin matching, the checks, the candidate log and exits |
 | `screener/launch.py`, `launch_bot.py` | The launch strategy and the program that runs it on your server |
+| `main_1min.py` | The main (1 min) strategy: main's checks and exits every minute, on your server |
 | `screener/robinhood.py` | The robinhood strategy: GeckoTerminal watchlist, DexScreener prices, GoPlus and RPC holder checks, costs and exits |
 | `robinhood_probe.py` | Research only: reports what each free data source returns for Robinhood Chain (run by the "Robinhood Chain probe" workflow; no trading) |
 | `deploy/` | Server setup guide, systemd services, the hourly push script for the launch bot, and the paper-run trigger that starts the Paper trading run every 10 minutes (and the Daily strategy comparison when yesterday's issue is missing) |

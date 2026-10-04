@@ -27,8 +27,9 @@ def ago(**kw):
 
 
 class FakeGitHub:
-    def __init__(self, runs=(), pushed=None, broken=False):
+    def __init__(self, runs=(), pushed=None, broken=False, pushed_1min=None):
         self.runs, self.pushed, self.broken = list(runs), pushed, broken
+        self.pushed_1min = pushed_1min
 
     def workflow_runs(self, workflow, since):
         if self.broken:
@@ -37,8 +38,8 @@ class FakeGitHub:
         return self.runs
 
     def last_commit_time(self, path):
-        assert path == "data/launch"
-        return self.pushed
+        assert path in ("data/launch", "data/main-1min")
+        return self.pushed if path == "data/launch" else self.pushed_1min
 
 
 def run_(conclusion, minutes_ago):
@@ -70,7 +71,13 @@ class Base(unittest.TestCase):
         self.write("robinhood/positions.json", {"sources": {
             name: {"ok": True, "calls": 3, "errors": 0, "rate_limited": 0, "at": ago(minutes=4)}
             for name in ("geckoterminal", "dexscreener", "goplus", "rpc")}})
-        return FakeGitHub([run_("success", 4), run_("success", 9)], pushed=NOW - timedelta(minutes=50))
+        self.write("main-1min/health.json", {
+            "last_ok": ago(minutes=50),
+            "calls_per_hour": {"2026-10-01T23:00": {"runs": 60, "dexscreener": 250,
+                                                    "rugcheck": 31}}})
+        return FakeGitHub([run_("success", 4), run_("success", 9)],
+                          pushed=NOW - timedelta(minutes=50),
+                          pushed_1min=NOW - timedelta(minutes=48))
 
     def lines(self, gh):
         text = "\n".join(health_lines(self.d, CFG, NOW, gh))
@@ -170,6 +177,46 @@ class HealthTests(Base):
         self.assertEqual(lines[2], "")
         self.assertEqual(lines[3], "### Health (x)")
         self.assertTrue(lines[5].startswith("| | main"))
+
+
+class MainOneMinuteHealthTests(Base):
+    def row(self, gh):
+        return self.lines(gh)[1]["main (1 min): server"]
+
+    def test_ok_with_runs_requests_and_push(self):
+        row = self.row(self.healthy())
+        self.assertIn(OK, row)
+        self.assertIn("last good run 2026-10-01 23:17 UTC (50 min ago); 60 runs in 1 h; "
+                      "busiest hour: 250 DexScreener, 31 RugCheck requests; "
+                      "last push 2026-10-01 23:19 UTC (48 min ago)", row)
+
+    def test_never_pushed(self):
+        gh = self.healthy()
+        os.remove(os.path.join(self.d, "main-1min", "health.json"))
+        row = self.row(gh)
+        self.assertIn(WARN, row)
+        self.assertIn("no results pushed yet", row)
+        self.assertIn("Part G", row)
+
+    def test_late_or_skipped(self):
+        gh = self.healthy()
+        gh.pushed_1min = NOW - timedelta(hours=4)
+        self.assertIn("(older than 3 h)", self.row(gh))
+        self.assertIn(WARN, self.row(gh))
+        gh = self.healthy()
+        self.write("main-1min/health.json", {
+            "last_ok": ago(minutes=50), "last_error": "api.dexscreener.com kept saying "
+            "'too many requests'", "error_at": ago(minutes=49),
+            "rugcheck_paused_until": ago(minutes=-3)})
+        row = self.row(gh)
+        self.assertIn(WARN, row)
+        self.assertIn("skipped since 23:18 UTC: api.dexscreener.com kept saying", row)
+        self.assertIn("RugCheck paused until 00:10 UTC", row)
+
+    def test_no_row_when_turned_off(self):
+        cfg = dict(CFG, main_1min=dict(CFG["main_1min"], enabled=False))
+        text = "\n".join(health_lines(self.d, cfg, NOW, self.healthy()))
+        self.assertNotIn("main (1 min)", text)
 
 
 class RunIntervalTests(Base):

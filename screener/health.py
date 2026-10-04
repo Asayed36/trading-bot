@@ -7,6 +7,8 @@ Sources:
     hours, and the last successful one;
   - GitHub's commits API (or data/launch/stats.json): the launch bot's last
     push from your server;
+  - data/main-1min/health.json and the commits API: the main (1 min)
+    strategy's last good run, its requests per hour, and its last push;
   - the strategies' own files: convergence's tracked wallets and Helius
     pause, the news strategy's source status, the robinhood strategy's data
     sources (GeckoTerminal, DexScreener, GoPlus, the Robinhood Chain RPC).
@@ -93,6 +95,47 @@ def record_health(data_folder, now, outcomes):
 # ---------------------------------------------------------------------
 # The report
 # ---------------------------------------------------------------------
+
+def add_main_1min(add, folder, cfg, now, github):
+    """One row: the main (1 min) strategy's last good run (from its pushed
+    health.json), runs and requests per hour over the last 24 h, and its
+    last push. A warning when the last good run or the last push is older
+    than [health] launch_stale_hours (it pushes about once an hour), or it
+    was skipped since."""
+    name = "main (1 min): server"
+    late_after = timedelta(hours=cfg.get("health", {}).get("launch_stale_hours", 3))
+    data = _load(os.path.join(folder, cfg["main_1min"]["folder"], "health.json")) or {}
+    ok, err_at = _utc(data.get("last_ok")), _utc(data.get("error_at"))
+    pushed = None
+    if github is not None:
+        try:
+            pushed = github.last_commit_time(f"data/{cfg['main_1min']['folder']}")
+        except Exception:
+            pushed = None
+    if not ok:
+        add(name, WARN, "no results pushed yet: is it set up (deploy/LAUNCH_SERVER_SETUP.md, "
+            "Part G)?", "main (1 min) has never pushed results")
+        return
+    detail = f"last good run {_at(ok, now)}"
+    hours = {k: v for k, v in (data.get("calls_per_hour") or {}).items()
+             if _utc(k) and now - _utc(k) <= timedelta(hours=24)}
+    if hours:
+        runs = sum(h.get("runs", 0) for h in hours.values())
+        per = {s: max(h.get(s, 0) for h in hours.values()) for s in ("dexscreener", "rugcheck")}
+        detail += (f"; {runs} runs in {len(hours)} h; busiest hour: {per['dexscreener']} "
+                   f"DexScreener, {per['rugcheck']} RugCheck requests")
+    if pushed:
+        detail += f"; last push {_at(pushed, now)}"
+    broken = err_at and err_at > ok
+    if broken:
+        detail += f"; skipped since {err_at:%H:%M} UTC: {data.get('last_error', '')[:100]}"
+    if data.get("rugcheck_paused_until"):
+        detail += f"; RugCheck paused until {data['rugcheck_paused_until'][11:16]} UTC"
+    late = now - ok > late_after or (pushed is not None and now - pushed > late_after)
+    if late:
+        detail += f" (older than {late_after.total_seconds() / 3600:.0f} h)"
+    add(name, WARN if (broken or late) else OK, detail)
+
 
 def health_lines(folder, cfg, now, github=None):
     """Markdown lines for the health section. `github` is a GitHubIssues
@@ -239,6 +282,10 @@ def health_lines(folder, cfg, now, github=None):
             if late:
                 detail += f" (older than {launch_stale.total_seconds() / 3600:.0f} h)"
             add("launch: server push", WARN if late else OK, detail)
+
+    # 7. The main (1 min) strategy on your server.
+    if cfg.get("main_1min", {}).get("enabled"):
+        add_main_1min(add, folder, cfg, now, github)
 
     head = [f"### Health ({now:%Y-%m-%d %H:%M} UTC)", ""]
     if problems:
