@@ -44,6 +44,13 @@
       "token": "0xdd1d7be3c2364a006e6c83f5e0f0345af36ed349",
       "name": "HYPERHOOKS",
       "created": "2026-10-04T00:47:03Z"
+    },
+    "0xebdb7ced641e53b86045de1e270a1a94283c9cc9538c109104b2a6d0a201f6e7": {
+      "pool": "0xebdb7ced641e53b86045de1e270a1a94283c9cc9538c109104b2a6d0a201f6e7",
+      "dex": "pons-v2-dex",
+      "token": "0x4c54d6b395c0917bf42f4f46e39a3b2f1e94b65d",
+      "name": "INC",
+      "created": "2026-10-03T20:59:01Z"
     }
   },
   "names": {
@@ -202,6 +209,10 @@
     "sora": [
       "2026-10-04T01:01:02.388899+00:00",
       "0xd55b04432b2b5a57ba92d967ad4a9dd91a8c6a3a"
+    ],
+    "inc": [
+      "2026-10-04T01:51:04.600053+00:00",
+      "0x4c54d6b395c0917bf42f4f46e39a3b2f1e94b65d"
     ]
   },
   "checked": {
@@ -246,24 +257,30 @@
       "failed": [
         "Not a copycat"
       ]
+    },
+    "0xebdb7ced641e53b86045de1e270a1a94283c9cc9538c109104b2a6d0a201f6e7": {
+      "at": "2026-10-04T01:51:04.600053+00:00",
+      "passed": false,
+      "failed": [
+        "Not a copycat"
+      ]
     }
   },
   "sources": {
     "geckoterminal": {
       "calls": 3,
-      "errors": 1,
-      "rate_limited": 1,
-      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
-      "ok": true,
-      "at": "2026-10-04T01:41:29.445028+00:00",
-      "used_this_run": true
-    },
-    "dexscreener": {
-      "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-04T01:41:29.445028+00:00",
+      "at": "2026-10-04T01:51:04.600053+00:00",
+      "used_this_run": true
+    },
+    "dexscreener": {
+      "calls": 3,
+      "errors": 0,
+      "rate_limited": 0,
+      "ok": true,
+      "at": "2026-10-04T01:51:04.600053+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -289,6 +306,7 @@
     "0x4159d844558b1c9c7f1caed2311d85414f55f2756c9490342669937ae8d34eed": "FAIL|Liquidity: $6,744 (need $10,000+)",
     "0x7ce33b798f58d2ff44fd9af18b43677a0c56be324c6b7d3e5bbbbdd8f2cfbaa6": "FAIL|Not a copycat: 12 other token(s) called SIGH in the last 7 days, one with more liquidity ($17,901 vs $58,339: 0x0fb6d77a6330b010adaa4ec63848fde54a047f67)",
     "0x2149ca8c91f3a38f881ad6c39cd77daf6832902f9c987e06a6f9fe5b6256ec7b": "FAIL|Pool age: 19815 min (need 30 min - 6 h)",
-    "0xee8fba8cfb29c510449a9eed99b8c728315cf79e9b9afd4f3b0edc02cc0ad8f4": "FAIL|Not a copycat: 6 other token(s) called HYPERHOOKS in the last 7 days, one with more liquidity ($15,819 vs $49,818: 0x5bf5533cf5c8abee0115755f0455cc371af0d349)"
+    "0xee8fba8cfb29c510449a9eed99b8c728315cf79e9b9afd4f3b0edc02cc0ad8f4": "FAIL|Not a copycat: 6 other token(s) called HYPERHOOKS in the last 7 days, one with more liquidity ($15,819 vs $49,818: 0x5bf5533cf5c8abee0115755f0455cc371af0d349)",
+    "0xebdb7ced641e53b86045de1e270a1a94283c9cc9538c109104b2a6d0a201f6e7": "FAIL|Not a copycat: 4 other token(s) called INC in the last 7 days, one with more liquidity ($24,498 vs $51,470: 0x61ae238994e7f063d29d29138f8ec4cf5425b65d)"
   }
 }
