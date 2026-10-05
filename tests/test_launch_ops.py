@@ -170,6 +170,64 @@ class PushScriptTests(unittest.TestCase):
         self.assertEqual(self.read("dev/data/main-1min/journal.csv"), "buy1\nsell1\n")
         self.assertEqual(self.read("server/data/main-1min/journal.csv"), "buy1\nsell1\n")
 
+    def test_a_folder_gitignore_blocks_is_skipped_and_the_others_still_pushed(self):
+        # What happened on 2026-10-05: .gitignore didn't allow data/news-listings
+        # yet, "git add" refused it and the whole push failed every hour.
+        self.write("dev/.gitignore", "data/*\n!data/launch/\n")
+        self.dev("add", "-A")
+        self.dev("commit", "-qm", "ignore")
+        self.dev("push", "-q", "origin", "main")
+        self.server("pull", "-q", "origin", "main")
+        os.makedirs(self.path("server/data/news-listings"))
+        self.write("server/data/news-listings/journal.csv", "listing1\n")
+        self.write("server/data/launch/journal.csv", "row2\n", "a")
+        result = self.push()
+        self.assertEqual(result.returncode, 3, result.stderr)
+        self.assertIn("WARNING: could not add data/news-listings", result.stderr)
+        self.assertIn("Pushed server results (data/launch).", result.stdout)
+        self.dev("pull", "-q", "origin", "main")
+        self.assertEqual(self.read("dev/data/launch/journal.csv"), "row1\nrow2\n")
+        self.assertFalse(os.path.exists(self.path("dev/data/news-listings")))
+        # Nothing new, but still a folder it can't add: still exit 3.
+        self.assertEqual(self.push().returncode, 3)
+
+        # The fixed .gitignore arrives on GitHub: the next run brings it in
+        # before adding, so it heals by itself.
+        self.write("dev/.gitignore", "data/*\n!data/launch/\n!data/news-listings/\n")
+        self.dev("commit", "-qam", "fix ignore")
+        self.dev("push", "-q", "origin", "main")
+        result = self.push()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("WARNING", result.stderr)
+        self.assertIn("Pushed server results (data/launch data/news-listings).", result.stdout)
+        self.dev("pull", "-q", "origin", "main")
+        self.assertEqual(self.read("dev/data/news-listings/journal.csv"), "listing1\n")
+
+
+@unittest.skipUnless(shutil.which("git"), "needs git")
+class GitignoreTests(unittest.TestCase):
+    """The repository's .gitignore lets every server results file through
+    (else the hourly push skips that folder), and still keeps out the
+    half-written and private files."""
+
+    def ignored(self, path):
+        return subprocess.run(["git", "check-ignore", "-q", "--no-index", path], cwd=HERE,
+                              capture_output=True).returncode == 0
+
+    def test_server_results_are_allowed(self):
+        for path in ("data/launch/90s/journal.csv", "data/main-1min/journal.csv",
+                     "data/main-1min/a/journal.csv", "data/main-1min/b/positions.json",
+                     "data/main-1min/b/entries.csv", "data/momentum/100pct-5min/journal.csv",
+                     "data/news-listings/journal.csv", "data/news-listings/positions.json",
+                     "data/news-listings/candidates.csv", "data/news-listings/ai_verdicts.csv",
+                     "data/news-listings/health.json", "data/news/ai_verdicts.csv"):
+            self.assertFalse(self.ignored(path), path)
+
+    def test_temporary_and_state_files_stay_out(self):
+        for path in ("data/news-listings/positions.json.tmp", "data/news-listings/state.json",
+                     "data/main-1min/a/positions.json.tmp"):
+            self.assertTrue(self.ignored(path), path)
+
 
 if __name__ == "__main__":
     unittest.main()

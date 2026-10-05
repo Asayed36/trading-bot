@@ -1,7 +1,8 @@
-# Pushes the server's paper results (data/launch, data/main-1min) to GitHub.
+# Pushes the server's paper results (data/launch, data/main-1min,
+# data/trade-feed-probe, data/momentum, data/news-listings) to GitHub.
 # Started once an hour by launch-push.timer.
 [Unit]
-Description=Push the server's paper results (launch, main 1 min) to GitHub
+Description=Push the server's paper results to GitHub
 After=network-online.target
 Wants=network-online.target
 
