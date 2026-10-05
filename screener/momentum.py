@@ -168,6 +168,8 @@ class MomentumEngine:
         self.last_message = None
         self.last_ok = None           # the last message on a live feed
         self.outage_ended = clock()   # nothing seen before the start
+        self.endpoint = None          # the RPC it's connected to (its host name)
+        self.down_since = None        # when the feed last dropped
         self._load()
         self._count(clock(), "bot started")
         for trader in self.traders.values():
@@ -214,15 +216,26 @@ class MomentumEngine:
 
     # ---- the feed ----------------------------------------------------
 
-    def connected(self, t=None):
+    def connected(self, t=None, endpoint=None):
         t = t or self.clock()
+        if self.down_since is not None:
+            # How long it was down, counted in the hour it came back.
+            self._count(t, "feed down seconds", round(t - self.down_since))
+            self.down_since = None
+        if endpoint and self.endpoint and endpoint != self.endpoint:
+            self._count(t, "feed endpoint switches")
+        self.endpoint = endpoint or self.endpoint
         self.feed_up, self.last_message = True, t
         self.outage_ended = t
 
-    def disconnected(self, t=None):
+    def disconnected(self, t=None, stopping=False):
+        """The feed dropped (counted), or the bot is stopping (not a drop)."""
         t = t or self.clock()
-        if self.feed_up:
+        if self.feed_up and not stopping:
             self._count(t, "feed disconnects")
+            if self.endpoint:
+                self._count(t, f"feed disconnects: {self.endpoint}")
+            self.down_since = t
         self.feed_up = False
 
     def feed_ok(self, t):
@@ -469,6 +482,7 @@ class MomentumEngine:
         return {"updated": utc(t).isoformat(), "feed_up": self.feed_ok(t),
                 "last_message": utc(self.last_message).isoformat() if self.last_message else None,
                 "last_ok": utc(self.last_ok).isoformat() if self.last_ok else None,
+                "endpoint": self.endpoint,
                 "following": len(self.launches),
                 "open": {n: len(tr.open_positions) for n, tr in self.traders.items()},
                 "this_hour": hour}

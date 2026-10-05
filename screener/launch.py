@@ -120,6 +120,11 @@ def _atomic_json(path, data):
     os.replace(tmp, path)  # the push job never sees a half-written file
 
 
+# A stopped launch bot sells a position that has had no price this many
+# minutes past its time stop at its last known price (close_stopped).
+STUCK_GRACE_MINUTES = 10
+
+
 class LaunchTrader(PaperTrader):
     """One speed (5s, 30s or 90s). Same bookkeeping as the other strategies,
     but launch costs: a priority fee in SOL on every buy and sell, a bot fee
@@ -244,6 +249,7 @@ class LaunchEngine:
                     "creator": info.get("creator"), "price_sol": None, "status": "held",
                     "entered": set(self.speeds), "buys": 0, "sells": 0,
                     "first_block_buyers": set(), "dev_buy_pct": info.get("dev_buy_pct", 0)})
+        self.closed_stopped = self.close_stopped(clock())
 
     # ---- persistence -------------------------------------------------
 
@@ -502,12 +508,41 @@ class LaunchEngine:
         prices = {m: p for m in self.watch if (p := self._current_usd(m, t))}
         if prices:
             self._update_prices(prices, t)
+        self.close_stopped(t)
         for mint in drop:
             self.jupiter.pop(mint, None)
             self.watch.pop(mint, None)
             self.migrated.discard(mint)
             self.external.pop(mint, None)
         return [], (drop if self.trade_feed else [])
+
+    def close_stopped(self, t=None):
+        """[launch] stopped = true only: a position whose time stop passed
+        more than STUCK_GRACE_MINUTES ago and that still has no price
+        (DexScreener never listed it, and its curve price is lost when the
+        bot restarts) can never reach its exits. It's sold at its last known
+        price, with the normal costs, marked "closed after the bot was
+        stopped". Returns the sells, as (speed, sell)."""
+        if not self.c.get("stopped"):
+            return []
+        t = t or self.clock()
+        when, closed = utc(t), []
+        for name, trader in self.traders.items():
+            for pos in list(trader.open_positions):
+                held = (when - datetime.fromisoformat(pos["entry_time"])).total_seconds() / 60
+                if held < self.pt["time_stop_minutes"] + STUCK_GRACE_MINUTES \
+                        or self._current_usd(pos["address"], t):
+                    continue
+                price = pos.get("last_price") or pos["entry_price"]
+                reason = (f"closed after the bot was stopped: at the last known price "
+                          f"({change_pct(pos['entry_price'], price) or 0:+.0f}%), no price "
+                          f"after {held:.0f} min")
+                closed.append((name, trader._sell(pos, pos["remaining_fraction"], price,
+                                                  reason, when)))
+                trader.open_positions.remove(pos)
+            if any(speed == name for speed, _ in closed):
+                trader.save()
+        return closed
 
     def prune(self, t=None):
         """Forget launches older than the memory window (run hourly)."""

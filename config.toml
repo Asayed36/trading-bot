@@ -201,7 +201,7 @@ allow_rebuy = false
 
 # ---------------------------------------------------------------------
 # CONVERGENCE STRATEGY: a third paper strategy. Paper-buys a token when 3+
-# wallets from a weekly list of proven traders buy it within 20 minutes.
+# wallets from a list of proven traders (grown every day) buy it within 20 minutes.
 # Needs a free Helius API key in the HELIUS_API_KEY GitHub secret (see
 # README). Paper trading only: it only reads public data, no wallet, no keys.
 # ---------------------------------------------------------------------
@@ -236,39 +236,49 @@ helius_every_minutes = 15
 min_wallets = 3
 window_minutes = 20
 max_signal_age_minutes = 20
-# How many wallets to follow. 50 fits the Helius free plan when checked
-# every 15 minutes: about 320k credits a month for live checks plus about
-# 210k for the weekly lists, at the estimates above (about 53% of the
-# monthly credits, under the 80% pause). With live_rpc = "public" (the free
-# public Solana RPC, no sign-up, less reliable) live checks cost no Helius
-# credits at all.
+# How many wallets to follow at most. 50 fits the Helius free plan when
+# checked every 15 minutes: about 320k credits a month for live checks, at
+# the estimates above, leaving the rest under the 80% pause for scoring
+# candidates (paced per day, see refresh_credits_per_run). With live_rpc =
+# "public" (the free public Solana RPC, no sign-up, less reliable) live
+# checks cost no Helius credits at all.
 tracked_wallets = 50
 live_rpc = "helius"
 # At most this many new transactions per wallet, and decoded per run.
 max_new_tx_per_wallet = 25
 max_decodes_per_run = 150
 
-# --- The weekly list of proven traders ---
+# --- The list of proven traders ---
+# It grows as wallets qualify (up to tracked_wallets): a new round of
+# candidates every refresh_every_hours (the next round starts once the last
+# one is done). A wallet scored in the last recheck_days isn't scored again;
+# a tracked wallet is scored again every recheck_days and leaves the list if
+# it no longer qualifies.
+refresh_every_hours = 24
+recheck_days = 7
 # Winners: tokens up at least this much in 24h, with this much liquidity.
 winner_min_change_24h_pct = 100
 winner_min_liquidity_usd = 30_000
-# Candidates, from each of the week's top winners: wallets that recently
-# sold it (GeckoTerminal's last 300 trades, free; sells of at least
+# Candidates, from each of the week's top winners (the ones not used in the
+# last winner_reuse_days first): wallets that recently sold it
+# (GeckoTerminal's last 300 trades, free; sells of at least
 # min_seller_trade_usd), and its biggest holders (RugCheck, free). Sellers
 # matter most: holders who haven't sold have no closed trades to judge.
-winners_per_refresh = 10
-sellers_per_winner = 20
+winners_per_refresh = 20
+winner_reuse_days = 3
+# Winners read a run (a GeckoTerminal and a RugCheck call each): a round's
+# candidates are gathered over several runs, so a run never asks
+# GeckoTerminal much (the robinhood strategy needs it in the same run).
+winners_per_run = 2
+sellers_per_winner = 25
 min_seller_trade_usd = 50
 holders_per_winner = 10
-candidates_per_refresh = 80
-# If a finished list has fewer than min_wallets wallets (it can't give a
-# signal), build it again after this many hours instead of waiting a week,
-# but only while under this % of the monthly Helius credits.
-retry_small_list_hours = 24
-retry_small_list_max_used_pct = 50
+candidates_per_refresh = 150
 # Each candidate's last history_days of swaps are read from Helius. Wallets
 # with more transactions than max_tx_per_candidate in that time are treated
-# as bots and skipped.
+# as bots and skipped; wallets with fewer than 2 x min_closed_trades can't
+# have enough closed trades, so their transactions aren't read (saves
+# credits; the result is the same).
 history_days = 14
 max_tx_per_candidate = 150
 # A candidate joins the list only with at least this many closed trades,
@@ -278,7 +288,9 @@ min_closed_trades = 5
 min_realized_sol = 2
 min_win_rate_pct = 40
 max_top_token_share_pct = 60
-# Helius credits the refresh may use per run (it's spread over many runs).
+# Helius credits the list may use per run (it's spread over many runs), and
+# per day at most an even share of what's left in the cycle after keeping
+# enough for the live checks of the list until the cycle ends.
 refresh_credits_per_run = 2_500
 
 # --- Basic checks before buying ---
@@ -317,7 +329,10 @@ enabled = true
 # last positions have closed (within 30 minutes), the launch-bot service can
 # be turned off (deploy/LAUNCH_SERVER_SETUP.md, Part K).
 # stopped = true: no new buys. Positions still open finish under their
-# normal exits; the journal, positions and other files are kept.
+# normal exits; the journal, positions and other files are kept. A position
+# still without a price 10 minutes after its 30-minute time stop (a token
+# DexScreener never listed) is sold at its last known price, with the normal
+# costs, marked "closed after the bot was stopped".
 stopped = true
 # PumpPortal's free real-time data feed (read-only).
 ws_url = "wss://pumpportal.fun/api/data"
@@ -399,7 +414,16 @@ extra_slippage_pct = 5
 [momentum]
 enabled = true
 folder = "momentum"
-ws_url = "wss://api.mainnet-beta.solana.com"
+# Free public Solana RPC websockets (no key, no sign-up), tried in this
+# order. The bot reconnects to the same one after a drop; when a connection
+# lasted under stable_seconds (or never got going), it moves on to the next.
+# python momentum_bot.py --check-feeds tries each one for 15 seconds.
+ws_urls = ["wss://api.mainnet-beta.solana.com", "wss://solana-rpc.publicnode.com"]
+# Reconnect after reconnect_seconds; only once every endpoint has failed in a
+# row does the wait double, up to max_reconnect_seconds.
+reconnect_seconds = 1
+max_reconnect_seconds = 15
+stable_seconds = 120
 costs_like_speed = "90s"
 # Launches 1-10 minutes old, on the bonding curve, less than this far to
 # graduating.
@@ -429,9 +453,12 @@ max_buys_per_hour = 10
 max_open = 20
 # The feed counts as down when nothing arrived for feed_stale_seconds (no
 # new buys then, nor for a window that overlaps it); after watchdog_seconds
-# of silence it reconnects.
+# of silence it reconnects (the feed sends about 25 messages a second).
 feed_stale_seconds = 10
-watchdog_seconds = 30
+watchdog_seconds = 15
+# The health section warns when the feed was down more than this % of the
+# last 24 hours.
+max_down_pct = 5
 # Held tokens are priced from DexScreener once the feed has no trade for
 # this long (or they graduate).
 stale_price_seconds = 60
@@ -857,10 +884,15 @@ copycat_window_days = 7
 copycat_clone_liquidity_pct = 90
 
 # GeckoTerminal allows only a few calls a minute from GitHub's runners (it
-# said 429 after about 7 in the probe), so at most this many a run, spaced
-# out. The pools seen are kept on a watchlist for later runs.
-gecko_calls_per_run = 3
-gecko_gap_seconds = 6.5
+# said 429 after about 7 in the probe, and about 3 runs in 10 got a 429 with
+# 3 calls 6.5 s apart), so at most this many a run, spaced out. Pons'
+# graduations are read from the chain (below), so its GeckoTerminal list is
+# only read when there are calls to spare: the lists are Pools.trade's, then
+# the newest pools, then Pons'. After a 429, one retry gecko_retry_seconds
+# later. The pools seen are kept on a watchlist for later runs.
+gecko_calls_per_run = 2
+gecko_gap_seconds = 10
+gecko_retry_seconds = 20
 # GoPlus token security (no key): at most this many tokens a run, spaced out.
 goplus_max_per_run = 8
 goplus_gap_seconds = 2.0
@@ -900,10 +932,15 @@ rpc_retry_budget_seconds = 120
 # found with
 # robinhood_probe.py: in a day of logs the event named every Pons token
 # GeckoTerminal listed as graduating that day, with the token at topic
-# pons_graduation_token_topic.
+# pons_graduation_token_topic. Graduations not yet named are looked up on
+# DexScreener (30 a call, at most onchain_lookups_per_run calls, each token
+# again after onchain_lookup_retry_minutes until listed): their names and
+# pools go on the watchlist and into the copycat check.
 graduation_count_hours = 24
 graduation_scan_minutes = 5
 graduation_calls_before_checks = 3
+onchain_lookups_per_run = 2
+onchain_lookup_retry_minutes = 30
 graduation_rpc_calls = 30
 pons_graduation_contract = "0xc7819b64a1daecd7ec19856d026cb14efbd89046"
 pons_graduation_topic = "0x80a5a2ff8b8c5533e5862e4e161bbcade9af6fd9d67bef56a590b062107f027f"
@@ -930,6 +967,9 @@ dex = "pons-v2-dex"
 pool_fee_pct = 1.0
 holder_checks = true
 min_liquidity_usd = 10000
+# Its graduations are read from the chain (the graduation event above), with
+# their names and pools from DexScreener: GeckoTerminal's list is a backup.
+onchain_graduations = true
 
 [[robinhood.launchpads]]
 name = "Pools.trade"

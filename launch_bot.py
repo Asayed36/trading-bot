@@ -2,6 +2,7 @@
 
     python launch_bot.py            <- run for good (the systemd service does this)
     python launch_bot.py --test     <- try the setup for 2 minutes; saves nothing
+    python launch_bot.py --close-stuck  <- (stopped only) sell positions stuck without a price
 
 It listens to PumpPortal's free real-time data feed for new pump.fun tokens
 and migrations, and paper-trades them at three speeds (see
@@ -225,17 +226,40 @@ def test_summary(engine, kinds=None):
     return "\n".join(lines)
 
 
+def close_stuck(cfg, folder, out=print):
+    """--close-stuck: no feed, no network. Loading the engine sells what's
+    stuck (LaunchEngine.close_stopped); this saves it and says what it did."""
+    if not cfg["launch"].get("stopped"):
+        out("Nothing done: the launch strategy isn't stopped ([launch] stopped = false), so "
+            "its positions still close under the normal exits.")
+        return 1
+    engine = LaunchEngine(cfg, folder)
+    engine.save()
+    for speed, sell in engine.closed_stopped:
+        out(f"{speed}: SELL {sell['symbol']} {sell['reason']}; P&L ${sell['pnl_usd']:+.2f}")
+    left = sum(len(t.open_positions) for t in engine.traders.values())
+    out(f"Closed {len(engine.closed_stopped)} stuck position(s); {left} still open. "
+        "The next hourly push takes the journals to GitHub.")
+    return 0
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--test", nargs="?", const=120, type=int, metavar="SECONDS",
                         help="try the setup: run for SECONDS (default 120, enough for all three "
                              "speeds) with results in a temporary folder, then print a summary")
+    parser.add_argument("--close-stuck", action="store_true",
+                        help="with [launch] stopped = true: sell the positions that are past "
+                             "their time stop with no price at their last known price, save, "
+                             "and exit (stop the launch-bot service first)")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     cfg = load_config()
     if not cfg.get("launch", {}).get("enabled"):
         print("The launch strategy is turned off ([launch] enabled = false).")
         return 0
+    if args.close_stuck:
+        return close_stuck(cfg, os.path.join(HERE, cfg["files"]["data_folder"]))
     if args.test:
         # A test must never write real results: a short run leaves the slower
         # speeds without their buys and uses up the hourly cap.

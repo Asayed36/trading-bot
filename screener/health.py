@@ -172,9 +172,23 @@ def add_momentum(add, folder, cfg, now, github):
                 day[key] = day.get(key, 0) + n
     signals = sum(n for k, n in day.items() if k.endswith(": signals"))
     buys = sum(n for k, n in day.items() if k.endswith(": buys"))
-    detail = (f"feed last up {_at(ok, now)}; last 24 h: {day.get('feed disconnects', 0)} "
-              f"disconnect(s), {day.get('launches seen', 0)} launches, {signals} signal(s), "
-              f"{buys} buy(s)")
+    # The hours the bot counted in (it may have started less than 24 h ago).
+    hours = sum(1 for hour in stats if (when := _utc(hour.replace(" ", "T")))
+                and now - when <= timedelta(hours=24)) or 1
+    drops = day.get("feed disconnects", 0)
+    last_hour = (stats.get(now.strftime("%Y-%m-%d %H:00")) or {}).get("feed disconnects", 0)
+    down = day.get("feed down seconds", 0)
+    down_pct = 100 * down / (hours * 3600)
+    by_endpoint = ", ".join(f"{k.split(': ', 1)[1]} {n}" for k, n in sorted(day.items())
+                            if k.startswith("feed disconnects: "))
+    detail = (f"feed last up {_at(ok, now)}" + (f" on {data['endpoint']}"
+                                               if data.get("endpoint") else "")
+              + f"; last 24 h: {drops} disconnect(s) ({drops / hours:.1f} an hour, "
+              f"{last_hour} this hour" + (f"; {by_endpoint}" if by_endpoint else "")
+              + f"), down {down / 60:.0f} min ({down_pct:.1f}%)"
+              + (f", {day['feed endpoint switches']} endpoint switch(es)"
+                 if day.get("feed endpoint switches") else "")
+              + f", {day.get('launches seen', 0)} launches, {signals} signal(s), {buys} buy(s)")
     if pushed:
         detail += f"; last push {_at(pushed, now)}"
     if data.get("feed_up") is False:
@@ -182,7 +196,10 @@ def add_momentum(add, folder, cfg, now, github):
     late = now - ok > late_after or (pushed is not None and now - pushed > late_after)
     if late:
         detail += f" (older than {late_after.total_seconds() / 3600:.0f} h)"
-    add(name, WARN if late else OK, detail)
+    too_down = down_pct > cfg["momentum"].get("max_down_pct", 100)
+    if too_down:
+        detail += f" (down more than {cfg['momentum']['max_down_pct']:g}% of the time)"
+    add(name, WARN if late or too_down else OK, detail)
 
 
 def add_main_1min(add, folder, cfg, now, github):
@@ -422,7 +439,9 @@ def health_lines(folder, cfg, now, github=None):
             detail += f" (list from {conv['list_updated'][:10]})"
         job = conv.get("refresh")
         if job:
-            detail += f"; rebuilding: {len(job['scored'])} scored, {len(job['queue'])} to go"
+            detail += (f"; rebuilding: {len(job['scored'])} scored, {len(job['queue'])} to go"
+                       + (f", {len(job['winners'])} winner(s) still to read"
+                          if job.get("winners") else ""))
         if not conv.get("helius"):
             add("convergence: wallets", WARN, "not active: is the HELIUS_API_KEY secret set?")
         elif tracked < c["min_wallets"]:
@@ -459,6 +478,13 @@ def health_lines(folder, cfg, now, github=None):
             detail = (f"{s.get('calls', 0)} call(s), {s.get('errors', 0)} failed"
                       + (f", {s['rate_limited']} rate-limited" if s.get("rate_limited") else "")
                       + f" (last used {_at(_utc(s['at']), now)})")
+            if name == "geckoterminal" and rh.get("gecko_hours"):
+                day = [row for hour, row in rh["gecko_hours"].items()
+                       if (when := _utc(hour.replace(" ", "T")))
+                       and now - when <= timedelta(hours=24)]
+                runs, limited, missed = (sum(r[i] for r in day) for i in range(3))
+                detail += (f"; last 24 h: a 429 in {limited} of {runs} run(s), "
+                           f"{missed} missed a list")
             if s.get("ok"):
                 add(f"robinhood: {name}", OK, detail)
             else:
