@@ -613,6 +613,9 @@ name = "OKX listings"
 kind = "exchange"
 format = "okx"
 url = "https://www.okx.com/api/v5/support/announcements?annType=announcements-new-listings"
+# Its US listings are rare (the last one on July 30, 2026): only warn after
+# 4 months without one.
+stale_days = 120
 
 [[news.sources]]
 name = "OKX new markets"
