@@ -26,6 +26,7 @@ data/news/*
 !data/news/entries.csv
 !data/news/candidates.csv
 !data/news/unmatched.csv
+!data/news/ai_verdicts.csv
 !data/robinhood/
 data/robinhood/*
 !data/robinhood/journal.csv
@@ -50,6 +51,22 @@ data/main-1min/*
 !data/main-1min/positions.json
 !data/main-1min/entries.csv
 !data/main-1min/health.json
+# ...and its paper versions (data/main-1min/a/, data/main-1min/b/, ...).
+!data/main-1min/*/
+data/main-1min/*/*
+!data/main-1min/*/journal.csv
+!data/main-1min/*/positions.json
+!data/main-1min/*/entries.csv
+# The news listings bot (run on your own server) pushes these.
+!data/news-listings/
+data/news-listings/*
+!data/news-listings/journal.csv
+!data/news-listings/positions.json
+!data/news-listings/entries.csv
+!data/news-listings/candidates.csv
+!data/news-listings/unmatched.csv
+!data/news-listings/ai_verdicts.csv
+!data/news-listings/health.json
 # The trade feed probe (a one-off measurement on your server) pushes only
 # its summary.
 !data/trade-feed-probe/

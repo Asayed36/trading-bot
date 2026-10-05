@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
 # Pushes the server's paper results to GitHub: the launch strategy
-# (data/launch), the main (1 min) strategy (data/main-1min) and the trade
-# feed probe's summary (data/trade-feed-probe), the momentum strategy
-# (data/momentum) and the news listings bot (data/news-listings).
+# (data/launch), the main (1 min) strategy and its versions
+# (data/main-1min), the trade feed probe's summary (data/trade-feed-probe),
+# the momentum strategy (data/momentum) and the news listings bot
+# (data/news-listings).
 # It uses the fine-grained GitHub token saved in ~/.git-credentials, which
 # can only read and write this repository's contents. Nothing else.
 #
 # How: fetch GitHub's main, move this checkout's main onto it (code files
-# that changed on GitHub are updated; data/launch and data/main-1min are
-# never touched, because the bots keep writing there and their files are
-# always the newest), then commit them on top and push. No rebase, so nothing can be left
-# half-done; and if an older version of this script left a rebase or
-# cherry-pick stuck, it's cleared first.
+# that changed on GitHub are updated, .gitignore included; the results
+# folders are never touched, because the bots keep writing there and their
+# files are always the newest), then commit them on top and push. No rebase,
+# so nothing can be left half-done; and if an older version of this script
+# left a rebase or cherry-pick stuck, it's cleared first.
+# Exit codes: 0 all pushed (or nothing new), 3 pushed but a folder had to be
+# skipped (see the WARNING), 1 the push itself failed.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -20,8 +23,12 @@ cd "$(dirname "$0")/.."
 export GIT_AUTHOR_NAME="launch-bot" GIT_AUTHOR_EMAIL="launch-bot@users.noreply.github.com"
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME" GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
+# Every server results folder. Each one is added on its own: a folder that
+# can't be added (say .gitignore doesn't allow it yet) is skipped with a
+# warning, and the others are still pushed.
+FOLDERS=(data/launch data/main-1min data/trade-feed-probe data/momentum data/news-listings)
 RESULTS=()
-for dir in data/launch data/main-1min data/trade-feed-probe data/momentum data/news-listings; do
+for dir in "${FOLDERS[@]}"; do
   if [ -d "$dir" ]; then RESULTS+=("$dir"); fi
 done
 if [ ${#RESULTS[@]} -eq 0 ]; then
@@ -30,7 +37,7 @@ if [ ${#RESULTS[@]} -eq 0 ]; then
 fi
 # Each results folder is left out when bringing code files up to date.
 KEEP=()
-for dir in data/launch data/main-1min data/trade-feed-probe data/momentum data/news-listings; do KEEP+=(":(exclude)$dir"); done
+for dir in "${FOLDERS[@]}"; do KEEP+=(":(exclude)$dir"); done
 
 # Clear anything left half-done. "--quit" forgets the operation without
 # touching any files, so the newest results are kept.
@@ -63,14 +70,29 @@ for attempt in 1 2 3 4; do
   git diff -z --name-only --diff-filter=D "$before" origin/main -- . "${KEEP[@]}" \
     | xargs -0 -r rm -f --
   # Only the finished files: never a half-written *.tmp.
-  git add -- "${RESULTS[@]}" ':(exclude,glob)**/*.tmp'
+  ADDED=() SKIPPED=()
+  for dir in "${RESULTS[@]}"; do
+    if err=$(git add -- "$dir" ':(exclude,glob)**/*.tmp' 2>&1); then
+      ADDED+=("$dir")
+    else
+      SKIPPED+=("$dir")
+      echo "WARNING: could not add $dir, skipped this time: $(echo "$err" | head -1)" >&2
+    fi
+  done
   if git diff --cached --quiet; then
     echo "No new server results."
-    exit 0
+    # Nothing to push, but a folder that couldn't be added still counts.
+    [ ${#SKIPPED[@]} -eq 0 ] && exit 0 || exit 3
   fi
   git commit -q -m "Server paper results $(date -u '+%Y-%m-%d %H:%M UTC')"
   if git push -q origin HEAD:main; then
-    echo "Pushed server results (${RESULTS[*]})."
+    echo "Pushed server results (${ADDED[*]})."
+    if [ ${#SKIPPED[@]} -gt 0 ]; then
+      # Pushed, but not everything: exit 3 so the failure shows in
+      # "systemctl status launch-push" and the journal (see the WARNING).
+      echo "Skipped: ${SKIPPED[*]} (see the WARNING above)." >&2
+      exit 3
+    fi
     exit 0
   fi
   # Someone (the GitHub workflow) pushed in between: start again from theirs.

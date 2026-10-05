@@ -274,7 +274,11 @@ Within an hour or two you should see commits called **"Launch paper results
   themselves.
 - **Test the push by hand:** `~/trading-bot/deploy/push_results.sh`. It
   never uses a rebase, and if an older version left a rebase or cherry-pick
-  stuck, it clears it first and still pushes the newest results. Check the
+  stuck, it clears it first and still pushes the newest results. Each
+  results folder is added on its own: if one can't be added (say
+  `.gitignore` doesn't allow it), it prints `WARNING: could not add ...`,
+  still pushes the others and ends with exit code 3, so
+  `systemctl status launch-push` shows it as failed. Check the
   push log with `journalctl -u launch-push -n 20`.
 - **Restarts:** the bot counts each start as `bot started` in
   `data/launch/stats.json`. A launch that was being followed when the bot
