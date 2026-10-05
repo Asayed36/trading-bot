@@ -2,9 +2,11 @@
 
     python momentum_bot.py            <- run for good (the momentum-bot service does this)
     python momentum_bot.py --test     <- try it for 2 minutes; saves nothing
+    python momentum_bot.py --check-feeds  <- which free RPC endpoints work now
 
-It listens to the free Solana public RPC for pump.fun's live events (every
-trade, launch and graduation: screener/pumpfeed.py) and paper-trades three
+It listens to a free public Solana RPC for pump.fun's live events (every
+trade, launch and graduation: screener/pumpfeed.py; [momentum] ws_urls are
+the endpoints, with backups to switch to) and paper-trades three
 momentum variants side by side (screener/momentum.py). Results go to
 data/momentum/ and are pushed to GitHub by deploy/push_results.sh. When that
 push brings new code the bot uses, it saves everything and exits by itself,
@@ -27,6 +29,7 @@ import signal
 import sys
 import tempfile
 import time
+from urllib.parse import urlparse
 
 import websockets
 
@@ -76,28 +79,47 @@ class Runner:
         os.replace(tmp, path)
 
     async def feed(self):
-        pause = 2
+        """The live feed, from the first of [momentum] ws_urls that works.
+        After a drop it reconnects to the same endpoint within
+        reconnect_seconds; a connection that lasted under stable_seconds (or
+        never got going) moves on to the next endpoint. The wait only grows
+        once every endpoint has failed in a row."""
+        c, urls = self.c, feed_urls(self.c)
+        at, failures = 0, 0
         while not self.stop.is_set():
+            url = urls[at % len(urls)]
+            started = None
             try:
-                async with self.connect(self.c["ws_url"], ping_interval=20, ping_timeout=20,
-                                        max_size=2**22, open_timeout=20) as ws:
+                async with self.connect(url, ping_interval=20, ping_timeout=20,
+                                        max_size=2**22, open_timeout=15) as ws:
                     await ws.send(subscribe_request())
-                    self.engine.connected(time.time())
-                    log.info("connected to %s; subscribed to pump.fun's events", self.c["ws_url"])
-                    pause = 2
+                    started = time.time()
+                    self.engine.connected(started, host(url))
+                    log.info("connected to %s; subscribed to pump.fun's events", host(url))
                     while not self.stop.is_set():
                         try:
-                            raw = await asyncio.wait_for(ws.recv(), self.c["watchdog_seconds"])
+                            raw = await asyncio.wait_for(ws.recv(), c["watchdog_seconds"])
                         except asyncio.TimeoutError:
                             raise ConnectionError(
-                                f"no message for {self.c['watchdog_seconds']} s") from None
+                                f"no message for {c['watchdog_seconds']} s") from None
                         self.on_raw(raw)
             except (OSError, ConnectionError, asyncio.TimeoutError,
                     websockets.WebSocketException) as exc:
                 if self.stop.is_set():
                     break
-                log.warning("feed disconnected (%s); no new buys until it's back; retrying "
-                            "in %ss", str(exc)[:120], pause)
+                lasted = time.time() - started if started else 0
+                if lasted >= c["stable_seconds"]:
+                    failures = 0              # it was working: try it again first
+                else:
+                    failures += 1
+                    at += 1                   # it wasn't: the next endpoint
+                pause = c["reconnect_seconds"]
+                if failures >= len(urls):     # every endpoint failed in a row
+                    pause = min(pause * 2 ** (failures - len(urls) + 1),
+                                c["max_reconnect_seconds"])
+                log.warning("feed disconnected from %s after %.0f s (%s); no new buys until "
+                            "it's back; trying %s in %ss", host(url), lasted, str(exc)[:120],
+                            host(urls[at % len(urls)]), pause)
             finally:
                 self.engine.disconnected(time.time())
             if self.stop.is_set():
@@ -106,7 +128,6 @@ class Runner:
                 await asyncio.wait_for(self.stop.wait(), pause)
             except asyncio.TimeoutError:
                 pass
-            pause = min(pause * 2, 30)
 
     def on_raw(self, raw):
         try:
@@ -115,6 +136,9 @@ class Runner:
             return
         if msg.get("method") != "logsNotification":
             if "error" in msg:
+                if msg.get("id") == 1:        # it refused the subscription itself
+                    raise ConnectionError(f"refused the subscription: "
+                                          f"{str(msg['error'])[:160]}")
                 log.warning("RPC says: %s", str(msg["error"])[:200])
             return
         value = ((msg.get("params") or {}).get("result") or {}).get("value") or {}
@@ -213,6 +237,38 @@ class Runner:
                  + ("; systemd starts the new code in about 10 s" if self.restarting else ""))
 
 
+def feed_urls(c):
+    """[momentum] ws_urls (ws_url in older config files)."""
+    return list(c.get("ws_urls") or [c["ws_url"]])
+
+
+def host(url):
+    return urlparse(url).netloc or url
+
+
+async def check_feed(url, seconds=15, connect=websockets.connect):
+    """Connect to one endpoint, subscribe, and count pump.fun notifications
+    for `seconds`. Returns a line saying how it went."""
+    try:
+        async with connect(url, open_timeout=15, max_size=2**22) as ws:
+            await ws.send(subscribe_request())
+            notes, end = 0, time.time() + seconds
+            while time.time() < end:
+                try:
+                    raw = await asyncio.wait_for(ws.recv(), max(end - time.time(), 0.1))
+                except asyncio.TimeoutError:
+                    break
+                msg = json.loads(raw)
+                if msg.get("id") == 1 and "error" in msg:
+                    return f"FAIL {host(url)}: refused the subscription: {str(msg['error'])[:120]}"
+                notes += msg.get("method") == "logsNotification"
+    except (OSError, asyncio.TimeoutError, websockets.WebSocketException, ValueError) as exc:
+        return f"FAIL {host(url)}: {type(exc).__name__}: {str(exc)[:120]}"
+    if not notes:
+        return f"FAIL {host(url)}: connected, but no pump.fun events in {seconds} s"
+    return f"OK   {host(url)}: {notes} pump.fun notifications in {seconds} s ({notes / seconds:.0f}/s)"
+
+
 def test_summary(engine):
     totals = {}
     for hour in engine.stats.values():
@@ -236,9 +292,18 @@ def main(argv=None):
     parser.add_argument("--test", nargs="?", const=120, type=int, metavar="SECONDS",
                         help="try it: run for SECONDS (default 120) with results in a temporary "
                              "folder, then print a summary")
+    parser.add_argument("--check-feeds", action="store_true",
+                        help="try each of [momentum] ws_urls for 15 seconds and say which "
+                             "deliver pump.fun's events (saves nothing)")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     cfg = load_config()
+    if args.check_feeds:
+        urls = feed_urls(cfg["momentum"])
+        print(f"Trying {len(urls)} endpoint(s), 15 seconds each (read-only)...", flush=True)
+        lines = [asyncio.run(check_feed(url)) for url in urls]
+        print("\n".join(lines))
+        return 0 if any(line.startswith("OK") for line in lines) else 1
     if not cfg.get("momentum", {}).get("enabled"):
         print("The momentum strategy is turned off ([momentum] enabled = false).")
         return 0

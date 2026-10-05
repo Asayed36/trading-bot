@@ -11,14 +11,17 @@ How it works (numbers in [convergence] in config.toml):
 
 1. Winners. Every run, tokens from DexScreener's lists that are up 100%+ in
    24h with real liquidity are remembered for a week.
-2. Weekly list. Once a week, wallets that recently sold the week's winners
+2. The list. Every day, wallets that recently sold the week's winners
    (GeckoTerminal trades, free) and their biggest holders (RugCheck, free)
-   become candidates. Each candidate's last 14 days of
-   swaps are read from Helius and their realized profit is worked out.
-   Wallets that trade too often (bots), made most of their profit on one
-   token, or didn't close enough trades are dropped. The most profitable
-   ones become the tracked list. This work is spread over many runs. A
-   list too small to give a signal is rebuilt a day later, not a week.
+   become candidates; wallets already scored in the last week are skipped.
+   Each candidate's last 14 days of swaps are read from Helius and their
+   realized profit is worked out (a wallet with too few transactions to
+   ever close enough trades isn't read). Wallets that trade too often
+   (bots), made most of their profit on one token, or didn't close enough
+   trades are dropped. Every one that qualifies joins the tracked list (the
+   most profitable 50 stay); each tracked wallet is scored again every week
+   and leaves the list if it no longer qualifies. This work is spread over
+   many runs, within a daily share of the credits.
 3. Live. Every 15 minutes (helius_every_minutes), each tracked wallet's new
    transactions are read from Helius and decoded into buys and sells. When
    3+ tracked wallets bought the same token within 20 minutes, and the last
@@ -303,6 +306,8 @@ def qualifies(stats, c):
         return False, "couldn't read their history"
     if stats.get("too_active"):
         return False, "trades too often (bot?)"
+    if stats.get("few_tx"):
+        return False, f"only {stats['transactions']} transactions (too few for enough closed trades)"
     if stats["closed"] < c["min_closed_trades"]:
         return False, f"only {stats['closed']} closed trade(s)"
     if stats["realized_sol"] < c["min_realized_sol"]:
@@ -486,7 +491,7 @@ class ConvergenceStrategy:
         if state.get("paused_until") and now < datetime.fromisoformat(state["paused_until"]):
             raise BudgetPaused("Helius budget for this cycle already used")
         if not tracked:
-            plan["notes"].append("no tracked wallets yet (the weekly list is being built)")
+            plan["notes"].append("no tracked wallets yet (the list is being built)")
             return
         if rpc.per_call and meter.used + len(tracked) * rpc.per_call > meter.cap:
             raise BudgetPaused("not enough Helius credits left for a full live check")
@@ -529,94 +534,157 @@ class ConvergenceStrategy:
         state["sells_seen"] = {m: ws for m, ws in sells_seen.items() if m in held}
 
     def _refresh(self, state, api, helius, meter, now, plan):
-        """Rebuild the tracked list, a few wallets per run."""
+        """Grow and refresh the tracked list, a few wallets per run: score
+        candidate wallets (recent sellers and top holders of the week's
+        winners), and re-score tracked wallets every recheck_days. Every
+        wallet that qualifies joins the list right away (the best
+        tracked_wallets by realized profit); a tracked wallet that no longer
+        qualifies leaves it. A new round of candidates starts every
+        refresh_every_hours. Credits: only today's share of what's left in
+        the cycle after reserving the live checks."""
         c = self.c
         listed = state.get("list_updated")
         age = now - datetime.fromisoformat(listed) if listed else None
-        # A list too small to ever give a signal (fewer than min_wallets) is
-        # rebuilt after retry_small_list_hours instead of waiting a week,
-        # with that day's winners, while under retry_small_list_max_used_pct
-        # of the monthly credits. A small list built before recent sellers
-        # were candidates (it has no list_summary) is rebuilt right away.
-        too_small = len(state.get("tracked") or []) < c["min_wallets"]
-        retry = (too_small and age is not None
-                 and (age >= timedelta(hours=c["retry_small_list_hours"])
-                      or "list_summary" not in state)
-                 and meter.used <= c["helius_monthly_credits"]
-                 * c["retry_small_list_max_used_pct"] / 100)
-        due = age is None or age >= timedelta(days=7) or retry
+        due = age is None or age >= timedelta(hours=c["refresh_every_hours"])
         job = state.get("refresh")
         if not job and not due:
             return
-        # Keep enough credits for live checks for the rest of the cycle.
+        # Keep enough credits for live checks of the list for the rest of the
+        # cycle; the rest is spread evenly over the days left.
         per_run_live = len(state.get("tracked") or []) * c["helius_live_credits_per_call"] * 1.5 \
             if c["live_rpc"] == "helius" else 0
         reserve = per_run_live * meter.runs_left()
+        today = now.date().isoformat()
+        spent = {d: n for d, n in (state.get("refresh_spent") or {}).items() if d >= (
+            now - timedelta(days=40)).date().isoformat()}
+        days_left = max(1.0, (meter.end - now).total_seconds() / 86400)
+        share = (meter.left() - reserve + spent.get(today, 0)) / days_left
         per_wallet = c["helius_history_credits_per_call"] * (c["max_tx_per_candidate"] + 1)
-        budget = min(c["refresh_credits_per_run"], meter.cap - meter.used - reserve)
+        budget = min(c["refresh_credits_per_run"], meter.left() - reserve,
+                     share - spent.get(today, 0))
         if budget < per_wallet:
-            plan["notes"].append("weekly list refresh waiting: credits reserved for live checks")
+            plan["notes"].append("list refresh waiting: "
+                                 + ("credits reserved for live checks"
+                                    if meter.left() - reserve < per_wallet
+                                    else "today's share of the credits is used"))
             return
-
         if not job:
-            order, sources = self._candidates(state, api)
-            job = {"started": now.isoformat(), "queue": order, "scored": {},
-                   "transactions": 0, "swaps": 0}
+            job = self._new_round(state, now)
             state["refresh"] = job
-            plan["notes"].append(f"{'list retry' if retry else 'weekly list refresh'} started: "
-                                 f"{len(order)} candidate wallets ({sources})")
+            plan["notes"].append(f"list refresh started: candidates from "
+                                 f"{len(job['winners'])} winner(s), "
+                                 f"{c['winners_per_run']} a run"
+                                 + (f"; {len(job['queue'])} tracked wallet(s) to re-check"
+                                    if job["queue"] else ""))
+        if job.get("winners"):
+            self._gather(job, state, api, now, plan)
 
         start_used = meter.used
         since = now.timestamp() - c["history_days"] * 86400
-        while job["queue"]:
-            if meter.used - start_used + per_wallet > budget:
-                break
-            wallet = job["queue"][0]
-            try:
-                sigs = helius.signatures(wallet, c["max_tx_per_candidate"] + 1)
-            except RpcError as exc:
-                # Don't let one wallet block the list: record it and move on.
-                job["scored"][wallet] = {"error": str(exc)[:80], "closed": 0, "wins": 0,
-                                         "realized_sol": 0.0, "win_rate": 0.0,
-                                         "top_share": 100.0, "swaps": 0}
+        try:
+            while job["queue"]:
+                if meter.used - start_used + per_wallet > budget:
+                    break
+                wallet = job["queue"][0]
+                try:
+                    sigs = helius.signatures(wallet, c["max_tx_per_candidate"] + 1)
+                except RpcError as exc:
+                    # Don't let one wallet block the list: record it and move on.
+                    job["scored"][wallet] = {"error": str(exc)[:80], "closed": 0, "wins": 0,
+                                             "realized_sol": 0.0, "win_rate": 0.0,
+                                             "top_share": 100.0, "swaps": 0}
+                    job["queue"].pop(0)
+                    continue
+                recent = [s for s in sigs
+                          if not s.get("err") and (s.get("blockTime") or 0) >= since]
+                if len(recent) > c["max_tx_per_candidate"]:
+                    stats = {"too_active": True, "swaps": len(recent), "closed": 0,
+                             "realized_sol": 0.0, "win_rate": 0.0, "top_share": 100.0, "wins": 0}
+                elif len(recent) < 2 * c["min_closed_trades"]:
+                    # Each closed trade needs a buy and a sell in the window:
+                    # too few transactions can never pass, so they aren't read.
+                    stats = {"few_tx": True, "transactions": len(recent), "swaps": 0,
+                             "closed": 0, "realized_sol": 0.0, "win_rate": 0.0,
+                             "top_share": 100.0, "wins": 0}
+                else:
+                    swaps = []
+                    for s in recent:
+                        swaps += decode_swaps(read_transaction(helius, s["signature"], plan),
+                                              wallet)
+                    stats = score_trader(swaps)
+                    job["transactions"] = job.get("transactions", 0) + len(recent)
+                    job["swaps"] = job.get("swaps", 0) + len(swaps)
+                job["scored"][wallet] = stats
                 job["queue"].pop(0)
-                continue
-            recent = [s for s in sigs if not s.get("err") and (s.get("blockTime") or 0) >= since]
-            if len(recent) > c["max_tx_per_candidate"]:
-                stats = {"too_active": True, "swaps": len(recent), "closed": 0,
-                         "realized_sol": 0.0, "win_rate": 0.0, "top_share": 100.0, "wins": 0}
-            else:
-                swaps = []
-                for s in recent:
-                    swaps += decode_swaps(read_transaction(helius, s["signature"], plan), wallet)
-                stats = score_trader(swaps)
-                job["transactions"] = job.get("transactions", 0) + len(recent)
-                job["swaps"] = job.get("swaps", 0) + len(swaps)
-            job["scored"][wallet] = stats
-            job["queue"].pop(0)
+                self._merge(state, wallet, stats, now, plan)
+        finally:
+            spent[today] = spent.get(today, 0) + meter.used - start_used
+            state["refresh_spent"] = spent
 
-        if not job["queue"]:
-            good = [(w, s) for w, s in job["scored"].items() if qualifies(s, c)[0]]
-            good.sort(key=lambda ws: -ws[1]["realized_sol"])
-            state["tracked"] = [dict(s, wallet=w) for w, s in good[:c["tracked_wallets"]]]
+        if not job["queue"] and not job.get("winners"):
             state["list_updated"] = now.isoformat()
-            state["last_sig"] = {w["wallet"]: state.get("last_sig", {}).get(w["wallet"])
-                                 for w in state["tracked"]
-                                 if state.get("last_sig", {}).get(w["wallet"])}
             state.pop("refresh", None)
             summary = list_summary(job, c)
             state["list_summary"] = summary
-            plan["notes"].append(f"weekly list refreshed: {len(state['tracked'])} of "
-                                 f"{len(job['scored'])} candidates qualified ({summary})")
+            plan["notes"].append(f"list refreshed: tracking {len(state['tracked'])} wallet(s); "
+                                 f"{summary}")
 
-    def _candidates(self, state, api):
-        """Wallets to score, most promising first. From each of the week's top
-        winners: wallets that recently SOLD it (GeckoTerminal trades, free) -
-        they've closed trades to judge - and its biggest holders (RugCheck,
-        free). Wallets seen on more winners come first."""
+    def _merge(self, state, wallet, stats, now, plan):
+        """A newly scored wallet: onto the list if it qualifies (the best
+        tracked_wallets by realized profit stay), off it if it was tracked
+        and no longer qualifies. A wallet that couldn't be read keeps its
+        place. Every scored wallet is remembered for recheck_days."""
         c = self.c
-        winners = state.get("winners", [])[:c["winners_per_refresh"]]
-        missing = [w["address"] for w in winners if not w.get("pair")]
+        state.setdefault("checked", {})[wallet] = now.isoformat()
+        tracked = {w["wallet"]: w for w in state.get("tracked") or []}
+        ok, why = qualifies(stats, c)
+        if ok:
+            tracked[wallet] = dict(stats, wallet=wallet, scored=now.isoformat())
+        elif wallet in tracked and not stats.get("error"):
+            tracked.pop(wallet)
+            plan.setdefault("dropped", []).append(wallet)
+            plan["notes"].append(f"{wallet[:6]}... left the list on its re-check: {why}")
+        best = sorted(tracked.values(), key=lambda w: -w["realized_sol"])[:c["tracked_wallets"]]
+        state["tracked"] = best
+        keep = {w["wallet"] for w in best}
+        state["last_sig"] = {w: sig for w, sig in (state.get("last_sig") or {}).items()
+                             if w in keep}
+
+    def _new_round(self, state, now):
+        """A new round of the list: the tracked wallets due a re-check go
+        first; candidates come from the week's top winners (the ones not used
+        in the last winner_reuse_days first), read winners_per_run a run
+        (_gather) so a run never asks GeckoTerminal much."""
+        c = self.c
+        recheck = timedelta(days=c["recheck_days"])
+        listed = state.get("list_updated")
+        due = [w["wallet"] for w in state.get("tracked") or []
+               if (w.get("scored") or listed) is None
+               or now - datetime.fromisoformat(w.get("scored") or listed) >= recheck]
+        used = {a: t for a, t in (state.get("winners_used") or {}).items()
+                if now - datetime.fromisoformat(t) < timedelta(days=7)}
+        reuse = timedelta(days=c["winner_reuse_days"])
+        winners = sorted(state.get("winners", []),
+                         key=lambda w: (w["address"] in used
+                                        and now - datetime.fromisoformat(used[w["address"]])
+                                        < reuse, -w["change"]))[:c["winners_per_refresh"]]
+        for w in winners:
+            used[w["address"]] = now.isoformat()
+        state["winners_used"] = used
+        return {"started": now.isoformat(), "queue": due, "rechecks": len(due),
+                "winners": [dict(w) for w in winners], "read": 0, "counts": {},
+                "sellers": [], "scored": {}, "transactions": 0, "swaps": 0}
+
+    def _gather(self, job, state, api, now, plan):
+        """Candidates from the next winners_per_run winners: wallets that
+        recently SOLD it (GeckoTerminal trades, free) - they've closed trades
+        to judge - and its biggest holders (RugCheck, free). Once every
+        winner is read, the candidates join the queue: wallets seen on more
+        winners first, sellers before holders, and none scored in the last
+        recheck_days."""
+        c = self.c
+        batch = job["winners"][:c["winners_per_run"]]
+        missing = [w["address"] for w in batch if not w.get("pair")]
         pools = {}
         if missing:
             try:
@@ -627,8 +695,8 @@ class ConvergenceStrategy:
                 found = []
             for addr in missing:
                 pools[addr] = (best_pair(found, addr, []) or {}).get("pairAddress")
-        counts, sellers, holders = defaultdict(int), set(), set()
-        for win in winners:
+        counts, sellers = job["counts"], set(job["sellers"])
+        for win in batch:
             creator = None
             try:
                 report = api.rugcheck_report(win["address"])
@@ -641,32 +709,49 @@ class ConvergenceStrategy:
                 for h in real_holders(report, None, {})[:c["holders_per_winner"]]:
                     owner = h.get("owner") or h.get("address")
                     if owner and owner != creator and not h.get("insider"):
-                        counts[owner] += 1
-                        holders.add(owner)
+                        counts[owner] = counts.get(owner, 0) + 1
             pool = win.get("pair") or pools.get(win["address"])
-            if not pool:
-                continue
-            try:
-                trades = api.gecko_pool_trades(pool)
-            except ApiError:  # includes rate limits: just use the holders
-                continue
-            sold = defaultdict(float)
-            for t in trades:
-                wallet = t.get("tx_from_address")
-                usd = to_float(t.get("volume_in_usd")) or 0.0
-                if (t.get("kind") == "sell" and wallet and wallet != creator
-                        and usd >= c["min_seller_trade_usd"]):
-                    sold[wallet] += usd
-            for wallet in sorted(sold, key=lambda w: -sold[w])[:c["sellers_per_winner"]]:
-                counts[wallet] += 1
-                sellers.add(wallet)
+            if pool:
+                try:
+                    trades = api.gecko_pool_trades(pool)
+                except ApiError:  # includes rate limits: just use the holders
+                    trades = []
+                sold = defaultdict(float)
+                for t in trades:
+                    wallet = t.get("tx_from_address")
+                    usd = to_float(t.get("volume_in_usd")) or 0.0
+                    if (t.get("kind") == "sell" and wallet and wallet != creator
+                            and usd >= c["min_seller_trade_usd"]):
+                        sold[wallet] += usd
+                for wallet in sorted(sold, key=lambda w: -sold[w])[:c["sellers_per_winner"]]:
+                    counts[wallet] = counts.get(wallet, 0) + 1
+                    sellers.add(wallet)
+            job["winners"].pop(0)
+            job["read"] += 1
+        job["sellers"] = sorted(sellers)
+        if job["winners"]:
+            return
+        recheck = timedelta(days=c["recheck_days"])
+        checked = {w: t for w, t in (state.get("checked") or {}).items()
+                   if now - datetime.fromisoformat(t) < recheck}
+        state["checked"] = checked
+        queued = set(job["queue"]) | {w["wallet"] for w in state.get("tracked") or []}
+        fresh = [w for w in counts if w not in checked and w not in queued]
+        skipped = sum(1 for w in counts if w in checked and w not in queued)
         # More winners first; on a tie, sellers before holders.
-        order = sorted(counts, key=lambda w: (-counts[w], w not in sellers))
-        order = order[:c["candidates_per_refresh"]]
-        n_sell = sum(1 for w in order if w in sellers)
-        sources = (f"{n_sell} recent sellers, {len(order) - n_sell} top holders "
-                   f"of {len(winners)} winners")
-        return order, sources
+        fresh = sorted(fresh, key=lambda w: (-counts[w], w not in sellers))
+        fresh = fresh[:c["candidates_per_refresh"]]
+        job["queue"] += fresh
+        job.pop("counts")
+        job.pop("sellers")
+        n_sell = sum(1 for w in fresh if w in sellers)
+        plan["notes"].append(
+            f"list refresh: {len(fresh)} new candidate wallets to score ({n_sell} recent "
+            f"sellers, {len(fresh) - n_sell} top holders of {job['read']} winners"
+            + (f"; {skipped} scored in the last {c['recheck_days']} days skipped"
+               if skipped else "")
+            + (f"; {job['rechecks']} tracked wallet(s) to re-check" if job["rechecks"] else "")
+            + ")")
 
     def _signals(self, state, api, pairs, now, plan):
         """3+ tracked wallets bought the same token within the window."""
@@ -752,8 +837,9 @@ class ConvergenceStrategy:
                if trader.state.get("list_updated") else ""))
         job = trader.state.get("refresh")
         if job:
-            out(f"  Weekly list refresh: {len(job['scored'])} scored, "
-                f"{len(job['queue'])} to go")
+            out(f"  List refresh: {len(job['scored'])} scored, {len(job['queue'])} to go"
+                + (f", {len(job['winners'])} winner(s) still to read for candidates"
+                   if job.get("winners") else ""))
         if plan["paused"]:
             out(f"  PAUSED: {plan['paused']}")
         for note in plan["notes"]:

@@ -365,6 +365,94 @@ class RunnerTests(unittest.TestCase):
         self.assertIn("last_ok", health)
         self.assertEqual(r.engine.sol_usd, 200.0)
 
+    def test_switches_endpoint_when_one_keeps_failing(self):
+        note = json.dumps({"jsonrpc": "2.0", "method": "logsNotification", "params": {
+            "result": {"context": {"slot": 1}, "value": {"err": None, "logs": [create()]}}}})
+        refused = json.dumps({"jsonrpc": "2.0", "id": 1,
+                              "error": {"code": -32601, "message": "Method not found"}})
+        asked = []
+
+        def connect(url, **kw):
+            asked.append(url)
+            if url.endswith("first"):
+                return FakeWs([], then=OSError("reset"))      # drops at once
+            if url.endswith("second"):
+                return FakeWs([refused])                       # no logsSubscribe here
+            return FakeWs([note])                              # works
+
+        cfg = dict(CFG, momentum=dict(M, ws_urls=["wss://first", "wss://second", "wss://third"],
+                                      reconnect_seconds=0.01))
+        with tempfile.TemporaryDirectory() as d:
+            r = momentum_bot.Runner(cfg, d, connect=connect, api=Api(), jupiter=False)
+            with self.assertLogs("momentum_bot", "INFO") as logs:
+                asyncio.run(asyncio.wait_for(r.main(stop_after=1), 10))
+        self.assertEqual(asked, ["wss://first", "wss://second", "wss://third"])
+        self.assertEqual(r.engine.endpoint, "third")
+        text = "\n".join(logs.output)
+        self.assertIn("feed disconnected from first after 0 s (reset); no new buys until it's "
+                      "back; trying second in 0.01s", text)
+        self.assertIn("refused the subscription", text)
+        hour = next(iter(r.engine.stats.values()))
+        self.assertEqual(hour["feed disconnects: first"], 1)
+        self.assertEqual(hour["feed disconnects: second"], 1)
+        self.assertEqual(hour["feed endpoint switches"], 2)
+        self.assertIn("feed down seconds", hour)
+
+    def test_a_stable_connection_is_tried_again_first(self):
+        asked = []
+
+        def connect(url, **kw):
+            asked.append(url)
+            return FakeWs([], then=OSError("reset") if len(asked) == 1 else None)
+
+        cfg = dict(CFG, momentum=dict(M, ws_urls=["wss://first", "wss://second"],
+                                      reconnect_seconds=0.01, stable_seconds=0))
+        with tempfile.TemporaryDirectory() as d:
+            r = momentum_bot.Runner(cfg, d, connect=connect, api=Api(), jupiter=False)
+            with self.assertLogs("momentum_bot", "INFO"):
+                asyncio.run(asyncio.wait_for(r.main(stop_after=0.5), 10))
+        self.assertEqual(asked, ["wss://first", "wss://first"])
+
+    def test_waits_longer_only_after_every_endpoint_failed(self):
+        pauses = []
+
+        real_wait_for = asyncio.wait_for
+
+        async def no_wait(awaitable, timeout):
+            if getattr(awaitable, "__qualname__", "") != "Event.wait":
+                return await real_wait_for(awaitable, timeout)     # the feed itself
+            awaitable.close()                                       # a pause: skip it
+            pauses.append(timeout)
+            if len(pauses) >= 6:
+                r.stop.set()
+            raise asyncio.TimeoutError
+
+        cfg = dict(CFG, momentum=dict(M, ws_urls=["wss://a", "wss://b"]))
+        with tempfile.TemporaryDirectory() as d:
+            r = momentum_bot.Runner(cfg, d, connect=lambda url, **kw: FakeWs(
+                [], then=OSError("down")), api=Api(), jupiter=False)
+            with mock.patch.object(momentum_bot.asyncio, "wait_for", no_wait), \
+                    self.assertLogs("momentum_bot", "INFO"):
+                asyncio.run(r.feed())
+        self.assertEqual(pauses, [1, 2, 4, 8, 15, 15])
+
+    def test_check_feeds(self):
+        note = json.dumps({"jsonrpc": "2.0", "method": "logsNotification", "params": {}})
+        ok = asyncio.run(momentum_bot.check_feed("wss://good", 0.2, connect=lambda u, **k: FakeWs(
+            [json.dumps({"jsonrpc": "2.0", "id": 1, "result": 5}), note, note])))
+        self.assertEqual(ok, "OK   good: 2 pump.fun notifications in 0.2 s (10/s)")
+        bad = asyncio.run(momentum_bot.check_feed("wss://bad", 0.2, connect=lambda u, **k: FakeWs(
+            [], then=OSError("refused"))))
+        self.assertEqual(bad, "FAIL bad: OSError: refused")
+        quiet = asyncio.run(momentum_bot.check_feed("wss://quiet", 0.2,
+                                                    connect=lambda u, **k: FakeWs([])))
+        self.assertIn("FAIL quiet: connected, but no pump.fun events", quiet)
+
+    def test_config_has_backup_endpoints(self):
+        self.assertGreaterEqual(len(M["ws_urls"]), 2)
+        self.assertTrue(all(u.startswith("wss://") for u in M["ws_urls"]))
+        self.assertEqual(momentum_bot.feed_urls({"ws_url": "wss://old"}), ["wss://old"])
+
     def test_restarts_itself_on_new_code(self):
         class Watcher:
             files = []

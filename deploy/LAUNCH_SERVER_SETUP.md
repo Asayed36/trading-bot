@@ -525,6 +525,24 @@ restarts itself when the hourly push brings new code it uses
 `sudo systemctl stop momentum-bot`; turn it off for good with
 `sudo systemctl disable --now momentum-bot`.
 
+### I3. The feed's backup endpoints
+
+The bot reads pump.fun's events from the free public Solana RPC endpoints in
+`ws_urls` under `[momentum]` in `config.toml` (no key, no sign-up). After a
+drop it reconnects to the same one within about a second; if that one keeps
+failing, it moves on to the next. To see which of them work from your
+server right now (15 seconds each; it saves nothing and doesn't disturb the
+running bot):
+
+```
+cd ~/trading-bot && .venv/bin/python momentum_bot.py --check-feeds
+```
+
+`OK` lines work. The health check's "momentum: server" row shows the
+disconnects over 24 hours (per hour, and per endpoint), how long the feed
+was down, and the endpoint it's on; it warns when the feed was down more
+than `max_down_pct` (5%) of the day.
+
 ---
 
 ## Part J. Check the exchange listings every minute (optional)
@@ -678,3 +696,22 @@ is open).
 
 To bring the launch bot back one day: remove `stopped = true` under
 `[launch]`, then `sudo systemctl enable --now launch-bot`.
+
+### K3. Positions stuck without a price
+
+A position whose token DexScreener never listed has no price after a
+restart, so its time stop can't sell it. While the launch strategy is
+stopped, the bot sells such a position at its last known price (with the
+normal costs) once it's 10 minutes past its time stop, marked
+`closed after the bot was stopped` in the journal. If the launch bot is
+still running, it does this by itself when the hourly push brings the new
+code. If you already turned it off, do it by hand:
+
+```
+systemctl is-active launch-bot
+cd ~/trading-bot && .venv/bin/python launch_bot.py --close-stuck
+```
+
+Run the second line only when the first says `inactive`. It prints one
+`SELL` line per position and `0 still open`; the next hourly push takes the
+journals to GitHub (or `sudo systemctl start launch-push` to send them now).

@@ -16,12 +16,12 @@ Each run:
   2. New pools from GeckoTerminal (which lists the launchpads as DEXes:
      "pons-v2-dex" = graduated Pons pools, "uniswap-pools-trade" =
      Pools.trade). GeckoTerminal only allows a few calls a minute from
-     GitHub's runners, so at most gecko_calls_per_run calls, spaced out; the
-     pools seen are kept in a watchlist so later runs can check them once
-     they're old enough. GeckoTerminal's lists miss about half of Pons'
-     graduations, so the graduations read from the chain (step 5) that it
-     hasn't listed go on the watchlist too, with their pool from DexScreener:
-     every graduation gets the same checks.
+     GitHub's runners, so at most gecko_calls_per_run calls, spaced out, with
+     one retry after a 429; the pools seen are kept in a watchlist so later
+     runs can check them once they're old enough. Pons' graduations come
+     from the chain (step 5): every one goes on the watchlist, named (and
+     later priced) from DexScreener, so its GeckoTerminal list is only read
+     when there are calls to spare. Every graduation gets the same checks.
   3. Each pool aged 30 min - 6 h is checked, cheap checks first (each one
      only when the ones before passed, so a run stays within the free limits):
        - Pool age and minimum liquidity (DexScreener, the same pool; the
@@ -435,7 +435,8 @@ class RobinhoodStrategy:
                 "watch": dict(state.get("watch") or {}),
                 "registry": copy.deepcopy(state.get("launchpad_tokens") or {}),
                 "graduations": dict(state.get("graduations") or {}),
-                "checked": dict(state.get("checked") or {})}
+                "checked": dict(state.get("checked") or {}),
+                "lookups": dict(state.get("onchain_lookups") or {})}
 
         # 1. Prices for open positions (from the pool they were bought in).
         # Without DexScreener nothing can be priced or bought: skip the run.
@@ -493,19 +494,31 @@ class RobinhoodStrategy:
     def _discover(self, plan, now):
         c = self.c
         calls = c["gecko_calls_per_run"]
-        urls = [(f"{GECKO}/networks/robinhood/dexes/{dex}/pools", {"page": 1})
-                for dex in self.launchpads]
-        urls.append((f"{GECKO}/networks/robinhood/new_pools", {"page": 1}))
-        # Take turns: the newest-pools list every run, the launchpads' own
-        # lists one or more a run, rotating (they change more slowly).
-        turn = int(now.timestamp() // 60) % max(len(urls) - 1, 1)
-        order = [urls[-1]] + urls[turn:-1] + urls[:turn]
-        found = 0
+        # Launchpads whose graduations are read from the chain (Pons) come
+        # last: their list is only read when there are calls to spare.
+        def lists(chain):
+            return [(f"{GECKO}/networks/robinhood/dexes/{dex}/pools", {"page": 1})
+                    for dex, pad in self.launchpads.items()
+                    if bool(pad.get("onchain_graduations")) == chain]
+        off_chain = lists(False)
+        # Take turns when there are more of those lists than calls to spare.
+        turn = int(now.timestamp() // 60) % max(len(off_chain), 1)
+        order = (off_chain[turn:] + off_chain[:turn]
+                 + [(f"{GECKO}/networks/robinhood/new_pools", {"page": 1})] + lists(True))
+        found, retried = 0, False
         for url, params in order[:calls]:
             params = dict(params, include="base_token,dex")
             try:
-                body = self._get(plan, "geckoterminal", url, params)
+                try:
+                    body = self._get(plan, "geckoterminal", url, params)
+                except RateLimited:
+                    if retried or not c.get("gecko_retry_seconds"):
+                        raise
+                    retried = True                # once a run: wait, and try it again
+                    self.sleep(c["gecko_retry_seconds"])
+                    body = self._get(plan, "geckoterminal", url, params)
             except RateLimited:
+                plan["gecko_missed"] = True
                 plan["notes"].append("GeckoTerminal is rate-limiting: the rest of its lists "
                                      "wait for the next run")
                 break
@@ -541,6 +554,12 @@ class RobinhoodStrategy:
             r["graduated"] = p["created"]
         r.update(symbol=p["name"] or r.get("symbol") or "",
                  title=p.get("title") or r.get("title") or "", seen=now.isoformat())
+        # Where it was found: GeckoTerminal's lists, or only the chain (named
+        # from DexScreener). Once GeckoTerminal lists it, it counts as listed.
+        if p.get("source") == "chain" and r.get("source") != "geckoterminal":
+            r["source"] = "chain"
+        elif p.get("source") != "chain":
+            r["source"] = "geckoterminal"
         for key in ("liquidity_usd", "market_cap_usd"):
             if p.get(key) is not None:
                 r[key] = p[key]
@@ -843,21 +862,67 @@ class RobinhoodStrategy:
                                "seen": seen, "tokens": sorted(seen), "scanned_to": start - 1,
                                "complete": start > head}
 
+    def _name_onchain(self, plan, now):
+        """The Pons graduations read from the chain that aren't in the
+        launchpad registry yet, looked up on DexScreener (30 a call, at most
+        onchain_lookups_per_run calls): their name, symbol, liquidity and
+        market cap go into the registry (for the copycat check), with the
+        graduation time from the chain. A token DexScreener doesn't list yet
+        is looked up again after onchain_lookup_retry_minutes."""
+        c = self.c
+        retry = timedelta(minutes=c.get("onchain_lookup_retry_minutes", 30))
+        looked = plan["lookups"]
+        seen = plan["graduations"].get("seen") or {}
+        todo = [t for t, _ in sorted(seen.items(), key=lambda x: x[1], reverse=True)
+                if t not in plan["registry"]
+                and (t not in looked or now - _utc(looked[t]) >= retry)]
+        todo = todo[:30 * c.get("onchain_lookups_per_run", 2)]
+        if not todo:
+            return
+        try:
+            pairs = self._dex_pairs(plan, todo)
+        except ApiError as exc:
+            plan["notes"].append(f"Pons graduations on chain: couldn't look up their names ({exc})")
+            return
+        named = 0
+        for token in todo:
+            looked[token] = now.isoformat()
+            pair = pick_pair(pairs, token)
+            if not pair:
+                continue
+            base = pair.get("baseToken") or {}
+            self._register(plan, {
+                "token": token, "dex": "pons-v2-dex", "name": (base.get("symbol") or "").strip(),
+                "title": (base.get("name") or "").strip(), "created": seen[token],
+                "liquidity_usd": to_float((pair.get("liquidity") or {}).get("usd")),
+                "market_cap_usd": to_float(pair.get("marketCap")) or to_float(pair.get("fdv")),
+                "source": "chain"}, now)
+            named += 1
+        plan["lookups"] = {t: w for t, w in looked.items() if t in seen}
+        if named:
+            plan["notes"].append(f"Pons graduations on chain: {named} named from DexScreener")
+
     def _discover_onchain(self, plan, now):
         """The Pons graduations read from the chain that GeckoTerminal's lists
         haven't shown, onto the watchlist as well (so every graduation is
-        checked). Their pool is found on DexScreener when they're checked;
-        the checks are the same as for every other pool."""
+        checked), named from DexScreener when it lists them (_name_onchain).
+        Their pool is DexScreener's when they're checked; the checks are the
+        same as for every other pool."""
+        self._name_onchain(plan, now)
         hi = timedelta(hours=self.c["max_pool_age_hours"])
         watched = {w["token"] for w in plan["watch"].values()}
         added = 0
         for token, when in (plan["graduations"].get("seen") or {}).items():
             if token in watched or now - _utc(when) > hi:
                 continue
+            name = (plan["registry"].get(token) or {}).get("symbol") or "?"
             plan["watch"][ONCHAIN + token] = {"pool": None, "dex": "pons-v2-dex",
-                                              "token": token, "name": "?", "created": when,
+                                              "token": token, "name": name, "created": when,
                                               "source": "chain"}
             added += 1
+        for w in plan["watch"].values():         # named since it was added
+            if w.get("source") == "chain" and w.get("name") in (None, "", "?"):
+                w["name"] = (plan["registry"].get(w["token"]) or {}).get("symbol") or "?"
         if added:
             plan["notes"].append(f"Pons graduations on chain: {added} new token(s) GeckoTerminal "
                                  "hasn't listed, added to the watchlist")
@@ -922,6 +987,7 @@ class RobinhoodStrategy:
         st["watch"], st["checked"] = plan["watch"], plan["checked"]
         st["launchpad_tokens"] = plan["registry"]
         st["graduations"] = plan["graduations"]
+        st["onchain_lookups"] = plan["lookups"]
         st.pop("names", None)             # the old copycat memory
         sources = {}
         for name in SOURCES:
@@ -933,6 +999,16 @@ class RobinhoodStrategy:
             sources[name] = dict(s, ok=s["calls"] > s["errors"], at=now.isoformat(),
                                  used_this_run=True)
         st["sources"] = sources
+        # GeckoTerminal over the last 24 hours, per hour: runs that used it,
+        # runs that got a 429, and runs that missed a list because of one.
+        g = plan["sources"].get("geckoterminal")
+        if g:
+            hours = st.setdefault("gecko_hours", {})
+            row = hours.setdefault(now.strftime("%Y-%m-%d %H:00"), [0, 0, 0])
+            row[0] += 1
+            row[1] += g["rate_limited"] > 0
+            row[2] += bool(plan.get("gecko_missed"))
+            st["gecko_hours"] = dict(sorted(hours.items())[-24:])
 
         for note in plan["notes"]:
             out(f"  ({note})")
@@ -984,7 +1060,8 @@ class RobinhoodStrategy:
         g = plan["graduations"]
         if not g.get("at"):
             return "Pons graduations on chain: not read yet"
-        seen = {t for t, r in plan["registry"].items() if r.get("dex") == "pons-v2-dex"}
+        seen = {t for t, r in plan["registry"].items()
+                if r.get("dex") == "pons-v2-dex" and r.get("source") != "chain"}
         tokens = g["tokens"]
         chain_only = [t for t in tokens if t not in seen]
         age = (plan["now"] - _utc(g["at"])).total_seconds() / 60

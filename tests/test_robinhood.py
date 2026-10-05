@@ -20,7 +20,11 @@ from screener.api import ApiError, RateLimited  # noqa: E402
 from screener.demo import DemoApi, DemoNewsHttp, demo_rpc_factory  # noqa: E402
 from screener.github_issues import issue_body, issue_title  # noqa: E402
 
-CFG = running(load_config())
+REAL = running(load_config())
+# Most tests check the checks, on tokens from GeckoTerminal's lists: with a
+# third call a run, Pons' own list is read too (as before the chain took
+# over). DiscoveryTests use the real number of calls.
+CFG = dict(REAL, robinhood=dict(REAL["robinhood"], gecko_calls_per_run=3))
 C = CFG["robinhood"]
 PT = C["paper_trading"]
 NOW = datetime(2026, 10, 3, 12, 0, tzinfo=timezone.utc)
@@ -90,6 +94,8 @@ def pons_history(holdings=None):
     for i, (wallet, amount) in enumerate(holdings.items(), 1):
         logs.append(transfer(CURVE, wallet, amount, start + i * 100))
     logs.append(transfer(CURVE, MANAGER, 800_000, block_at(NOW - timedelta(hours=2))))
+    # ...and the graduation event (every Pons graduation is on the chain).
+    logs.append(graduation(PONS, block_at(NOW - timedelta(hours=2))))
     return logs
 
 
@@ -247,12 +253,14 @@ class FlowTests(Base):
         later = NOW + timedelta(minutes=C["recheck_minutes"] + 1)
         s2 = self.strategy()
         plan = s2.fetch(later)
-        self.assertEqual(len([c for c in self.http.calls if c[0] == "geckoterminal"]), 1)
+        # One retry after gecko_retry_seconds, then the rest waits.
+        self.assertEqual(len([c for c in self.http.calls if c[0] == "geckoterminal"]), 2)
+        self.assertEqual(self.sleeps, [C["gecko_retry_seconds"]])
         self.assertTrue(any("rate-limiting" in n for n in plan["notes"]))
         self.assertIn(PONS_POOL, plan["watch"])
         s2.apply(plan, lambda *_: None)
         src = s2.trader.state["sources"]["geckoterminal"]
-        self.assertEqual((src["ok"], src["rate_limited"]), (False, 1))
+        self.assertEqual((src["ok"], src["rate_limited"]), (False, 2))
 
     def test_a_pool_is_rechecked_only_after_recheck_minutes(self):
         self.http.goplus[PONS] = {"is_honeypot": "1"}
@@ -656,6 +664,89 @@ class GraduationCountTests(Base):
         self.http.calls.clear()
         s, _, text = self.run_once(NOW + timedelta(minutes=C["graduation_scan_minutes"] + 1))
         self.assertTrue(s.trader.state["graduations"]["complete"])
+
+
+class DiscoveryTests(Base):
+    """With the real config: 2 GeckoTerminal calls (Pools.trade's list and
+    the newest pools), Pons' graduations from the chain."""
+
+    def gecko_urls(self):
+        return [c[1].rsplit("/robinhood/", 1)[1] for c in self.http.calls
+                if c[0] == "geckoterminal"]
+
+    def test_two_calls_and_pons_from_the_chain_named_by_dexscreener(self):
+        self.assertEqual(REAL["robinhood"]["gecko_calls_per_run"], 2)
+        s, bought, text = self.run_once(cfg=REAL)
+        self.assertEqual(self.gecko_urls(), ["dexes/uniswap-pools-trade/pools", "new_pools"])
+        self.assertEqual([p["symbol"] for p in bought], ["GLITCH"])   # FROG: found after the checks
+        watch = s.trader.state["watch"]
+        self.assertEqual(watch[rh.ONCHAIN + PONS]["name"], "FROG")    # named from DexScreener
+        reg = s.trader.state["launchpad_tokens"][PONS]
+        self.assertEqual((reg["symbol"], reg["title"], reg["dex"]), ("FROG", "Frog", "pons-v2-dex"))
+        self.assertLess(abs((rh._utc(reg["graduated"]) - (NOW - timedelta(hours=2)))
+                            .total_seconds()), 1)                    # the chain's time
+        self.assertIn("Pons graduations on chain: 1 named from DexScreener", text)
+        self.assertEqual(reg["source"], "chain")
+        self.assertIn("listed by GeckoTerminal: 0; found only on chain (checked from the "
+                      "chain): 1", text)
+        # The next run checks it like any Pons pool, and buys it.
+        _, bought, text = self.run_once(NOW + timedelta(minutes=5), cfg=REAL)
+        self.assertEqual([p["symbol"] for p in bought], ["FROG"])
+        frog = self.candidate("FROG")
+        self.assertEqual((frog["launchpad"], frog["pool_address"], frog["holders_complete"]),
+                         ("Pons", PONS_POOL, "yes"))
+
+    def test_a_chain_token_copies_an_earlier_one(self):
+        rival = "0x" + "6" * 40
+        self.http.logs.append(graduation(rival, block_at(NOW - timedelta(hours=20))))
+        self.http.pairs[rival] = [pair(rival, "0x" + "6" * 64, "FROG", 20 * 60, liquidity=20_000)]
+        self.run_once(cfg=REAL)
+        self.run_once(NOW + timedelta(minutes=5), cfg=REAL)
+        frog = self.candidate("FROG")
+        self.assertEqual(frog["copycat_of"], rival)
+        self.assertIn("Not a copycat", frog["failed_checks"])
+
+    def test_unlisted_graduations_are_looked_up_again_later(self):
+        new = "0x" + "7" * 40
+        self.http.logs.append(graduation(new, block_at(NOW - timedelta(hours=1))))
+
+        def lookups():
+            return [c for c in self.http.calls if c[0] == "dexscreener" and new in c[1]]
+        s, _, _ = self.run_once(cfg=REAL)
+        self.assertEqual(len(lookups()), 1)
+        self.assertNotIn(new, s.trader.state["launchpad_tokens"])
+        self.assertEqual(s.trader.state["watch"][rh.ONCHAIN + new]["name"], "?")
+        self.http.calls.clear()
+        self.run_once(NOW + timedelta(minutes=10), cfg=REAL)
+        self.assertEqual(len([c for c in lookups() if "/tokens/" in c[1]]), 1)  # its check only
+        self.http.pairs[new] = [pair(new, "0x" + "7" * 64, "LIZARD", 60)]
+        self.http.calls.clear()
+        s, _, _ = self.run_once(NOW + timedelta(minutes=31), cfg=REAL)
+        self.assertEqual(s.trader.state["launchpad_tokens"][new]["symbol"], "LIZARD")
+
+    def test_a_429_is_retried_once_and_counted_per_hour(self):
+        calls = []
+        real_get = self.http.get
+
+        def flaky(source, url, params=None):
+            if source == "geckoterminal":
+                calls.append(url)
+                if len(calls) == 1:
+                    self.http.calls.append((source, url, params))
+                    raise RateLimited("429")
+            return real_get(source, url, params)
+        self.http.get = flaky
+        s, _, text = self.run_once(cfg=REAL)
+        self.assertEqual(self.sleeps, [20])
+        self.assertEqual(len(calls), 3)                    # the retry worked: both lists read
+        self.assertNotIn("rate-limiting", text)
+        self.assertEqual(s.trader.state["gecko_hours"], {"2026-10-03 12:00": [1, 1, 0]})
+        # Rate-limited again (and the retry too): the next list waits.
+        self.http.get = lambda source, url, params=None: (_ for _ in ()).throw(
+            RateLimited("429")) if source == "geckoterminal" else real_get(source, url, params)
+        s, _, text = self.run_once(NOW + timedelta(minutes=5), cfg=REAL)
+        self.assertIn("rate-limiting", text)
+        self.assertEqual(s.trader.state["gecko_hours"], {"2026-10-03 12:00": [2, 2, 1]})
 
 
 class ExitTests(Base):

@@ -19,7 +19,7 @@ from screener.api import ApiError, RateLimited  # noqa: E402
 from screener.compare import helius_lines  # noqa: E402
 from screener.convergence import (BudgetPaused, ConvergenceStrategy,  # noqa: E402
                                   CreditMeter, Rpc, cycle_start, decode_swaps,
-                                  qualifies, score_trader)
+                                  next_cycle_start, qualifies, score_trader)
 from screener.demo import (EARLY_GOOD, DemoApi, DemoRpc, _swap,  # noqa: E402
                            demo_rpc_factory, demo_trader_history)
 from screener.paper_trader import now_utc  # noqa: E402
@@ -222,16 +222,20 @@ class FlowTests(unittest.TestCase):
         # live checks (30 each), then it must pause instead of going over.
         small = with_conv(helius_monthly_credits=1_000, max_tx_per_candidate=20,
                           refresh_credits_per_run=500)
+        # The last day of the cycle: the whole rest is today's share.
+        end = next_cycle_start(cycle_start(now_utc(), C["helius_cycle_day"]))
+        last_day = end - timedelta(hours=12)
+        self.history = demo_trader_history(last_day)
         for _ in range(6):  # the refresh is spread over runs: 2 wallets per run here
-            self.go(small)
+            self.go(small, now=last_day)
         self.assertEqual(len(self.state()["tracked"]), 3)
         for _ in range(15):
-            self.go(small)
+            self.go(small, now=last_day)
         state = self.state()
         self.assertLessEqual(state["helius"]["used"], 800)
         self.assertGreater(state["helius"]["used"], 700)
         self.assertIn("paused_until", state)
-        _, _, lines = self.go(small)
+        _, _, lines = self.go(small, now=last_day)
         self.assertTrue(any("PAUSED" in line for line in lines))
         # the next cycle resumes
         later = datetime.fromisoformat(state["paused_until"]) + timedelta(hours=1)

@@ -284,7 +284,32 @@ class MomentumHealthTests(Base):
         row = self.lines(self.healthy())[1]["momentum: server"]
         self.assertIn(OK, row)
         self.assertIn("feed last up 2026-10-01 23:18 UTC (49 min ago); last 24 h: 2 "
-                      "disconnect(s), 1800 launches, 4 signal(s), 3 buy(s); last push", row)
+                      "disconnect(s) (2.0 an hour, 0 this hour), down 0 min (0.0%), 1800 "
+                      "launches, 4 signal(s), 3 buy(s); last push", row)
+
+    def test_disconnect_rate_endpoints_and_down_time(self):
+        gh = self.healthy()
+        self.write("momentum/health.json", {"last_ok": ago(minutes=49), "feed_up": True,
+                                            "endpoint": "solana-rpc.publicnode.com"})
+        self.write("momentum/stats.json", {
+            "2026-10-01 22:00": {"feed disconnects": 12, "feed down seconds": 150,
+                                 "feed disconnects: api.mainnet-beta.solana.com": 11,
+                                 "feed disconnects: solana-rpc.publicnode.com": 1},
+            "2026-10-01 23:00": {"feed disconnects": 3, "feed down seconds": 30,
+                                 "feed disconnects: solana-rpc.publicnode.com": 3,
+                                 "feed endpoint switches": 1}})
+        row = self.lines(gh)[1]["momentum: server"]
+        self.assertIn(OK, row)
+        self.assertIn("on solana-rpc.publicnode.com; last 24 h: 15 disconnect(s) (7.5 an hour, "
+                      "0 this hour; api.mainnet-beta.solana.com 11, solana-rpc.publicnode.com 4)"
+                      ", down 3 min (2.5%), 1 endpoint switch(es)", row)
+        # down more than max_down_pct (5%) of the time: a warning
+        self.write("momentum/stats.json", {"2026-10-01 23:00": {"feed disconnects": 40,
+                                                                "feed down seconds": 600}})
+        row = self.lines(gh)[1]["momentum: server"]
+        self.assertIn(WARN, row)
+        self.assertIn("down 10 min (16.7%)", row)
+        self.assertIn("(down more than 5% of the time)", row)
 
     def test_never_pushed_or_late(self):
         gh = self.healthy()
@@ -384,9 +409,13 @@ class RobinhoodSourceTests(Base):
                             "at": ago(minutes=4)},
             "goplus": {"ok": False, "calls": 2, "errors": 2, "rate_limited": 0,
                        "error": "api.gopluslabs.io answered with error 500",
-                       "at": ago(minutes=4)}}})
+                       "at": ago(minutes=4)}},
+            "gecko_hours": {"2026-09-30 20:00": [9, 9, 9],          # over 24 h ago
+                            "2026-10-01 22:00": [10, 3, 1], "2026-10-01 23:00": [11, 1, 0]}})
         text, rows = self.lines(gh)
         self.assertIn("✅ 3 call(s), 1 failed, 1 rate-limited", rows["robinhood: geckoterminal"])
+        self.assertIn("; last 24 h: a 429 in 4 of 21 run(s), 1 missed a list",
+                      rows["robinhood: geckoterminal"])
         self.assertIn("✅", rows["robinhood: dexscreener"])
         self.assertIn("⚠️ failing", rows["robinhood: goplus"])
         self.assertIn("error 500", rows["robinhood: goplus"])

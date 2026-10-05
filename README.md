@@ -218,28 +218,30 @@ positions and journal in `data/convergence/`, and no GitHub issue per trade;
 its results are in the daily comparison. Numbers are in `[convergence]` in
 `config.toml`.
 
-**The tracked list, rebuilt every week:**
+**The tracked list, grown every day:**
 1. Every run, tokens up 100%+ in 24h with $30k+ liquidity are remembered as
    the week's winners (free DexScreener data).
-2. From each of the top 10 winners, candidates are the wallets that
-   recently **sold** it (its pool's last 300 trades on GeckoTerminal, free;
-   sells of $50+) and its biggest holders (free RugCheck data, creators and
-   insiders left out), up to 80. Wallets seen on more winners come first,
-   and sellers before holders: a holder who hasn't sold has no closed trades
-   to judge.
+2. Every day, from 20 of the winners (the ones not used in the last 3 days
+   first), candidates are the wallets that recently **sold** it (its pool's
+   last 300 trades on GeckoTerminal, free; sells of $50+) and its biggest
+   holders (free RugCheck data, creators and insiders left out), up to 150.
+   Wallets seen on more winners come first, and sellers before holders: a
+   holder who hasn't sold has no closed trades to judge. Wallets already
+   scored in the last 7 days are skipped.
 3. Each candidate's last 14 days of swaps are read from Helius and their
-   **realized profit** (in SOL) is worked out.
+   **realized profit** (in SOL) is worked out. A wallet with fewer than 10
+   transactions in 14 days can't have 5 closed trades, so its transactions
+   aren't read (same result, fewer credits).
 4. Candidates are dropped if they made over 150 transactions in 14 days
    (probably a bot), closed fewer than 5 trades, made under 2 SOL, won under
    40% of trades, or made over 60% of their profit on one token.
-5. The 50 most profitable become the tracked list. This work is spread over
-   many runs, so a new list takes a few hours to build. The run log (and
+5. Every candidate that passes joins the tracked list at once (the 50 most
+   profitable stay). Each tracked wallet is scored again every 7 days and
+   leaves the list if it no longer passes. This work is spread over many
+   runs, within a daily share of the Helius credits. The run log (and
    `list_summary` in `data/convergence/positions.json`) says why candidates
    were dropped, e.g. `26 too few closed trades, 3 qualified; 41 swaps in
    812 transactions`.
-6. If a finished list has fewer than 3 wallets, it can never give a signal,
-   so it's built again a day later (with that day's winners) instead of a
-   week later, as long as under 50% of the month's Helius credits are used.
 
 **Buying:** every 15 minutes, each tracked wallet's new transactions are read
 and decoded. When 3+ of them bought the same token within 20 minutes, and the
@@ -261,8 +263,9 @@ call** (`helius_live_credits_per_call` and `helius_history_credits_per_call`
 in `config.toml`), above what was measured, so its count errs high. At those
 rates it can follow 50 wallets and use roughly half the free 1,000,000
 monthly credits. Every call is counted before it's made, and:
-- the weekly list rebuild only uses credits left over after reserving enough
-  for live checks until the end of the month;
+- scoring candidates only uses credits left over after reserving enough
+  for live checks of the list until the end of the month, spread evenly over
+  the days left (at most a day's share a day);
 - the strategy **pauses itself** rather than go past **80%** of the monthly
   credits, and starts again when Helius resets your credits (open positions
   keep being managed while paused, using free DexScreener prices);
@@ -317,7 +320,7 @@ safe). Commit that change.
    click **Run workflow**.
 2. When it finishes, open the run and look at **STEP 6** in the summary. You
    should see `Helius credits this cycle: ...` and
-   `weekly list refresh started: N candidate wallets`, instead of
+   `list refresh started: N wallets to score`, instead of
    `not active: add the HELIUS_API_KEY secret`.
 3. Now and then, compare your Helius dashboard with the bot's count. The bot's
    count should be **higher** (it's a deliberately cautious estimate). If the
@@ -431,7 +434,10 @@ rising fast on real buying works better than sniping it at creation.
 
 - **Data:** every pump.fun trade, launch and graduation, live from Solana's
   **free public RPC** (one read-only `logsSubscribe`; no key, no wallet;
-  `screener/pumpfeed.py`). Prices: each trade's bonding-curve price;
+  `screener/pumpfeed.py`). A backup free endpoint is in `ws_urls`: after a
+  drop the bot reconnects within about a second, and moves to the next
+  endpoint when one keeps failing; the health check shows disconnects per
+  hour and per endpoint, and the time the feed was down. Prices: each trade's bonding-curve price;
   DexScreener once a held token stops trading for a minute or graduates.
   SOL's price: DexScreener.
 - **Three variants, side by side**, each with its own journal in
@@ -698,12 +704,15 @@ issues are titled **PASSED (robinhood): SYMBOL** with the label
 - **New pools:** GeckoTerminal lists the launchpads as DEXes
   (`pons-v2-dex` = graduated Pons pools, `uniswap-pools-trade` = Pools.trade).
   It answers "too many requests" after a few calls a minute from GitHub, so
-  each run makes at most 3 calls, 6.5 seconds apart. Pools it lists go on a
-  watchlist and are checked once they're 30 minutes old, so a pool missed one
-  run is still caught later. GeckoTerminal's lists miss about half of Pons'
-  graduations, so the graduations read from the chain (below) that it hasn't
-  listed go on the watchlist too, their pool found on DexScreener: every Pons
-  graduation gets the same checks.
+  each run makes at most 2 calls, 10 seconds apart (Pools.trade's list and
+  the newest pools), and tries once more 20 seconds after a "too many
+  requests". Pools it lists go on a watchlist and are checked once they're
+  30 minutes old, so a pool missed one run is still caught later. Pons'
+  graduations come from the chain (below): every one goes on the watchlist,
+  named from DexScreener (its pool too, when it's checked), so Pons' own
+  GeckoTerminal list is only read when there's a call to spare. Every Pons
+  graduation gets the same checks. The health check shows how many runs got
+  a "too many requests" over 24 hours.
 - **Prices:** DexScreener, from the same pool (DexScreener doesn't list the
   Pons curve itself, so it's only used once a token has a Uniswap pool).
 - **Checks** (each pool at most once an hour; a later check only runs when the
@@ -719,7 +728,8 @@ issues are titled **PASSED (robinhood): SYMBOL** with the label
     graduated after it, and clones whose liquidity is 90% or more of their
     market cap (real graduations have about 30-60%). Of the ones left, the
     earliest graduation is the original (`copycat_of`). The launchpad tokens
-    are the ones GeckoTerminal has listed, remembered for 7 days; liquidity
+    are the ones GeckoTerminal has listed and the Pons graduations read from
+    the chain (named from DexScreener), remembered for 7 days; liquidity
     and market cap are DexScreener's (search) when it has them, else
     GeckoTerminal's
   - GoPlus: not a honeypot, not mintable, no hidden owner, the owner can't
