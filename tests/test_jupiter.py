@@ -15,13 +15,15 @@ import requests
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 from run import load_config, run  # noqa: E402
 from screener.demo import DemoApi  # noqa: E402
 from screener.filters import Result  # noqa: E402
 from screener.jupiter import COLUMNS, URL, JupiterOrganic, organic_values  # noqa: E402
 from screener.paper_trader import ENTRY_COLUMNS, PaperTrader  # noqa: E402
 
-CFG = load_config()
+CFG = running(load_config())
 MINT = "MINTaaaa"
 ROW = {"id": MINT, "organicScore": 63.456, "organicScoreLabel": "medium",
        "stats1h": {"buyOrganicVolume": 2500, "buyVolume": 10000,

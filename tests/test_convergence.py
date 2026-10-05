@@ -12,6 +12,8 @@ from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 from run import load_config, run  # noqa: E402
 from screener.api import ApiError, RateLimited  # noqa: E402
 from screener.compare import helius_lines  # noqa: E402
@@ -22,7 +24,7 @@ from screener.demo import (EARLY_GOOD, DemoApi, DemoRpc, _swap,  # noqa: E402
                            demo_rpc_factory, demo_trader_history)
 from screener.paper_trader import now_utc  # noqa: E402
 
-CFG = load_config()
+CFG = running(load_config())
 # helius_every_minutes = 2 means no gap between Helius checks, so these tests
 # can run the strategy several times in a row. The gap has its own tests.
 C = dict(CFG["convergence"], helius_every_minutes=2)

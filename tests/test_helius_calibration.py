@@ -13,13 +13,15 @@ from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 from run import load_config  # noqa: E402
 from screener.api import RateLimited  # noqa: E402
 from screener.convergence import (ConvergenceStrategy, CreditMeter, Rpc,  # noqa: E402
                                   RpcError, read_transaction)
 from screener.demo import DemoApi, DemoRpc, demo_trader_history  # noqa: E402
 
-CFG = load_config()
+CFG = running(load_config())
 C = CFG["convergence"]
 QUIET = dict(out=lambda *a: None)
 VERSION_ERROR = ("Transaction version (1) is not supported by the requesting client. Please "

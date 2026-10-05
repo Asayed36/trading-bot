@@ -80,6 +80,13 @@ round_trip_cost_pct = 3
 # If false, never buy the same token twice (even after we've sold it).
 allow_rebuy = false
 
+[main]
+# The main strategy on GitHub (run.py). Stopped on 2026-10-05: 188 trades,
+# 25% wins against 42% needed. Its rules live on in main (1 min) below.
+# stopped = true: no new buys. Positions still open finish under their
+# normal exits; the journal, positions and other files are kept.
+stopped = true
+
 # ---------------------------------------------------------------------
 # MAIN (1 MIN): the main strategy checked every minute, on your own server
 # (main_1min.py, deploy/main-1min.service). It uses exactly [filters] and
@@ -98,6 +105,31 @@ rugcheck_recheck_minutes = 10
 rugcheck_max_per_run = 10
 # ...and not at all for this long after it says "too many requests".
 rugcheck_pause_minutes = 5
+# Jupiter's organic score (version B's check, and every buy's entries.csv
+# row) is read at most this often per token.
+organic_cache_minutes = 10
+
+# Paper versions of main (1 min), side by side on the same data every minute:
+# main's checks plus one extra rule each, the same exits and costs
+# ([paper_trading]), each with its own files in data/main-1min/<folder>/.
+# A: buy only after a token passed main's checks on 3 consecutive one-minute
+# checks (tokens that drop off DexScreener's lists while on a run of passes
+# are still checked each minute, for A only). The counts start again when
+# the bot restarts.
+[[main_1min.versions]]
+name = "A"
+label = "main (1 min) A"
+folder = "main-1min/a"
+consecutive_passes = 3
+
+# B: skip tokens up more than 100% in the last hour (DexScreener), and
+# require a Jupiter organic score of at least 60 (unknown = skip).
+[[main_1min.versions]]
+name = "B"
+label = "main (1 min) B"
+folder = "main-1min/b"
+max_change_1h_pct = 100
+min_organic_score = 60
 
 # ---------------------------------------------------------------------
 # EARLY STRATEGY: a second paper strategy that runs alongside the one above
@@ -107,6 +139,10 @@ rugcheck_pause_minutes = 5
 # ---------------------------------------------------------------------
 [early]
 enabled = true
+# Stopped on 2026-10-05: average win smaller than average loss.
+# stopped = true: no new buys. Positions still open finish under their
+# normal exits; the journal, positions and other files are kept.
+stopped = true
 
 # Only tokens that graduated to one of these (DexScreener's names)...
 allowed_dexes = ["pumpswap", "raydium"]
@@ -276,6 +312,13 @@ allow_rebuy = false
 # ---------------------------------------------------------------------
 [launch]
 enabled = true
+# All three speeds stopped on 2026-10-05: losing after costs, and without
+# the trade feed the 5s and 30s speeds bought at the creation price. Once the
+# last positions have closed (within 30 minutes), the launch-bot service can
+# be turned off (deploy/LAUNCH_SERVER_SETUP.md, Part K).
+# stopped = true: no new buys. Positions still open finish under their
+# normal exits; the journal, positions and other files are kept.
+stopped = true
 # PumpPortal's free real-time data feed (read-only).
 ws_url = "wss://pumpportal.fun/api/data"
 
@@ -398,15 +441,19 @@ near_miss_rise_fraction = 0.8
 
 # The three variants, side by side, each with its own journal in
 # data/momentum/<name>/: a rise of rise_pct within window_minutes.
+# stopped = true: that variant makes no new buys (stopped on 2026-10-05:
+# losing even before costs); its journal is kept.
 [[momentum.variants]]
 name = "30pct-2min"
 rise_pct = 30
 window_minutes = 2
+stopped = true
 
 [[momentum.variants]]
 name = "50pct-3min"
 rise_pct = 50
 window_minutes = 3
+stopped = true
 
 [[momentum.variants]]
 name = "100pct-5min"

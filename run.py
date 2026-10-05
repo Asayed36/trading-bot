@@ -100,12 +100,16 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
     # Jupiter's organic score at each buy, for entries.csv (logging only; the
     # news strategy's coins aren't Solana tokens, so it has none).
     trader.organic = jupiter
+    # A stopped main ([main] stopped = true) screens nothing and buys nothing:
+    # it only sells the positions it still holds, under its normal exits.
+    main_stopped = bool(cfg.get("main", {}).get("stopped"))
+    trader.buying = not main_stopped
 
     # Fetch everything from the internet BEFORE changing any paper trades, so
     # a failed or rate-limited run leaves positions and journal untouched.
     prices = current_prices(api, trader.open_positions, f["allowed_dexes"])
     screen_lines = []
-    results = screen(api, cfg, screen_lines.append)
+    results = [] if main_stopped else screen(api, cfg, screen_lines.append)
 
     # The "early" strategy fetches its own data. If that fails (including a
     # rate limit from one of its sources), only the early strategy skips this
@@ -114,6 +118,12 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
     if cfg.get("early", {}).get("enabled"):
         early = EarlyStrategy(cfg, data_folder)
         early.trader.organic = jupiter
+        if cfg["early"].get("stopped"):
+            # No new buys; it only runs while it still holds a position.
+            early.trader.buying = False
+            if not early.trader.open_positions:
+                early = None
+    if early:
         try:
             early_plan = early.fetch(api)
         except ApiError as exc:
@@ -172,6 +182,9 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
     out(LINE)
     out("STEP 2: Screening new tokens")
     out(LINE)
+    if main_stopped:
+        out("  The main strategy is stopped ([main] stopped = true): no screening, no new "
+            "buys. Its open positions finish under their normal exits.")
     for line in screen_lines:
         out(line)
 
@@ -180,7 +193,9 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
     out("STEP 3: Paper buys")
     out(LINE)
     passed = [r for r in results if r.passed]
-    if not passed:
+    if main_stopped:
+        out("  None: the main strategy is stopped.")
+    elif not passed:
         out("  No token passed every filter this run, so nothing was bought.")
     for r in passed:
         pos = trader.buy(r)
@@ -267,7 +282,7 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
     # ---- Summary ----
     out("")
     out(LINE)
-    out("SUMMARY (main strategy)")
+    out("SUMMARY (main strategy)" + ("  - stopped: no new buys" if main_stopped else ""))
     out(LINE)
     out(f"  Tokens checked: {len(results)}   passed: {len(passed)}   "
         f"failed: {len(results) - len(passed)}")
@@ -281,7 +296,8 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
     if early:
         et = early.trader
         out("")
-        out("SUMMARY (early strategy)" + ("  - skipped this run" if early_skipped else ""))
+        out("SUMMARY (early strategy)" + ("  - skipped this run" if early_skipped else "")
+            + ("  - stopped: no new buys" if cfg["early"].get("stopped") else ""))
         out(f"  Open paper positions: {len(et.open_positions)}")
         for pos in et.open_positions:
             change = (pos["last_price"] / pos["entry_price"] - 1) * 100

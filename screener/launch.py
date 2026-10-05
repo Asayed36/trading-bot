@@ -218,6 +218,10 @@ class LaunchEngine:
         self.speeds = {s["name"]: s for s in self.c["speeds"]}
         self.traders = {name: LaunchTrader(self.pt, s, os.path.join(self.folder, name))
                         for name, s in self.speeds.items()}
+        # [launch] stopped = true: no new buys at any speed; positions still
+        # open finish under their normal exits (the 30-minute time stop at most).
+        for trader in self.traders.values():
+            trader.buying = not self.c.get("stopped")
         self.sol_usd = None
         self.watch = {}          # mint -> launch being evaluated, entered or held
         self.external = {}       # mint -> latest USD price after graduation (DexScreener)

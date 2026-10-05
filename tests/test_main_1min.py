@@ -15,13 +15,15 @@ from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 import compare  # noqa: E402
 import main_1min as m1  # noqa: E402
 from run import load_config, run  # noqa: E402
 from screener.api import ApiError, RateLimited  # noqa: E402
 from screener.demo import GOOD, DemoApi  # noqa: E402
 
-CFG = load_config()
+CFG = running(load_config())
 NOW = datetime(2026, 10, 4, 12, 0, tzinfo=timezone.utc)
 
 
@@ -81,8 +83,10 @@ class SameAsMainTests(Base):
         self.assertEqual(mine[0]["usd_amount"], "10.00")
         # Only its own folder: none of the GitHub main strategy's files.
         self.assertEqual(sorted(os.listdir(self.d)), ["main-1min"])
+        # (a and b: the versions' own folders, see VersionTests)
         self.assertEqual(sorted(os.listdir(os.path.join(self.d, "main-1min"))),
-                         ["entries.csv", "health.json", "journal.csv", "positions.json"])
+                         ["a", "b", "entries.csv", "health.json", "journal.csv",
+                          "positions.json"])
         self.assertIn("passed", lines[0])
 
     def test_mains_exits_and_costs(self):
@@ -215,6 +219,138 @@ class LoopTests(unittest.TestCase):
         self.assertIn("nothing is saved", out.getvalue())
 
 
+class ChangingApi(Api):
+    """Api whose tokens report a 1-hour change, and that can make GOODCAT
+    fail main's checks (no liquidity) or drop off the lists."""
+
+    def __init__(self, h1=40.0):
+        super().__init__()
+        self.h1, self.fail_good, self.hide_good = h1, False, False
+
+    def pairs_for_tokens(self, addresses):
+        pairs = super().pairs_for_tokens(addresses)
+        for p in pairs:
+            p["priceChange"]["h1"] = self.h1
+            if self.fail_good and p["baseToken"]["address"] == GOOD:
+                p["liquidity"]["usd"] = 0
+        return pairs
+
+    def latest_profiles(self):
+        items = super().latest_profiles()
+        return [i for i in items if not (self.hide_good and i["tokenAddress"] == GOOD)]
+
+    def latest_boosts(self):
+        items = super().latest_boosts()
+        return [i for i in items if not (self.hide_good and i["tokenAddress"] == GOOD)]
+
+
+class Organic:
+    def __init__(self, score):
+        self.score, self.asked = score, []
+
+    def __call__(self, mint):
+        self.asked.append(mint)
+        return {"jupiter_organic_score": self.score, "jupiter_organic_label": "high",
+                "jupiter_organic_volume_1h_pct": None, "jupiter_organic_buyers_1h_pct": None}
+
+
+class VersionTests(Base):
+    def go(self, api, organic=None, minutes=1, start=0):
+        bot = getattr(self, "bot_", None) or m1.MainOneMinute(CFG, self.d, api, organic)
+        self.bot_ = bot
+        lines = []
+        for m in range(start, start + minutes):
+            bot.run_once(NOW + timedelta(minutes=m), lines.append)
+        return bot, lines
+
+    def buys(self, sub):
+        return [r["symbol"] for r in rows(os.path.join(self.d, "main-1min", sub, "journal.csv"))
+                if r["action"] == "BUY"]
+
+    def test_a_buys_on_the_third_consecutive_pass(self):
+        api = ChangingApi()
+        self.go(api, minutes=2)
+        self.assertEqual(self.buys("a"), [])                     # 2 passes so far
+        self.assertIn("GOODCAT", [r["symbol"] for r in rows(self.path("journal.csv"))])
+        bot, lines = self.go(api, start=2)
+        self.assertIn("GOODCAT", self.buys("a"))
+        self.assertTrue(any("[A] BUY  GOODCAT" in line for line in lines))
+        self.assertEqual(bot.streaks, {})                        # nothing left to watch
+        # its own journal, the same $10 and costs as main
+        a = rows(os.path.join(self.d, "main-1min", "a", "journal.csv"))
+        self.assertEqual(a[0]["usd_amount"], "10.00")
+
+    def test_a_starts_again_after_a_failed_minute(self):
+        api = ChangingApi()
+        self.go(api, minutes=2)
+        api.fail_good = True
+        self.go(api, start=2)                                    # fails: back to 0
+        api.fail_good = False
+        self.go(api, minutes=2, start=3)
+        self.assertNotIn("GOODCAT", self.buys("a"))
+        self.go(api, start=5)
+        self.assertIn("GOODCAT", self.buys("a"))
+
+    def test_a_keeps_checking_a_token_that_left_the_lists(self):
+        api = ChangingApi()
+        self.go(api)
+        api.hide_good = True                                     # off DexScreener's lists
+        bot, lines = self.go(api, minutes=2, start=1)
+        self.assertIn("GOODCAT", self.buys("a"))
+        # main (1 min) itself only checks the listed tokens, as before
+        self.assertNotIn("GOODCAT", lines[-1].split("\n")[0])
+
+    def test_b_skips_big_risers_and_low_organic_scores(self):
+        self.go(ChangingApi(h1=150.0), Organic(80))
+        self.assertEqual(self.buys("b"), [])                     # up 150% in 1h
+        self.tmp.cleanup()
+        self.tmp = tempfile.TemporaryDirectory()
+        self.d, self.bot_ = self.tmp.name, None
+        organic = Organic(45)
+        self.go(ChangingApi(h1=40.0), organic)
+        self.assertEqual(self.buys("b"), [])                     # organic score 45
+        self.assertIn(GOOD, organic.asked)
+        self.tmp.cleanup()
+        self.tmp = tempfile.TemporaryDirectory()
+        self.d, self.bot_ = self.tmp.name, None
+        organic = Organic(72)
+        bot, _ = self.go(ChangingApi(h1=40.0), organic, minutes=3)
+        self.assertIn("GOODCAT", self.buys("b"))
+        # one Jupiter reading per token, reused by B and every buy's entries row
+        self.assertEqual(organic.asked.count(GOOD), 1)
+        entry = rows(os.path.join(self.d, "main-1min", "b", "entries.csv"))[0]
+        self.assertEqual(entry["jupiter_organic_score"], "72")
+
+    def test_b_without_an_organic_score_skips(self):
+        self.go(ChangingApi(h1=40.0), None)
+        self.assertEqual(self.buys("b"), [])
+
+    def test_same_exits_for_every_version(self):
+        api = ChangingApi()
+        self.go(api, Organic(72), minutes=3)
+        Api.__init__(api, {GOOD: 0.5})                           # -50%: the -30% stop
+        self.go(api, Organic(72), start=3)
+        for sub in ("", "a", "b"):
+            sells = [r for r in rows(os.path.join(self.d, "main-1min", sub, "journal.csv"))
+                     if r["action"] == "SELL" and r["symbol"] == "GOODCAT"]
+            self.assertTrue(sells and sells[0]["reason"].startswith("stop loss"), sub)
+
+    def test_health_counts_each_version(self):
+        api, organic = ChangingApi(), Organic(72)
+        self.go(api, organic, minutes=3)
+        with open(self.path("health.json")) as fh:
+            data = json.load(fh)
+        hour = data["calls_per_hour"][NOW.strftime("%Y-%m-%dT%H:00")]
+        bought_a, bought_b = self.buys("a"), self.buys("b")
+        self.assertEqual(sorted(bought_a), ["FRENS", "GOODCAT"])     # the demo's two passes
+        self.assertEqual((hour["A buys"], hour["B buys"]), (len(bought_a), len(bought_b)))
+        self.assertGreaterEqual(hour["A waiting"], 2)
+        self.assertEqual(hour["jupiter"], len(organic.asked))        # one reading per token
+        self.assertEqual(len(organic.asked), len(set(organic.asked)))
+        self.assertEqual(data["versions"]["A"]["open"], 2)
+        self.assertEqual(data["versions"]["B"]["label"], "main (1 min) B")
+
+
 class SafetyTests(unittest.TestCase):
     def test_only_the_read_only_lookups(self):
         api = m1.CountingApi(DemoApi())
@@ -225,7 +361,7 @@ class SafetyTests(unittest.TestCase):
             source = fh.read().lower()
         for word in ("private_key", "keypair", "sign_transaction", "sendtransaction"):
             self.assertNotIn(word, source)
-        self.assertEqual(api.calls, {"dexscreener": 0, "rugcheck": 0})
+        self.assertEqual(api.calls, {"dexscreener": 0, "rugcheck": 0, "jupiter": 0})
 
 
 class CompareTests(unittest.TestCase):
@@ -240,8 +376,11 @@ class CompareTests(unittest.TestCase):
                 self.assertEqual(compare.main(), 0)
         text = out.getvalue()
         header = next(line for line in text.splitlines() if line.startswith("| | main"))
-        self.assertTrue(header.startswith("| | main | main (1 min) | early"), header)
+        self.assertTrue(header.startswith(
+            "| | main | main (1 min) | main (1 min) A | main (1 min) B | early"), header)
         self.assertIn("| main (1 min): server |", text)
+        self.assertIn("| main (1 min) A: server |", text)
+        self.assertIn("| main (1 min) B: server |", text)
 
 
 if __name__ == "__main__":

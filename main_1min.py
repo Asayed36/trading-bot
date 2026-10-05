@@ -16,6 +16,12 @@ that push brings new code the bot uses, it exits by itself between two runs
 new code (screener/autorestart.py; "automatic restart" in
 journalctl -u main-1min).
 
+Paper versions ([[main_1min.versions]]) run inside the same bot, on the same
+data each minute: main's checks plus one extra rule each (A: 3 consecutive
+passing minutes; B: not up more than 100% in the last hour and a Jupiter
+organic score of 60+), the same exits and costs, and their own files in
+data/main-1min/a/ and data/main-1min/b/.
+
 Staying within the free limits, every minute:
   - DexScreener: the latest profiles and boosts, the candidates' pairs (30
     per request) and the open positions' prices: about 4-6 requests a minute
@@ -44,7 +50,7 @@ from screener.api import ApiError, PublicApi, RateLimited
 from screener.autorestart import CodeWatcher
 from screener.autorestart import forever as run_forever
 from screener.filters import (PASS, best_pair, current_prices, evaluate, find_candidates,
-                              market_checks)
+                              market_checks, to_float)
 from screener.jupiter import JupiterOrganic
 from screener.paper_trader import PaperTrader, now_utc
 from screener.settings import HERE, load_config
@@ -72,7 +78,7 @@ class CountingApi:
 
     def __init__(self, api):
         self.api = api
-        self.calls = {"dexscreener": 0, "rugcheck": 0}
+        self.calls = {"dexscreener": 0, "rugcheck": 0, "jupiter": 0}
 
     def latest_profiles(self):
         self.calls["dexscreener"] += 1
@@ -92,6 +98,42 @@ class CountingApi:
         return self.api.rugcheck_report(address)
 
 
+class Version:
+    """One paper version of main (1 min) ([[main_1min.versions]]): the same
+    data each minute and the same exits and costs ([paper_trading]), with
+    extra entry rules and its own files."""
+
+    def __init__(self, v, data_folder):
+        self.name = v["name"]
+        self.label = v.get("label") or f"main (1 min) {self.name}"
+        self.folder = os.path.join(data_folder, v["folder"])
+        # A: buy only on the Nth consecutive minute a token passes.
+        self.passes = int(v.get("consecutive_passes", 1))
+        # B: skip tokens up more than this in the last hour...
+        self.max_change_1h = v.get("max_change_1h_pct")
+        # ...and require at least this Jupiter organic score.
+        self.min_organic = v.get("min_organic_score")
+
+    def why_not(self, result, streak, organic):
+        """None when this version buys the token (it passed main's checks);
+        otherwise why not, for the hourly counts."""
+        if streak < self.passes:
+            return f"{streak} of {self.passes} passes"
+        if self.max_change_1h is not None:
+            change = to_float(((result.pair or {}).get("priceChange") or {}).get("h1"))
+            if change is None:
+                return "no 1h change"
+            if change > self.max_change_1h:
+                return f"up >{self.max_change_1h:g}% in 1h"
+        if self.min_organic is not None:
+            score = to_float(organic(result.address).get("jupiter_organic_score"))
+            if score is None:
+                return "no organic score"
+            if score < self.min_organic:
+                return f"organic score <{self.min_organic:g}"
+        return None
+
+
 class MainOneMinute:
     def __init__(self, cfg, data_folder, api, jupiter=None):
         self.cfg = cfg
@@ -101,6 +143,27 @@ class MainOneMinute:
         self.jupiter = jupiter
         self.reports = {}          # token -> (when, RugCheck report): memory only
         self.rugcheck_paused_until = None
+        self.versions = [Version(v, data_folder) for v in self.c.get("versions", [])
+                         if v.get("enabled", True)]
+        # Consecutive minutes each token has passed main's checks (memory
+        # only: a restart starts the counts again).
+        self.streaks = {}
+        self.organic_cache = {}    # token -> (when, Jupiter's values)
+        self.now = None
+
+    def organic(self, address):
+        """Jupiter's organic score values, read at most every
+        organic_cache_minutes per token (version B's check and every buy's
+        entries.csv row share them)."""
+        if not self.jupiter:
+            return {}
+        known = self.organic_cache.get(address)
+        if known and self.now - known[0] < timedelta(minutes=self.c["organic_cache_minutes"]):
+            return known[1]
+        self.api.calls["jupiter"] += 1
+        values = self.jupiter(address) or {}
+        self.organic_cache[address] = (self.now, values)
+        return values
 
     def _report(self, address, now, budget):
         """RugCheck's report: from memory when fresh, else asked (if the
@@ -130,19 +193,38 @@ class MainOneMinute:
         """One run: fetch everything first, then trade. A DexScreener failure
         skips the run without changing anything (like main)."""
         now = now or now_utc()
-        # Forget reports nobody will reuse.
+        self.now = now
+        # Forget reports and organic scores nobody will reuse.
         fresh = timedelta(minutes=self.c["rugcheck_recheck_minutes"])
         self.reports = {a: r for a, r in self.reports.items() if now - r[0] < fresh}
+        keep = timedelta(minutes=self.c.get("organic_cache_minutes", 10))
+        self.organic_cache = {a: v for a, v in self.organic_cache.items() if now - v[0] < keep}
         before = dict(self.api.calls)
         try:
             trader = SafeTrader(self.pt, self.folder)
-            trader.organic = self.jupiter
-            prices = current_prices(self.api, trader.open_positions, self.f["allowed_dexes"])
+            trader.organic = self.organic if self.jupiter else None
+            vtraders = {}
+            for v in self.versions:
+                vtraders[v.name] = SafeTrader(self.pt, v.folder)
+                vtraders[v.name].organic = trader.organic
+            held, seen = [], set()
+            for t in [trader, *vtraders.values()]:
+                for pos in t.open_positions:
+                    if pos["address"] not in seen:
+                        seen.add(pos["address"])
+                        held.append(pos)
+            prices = current_prices(self.api, held, self.f["allowed_dexes"])
             addresses = find_candidates(self.api.latest_profiles(), self.api.latest_boosts())
-            pairs = self.api.pairs_for_tokens(addresses) if addresses else []
+            # Version A also re-checks the tokens on a run of passes that
+            # have dropped off DexScreener's lists, after the listed ones (so
+            # main (1 min) keeps its RugCheck budget). Only A uses them.
+            listed = set(addresses)
+            watched = [a for a in self.streaks if a not in listed]
+            to_check = addresses + watched
+            pairs = self.api.pairs_for_tokens(to_check) if to_check else []
             budget = {"rugcheck": self.c["rugcheck_max_per_run"]}
             results, waiting = [], 0
-            for addr in addresses:
+            for addr in to_check:
                 pair = best_pair(pairs, addr, self.f["allowed_dexes"])
                 market_ok = all(c.status == PASS for c in market_checks(pair, self.f))
                 skip = self.cfg["api"]["skip_safety_if_market_fails"] and not market_ok
@@ -150,7 +232,7 @@ class MainOneMinute:
                 if not skip:
                     got = self._report(addr, now, budget)
                     if got is None:
-                        waiting += 1          # checked in a later minute
+                        waiting += addr in listed     # checked in a later minute
                         continue
                     report = got[0]
                 results.append(evaluate(addr, pair, report, self.f, safety_skipped=skip))
@@ -159,23 +241,55 @@ class MainOneMinute:
             out(f"{now:%H:%M} skipped, nothing changed: {exc}")
             return None
 
-        lines = []
+        # Runs of consecutive passes: a token checked this minute that
+        # failed, or wasn't checked (off the lists, waiting for RugCheck),
+        # starts again from zero.
+        self.streaks = {r.address: self.streaks.get(r.address, 0) + 1
+                        for r in results if r.passed}
+        main_results = [r for r in results if r.address in listed]
+
+        lines, counts = [], {}
         for s in trader.update(prices, when=now):
             lines.append(f"SELL {s['symbol']} {s['reason']} P&L ${s['pnl_usd']:+.2f}")
-        for r in results:
+        for r in main_results:
             if r.passed and trader.buy(r, when=now):
                 lines.append(f"BUY  {r.symbol} ${self.pt['buy_amount_usd']} at ${r.price:.10g}")
         trader.save()
-        passed = sum(r.passed for r in results)
+        for v in self.versions:
+            vt = vtraders[v.name]
+            for s in vt.update(prices, when=now):
+                lines.append(f"[{v.name}] SELL {s['symbol']} {s['reason']} "
+                             f"P&L ${s['pnl_usd']:+.2f}")
+            for r in (results if v.passes > 1 else main_results):
+                if not r.passed or not vt.can_buy(r.address):
+                    continue
+                why = v.why_not(r, self.streaks.get(r.address, 0), self.organic)
+                if why:
+                    key = f"{v.name} waiting" if why.endswith("passes") else f"{v.name} skipped"
+                    counts[key] = counts.get(key, 0) + 1
+                    continue
+                if vt.buy(r, when=now):
+                    counts[f"{v.name} buys"] = counts.get(f"{v.name} buys", 0) + 1
+                    lines.append(f"[{v.name}] BUY  {r.symbol} ${self.pt['buy_amount_usd']} at "
+                                 f"${r.price:.10g}")
+            vt.save()
+        # Only tokens a run-of-passes version could still buy are watched.
+        self.streaks = {a: n for a, n in self.streaks.items()
+                        if any(vtraders[v.name].can_buy(a) for v in self.versions
+                               if v.passes > 1)}
+        passed = sum(r.passed for r in main_results)
         note = f", {waiting} waiting for RugCheck" if waiting else ""
-        self._health(now, before, None)
-        out(f"{now:%H:%M} {len(addresses)} candidate(s), {len(results)} checked, {passed} "
+        self._health(now, before, None, counts, vtraders)
+        extra = "".join(f"; {v.name}: {len(vtraders[v.name].open_positions)} open, "
+                        f"P&L ${vtraders[v.name].state['running_total_pnl_usd']:+.2f}"
+                        for v in self.versions)
+        out(f"{now:%H:%M} {len(addresses)} candidate(s), {len(main_results)} checked, {passed} "
             f"passed{note}; {len(trader.open_positions)} open; "
-            f"P&L ${trader.state['running_total_pnl_usd']:+.2f}"
+            f"P&L ${trader.state['running_total_pnl_usd']:+.2f}{extra}"
             + "".join(f"\n  {line}" for line in lines))
-        return results
+        return main_results
 
-    def _health(self, now, before, error):
+    def _health(self, now, before, error, counts=None, vtraders=None):
         """data/main-1min/health.json: the last good run, the last error,
         and requests per site per hour (pushed with the results)."""
         path = os.path.join(self.folder, "health.json")
@@ -194,6 +308,16 @@ class MainOneMinute:
         row["runs"] += 1
         for site, n in self.api.calls.items():
             row[site] = row.get(site, 0) + n - before.get(site, 0)
+        # Each version's buys, and tokens it passed on this hour (waiting
+        # for more passes, or skipped by its extra rules).
+        for key, n in (counts or {}).items():
+            row[key] = row.get(key, 0) + n
+        if vtraders is not None:
+            data["versions"] = {
+                v.name: {"label": v.label, "open": len(vtraders[v.name].open_positions),
+                         "watching": sum(1 for a in self.streaks if v.passes > 1
+                                         and vtraders[v.name].can_buy(a))}
+                for v in self.versions}
         for old in sorted(calls)[:-HOURS_KEPT]:
             calls.pop(old)
         if self.rugcheck_paused_until and now < self.rugcheck_paused_until:

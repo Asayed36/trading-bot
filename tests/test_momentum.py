@@ -16,13 +16,15 @@ from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 import compare  # noqa: E402
 import momentum_bot  # noqa: E402
 from screener import pumpfeed as pf  # noqa: E402
 from screener.momentum import MomentumEngine, window_metrics  # noqa: E402
 from screener.settings import HERE, load_config  # noqa: E402
 
-CFG = load_config()
+CFG = running(load_config())
 M = CFG["momentum"]
 # The real feed sends ~44 messages a second, so a 10 s silence means it's
 # down. These tests send few events, so the feed's own tests use the real
