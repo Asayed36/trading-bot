@@ -207,6 +207,8 @@ class MustPassTests(Base):
         self.assertEqual(bought, [])
         checks = {ch.name: ch for ch in plan["candidates"][0]["checks"]}
         self.assertEqual(checks["AI check"].status, "FAIL")
+        row = self.verdicts()[0]
+        self.assertEqual((row["rule_verdict"], row["agree"]), ("PASS", "no"))  # rules alone
 
     def test_must_pass_without_an_answer_is_rule_based(self):
         _, bought, _ = self.go(client=None, key=None, cfg=with_ai(must_pass=True))

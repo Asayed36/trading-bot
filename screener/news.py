@@ -1055,11 +1055,13 @@ class NewsStrategy:
             for ch in checks:
                 out(f"   {'  ok ' if ch.status == PASS else ' FAIL'}  {ch.name:<22} {ch.detail}")
             if cand.get("ai"):
+                rules = [ch for ch in checks if ch.name != "AI check"]
                 out(f"     AI   {describe(cand['ai'])}")
                 self._log_ai(now, source, item,
                              coin["id"] if coin else ";".join(x["id"] for x in cand["coins"][:5]),
-                             "PASS" if passed else "FAIL",
-                             "; ".join(f"{ch.name}: {ch.detail}" for ch in checks
+                             # the rule-based result alone, without the AI's own check
+                             "PASS" if all(ch.status == PASS for ch in rules) else "FAIL",
+                             "; ".join(f"{ch.name}: {ch.detail}" for ch in rules
                                        if ch.status != PASS), cand["ai"])
             out("")
             self._log(now, source, item, cand["coins"], passed, checks)
