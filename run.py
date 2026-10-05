@@ -12,7 +12,8 @@ screener/early.py), "convergence" (3+ proven traders buying the same
 token, see [convergence] and screener/convergence.py; needs a free Helius
 API key in the HELIUS_API_KEY environment variable), "news" (official
 news about established coins, see [news] and screener/news.py; a free
-CoinGecko key in COINGECKO_API_KEY is recommended), and "robinhood"
+CoinGecko key in COINGECKO_API_KEY is recommended; an Anthropic key in
+CLAUDE_API_KEY adds an AI second opinion on its headlines), and "robinhood"
 (graduated memecoins on Robinhood Chain, see [robinhood] and
 screener/robinhood.py). Compare them with `python compare.py`.
 
@@ -92,7 +93,8 @@ def record_schedule(data_folder, every, now, out=print):
 
 
 def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_factory=None,
-        news_http=None, coingecko_key=None, robinhood_http=None, jupiter=None):
+        news_http=None, coingecko_key=None, robinhood_http=None, jupiter=None,
+        ai_key=None, ai_client=None):
     f, pt = cfg["filters"], cfg["paper_trading"]
     trader = PaperTrader(pt, data_folder)
     # Jupiter's organic score at each buy, for entries.csv (logging only; the
@@ -133,7 +135,7 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
     # the demo a fake one.
     news, news_plan, news_skipped = None, None, None
     if cfg.get("news", {}).get("enabled") and news_http is not None:
-        news = NewsStrategy(cfg, data_folder, news_http, coingecko_key)
+        news = NewsStrategy(cfg, data_folder, news_http, coingecko_key, ai_key, ai_client)
         try:
             news_plan = news.fetch()
         except ApiError as exc:
@@ -357,12 +359,14 @@ def main():
 
     helius_key, rpc_factory = os.environ.get("HELIUS_API_KEY") or None, None
     coingecko_key = os.environ.get("COINGECKO_API_KEY") or None
+    ai_key, ai_client = os.environ.get("CLAUDE_API_KEY") or None, None
     if args.demo:
-        from screener.demo import DemoApi, DemoNewsHttp, demo_rpc_factory
+        from screener.demo import DemoApi, DemoClaude, DemoNewsHttp, demo_rpc_factory
         print("*** DEMO MODE: all tokens, wallets, news and prices below are MADE UP. ***\n")
         api, folder = DemoApi(), os.path.join(HERE, "demo_data")
         helius_key, rpc_factory = None, demo_rpc_factory()
         news_http, coingecko_key = DemoNewsHttp(), None
+        ai_key, ai_client = None, DemoClaude()   # made-up AI verdicts, no API call
         robinhood_http = None   # no made-up Robinhood Chain data: skipped in the demo
         jupiter = None          # no Jupiter lookups in the demo: those columns stay blank
     else:
@@ -376,7 +380,7 @@ def main():
     try:
         run(api, cfg, folder, issues=issues, helius_key=helius_key, rpc_factory=rpc_factory,
             news_http=news_http, coingecko_key=coingecko_key, robinhood_http=robinhood_http,
-            jupiter=jupiter)
+            jupiter=jupiter, ai_key=ai_key, ai_client=ai_client)
     except RateLimited as exc:
         print(f"\nRate limited: {exc}")
         print("Skipping this run. Nothing was traded; try again later.")

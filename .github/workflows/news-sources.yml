@@ -2,7 +2,9 @@
 # GitHub's servers, and shows what each gives (python -m screener.news
 # --check-sources). Read-only: no CoinGecko, no trading, nothing saved. The
 # run fails (red) if any turned-on source fails, so you can see at a glance
-# when a feed address needs fixing.
+# when a feed address needs fixing. It also sends one known headline to the
+# news strategy's AI check (python -m screener.news_ai), if the
+# CLAUDE_API_KEY secret is set, to test the key and the API.
 
 name: News sources check
 
@@ -11,6 +13,7 @@ on:
   push:                      # and whenever the news code or its sources change
     paths:
       - screener/news.py
+      - screener/news_ai.py
       - config.toml
       - .github/workflows/news-sources.yml
 
@@ -34,3 +37,16 @@ jobs:
 
       - name: Check the sources
         run: python -m screener.news --check-sources
+
+      # One known headline sent to the AI check (about $0.001), to test the
+      # CLAUDE_API_KEY secret and the API. Without the secret it only says so.
+      - name: Check the AI check
+        if: always()
+        env:
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+        run: |
+          set +e
+          python -m screener.news_ai
+          code=$?
+          if [ "$code" -eq 2 ]; then exit 0; fi
+          exit $code

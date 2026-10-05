@@ -32,6 +32,31 @@ def _utc(text):
     return when if when.tzinfo else when.replace(tzinfo=timezone.utc)
 
 
+def _news_ai(c, meter, now):
+    """(status, detail) for the news strategy's AI check: off, not used yet,
+    today's count against the daily limit, or the last error."""
+    if not c.get("enabled", True):
+        return INFO, "turned off (news.ai.enabled = false)"
+    if not meter:
+        return INFO, ("not used yet: it runs when there's crypto news, and needs the "
+                      "CLAUDE_API_KEY secret")
+    if meter.get("off"):
+        return INFO, f"not used: {meter['off']}; the rule-based checks decide"
+    today = meter.get("day") == now.strftime("%Y-%m-%d")
+    calls = meter.get("calls", 0) if today else 0
+    detail = f"{calls} of {c['daily_limit']} checks today"
+    if meter.get("last_ok"):
+        detail += f"; last answer {_utc(meter['last_ok']):%Y-%m-%d %H:%M} UTC"
+    error = meter.get("last_error")
+    if error and (not meter.get("last_ok") or error[:16] > meter["last_ok"][:16].replace("T", " ")):
+        return WARN, f"{detail}; failing: {error[:120]} (the rule-based checks decide)"
+    if not meter.get("last_ok"):
+        return INFO, detail + "; no answer yet (is the CLAUDE_API_KEY secret set?)"
+    if today and calls >= c["daily_limit"]:
+        return WARN, detail + ": daily limit reached, the rest of today is rule-based only"
+    return OK, detail
+
+
 def _news_source(src, s, now):
     """(status, detail) for a working news source. A source with nothing new
     for longer than its stale_days (by kind, see screener/news.py) warns: its
@@ -311,6 +336,9 @@ def health_lines(folder, cfg, now, github=None):
                 add(f"news: {name}", WARN, f"failing: {s.get('error', 'unknown error')[:120]}")
             else:
                 add(f"news: {name}", *_news_source(src, s, now))
+        ai_cfg = cfg["news"].get("ai") or {}
+        if ai_cfg:
+            add("news: AI check", *_news_ai(ai_cfg, news.get("ai"), now))
 
     # 5. The robinhood strategy's data sources (the last run that used each).
     if cfg.get("robinhood", {}).get("enabled"):
