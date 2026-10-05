@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Pushes the server's paper results to GitHub: the launch strategy
 # (data/launch), the main (1 min) strategy (data/main-1min) and the trade
-# feed probe's summary (data/trade-feed-probe) and the momentum strategy
-# (data/momentum).
+# feed probe's summary (data/trade-feed-probe), the momentum strategy
+# (data/momentum) and the news listings bot (data/news-listings).
 # It uses the fine-grained GitHub token saved in ~/.git-credentials, which
 # can only read and write this repository's contents. Nothing else.
 #
@@ -21,7 +21,7 @@ export GIT_AUTHOR_NAME="launch-bot" GIT_AUTHOR_EMAIL="launch-bot@users.noreply.g
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME" GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
 RESULTS=()
-for dir in data/launch data/main-1min data/trade-feed-probe data/momentum; do
+for dir in data/launch data/main-1min data/trade-feed-probe data/momentum data/news-listings; do
   if [ -d "$dir" ]; then RESULTS+=("$dir"); fi
 done
 if [ ${#RESULTS[@]} -eq 0 ]; then
@@ -30,7 +30,7 @@ if [ ${#RESULTS[@]} -eq 0 ]; then
 fi
 # Each results folder is left out when bringing code files up to date.
 KEEP=()
-for dir in data/launch data/main-1min data/trade-feed-probe data/momentum; do KEEP+=(":(exclude)$dir"); done
+for dir in data/launch data/main-1min data/trade-feed-probe data/momentum data/news-listings; do KEEP+=(":(exclude)$dir"); done
 
 # Clear anything left half-done. "--quit" forgets the operation without
 # touching any files, so the newest results are kept.

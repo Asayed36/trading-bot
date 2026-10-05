@@ -345,6 +345,40 @@ service; setup: Part G of
   and a health row with its last good run, runs and busiest-hour requests,
   and its last push.
 
+## The "news (listings)" strategy (exchange listings every minute, on your own server)
+
+The news strategy for the exchange listings only, checked **every minute**
+instead of every 15 minutes on GitHub, because a listing's price moves
+within minutes. `news_listings_bot.py` runs all the time on the launch
+bot's server (the `news-listings` service; setup: Part J of
+[`deploy/LAUNCH_SERVER_SETUP.md`](deploy/LAUNCH_SERVER_SETUP.md)).
+
+- **Its sources:** the `[[news.sources]]` marked `runs_on = "server"`:
+  Binance's new-listing list, Kraken's blog, and new coins in the public
+  market lists of Coinbase, Upbit and OKX (a coin that wasn't on a list
+  before is a new listing; the first read only saves the list). GitHub no
+  longer reads these; all the other news sources stay on GitHub.
+- **Exactly the news strategy's rules:** the same code and settings (`[news]`):
+  the coin matching, every check, the AI check (Claude Haiku 4.5), $10
+  buys, 1% costs and the same exits (half at +50%; the rest at -20%, 25%
+  below the peak, or after 7 days).
+- **Its own files:** `data/news-listings/` (`journal.csv`, `positions.json`,
+  `candidates.csv`, `ai_verdicts.csv`, `entries.csv`, `health.json`), pushed
+  to GitHub once an hour. It opens no GitHub issues.
+- **Limits:** each source once a minute; CoinGecko only for a new listing,
+  plus the open positions' prices every 15 minutes, within its own count of
+  4,000 calls a month (GitHub's news strategy now stops at 5,500, so both
+  together stay under the free plan's 10,000 even with one key); the AI
+  check at most 50 times a day. Settings: `[news_listings]`.
+- **The Claude API key** lives on the server in a file only root can read,
+  handed to this one service by systemd (Part J2). Without it, the
+  rule-based checks decide, as always.
+- **Updates itself** like the other server bots ("automatic restart" in
+  `journalctl -u news-listings`).
+- **In the daily comparison:** the **news (listings)** column, next to news,
+  and health rows for the bot (last good run, runs, CoinGecko calls, last
+  push), each of its sources, and its AI check.
+
 ## The "momentum" strategy (new launches rising fast, on your own server)
 
 It tests whether buying a brand-new pump.fun launch **after** it starts
@@ -476,12 +510,12 @@ Settings are under `[news]` in `config.toml`.
   lists), GlobeNewswire (public companies' releases, plus releases tagged
   cryptocurrency or blockchain) and Business Wire (all news); releases that
   don't mention crypto are skipped;
-- exchanges: Binance's new-listing list, Kraken's blog, OKX's new-listing
-  announcements, and new coins in the public market lists of Coinbase,
-  Upbit and OKX (a coin that wasn't on the list before is a new listing; the
-  first read only saves the list). Upbit's notices and Bybit's announcements
-  refuse GitHub's US servers, so Upbit is watched through its market list
-  and Bybit is turned off (`enabled = false`);
+- exchanges: OKX's new-listing announcements (Bybit's are turned off,
+  `enabled = false`: Bybit refuses GitHub's US servers). The exchange
+  listings that move fastest (Binance's new-listing list, Kraken's blog, and
+  new coins in the public market lists of Coinbase, Upbit and OKX) are
+  marked `runs_on = "server"`: the **news (listings)** bot on your server
+  reads them every minute instead (below);
 - the SEC: its press releases (only those about crypto) and EDGAR's latest
   S-1 filings by funds ("Canary PEPE ETF"): a new crypto fund's first S-1
   counts as a catalyst, an amendment (S-1/A) doesn't;
@@ -760,6 +794,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/momentum.py`, `screener/pumpfeed.py`, `momentum_bot.py` | The momentum strategy, pump.fun's on-chain events, and the program that runs it on your server |
 | `trade_feed_probe.py` | A 2-hour, read-only measurement of the free Solana RPC as a pump.fun trade feed (no trading) |
 | `main_1min.py` | The main (1 min) strategy: main's checks and exits every minute, on your server |
+| `news_listings_bot.py` | The news (listings) strategy: the news strategy's exchange listings every minute, on your server |
 | `screener/robinhood.py` | The robinhood strategy: GeckoTerminal watchlist, DexScreener prices, GoPlus and RPC holder checks, costs and exits |
 | `robinhood_probe.py` | Research only: reports what each free data source returns for Robinhood Chain (run by the "Robinhood Chain probe" workflow; no trading) |
 | `deploy/` | Server setup guide, systemd services, the hourly push script for the launch bot, and the paper-run trigger that starts the Paper trading run every 10 minutes (and the Daily strategy comparison when yesterday's issue is missing) |

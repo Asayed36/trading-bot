@@ -10,7 +10,9 @@ min)** strategy (Part G): the main strategy's checks every minute.
 phrase, and nothing can buy or sell anything. **Never put a wallet or a private
 key on this server.** The only secrets on it are GitHub tokens limited to
 this repository: one that can read and write its files (Part C), and,
-optionally, one that can only start its workflows (Part F).
+optionally, one that can only start its workflows (Part F); plus, optionally,
+a Claude API key for the news listings bot's AI check (Part J), readable by
+root only. None of them can move or trade anything.
 
 It takes about 30–45 minutes the first time. Copy each command exactly.
 Lines starting with `#` are explanations, not commands.
@@ -261,7 +263,7 @@ Within an hour or two you should see commits called **"Launch paper results
   itself, and systemd starts it again with the new code about 10 seconds
   later. You don't need to do anything. Changes to other strategies' code
   or settings don't restart them. See every automatic restart with:
-  `journalctl -u launch-bot -u main-1min --no-pager | grep "automatic restart"`.
+  `journalctl -u launch-bot -u main-1min -u momentum-bot -u news-listings --no-pager | grep "automatic restart"`.
   (Any of your own edits to a file that also changed on GitHub are replaced
   by GitHub's version.)
 - **Two things still need you, and the pull request will say so when they
@@ -292,6 +294,9 @@ Within an hour or two you should see commits called **"Launch paper results
 - **Main (1 min)** (Part G): `journalctl -u main-1min -n 30 --no-pager`
   shows one line a minute. Pause it with `sudo systemctl stop main-1min`;
   turn it off for good with `sudo systemctl disable --now main-1min`.
+- **News (listings)** (Part J): `journalctl -u news-listings -n 30 --no-pager`
+  shows one line a minute. Its Claude API key is in
+  `/etc/trading-bot/claude_api_key` (root only); see J2 to change or remove it.
 - **Stop paying:** in Vultr, **destroy** the server. Just stopping it keeps
   billing.
 - **Never** install a wallet, paste a private key or seed phrase, or use
@@ -506,3 +511,114 @@ restarts itself when the hourly push brings new code it uses
 (`journalctl -u momentum-bot | grep "automatic restart"`). Pause it with
 `sudo systemctl stop momentum-bot`; turn it off for good with
 `sudo systemctl disable --now momentum-bot`.
+
+---
+
+## Part J. Check the exchange listings every minute (optional)
+
+The **news (listings)** strategy is the news strategy for the exchange
+listings only: Binance's new-listing list, Kraken's blog, and new coins in
+the public market lists of Coinbase, Upbit and OKX. Your server checks them
+**every minute** instead of every 15 minutes on GitHub; GitHub no longer
+reads these five (all the other news sources stay on GitHub). Everything
+else is the news strategy's: the coin matching, the checks, the AI check,
+the costs and the exits. Its results go to `data/news-listings/` only (its
+own journal, candidate log and AI verdicts), the hourly push sends them to
+GitHub, and the daily comparison shows them as **news (listings)** next to
+**news**, with health rows for the bot, each of its sources and its AI
+check.
+
+It only reads public data (each source once a minute; CoinGecko only for a
+new listing, and the open positions' prices every 15 minutes) and asks
+Anthropic's API about new listing headlines, at most 50 a day (about $0.10
+at most). No wallet, no private key.
+
+### J1. Get the new files
+
+```
+sudo systemctl start launch-push
+cd ~/trading-bot && git log -1 --oneline
+.venv/bin/pip install -r requirements.txt -r requirements-launch.txt
+```
+
+(The last line installs `anthropic`, Anthropic's Python library, which this
+bot is the first on the server to use.)
+
+### J2. Save the Claude API key (the safe way)
+
+1. **Make a separate key for the server** in Anthropic's console
+   (<https://console.anthropic.com/settings/keys> → **Create Key**, name it
+   `trading-bot server`), instead of reusing the one in GitHub's secret. You
+   can then revoke either one without breaking the other. If your console
+   offers a monthly spend limit (Settings → Limits), set a low one there
+   too, as a backstop to the bot's own daily limit.
+2. **Store it in a file only root can read.** These lines ask for the key
+   without showing it or saving it in your command history:
+
+   ```
+   sudo install -d -m 700 -o root -g root /etc/trading-bot
+   sudo install -m 600 -o root -g root /dev/null /etc/trading-bot/claude_api_key
+   read -rsp "Paste the Claude API key, then press Enter: " KEY; echo
+   printf '%s' "$KEY" | sudo tee /etc/trading-bot/claude_api_key >/dev/null
+   unset KEY
+   sudo stat -c '%U %a %s bytes' /etc/trading-bot/claude_api_key
+   ```
+
+   The last line should say `root 600` and a size of about 100 bytes (not 0).
+
+Why this way: the key is **not** in the bot's folder (which is pushed to
+GitHub), not in a `.env` file the `bot` user can read, and not in an
+environment variable. When the service starts, systemd reads the file as
+root and hands a copy to this one service only (its `LoadCredential=`
+line), in a private folder that other services can't see. The other bots
+never get it, and it doesn't show in `ps` or `systemctl show`.
+
+To run **without** the AI check, still create the empty file (the first two
+lines only): the bot then logs every item as "not checked" and the
+rule-based checks decide, as always.
+
+To change the key later, repeat the `read`/`printf` lines, then
+`sudo systemctl restart news-listings`. To remove it:
+`sudo truncate -s 0 /etc/trading-bot/claude_api_key` and restart.
+
+### J3. Test it
+
+```
+.venv/bin/python -m screener.news --check-sources --runs-on server
+sudo systemd-run --quiet --pipe --wait -p User=bot -p WorkingDirectory=/home/bot/trading-bot \
+  -p LoadCredential=claude_api_key:/etc/trading-bot/claude_api_key \
+  /home/bot/trading-bot/.venv/bin/python -m screener.news_ai
+.venv/bin/python news_listings_bot.py --test
+```
+
+- The first line reads the five sources once: five `ok` lines (Coinbase,
+  Upbit and OKX show how many coins they list). If Upbit says `ok` here but
+  failed on GitHub, that's because your server isn't in the US.
+- The second sends one known headline to the AI check, with the key given
+  to it exactly as the service will get it: it should end with
+  `yes: Quant (QNT); catalyst: partnership ...` and the cost (about $0.001).
+- The third does one run of the bot and saves **nothing**. It prints one
+  line like `12:01 5/5 source(s) ok, 0 new item(s); 0 open; P&L $+0.00`
+  (the first read of each market list only notes today's coins, so nothing
+  is new yet).
+
+### J4. Turn it on
+
+```
+sudo cp ~/trading-bot/deploy/news-listings.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now news-listings
+systemctl status news-listings --no-pager
+journalctl -u news-listings -n 20 --no-pager
+```
+
+`status` should say **active (running)**, and the log starts with
+`AI check: on` and gets one line a minute (the full report, with each
+check, when there's a new listing). Within about an hour the push commits
+`data/news-listings/`. Like the other bots, it restarts itself when the
+hourly push brings new code it uses
+(`journalctl -u news-listings | grep "automatic restart"`). Pause it with
+`sudo systemctl stop news-listings`; turn it off for good with
+`sudo systemctl disable --now news-listings`. While it's off, the five
+exchange sources aren't read anywhere: to read them on GitHub again,
+remove their `runs_on = "server"` lines in `config.toml`.

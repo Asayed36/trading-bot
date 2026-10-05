@@ -591,7 +591,10 @@ class BetterMatchingTests(unittest.TestCase):
 
 
 def sources(*names):
-    return dict(CFG, news=dict(C, sources=[s for s in C["sources"] if s["name"] in names]))
+    """Only these sources, all read here (even those the server reads)."""
+    picked = [{k: v for k, v in s.items() if k != "runs_on"}
+              for s in C["sources"] if s["name"] in names]
+    return dict(CFG, news=dict(C, sources=picked))
 
 
 class NewSourceFlowTests(Base):
@@ -695,7 +698,7 @@ class CheckSourcesTests(unittest.TestCase):
         failing = check_sources(CFG, DemoNewsHttp(now=NOW), lines.append, now=NOW)
         self.assertEqual(failing, 0)
         text = "\n".join(lines)
-        self.assertIn("ok    Coinbase new pairs: 1 coins listed", text)
+        self.assertIn("ok    Coinbase new pairs (server): 1 coins listed", text)
         self.assertIn("off   Bybit listings: Bybit blocks", text)
         self.assertIn("ok    SEC EDGAR fund filings: 0 item(s), 1 filing(s) in all", text)
         self.assertIn("ok    Ripple insights: 1 item(s)", text)
@@ -705,6 +708,9 @@ class CheckSourcesTests(unittest.TestCase):
                 raise ApiError("down")
 
         self.assertGreater(check_sources(CFG, Broken(now=NOW), lambda *a: None, now=NOW), 10)
+        lines = []
+        check_sources(CFG, DemoNewsHttp(now=NOW), lines.append, now=NOW, runs_on="server")
+        self.assertEqual(len([line for line in lines if not line.startswith(" ")]), 5)
 
 
 if __name__ == "__main__":

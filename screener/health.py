@@ -226,6 +226,74 @@ def add_main_1min(add, folder, cfg, now, github):
     add(name, WARN if (broken or late) else OK, detail)
 
 
+def _news_source_rows(add, label, cfg, runs_on, sources, now):
+    """One row per news source read on GitHub, or on the server."""
+    for src in cfg["news"].get("sources") or []:
+        if src.get("runs_on", "github") != runs_on:
+            continue
+        name = src["name"]
+        s = sources.get(name)
+        if src.get("enabled") is False:
+            add(f"{label}: {name}", INFO, f"turned off: {src.get('note', 'enabled = false')}")
+        elif not sources:
+            continue
+        elif s is None:
+            add(f"{label}: {name}", INFO, "not checked yet")
+        elif not s.get("ok"):
+            add(f"{label}: {name}", WARN, f"failing: {s.get('error', 'unknown error')[:120]}")
+        else:
+            add(f"{label}: {name}", *_news_source(src, s, now))
+
+
+def add_news_listings(add, folder, cfg, now, github):
+    """The news listings bot: its last good run (pushed health.json), runs
+    and requests per hour over the last 24 h, and its last push; then a row
+    per source it reads, and its AI check. A warning when the last good run
+    or the last push is older than [health] launch_stale_hours."""
+    label = "news (listings)"
+    sub = cfg["news_listings"]["folder"]
+    late_after = timedelta(hours=cfg.get("health", {}).get("launch_stale_hours", 3))
+    data = _load(os.path.join(folder, sub, "health.json")) or {}
+    state = _load(os.path.join(folder, sub, "positions.json")) or {}
+    ok, err_at = _utc(data.get("last_ok")), _utc(data.get("error_at"))
+    pushed = None
+    if github is not None:
+        try:
+            pushed = github.last_commit_time(f"data/{sub}")
+        except Exception:
+            pushed = None
+    if not ok:
+        add(f"{label}: server", WARN, "no results pushed yet: is it set up "
+            "(deploy/LAUNCH_SERVER_SETUP.md, Part J)?", "news (listings) has never pushed results")
+        return
+    detail = f"last good run {_at(ok, now)}"
+    hours = {k: v for k, v in (data.get("calls_per_hour") or {}).items()
+             if _utc(k) and now - _utc(k) <= timedelta(hours=24)}
+    if hours:
+        runs = sum(h.get("runs", 0) for h in hours.values())
+        gecko = sum(h.get("coingecko.com", 0) for h in hours.values())
+        detail += f"; {runs} runs in {len(hours)} h, {gecko} CoinGecko call(s)"
+    if pushed:
+        detail += f"; last push {_at(pushed, now)}"
+    broken = err_at and err_at > ok
+    if broken:
+        detail += f"; skipped since {err_at:%H:%M} UTC: {data.get('last_error', '')[:100]}"
+    late = now - ok > late_after or (pushed is not None and now - pushed > late_after)
+    if late:
+        detail += f" (older than {late_after.total_seconds() / 3600:.0f} h)"
+    add(f"{label}: server", WARN if (broken or late) else OK, detail)
+    _news_source_rows(add, label, cfg, "server", state.get("sources") or {}, now)
+    ai_cfg = cfg["news"].get("ai") or {}
+    if ai_cfg:
+        own = dict(ai_cfg, daily_limit=cfg["news_listings"].get("ai_daily_limit",
+                                                                 ai_cfg["daily_limit"]))
+        status, detail = _news_ai(own, state.get("ai"), now)
+        if status == INFO and data.get("ai_key") is False:
+            detail = ("not used: no Claude API key on the server (Part J); the rule-based "
+                      "checks decide")
+        add(f"{label}: AI check", status, detail)
+
+
 def health_lines(folder, cfg, now, github=None):
     """Markdown lines for the health section. `github` is a GitHubIssues
     (or anything with workflow_runs() and last_commit_time()), or None when
@@ -323,19 +391,9 @@ def health_lines(folder, cfg, now, github=None):
         sources = news.get("sources") or {}
         if not sources:
             add("news: sources", WARN, "not checked yet")
-        for src in cfg["news"].get("sources") or []:
-            name = src["name"]
-            s = sources.get(name)
-            if src.get("enabled") is False:
-                add(f"news: {name}", INFO, f"turned off: {src.get('note', 'enabled = false')}")
-            elif not sources:
-                continue
-            elif s is None:
-                add(f"news: {name}", INFO, "not checked yet")
-            elif not s.get("ok"):
-                add(f"news: {name}", WARN, f"failing: {s.get('error', 'unknown error')[:120]}")
-            else:
-                add(f"news: {name}", *_news_source(src, s, now))
+        # (The sources marked runs_on = "server" are the news listings
+        # bot's: their rows are with it, in section 9.)
+        _news_source_rows(add, "news", cfg, "github", sources, now)
         ai_cfg = cfg["news"].get("ai") or {}
         if ai_cfg:
             add("news: AI check", *_news_ai(ai_cfg, news.get("ai"), now))
@@ -390,6 +448,10 @@ def health_lines(folder, cfg, now, github=None):
     # 8. The momentum strategy on your server.
     if cfg.get("momentum", {}).get("enabled"):
         add_momentum(add, folder, cfg, now, github)
+
+    # 9. The news listings bot on your server.
+    if cfg.get("news_listings", {}).get("enabled") and cfg.get("news"):
+        add_news_listings(add, folder, cfg, now, github)
 
     head = [f"### Health ({now:%Y-%m-%d %H:%M} UTC)", ""]
     if problems:

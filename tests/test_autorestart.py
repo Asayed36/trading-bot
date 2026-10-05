@@ -213,7 +213,7 @@ class ServiceTests(unittest.TestCase):
     def test_systemd_restarts_a_clean_exit(self):
         # The bots exit with code 0 on new code; Restart=always (not
         # on-failure) is what makes systemd start them again.
-        for name in ("launch-bot.service", "main-1min.service"):
+        for name in ("launch-bot.service", "main-1min.service", "news-listings.service"):
             with open(os.path.join(HERE, "deploy", name)) as fh:
                 text = fh.read()
             self.assertIn("Restart=always", text)

@@ -37,6 +37,7 @@ import copy
 import csv
 import hashlib
 import html
+import json
 import os
 import re
 import xml.etree.ElementTree as ET
@@ -770,6 +771,14 @@ class NewsTrader(PaperTrader):
     """Sell half at +50% (PaperTrader), then everything left at -20% from
     entry, 25% below the highest price since entry, or after 7 days."""
 
+    def save(self):
+        # In one step, so a push (GitHub's commit, or the server's hourly
+        # push) never sees a half-written positions.json.
+        tmp = self.state_path + ".tmp"
+        with open(tmp, "w") as fh:
+            json.dump(self.state, fh, indent=2)
+        os.replace(tmp, self.state_path)
+
     def close_reason(self, pos, change_pct, from_peak, hours):
         c = self.cfg
         if change_pct <= -c["stop_loss_pct"]:
@@ -787,10 +796,15 @@ class NewsTrader(PaperTrader):
 
 class NewsStrategy:
     def __init__(self, cfg, data_folder, http=None, coingecko_key=None, ai_key=None,
-                 ai_client=None):
+                 ai_client=None, folder="news", runs_on="github"):
         self.c = cfg["news"]
         self.pt = self.c["paper_trading"]
-        self.folder = os.path.join(data_folder, "news")
+        # The sources this copy reads: [[news.sources]] with runs_on = "server"
+        # are read every minute by the news listings bot on your server
+        # (news_listings_bot.py); all the others here, on GitHub.
+        self.runs_on = runs_on
+        self.sources = [s for s in self.c["sources"] if s.get("runs_on", "github") == runs_on]
+        self.folder = os.path.join(data_folder, folder)
         self.trader = NewsTrader(self.pt, self.folder)
         self.http = http or NewsHttp()
         self.key = coingecko_key
@@ -833,7 +847,7 @@ class NewsStrategy:
                     if st.get("ok") and st.get("items")]
         plan["sources_read"] = list(read)
         new, backlog = [], 0
-        for source in c["sources"]:
+        for source in self.sources:
             if source.get("enabled") is False:
                 continue
             status = {"name": source["name"], "kind": source.get("kind", "press")}
@@ -892,16 +906,25 @@ class NewsStrategy:
                      and not crypto.search(f"{i['title']}. {i['summary']}")]
         new = [x for x in new if x not in unrelated]
         held = [p["address"] for p in self.trader.open_positions]
+        # Open positions' prices: every check, or only every
+        # prices_every_minutes (the server bot checks every minute, and the
+        # exits are about days, so that saves CoinGecko calls).
+        last_prices = state.get("last_prices")
+        every = c.get("prices_every_minutes", 0)
+        price_now = held and (not last_prices or every <= 0 or now - datetime.fromisoformat(
+            last_prices) >= timedelta(minutes=every - 0.5))
         coins = []
         try:
             if any(not s.get("coin") for s, _, _ in new):
                 for page in range(1, c["coin_pages"] + 1):
                     coins += gecko.markets(page=page)
             known = {x["id"] for x in coins}
-            want = held + [s["coin"] for s, _, _ in new if s.get("coin")]
+            want = (held if price_now else []) + [s["coin"] for s, _, _ in new if s.get("coin")]
             want = [i for i in dict.fromkeys(want) if i not in known]
             if want:
                 coins += gecko.markets(ids=want)
+            if price_now:
+                state["last_prices"] = now.isoformat()
         except ApiError as exc:
             # Without coin data nothing can be checked: leave this run's new
             # items unseen so they're checked next run while still fresh.
@@ -990,7 +1013,7 @@ class NewsStrategy:
         trader, now, c = self.trader, plan["now"], self.c
         state = plan["state"]
         # Keep the trader's positions (updated below) but take fetch's other state.
-        for key in ("last_check", "coingecko", "ai", "ai_recent"):
+        for key in ("last_check", "coingecko", "ai", "ai_recent", "last_prices"):
             if key in state:
                 trader.state[key] = state[key]
         trader.state.pop("seen_started", None)   # replaced by sources_read
@@ -1158,7 +1181,7 @@ class NewsStrategy:
 # Checking the sources by hand
 # ---------------------------------------------------------------------
 
-def check_sources(cfg, http=None, out=print, now=None):
+def check_sources(cfg, http=None, out=print, now=None, runs_on=None):
     """Read every source once and show what it gives: whether it works, how
     many items, the newest date and the latest headlines. Read-only: no
     CoinGecko, nothing saved. Returns the number of failing sources."""
@@ -1166,7 +1189,10 @@ def check_sources(cfg, http=None, out=print, now=None):
     now = now or now_utc()
     failing = 0
     for source in cfg["news"]["sources"]:
-        name = source["name"]
+        where = source.get("runs_on", "github")
+        if runs_on and where != runs_on:
+            continue
+        name = source["name"] + (" (server)" if where == "server" else "")
         if source.get("enabled") is False:
             out(f"off   {name}: {source.get('note', 'turned off')}")
             continue
@@ -1201,7 +1227,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="The news strategy's sources.")
     parser.add_argument("--check-sources", action="store_true",
                         help="read every source once and show what it gives (saves nothing)")
+    parser.add_argument("--runs-on", choices=("github", "server"),
+                        help="only the sources read on GitHub, or only those the server's "
+                             "news listings bot reads")
     args = parser.parse_args()
     if not args.check_sources:
         parser.error("nothing to do: use --check-sources")
-    sys.exit(1 if check_sources(load_config()) else 0)
+    sys.exit(1 if check_sources(load_config(), runs_on=args.runs_on) else 0)

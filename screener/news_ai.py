@@ -242,6 +242,18 @@ def verdict_row(now, source, item, rule_coin, rule_verdict, rule_failed, verdict
 
 
 def api_key():
+    """The Anthropic key: on the server, systemd's credential (a file only
+    the service can read, deploy/news-listings.service); on GitHub, the
+    CLAUDE_API_KEY secret in the environment. None when there's none."""
+    folder = os.environ.get("CREDENTIALS_DIRECTORY")
+    if folder:
+        try:
+            with open(os.path.join(folder, "claude_api_key")) as fh:
+                key = fh.read().strip()
+            if key:
+                return key
+        except OSError:
+            pass
     return os.environ.get("CLAUDE_API_KEY") or None
 
 

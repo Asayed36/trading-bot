@@ -100,6 +100,12 @@ def main():
     if cfg.get("news", {}).get("enabled"):
         strategies.append(("news", os.path.join(folder, "news"),
                            cfg["news"]["paper_trading"]["round_trip_cost_pct"]))
+    if cfg.get("news", {}).get("enabled") and cfg.get("news_listings", {}).get("enabled"):
+        # The exchange listings, checked every minute on your server (pushed
+        # about once an hour), with news's checks, costs and exits: next to news.
+        strategies.append(("news (listings)",
+                           os.path.join(folder, cfg["news_listings"]["folder"]),
+                           cfg["news"]["paper_trading"]["round_trip_cost_pct"]))
     if cfg.get("robinhood", {}).get("enabled"):
         # Open positions are valued after selling costs: slippage plus the
         # higher of the launchpads' pool fees.
