@@ -1,0 +1,36 @@
+# News sources check: reads every source of the news strategy once, from
+# GitHub's servers, and shows what each gives (python -m screener.news
+# --check-sources). Read-only: no CoinGecko, no trading, nothing saved. The
+# run fails (red) if any turned-on source fails, so you can see at a glance
+# when a feed address needs fixing.
+
+name: News sources check
+
+on:
+  workflow_dispatch:         # start it by hand from the Actions tab
+  push:                      # and whenever the news code or its sources change
+    paths:
+      - screener/news.py
+      - config.toml
+      - .github/workflows/news-sources.yml
+
+permissions:
+  contents: read             # it only reads the code; nothing is written back
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Check the sources
+        run: python -m screener.news --check-sources

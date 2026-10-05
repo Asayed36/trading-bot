@@ -32,6 +32,28 @@ def _utc(text):
     return when if when.tzinfo else when.replace(tzinfo=timezone.utc)
 
 
+def _news_source(src, s, now):
+    """(status, detail) for a working news source. A source with nothing new
+    for longer than its stale_days (by kind, see screener/news.py) warns: its
+    address may have changed, or it was replaced by a page that never
+    updates."""
+    from screener.news import STALE_DAYS
+    if "markets" in s:
+        detail = f"{s['markets']} coin(s) listed"
+    else:
+        detail = f"{s.get('items', 0)} item(s)"
+    newest = s.get("newest")
+    if not newest:
+        return OK, detail + ("; no new listing seen yet" if "markets" in s else "")
+    when = _utc(newest)
+    days = (now - when).total_seconds() / 86400
+    limit = src.get("stale_days", STALE_DAYS.get(src.get("kind", "press"), 14))
+    detail += f", newest {when:%Y-%m-%d}"
+    if days > limit:
+        return WARN, detail + f": nothing new for {days:.0f} days (expected within {limit})"
+    return OK, detail
+
+
 def _load(path):
     if not os.path.exists(path):
         return None
@@ -270,17 +292,25 @@ def health_lines(folder, cfg, now, github=None):
             add("convergence: Helius", WARN,
                 f"paused until {conv['paused_until'][:10]} (credit limit reached)")
 
-    # 4. News sources.
+    # 4. News sources: one row for each source in config.toml.
     if cfg.get("news", {}).get("enabled"):
         news = _load(os.path.join(folder, "news", "positions.json")) or {}
         sources = news.get("sources") or {}
         if not sources:
             add("news: sources", WARN, "not checked yet")
-        for name, s in sources.items():
-            if s.get("ok"):
-                add(f"news: {name}", OK, f"{s.get('items', 0)} item(s)")
-            else:
+        for src in cfg["news"].get("sources") or []:
+            name = src["name"]
+            s = sources.get(name)
+            if src.get("enabled") is False:
+                add(f"news: {name}", INFO, f"turned off: {src.get('note', 'enabled = false')}")
+            elif not sources:
+                continue
+            elif s is None:
+                add(f"news: {name}", INFO, "not checked yet")
+            elif not s.get("ok"):
                 add(f"news: {name}", WARN, f"failing: {s.get('error', 'unknown error')[:120]}")
+            else:
+                add(f"news: {name}", *_news_source(src, s, now))
 
     # 5. The robinhood strategy's data sources (the last run that used each).
     if cfg.get("robinhood", {}).get("enabled"):

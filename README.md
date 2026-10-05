@@ -30,8 +30,9 @@ spends real money.
 - **Helius** (`mainnet.helius-rpc.com`, free plan, needs a free sign-up):
   wallets' transactions, for the convergence strategy only (below).
 - **Official news feeds** (PR Newswire, GlobeNewswire, Business Wire, project
-  blogs, Binance and Kraken announcements) and **CoinGecko** (free plan): for
-  the news strategy only (below).
+  blogs, the SEC, exchange announcements and the public market lists of
+  Coinbase, Upbit and OKX, all read-only with no key) and **CoinGecko** (free
+  plan): for the news strategy only (below).
 - **GoPlus** (`api.gopluslabs.io`, no key) and **Robinhood Chain's public RPC**
   (`rpc.mainnet.chain.robinhood.com`, no key): for the robinhood strategy only
   (below), with GeckoTerminal and DexScreener.
@@ -185,7 +186,8 @@ because young pools are thinner.
     this in `data/health.json`, which is saved at least every 30 minutes;
   - convergence: how many wallets it tracks (warns under 3, when it can't
     give a signal) and whether Helius is paused;
-  - news: each source, ok or failing with the reason;
+  - news: each source, ok, turned off, failing with the reason, or with
+    nothing new for longer than usual;
   - launch: when your server last pushed results (warns after 3 hours or if
     it never has).
 
@@ -466,26 +468,54 @@ September 24, 2026. **No X, no AI**: only official sources and rule-based checks
 Settings are under `[news]` in `config.toml`.
 
 **Sources** (`[[news.sources]]`, read every 15 minutes):
-- press-release wires: PR Newswire (crypto and blockchain feeds),
-  GlobeNewswire (public companies' releases) and Business Wire (all news);
-  releases that don't mention crypto are skipped;
-- project blogs (each one tied to its coin): Quant to start with, and you
-  can add more (Chainlink's blog was tried but has no RSS feed);
-- exchange announcements: Binance's new-listing list and Kraken's blog.
+- press-release wires: PR Newswire (all news, plus its crypto and blockchain
+  lists), GlobeNewswire (public companies' releases, plus releases tagged
+  cryptocurrency or blockchain) and Business Wire (all news); releases that
+  don't mention crypto are skipped;
+- exchanges: Binance's new-listing list, Kraken's blog, OKX's new-listing
+  announcements, and new coins in the public market lists of Coinbase,
+  Upbit and OKX (a coin that wasn't on the list before is a new listing; the
+  first read only saves the list). Upbit's notices and Bybit's announcements
+  refuse GitHub's US servers, so Upbit is watched through its market list
+  and Bybit is turned off (`enabled = false`);
+- the SEC: its press releases (only those about crypto) and EDGAR's latest
+  S-1 filings by funds ("Canary PEPE ETF"): a new crypto fund's first S-1
+  counts as a catalyst, an amendment (S-1/A) doesn't;
+- project blogs, each tied to its coin: Quant, Chainlink (its press
+  releases: its blog has no feed), Solana, Ripple and Avalanche (read from
+  their blog pages, which have no feed), Hedera and Stellar.
 
 Each run's log shows which sources worked (`ok` / `FAIL` with the reason),
 and the latest status is saved in `data/news/positions.json`. A feed with no
 items at all counts as `FAIL`: Business Wire, for one, answers a wrong
 address with an empty feed. Common mistakes in hand-made feeds (HTML
-entities like `&nbsp;`, a bare `&`) are repaired before reading. Feed addresses change now and
-then, so fix or remove any that keep failing.
+entities like `&nbsp;`, a bare `&`, no character set) are repaired before
+reading. The health check has a row for every source: failing, turned off,
+or working but with nothing new for longer than usual (4 days for a press
+wire, 14 for an exchange or the SEC's press releases, 30 for a blog; set
+`stale_days` on a source to change it), which usually means its address
+changed. To test every source by hand, run the **News sources check**
+workflow (Actions tab), or `python -m screener.news --check-sources`; it
+also runs by itself when the news code or `config.toml` changes.
 
 **Which coin?** CoinGecko's top 500 coins. A coin counts when its name
 appears with the right capitals. One-word names that are also everyday words
 ("Flow", "Core") also need their ticker, like `(FLOW)` or `$FLOW`, or a word
 like Network/Protocol/Token after the name. Bitcoin and Ether mentioned in
 passing don't count when another coin is the subject. Press releases that
-don't mention crypto at all are skipped.
+don't mention crypto at all are skipped. Also:
+- exchange headlines are read for tickers ("WOJAK is available for
+  trading!", "OKX will launch GRVT/USD", "Binance Will List Hyperliquid
+  (HYPE)"); a ticker outside the top 500 is looked up in CoinGecko's full
+  list of about 20,000 coins (one extra call, only on runs that need it),
+  taking the coin named in the headline or else the biggest with that ticker;
+- a company named after a coin ("BNB Plus Corp.", "Solana Company Inc.") is
+  not the coin, unless the coin's ticker is given too; a project's own
+  company ("Ondo Finance Inc.") still counts;
+- a release and its translations are checked once, in English: same release
+  number in the address (GlobeNewswire, Business Wire), or same wire, minute
+  and company (PR Newswire);
+- fund filings are matched on the fund's name in any capitals.
 
 **The checks** (all must pass):
 
@@ -495,10 +525,10 @@ don't mention crypto at all are skipped.
 | One coin | exactly one coin is named |
 | Not a stablecoin | not a stablecoin or a wrapped/staked token |
 | Not paid content | no "sponsored", "paid content", "advertorial" |
-| Catalyst wording | "selects", "partners with", "launches", "goes live", "acquires", "approved"... (exchanges: "will list", "listing", "trading starts"...) |
+| Catalyst wording | "selects", "partners with", "launches", "goes live", "acquires", "approved"... (exchanges: "will list", "listing", "available for trading", "trading starts"...; SEC filings: a fund's first "S-1") |
 | No hype wording | not "exploring", "in talks", "potential partnership", "rumor", "memorandum of understanding", "price prediction", "airdrop"... |
 | Not bad news | not "hack", "exploit", "delist", "lawsuit", "investigation"... |
-| Named counterparty | a well-known institution is named: a bank, payment network, big exchange, tech company or regulator (exchange announcements count the exchange itself) |
+| Named counterparty | a well-known institution is named: a bank, payment network, big exchange, tech company or regulator (exchange announcements count the exchange itself, SEC filings the SEC) |
 | Big enough | market cap $20M+ and 24h volume $1M+ |
 | Not already moved | up less than 15% in the last hour and 40% in 24h |
 | Not bought recently | no buy of the same coin in the last 3 days |
@@ -693,7 +723,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/github_issues.py` | Opens and closes the "PASSED" GitHub issues |
 | `screener/early.py` | The early strategy: candidates, checks, pullback entry and exits |
 | `screener/convergence.py` | The convergence strategy: Helius reads, credit budget, wallet scoring, signals and exits |
-| `screener/news.py` | The news strategy: feeds, coin matching, the checks, the candidate log and exits |
+| `screener/news.py` | The news strategy: feeds, coin matching, the checks, the candidate log and exits; `--check-sources` tests every source |
 | `screener/launch.py`, `launch_bot.py` | The launch strategy and the program that runs it on your server |
 | `screener/momentum.py`, `screener/pumpfeed.py`, `momentum_bot.py` | The momentum strategy, pump.fun's on-chain events, and the program that runs it on your server |
 | `trade_feed_probe.py` | A 2-hour, read-only measurement of the free Solana RPC as a pump.fun trade feed (no trading) |
@@ -707,6 +737,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `tests/` | Automated checks that the rules work. Run with `python -m unittest -v` (first `pip install -r requirements-launch.txt` too: the launch bot's tests need it) |
 | `.github/workflows/screener.yml` | Runs all strategies every 5 minutes on GitHub |
 | `.github/workflows/daily-comparison.yml` | Posts the daily comparison issue |
+| `.github/workflows/news-sources.yml` | News sources check: reads every news source once and shows what it gives (read-only) |
 
 ## Important caveats
 

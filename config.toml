@@ -472,9 +472,14 @@ catalyst_words = ["selects", "selected", "partners with", "partnership with", "l
                   "integrates", "integration with", "adopts", "chooses", "acquires",
                   "acquisition of", "approved", "approval", "granted", "signs", "signed",
                   "agreement with", "collaboration with", "invests in", "strategic investment"]
-# ...and for exchange announcements, a new listing.
-exchange_words = ["will list", "lists", "listing", "will add", "adds", "trading starts",
-                  "now available", "will launch", "launches"]
+# ...for exchange announcements, a new listing ("WOJAK is available for
+# trading!", "OKX to list CARDS/USDT")...
+exchange_words = ["will list", "to list", "lists", "listing", "will add", "adds",
+                  "trading starts", "now available", "available for trading", "will launch",
+                  "launches"]
+# ...and for SEC filings, a new fund's first registration (S-1), not an
+# amendment (S-1/A).
+filing_words = ["S-1 filed"]
 # Hype or not-yet-real...
 hype_words = ["exploring", "explores", "in talks", "in discussions", "potential partnership",
               "potential listing", "rumor", "rumour", "reportedly", "speculation",
@@ -505,10 +510,32 @@ institutions = ["JPMorgan", "J.P. Morgan", "Citi", "Citigroup", "Bank of America
 
 # --- Sources ---
 # kind: "press" (press-release wire), "blog" (a project's own blog: set coin
-# to its CoinGecko id) or "exchange" (listing announcements). format: "rss"
-# (RSS or Atom, the default) or "binance" (Binance's public announcement
-# list). Each run's log says which sources worked; fix or remove any that
-# keep failing. Feed addresses change now and then.
+# to its CoinGecko id), "exchange" (listing announcements and new trading
+# pairs), "regulator" (the SEC's press releases) or "filing" (SEC EDGAR).
+# Press and regulator items that don't mention crypto are skipped.
+# format: "rss" (RSS or Atom, the default), "binance", "okx" or "bybit"
+# (their public announcement lists), "markets" (an exchange's public list of
+# trading pairs: a coin that wasn't there before is a new listing; the first
+# read only saves the list), "html" (a blog page without a feed: the links
+# matching link_pattern) or "edgar" (EDGAR's latest S-1 filings, funds only).
+# dates = "day": the source gives only the day, so a post from the last 2
+# days counts as first seen when the bot sees it. enabled = false turns a
+# source off. stale_days: how long it may go without anything new before the
+# health check warns (default: press 4, exchange 14, blog 30, regulator 14,
+# filing 4). Each run's log says which sources worked; fix or remove any
+# that keep failing. Feed addresses change now and then. To test them all
+# by hand: python -m screener.news --check-sources (or run the "News
+# sources check" workflow on GitHub).
+
+# --- Press-release wires ---
+[[news.sources]]
+# PR Newswire's crypto and blockchain lists are slow and include unrelated
+# releases; its all-news feed (the latest 20, a few hours' worth on a
+# weekday) catches crypto releases filed under other categories.
+name = "PR Newswire"
+kind = "press"
+url = "https://www.prnewswire.com/rss/news-releases-list.rss"
+
 [[news.sources]]
 name = "PR Newswire crypto"
 kind = "press"
@@ -521,20 +548,32 @@ url = "https://www.prnewswire.com/rss/consumer-technology-latest-news/blockchain
 
 [[news.sources]]
 # GlobeNewswire's latest 20 releases from public companies (its documented
-# feed). Releases that don't mention crypto are skipped without any
-# CoinGecko call.
+# feed).
 name = "GlobeNewswire"
 kind = "press"
 url = "https://www.globenewswire.com/RssFeed/orgclass/1/feedTitle/GlobeNewswire%20-%20News%20About%20Public%20Companies"
 
 [[news.sources]]
-# Business Wire's all-news feed: releases that don't mention crypto are
-# skipped without any CoinGecko call.
+# Releases tagged "cryptocurrency" and "blockchain", from any company.
+name = "GlobeNewswire crypto"
+kind = "press"
+url = "https://www.globenewswire.com/RssFeed/keyword/cryptocurrency"
+
+[[news.sources]]
+name = "GlobeNewswire blockchain"
+kind = "press"
+url = "https://www.globenewswire.com/RssFeed/keyword/blockchain"
+
+[[news.sources]]
+# Business Wire's all-news feed.
 name = "Business Wire"
 kind = "press"
 url = "https://feed.businesswire.com/rss/home/?rss=G1QFDERJXkJcFVJYWQ=="
 
+# --- Exchanges ---
 [[news.sources]]
+# Binance's "New Cryptocurrency Listing" list. It works: Binance simply
+# posts there only every few days.
 name = "Binance listings"
 kind = "exchange"
 format = "binance"
@@ -546,10 +585,126 @@ kind = "exchange"
 url = "https://blog.kraken.com/feed/"
 
 [[news.sources]]
+# Coinbase posts no listing feed: a coin that appears in its public list of
+# trading pairs is a new listing.
+name = "Coinbase new pairs"
+kind = "exchange"
+format = "markets"
+exchange = "coinbase"
+url = "https://api.exchange.coinbase.com/products"
+trade_url = "https://exchange.coinbase.com/trade/{symbol}-USD"
+
+[[news.sources]]
+# Upbit's listing notices refuse GitHub's US servers (error 403), so new
+# coins are found in its public market list instead (KRW, BTC and USDT
+# markets).
+name = "Upbit new markets"
+kind = "exchange"
+format = "markets"
+exchange = "upbit"
+url = "https://api.upbit.com/v1/market/all"
+trade_url = "https://upbit.com/exchange?code=CRIX.UPBIT.KRW-{symbol}"
+
+[[news.sources]]
+# OKX's "New listings" announcements. Seen from GitHub's US servers, OKX
+# shows its US announcements only, so its spot market list (below) is
+# watched too.
+name = "OKX listings"
+kind = "exchange"
+format = "okx"
+url = "https://www.okx.com/api/v5/support/announcements?annType=announcements-new-listings"
+# Its US listings are rare (the last one on July 30, 2026): only warn after
+# 4 months without one.
+stale_days = 120
+
+[[news.sources]]
+name = "OKX new markets"
+kind = "exchange"
+format = "markets"
+exchange = "okx"
+exchange_name = "OKX"
+url = "https://www.okx.com/api/v5/public/instruments?instType=SPOT"
+trade_url = "https://www.okx.com/trade-spot/{symbol}-usdt"
+
+[[news.sources]]
+# Bybit's new-listing announcements. Bybit blocks US addresses, including
+# GitHub's servers ("blocked from your country"), so this is off; turn it on
+# only if the bot runs from a country Bybit serves.
+name = "Bybit listings"
+kind = "exchange"
+format = "bybit"
+url = "https://api.bybit.com/v5/announcements/index?locale=en-US&type=new_crypto&limit=20"
+enabled = false
+note = "Bybit blocks GitHub's US servers"
+
+# --- The SEC ---
+[[news.sources]]
+# The SEC asks automated readers to say who they are (no email is sent).
+name = "SEC press releases"
+kind = "regulator"
+url = "https://www.sec.gov/news/pressreleases.rss"
+headers = {User-Agent = "trading-bot-news", Accept = "*/*"}
+
+[[news.sources]]
+# EDGAR's latest S-1 filings: kept only for funds (ETF, trust, fund), and
+# matched to the coin in the fund's name ("Canary PEPE ETF").
+name = "SEC EDGAR fund filings"
+kind = "filing"
+format = "edgar"
+url = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=S-1&company=&dateb=&owner=include&count=100&output=atom"
+headers = {User-Agent = "trading-bot-news", Accept = "*/*"}
+
+# --- Project blogs (each tied to its coin) ---
+[[news.sources]]
 name = "Quant blog"
 kind = "blog"
 coin = "quant-network"
 url = "https://quant.network/feed/"
+
+[[news.sources]]
+# Chainlink's blog has no feed (blog.chain.link/feed/ is a web page); its
+# press releases have one, dated by day only.
+name = "Chainlink press releases"
+kind = "blog"
+coin = "chainlink"
+url = "https://chain.link/press-releases/rss.xml"
+dates = "day"
+
+[[news.sources]]
+name = "Solana news"
+kind = "blog"
+coin = "solana"
+url = "https://solana.com/news/rss.xml"
+
+[[news.sources]]
+# Ripple's blog has no feed: the posts linked from its page.
+name = "Ripple insights"
+kind = "blog"
+coin = "ripple"
+format = "html"
+url = "https://ripple.com/insights/"
+link_pattern = "^/insights/[a-z0-9-]{8,}/?$"
+
+[[news.sources]]
+# Avalanche's blog has no feed either.
+name = "Avalanche blog"
+kind = "blog"
+coin = "avalanche-2"
+format = "html"
+url = "https://www.avax.network/about/blog"
+link_pattern = "^/about/blog/[a-z0-9-]{8,}$"
+
+[[news.sources]]
+name = "Hedera blog"
+kind = "blog"
+coin = "hedera-hashgraph"
+url = "https://hedera.com/blog/rss.xml"
+
+[[news.sources]]
+name = "Stellar blog"
+kind = "blog"
+coin = "stellar"
+url = "https://stellar.org/blog/rss.xml"
 
 [news.paper_trading]
 # Pretend dollars per buy.
