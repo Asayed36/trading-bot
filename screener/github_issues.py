@@ -135,6 +135,23 @@ class GitHubIssues:
         self._request("PATCH", f"/issues/{number}",
                       json={"state": "closed", "state_reason": "completed"})
 
+    def issue(self, number):
+        return self._request("GET", f"/issues/{number}").json()
+
+    def set_body(self, number, body):
+        self._request("PATCH", f"/issues/{number}", json={"body": body})
+
+    def add_labels(self, number, labels):
+        self._request("POST", f"/issues/{number}/labels", json={"labels": list(labels)})
+
+    def create_pull(self, title, head, base, body, draft=True):
+        """Open a pull request (a draft by default). Needs "pull-requests:
+        write", and the repository setting that lets GitHub Actions create
+        pull requests. Returns its web address."""
+        resp = self._request("POST", "/pulls", json={
+            "title": title, "head": head, "base": base, "body": body, "draft": draft})
+        return resp.json()["html_url"]
+
 
 # ---------------------------------------------------------------------
 # What goes in the issue

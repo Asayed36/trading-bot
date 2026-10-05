@@ -1056,6 +1056,25 @@ launch_stale_hours = 3
 # The workflow file of the scheduled paper trading run.
 workflow = "screener.yml"
 
+[repair]
+# Automatic repair (.github/workflows/repair.yml, screener/repair.py): after
+# the daily comparison, each problem in the health section gets a GitHub
+# issue. Claude Code (on GitHub, with the CLAUDE_API_KEY secret) tries to fix
+# at most max_attempts_per_day a day, one attempt per issue, and opens a
+# draft pull request for you to review; it never merges. Problems on your
+# server or about a secret or setting are left to you ("needs-you" label).
+enabled = true
+model = "claude-sonnet-5-5"     # $2 / $10 per million tokens in / out
+max_attempts_per_day = 1
+# No new attempt once today's attempts cost this much (in USD; a run whose
+# cost wasn't reported counts as assumed_usd_when_unknown).
+max_daily_usd = 3
+assumed_usd_when_unknown = 2
+# Each attempt: at most this many steps (the workflow also stops it after 20
+# minutes).
+max_turns = 30
+base = "main"
+
 [files]
 # Where results are saved (created automatically).
 data_folder = "data"
