@@ -252,24 +252,37 @@ def demo_news_items(now=None):
 
 
 class DemoNewsHttp:
-    """Pretends to be the news feeds and CoinGecko. Any RSS URL returns the
-    demo items; any other JSON URL returns the demo coin list."""
+    """Pretends to be the news sources and CoinGecko. PR Newswire's feeds
+    return the demo items; every other source returns one old, unrelated
+    post (or its usual market list); any other JSON URL returns the demo
+    coin list."""
 
-    def __init__(self, now=None, items=None, coins=None, price_moves=None):
+    def __init__(self, now=None, items=None, coins=None, price_moves=None, markets=None):
         self.now = now
         self.items = items if items is not None else demo_news_items()
         self.coins = coins if coins is not None else DEMO_COINS
         self.price_moves = price_moves or {}
+        # Tickers on each exchange's market list ("coinbase", "upbit", "okx").
+        self.markets = markets or {}
         self.calls = []
 
-    def text(self, url):
+    def text(self, url, headers=None):
         self.calls.append(url)
         from email.utils import format_datetime
         now = self.now or datetime.now(timezone.utc)
+        old = now - timedelta(days=2)
+        if "ripple.com" in url or "avax.network" in url:     # blog pages without a feed
+            path = "/insights/" if "ripple" in url else "/about/blog/"
+            return (f'<html><a href="{path}an-older-post-from-us">An older post from us '
+                    f'{old:%B} {old.day}, {old.year}</a></html>')
+        if "sec.gov/cgi-bin" in url:                         # EDGAR's Atom feed
+            return ('<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>S-1 - Acme '
+                    'Biotech Inc. (0001234567) (Filer)</title><link href="https://www.sec.gov/'
+                    f'x"/><id>urn:1</id><updated>{old.isoformat()}</updated></entry></feed>')
         if "prnewswire" not in url:   # other feeds: one old, unrelated post
-            when = format_datetime(now - timedelta(days=2))
             return (f"<rss><channel><item><title>Weekly update from {url[8:30]}</title>"
-                    f"<link>{url}#old</link><pubDate>{when}</pubDate></item></channel></rss>")
+                    f"<link>{url}#old</link><pubDate>{format_datetime(old)}</pubDate></item>"
+                    f"</channel></rss>")
         rows = []
         for n, (_, title, summary, ago) in enumerate(self.items):
             when = format_datetime(now - timedelta(minutes=ago))
@@ -280,11 +293,31 @@ class DemoNewsHttp:
 
     def json(self, url, headers=None):
         self.calls.append(url)
+        old = (self.now or datetime.now(timezone.utc)) - timedelta(days=2)
+        ms = int(old.timestamp() * 1000)
         if "binance" in url:
-            old = (self.now or datetime.now(timezone.utc)) - timedelta(days=2)
             return {"code": "000000", "data": {"catalogs": [{"articles": [
                 {"id": 1, "code": "demo1", "title": "Notice on Scheduled Maintenance",
-                 "releaseDate": int(old.timestamp() * 1000)}]}]}}
+                 "releaseDate": ms}]}]}}
+        if "okx.com/api/v5/support" in url:
+            return {"code": "0", "data": [{"details": [
+                {"title": "OKX to delist an old pair", "url": "https://www.okx.com/x",
+                 "pTime": str(ms)}]}]}
+        if "bybit" in url:
+            return {"retCode": 0, "result": {"list": [
+                {"title": "Maintenance", "url": "https://www.bybit.com/x", "publishTime": ms}]}}
+        tickers = lambda name: ["BTC"] + self.markets.get(name, [])   # noqa: E731
+        if "coinbase.com/products" in url:
+            return [{"id": f"{t}-USD", "base_currency": t, "status": "online"}
+                    for t in tickers("coinbase")]
+        if "upbit.com" in url:
+            return [{"market": f"KRW-{t}", "english_name": t.title()} for t in tickers("upbit")]
+        if "okx.com/api/v5/public/instruments" in url:
+            return {"code": "0", "data": [{"instId": f"{t}-USDT", "baseCcy": t}
+                                          for t in tickers("okx")]}
+        if "/coins/list" in url:
+            return [{"id": c["id"], "symbol": c["symbol"], "name": c["name"]}
+                    for c in self.coins]
         coins = copy.deepcopy(self.coins)
         for coin in coins:
             coin["current_price"] *= self.price_moves.get(coin["id"], 1.0)

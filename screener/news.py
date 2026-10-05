@@ -2,9 +2,10 @@
 
 Every 15 minutes (news.every_minutes) it reads official sources only:
 press-release wires (PR Newswire, GlobeNewswire, Business Wire), project
-blogs and exchange announcements (all listed in [[news.sources]] in
-config.toml). Each new item that names a coin CoinGecko knows is a
-candidate, and goes through rule-based checks (no AI, no X):
+blogs, exchange announcements and new trading pairs, and the SEC (press
+releases and fund filings), all listed in [[news.sources]] in config.toml.
+Each new item that names a coin CoinGecko knows is a candidate, and goes
+through rule-based checks (no AI, no X):
 
   Fresh news          published in the last 3 hours
   One coin            names exactly one coin (Bitcoin/Ether as background
@@ -43,6 +44,7 @@ from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from html.entities import name2codepoint
 from types import SimpleNamespace
+from urllib.parse import urljoin, urlparse
 
 import requests
 
@@ -67,6 +69,28 @@ QUALIFIERS = r"(?:Network|Protocol|Foundation|Labs|Chain|Blockchain|[Tt]oken|[Cc
 # time) never age out of a feed, so they're remembered longer.
 SEEN_DAYS = 1
 SEEN_UNDATED_DAYS = 4
+# A coin's name at the start of a company's name ("BNB Plus Corp.", "Solana
+# Company Inc.") is the company, not the coin.
+COMPANY = (r"(?:Corp(?:oration)?|Company|Inc|Incorporated|Ltd|Limited|LLC|L\.L\.C|PLC|plc"
+           r"|Holdings?|Group|AB|AG|ASA|GmbH|N\.V|S\.A)\b")
+# Words that make a company the coin's own project ("Ondo Finance Inc.").
+PROJECT_WORDS = {"Network", "Protocol", "Foundation", "Labs", "Chain", "Blockchain", "Token",
+                 "Coin", "DAO", "Finance", "Hashgraph"}
+# Exchange headlines name the coin by its ticker: "WOJAK is available for
+# trading!", "OKX will launch GRVT/USD", "Binance Will List Hyperliquid (HYPE)".
+QUOTES = r"(?:USD|USDT|USDC|USDG|FDUSD|EUR|GBP|KRW|JPY|TRY|BRL|AUD|SGD|BTC|ETH|BNB)"
+NOT_TICKERS = {"USD", "EUR", "GBP", "KRW", "JPY", "TRY", "BRL", "AUD", "SGD", "OKX", "API",
+               "UTC", "VIP", "ETF", "NEW", "SPOT", "FAQ"}
+# Words in a fund's name that aren't a coin ("Canary PEPE ETF").
+FUND_WORDS = {"ETF", "ETP", "TRUST", "FUND", "INC", "LLC", "LP", "THE", "AND", "SHARES", "INDEX",
+              "CRYPTO", "STAKED", "STAKING", "SPOT", "DIGITAL", "ASSET", "ASSETS", "INCOME",
+              "STRATEGY", "PREMIUM", "DAILY", "TARGET", "LEVERAGED", "COVERED", "CALL", "PLUS",
+              "SERIES", "CORE", "OPTION", "OPTIONS", "YIELD", "NEXT", "GEN", "TECHNOLOGY"}
+# How long a working source may go without a new item before the health
+# check warns (set stale_days on a source to change it).
+STALE_DAYS = {"press": 4, "exchange": 14, "blog": 30, "regulator": 14, "filing": 4}
+MONTHS = ("january february march april may june july august september october november "
+          "december").split()
 
 
 # ---------------------------------------------------------------------
@@ -91,8 +115,13 @@ class NewsHttp:
             raise ApiError(f"{url.split('?')[0]} answered with error {resp.status_code}")
         return resp
 
-    def text(self, url):
-        return self._get(url).text
+    def text(self, url, headers=None):
+        resp = self._get(url, headers)
+        # Feeds served without a charset are UTF-8 (the XML default), not
+        # the Latin-1 requests would guess ("Stellar\u00e2\u0080\u0099s").
+        if "charset" not in (resp.headers.get("content-type") or "").lower():
+            return resp.content.decode("utf-8", "replace")
+        return resp.text
 
     def json(self, url, headers=None):
         return self._get(url, headers).json()
@@ -106,6 +135,47 @@ def seen_key(text):
     """A short fingerprint of an item, so the list of items already seen
     (kept for a few days in positions.json) stays small."""
     return hashlib.sha1(text.encode("utf-8")).hexdigest()[:12]
+
+
+ENGLISH = re.compile(r"\b(the|and|to|of|for|with|its|announces|launches|completes)\b",
+                     re.IGNORECASE)
+NOT_ENGLISH = re.compile("[äöüßàâçéèêëîïôùûñåæøœ]")
+
+
+def is_english(item):
+    """Roughly: is this headline in English? (Wires send translations too.)"""
+    if re.search(r"/en/", item.get("url") or ""):
+        return True
+    title = item["title"]
+    return bool(ENGLISH.search(title)) and not NOT_ENGLISH.search(title.lower())
+
+
+def duplicate_keys(item, source):
+    """Fingerprints that mark the same release seen elsewhere: the same
+    headline on another wire; the same release id in the address (a
+    translation on GlobeNewswire or Business Wire: .../3373842/0/sv/...);
+    or, for press releases, the same wire, minute and company (PR Newswire
+    gives each translation its own address)."""
+    keys = [seen_key("title|" + re.sub(r"\W+", " ", item["title"].lower()).strip())]
+    url = item.get("url") or ""
+    rid = (re.search(r"globenewswire\.com/news-release/\d{4}/\d\d/\d\d/(\d+)/", url)
+           or re.search(r"businesswire\.com/news/home/(\d+)/", url))
+    if rid:
+        keys.append(seen_key(f"release|{urlparse(url).netloc}|{rid.group(1)}"))
+    if source.get("kind", "press") == "press" and item.get("published"):
+        first = " ".join(re.findall(r"\w+", item["title"].lower())[:2])
+        keys.append(seen_key(f"same time|{urlparse(url).netloc}|"
+                             f"{item['published']:%Y-%m-%d %H:%M}|{first}"))
+    return keys
+
+
+def crypto_only(source):
+    """Sources whose items must mention crypto at all (press wires and
+    regulators, which mostly publish other news): set crypto_only on a
+    source to change it."""
+    if source.get("coin"):
+        return False
+    return source.get("crypto_only", source.get("kind", "press") in ("press", "regulator"))
 
 
 def clean(text):
@@ -236,6 +306,194 @@ def parse_binance(data):
     return items
 
 
+def _from_ms(value):
+    ms = to_float(value)
+    return datetime.fromtimestamp(ms / 1000, timezone.utc) if ms else None
+
+
+def parse_okx(data):
+    """Items from OKX's public announcement list (no key)."""
+    items = []
+    for group in (data or {}).get("data") or []:
+        for a in group.get("details") or []:
+            if a.get("title"):
+                items.append({"id": a.get("url") or a["title"], "title": clean(a["title"]),
+                              "summary": "", "url": a.get("url") or "",
+                              "published": _from_ms(a.get("pTime"))})
+    if not items:
+        raise ApiError("no announcements in the answer")
+    return items
+
+
+def parse_bybit(data):
+    """Items from Bybit's public announcement list (no key)."""
+    items = []
+    for a in ((data or {}).get("result") or {}).get("list") or []:
+        if a.get("title"):
+            items.append({"id": a.get("url") or a["title"], "title": clean(a["title"]),
+                          "summary": clean(a.get("description") or "")[:2000],
+                          "url": a.get("url") or "",
+                          "published": _from_ms(a.get("publishTime") or a.get("dateTimestamp"))})
+    if not items:
+        raise ApiError("no announcements in the answer"
+                       + (f" ({data.get('retMsg')})" if isinstance(data, dict)
+                          and data.get("retMsg") not in (None, "", "OK") else ""))
+    return items
+
+
+def parse_markets(exchange, data):
+    """{ticker: name} of every coin an exchange trades, from its public list
+    of markets (no key). A ticker that wasn't there before is a new listing."""
+    found = {}
+    if exchange == "coinbase":           # api.exchange.coinbase.com/products
+        for p in data if isinstance(data, list) else []:
+            if p.get("base_currency") and p.get("status") != "delisted":
+                found.setdefault(p["base_currency"].upper(), "")
+    elif exchange == "upbit":            # api.upbit.com/v1/market/all
+        for m in data if isinstance(data, list) else []:
+            base = (m.get("market") or "").partition("-")[2]
+            if base:
+                found.setdefault(base.upper(), m.get("english_name") or "")
+    elif exchange == "okx":              # okx.com/api/v5/public/instruments?instType=SPOT
+        for m in (data.get("data") if isinstance(data, dict) else None) or []:
+            if m.get("baseCcy"):
+                found.setdefault(m["baseCcy"].upper(), "")
+    else:
+        raise ApiError(f"unknown exchange {exchange!r} (coinbase, upbit or okx)")
+    if not found:
+        raise ApiError("no markets in the answer")
+    return found
+
+
+def _page_date(text):
+    """A date written on a blog page ("September 29, 2026" or "9.14.2026"),
+    and the text without it."""
+    m = re.search(r"\b(" + "|".join(MONTHS) + r") (\d{1,2}), (20\d\d)\b", text, re.IGNORECASE)
+    if m:
+        when = (int(m.group(3)), MONTHS.index(m.group(1).lower()) + 1, int(m.group(2)))
+    else:
+        m = re.search(r"\b(\d{1,2})\.(\d{1,2})\.(20\d\d)\b", text)
+        if not m:
+            return None, text
+        when = (int(m.group(3)), int(m.group(1)), int(m.group(2)))
+    try:
+        day = datetime(*when, tzinfo=timezone.utc)
+    except ValueError:
+        return None, text
+    return day, (text[:m.start()] + " " + text[m.end():]).strip()
+
+
+def parse_html(text, base_url, pattern):
+    """Posts on a blog page that has no feed (Ripple, Avalanche): every link
+    whose address matches `pattern`, its text as the title, and the date
+    written next to it, if any."""
+    found = {}
+    for href, inner in re.findall(r'<a\b[^>]*?href="([^"]+)"[^>]*>(.*?)</a>', text or "",
+                                  re.DOTALL):
+        if not re.search(pattern, href):
+            continue
+        url = urljoin(base_url, href)
+        words = clean(inner)
+        if len(words) > len(found.get(url, "")):     # the same post is linked several times
+            found[url] = words
+    items = []
+    for url, words in found.items():
+        published, words = _page_date(words)
+        title = re.sub(r"^\d{1,2}\s+", "", words)                  # "01 The Swell..."
+        title = re.sub(r"^.*?\bMinute Read\s+", "", title)         # "By Avalanche / 7 Minute Read"
+        title = re.sub(r"\s*\bRead More\s*$", "", title).strip(" /")
+        if not title:
+            title = url.rstrip("/").rsplit("/", 1)[-1].replace("-", " ").capitalize()
+        items.append({"id": url, "title": title[:300], "summary": "", "url": url,
+                      "published": published})
+    if not items:
+        raise ApiError("no posts found on the page (has its layout changed?)")
+    return items
+
+
+def parse_edgar(items):
+    """SEC EDGAR's latest S-1 filings, kept only for funds ("Canary PEPE
+    ETF", "Grayscale Solana Trust"): a new crypto fund files an S-1 first.
+    Amendments (S-1/A) are kept too, but say so in the title."""
+    out = []
+    for it in items:
+        m = re.match(r"^(\S+) - (.+?) \(\d{10}\)", it["title"])
+        if not m or not re.search(r"\b(ETF|ETP|Trust|Fund)\b", m.group(2), re.IGNORECASE):
+            continue
+        form, company = m.group(1), m.group(2).strip()
+        what = f"{form} filed" if "/A" not in form else f"{form} amendment filed"
+        out.append(dict(it, title=f"{what}: {company}",
+                        summary=f"{company} filed form {form} with the SEC."))
+    return out
+
+
+def read_source(http, source, now, plan, status):
+    """One source's items (see parse_*). Market lists give an item for
+    each coin that wasn't listed before."""
+    fmt, url = source.get("format", "rss"), source["url"]
+    headers = source.get("headers")
+    args = (url, headers) if headers else (url,)
+    if fmt == "markets":
+        listed = parse_markets(source.get("exchange"), http.json(*args))
+        return new_markets(source, listed, now, plan, status)
+    if fmt in ("binance", "okx", "bybit"):
+        items = {"binance": parse_binance, "okx": parse_okx,
+                 "bybit": parse_bybit}[fmt](http.json(*args))
+    elif fmt == "html":
+        items = parse_html(http.text(*args), url, source["link_pattern"])
+    elif fmt in ("rss", "edgar"):
+        items = parse_feed(http.text(*args))
+    else:
+        raise ApiError(f"unknown format {fmt!r}")
+    dated = [i["published"] for i in items if i["published"]]
+    if dated:
+        status["newest"] = max(dated).astimezone(timezone.utc).isoformat()
+    if fmt == "edgar":
+        status["filings"] = len(items)
+        items = parse_edgar(items)
+    if fmt == "html" or source.get("dates") == "day":
+        # Only the day is given: a post from the last 2 days counts as
+        # "first seen just now" (like an undated item); older ones are old.
+        for i in items:
+            day = i["published"]
+            if day and (day.hour, day.minute) == (0, 0) and now - day < timedelta(days=2):
+                i["published"] = None
+    return items
+
+
+def new_markets(source, listed, now, plan, status):
+    """New tickers on an exchange's market list, as listing items. The
+    first read only saves today's list."""
+    name, state = source["name"], plan["state"]
+    status["markets"] = len(listed)
+    last = (state.get("markets_new") or {}).get(name)
+    if last:
+        status["newest"] = last
+    known = (state.get("markets") or {}).get(name)
+    if known is None:
+        plan["markets"][name] = sorted(listed)
+        status["note"] = f"first read: {len(listed)} coin(s) saved; new ones count as listings"
+        return []
+    known = set(known)
+    new = sorted(s for s in listed if s not in known)
+    plan["markets"][name] = sorted(known | set(listed))
+    if len(new) > 20:
+        # Not a normal day's listings: the list itself changed. Saved, not checked.
+        status["note"] = f"{len(new)} new tickers at once: saved, not checked"
+        return []
+    if new:
+        status["newest"] = plan["markets_new"][name] = now.isoformat()
+    exchange = source.get("exchange_name") or source["exchange"].capitalize()
+    items = []
+    for sym in new:
+        label = f"{listed[sym]} ({sym})" if listed[sym] else f"({sym})"
+        items.append({"id": sym, "title": f"{exchange} lists {label} for trading",
+                      "summary": f"{sym} is a new market on {exchange}.",
+                      "url": (source.get("trade_url") or source["url"]).format(symbol=sym),
+                      "published": now})
+    return items
+
+
 # ---------------------------------------------------------------------
 # CoinGecko (free plan)
 # ---------------------------------------------------------------------
@@ -269,6 +527,16 @@ class CoinGecko:
         path += f"&ids={','.join(ids)}" if ids else f"&page={page}"
         return [coin_info(c) for c in self._get(path) or []]
 
+    def coin_list(self):
+        """Every coin CoinGecko knows (about 20,000: id, symbol and name, no
+        prices). One call, made only on runs with an exchange listing whose
+        ticker isn't among the biggest coins."""
+        if not hasattr(self, "_all"):
+            self._all = [{"id": c.get("id"), "symbol": (c.get("symbol") or "").upper(),
+                          "name": c.get("name") or ""}
+                         for c in self._get("/coins/list") or [] if c.get("id")]
+        return self._all
+
 
 def coin_info(c):
     return {
@@ -290,26 +558,45 @@ def _words(words):
                       re.IGNORECASE)
 
 
+def company_name(name, text):
+    """The company named after a coin in `text` ("BNB Plus Corp." for BNB),
+    or None. A company that is the coin's own project ("Ondo Finance Inc.",
+    "Quant Network Ltd") doesn't count."""
+    for m in re.finditer(r"(?<![\w$])" + re.escape(name) + r"((?:\s+[A-Z][\w&'\u2019.-]*){0,2}?)"
+                         r",?\s+" + COMPANY + r"\.?", text):
+        if not PROJECT_WORDS & set(re.findall(r"[\w]+", m.group(1))):
+            return m.group(0)
+    return None
+
+
 def find_coins(text, coins, c):
     """Coins named in `text`. A coin is named when its name appears with the
     same capitals as on CoinGecko. One-word names that are also everyday
     words ("Quant", "Flow", "Core") also need their ticker - "(QNT)" or
     "$QNT" - or a word like Network/Protocol/Token right after, unless they
-    are listed in news.unambiguous_names."""
+    are listed in news.unambiguous_names. A company named after a coin
+    ("BNB Plus Corp.") doesn't name the coin, unless the coin's ticker is
+    given too."""
     found = []
     clear = set(c["unambiguous_names"])
     for coin in coins:
         name, sym = coin["name"], coin["symbol"]
         if len(name) < 3 or not re.search(r"(?<![\w$])" + re.escape(name) + r"(?!\w)", text):
             continue
+        ticker = sym and len(sym) >= 2 and re.search(
+            r"(\$" + re.escape(sym) + r"\b|\(" + re.escape(sym) + r"\))", text)
+        if not ticker and company_name(name, text):
+            continue
         if " " in name or name in clear:
             found.append(coin)
             continue
-        ticker = sym and len(sym) >= 2 and re.search(
-            r"(\$" + re.escape(sym) + r"\b|\(" + re.escape(sym) + r"\))", text)
         qualified = re.search(re.escape(name) + r"\s+" + QUALIFIERS + r"\b", text)
         if ticker or qualified:
             found.append(coin)
+    return _main_coins(found, c)
+
+
+def _main_coins(found, c):
     # "Bitcoin Cash" also contains "Bitcoin": keep only the longer name.
     found = [x for x in found
              if not any(x is not y and x["name"] in y["name"] for y in found)]
@@ -317,6 +604,56 @@ def find_coins(text, coins, c):
     # another coin is the subject.
     main = [x for x in found if x["id"] not in c["background_coins"]]
     return main or found
+
+
+def listing_tickers(title):
+    """The tickers an exchange's listing headline names: "WOJAK is available
+    for trading!", "OKX will launch GRVT/USD", "Binance Will List Hyperliquid
+    (HYPE)", Upbit's "(XRP)"."""
+    found = []
+    m = re.match(r"^(.+?)\s+(?:is|are)\s+(?:now\s+)?(?:available|live)\s+(?:for|on)\s+trading",
+                 title, re.IGNORECASE)
+    if m:
+        found += re.findall(r"\b[A-Z0-9]{2,15}\b", m.group(1))
+    found += re.findall(r"\b([A-Z0-9]{2,15})[/-]" + QUOTES + r"\b", title)
+    found += re.findall(r"\(([A-Z0-9]{2,15})\)", title)
+    out = []
+    for sym in found:
+        if sym not in NOT_TICKERS and not sym.isdigit() and sym not in out:
+            out.append(sym)
+    return out
+
+
+def ticker_coins(title, tickers, by_symbol):
+    """The coin for each ticker: of the coins with that ticker, the one whose
+    name is in the headline, else the biggest by market value."""
+    named = []
+    for sym in tickers:
+        options = by_symbol.get(sym) or []
+        if not options:
+            continue
+        in_title = [x for x in options if x["name"] and x["name"].lower() in title.lower()]
+        best = max(in_title or options, key=lambda x: x.get("market_cap") or 0)
+        if best not in named:
+            named.append(best)
+    return named
+
+
+def fund_coins(fund, coins, c):
+    """The coin a fund is named after ("Canary PEPE ETF", "Grayscale Solana
+    Trust"): EDGAR writes names in any capitals, so names and tickers are
+    matched in any case, among CoinGecko's biggest coins only."""
+    words = [w.upper() for w in re.findall(r"[A-Za-z0-9]+", fund)]
+    padded = " " + " ".join(words) + " "
+    found = []
+    for coin in coins:
+        name = " ".join(w.upper() for w in re.findall(r"[A-Za-z0-9]+", coin["name"]))
+        sym = coin["symbol"]
+        by_name = len(name) >= 3 and name not in FUND_WORDS and f" {name} " in padded
+        by_sym = len(sym) >= 3 and sym not in FUND_WORDS and sym in words
+        if by_name or by_sym:
+            found.append(coin)
+    return _main_coins(found, c)
 
 
 def coin_index(coins):
@@ -362,7 +699,8 @@ def check_candidate(item, source, coins, now, state, c):
     checks.append(Check("Not paid content", FAIL if paid else PASS,
                         f"says \"{paid.group(1)}\"" if paid else "ok"))
 
-    strong = c["exchange_words"] if kind == "exchange" else c["catalyst_words"]
+    strong = {"exchange": c["exchange_words"],
+              "filing": c["filing_words"]}.get(kind, c["catalyst_words"])
     hit = _words(strong).search(text)
     checks.append(Check("Catalyst wording", PASS if hit else FAIL,
                         f"\"{hit.group(1)}\"" if hit else "no catalyst words (selects, "
@@ -378,6 +716,9 @@ def check_candidate(item, source, coins, now, state, c):
 
     if kind == "exchange":
         checks.append(Check("Named counterparty", PASS, f"the exchange itself ({source['name']})"))
+    elif kind == "filing":
+        checks.append(Check("Named counterparty", PASS,
+                            f"a filing with the SEC ({source['name']})"))
     else:
         who = re.search(r"(?<![\w-])(" + "|".join(re.escape(w) for w in c["institutions"])
                         + r")(?!\w)", text)
@@ -446,7 +787,8 @@ class NewsStrategy:
         c = self.c
         state = copy.deepcopy(self.trader.state)
         plan = {"now": now, "notes": [], "sources": [], "candidates": [], "prices": {},
-                "seen": {}, "state": state, "checked": False, "unmatched": []}
+                "seen": {}, "state": state, "checked": False, "unmatched": [],
+                "markets": {}, "markets_new": {}}
         last = state.get("last_check")
         gap = timedelta(minutes=c["every_minutes"] - 2)    # 2 min slack for GitHub's jitter
         if last and now - datetime.fromisoformat(last) < gap:
@@ -471,12 +813,11 @@ class NewsStrategy:
         plan["sources_read"] = list(read)
         new, backlog = [], 0
         for source in c["sources"]:
+            if source.get("enabled") is False:
+                continue
             status = {"name": source["name"], "kind": source.get("kind", "press")}
             try:
-                if source.get("format") == "binance":
-                    items = parse_binance(self.http.json(source["url"]))
-                else:
-                    items = parse_feed(self.http.text(source["url"]))
+                items = read_source(self.http, source, now, plan, status)
                 status.update(items=len(items), ok=True)
             except ApiError as exc:
                 status.update(ok=False, error=str(exc)[:160])
@@ -490,17 +831,23 @@ class NewsStrategy:
             status["old"] = len(items) - len(recent)
             items = recent
             fresh = []
+            # English first, so that of a release and its translations
+            # (same time, same company) the English one is the one checked.
+            items.sort(key=lambda i: not is_english(i))
             for item in items:
                 key = seen_key(f"{source['name']}|{item['id'] or item['url'] or item['title']}")
-                # The same release often goes out on several wires: once is enough.
-                same = seen_key("title|" + re.sub(r"\W+", " ", item["title"].lower()).strip())
                 if key in seen or key in plan["seen"]:
                     continue
                 mark = now.strftime("%Y-%m-%dT%H:%M") + ("" if item["published"] else "u")
                 plan["seen"][key] = mark
-                if same in seen or same in plan["seen"]:
+                # The same release often goes out on several wires, and in
+                # several languages: once is enough.
+                same = duplicate_keys(item, source)
+                if any(k in seen or k in plan["seen"] for k in same):
+                    status["duplicates"] = status.get("duplicates", 0) + 1
                     continue
-                plan["seen"][same] = mark
+                for k in same:
+                    plan["seen"][k] = mark
                 fresh.append((source, item, key))
             status["new"] = len(fresh)
             plan["sources"].append(status)
@@ -520,8 +867,8 @@ class NewsStrategy:
         # Press releases that don't mention crypto at all are skipped before
         # any CoinGecko call (most of a newswire's items).
         crypto = _words(c["crypto_words"])
-        unrelated = [(s, i, k) for s, i, k in new if s.get("kind", "press") == "press"
-                     and not s.get("coin") and not crypto.search(f"{i['title']}. {i['summary']}")]
+        unrelated = [(s, i, k) for s, i, k in new if crypto_only(s)
+                     and not crypto.search(f"{i['title']}. {i['summary']}")]
         new = [x for x in new if x not in unrelated]
         held = [p["address"] for p in self.trader.open_positions]
         coins = []
@@ -539,12 +886,32 @@ class NewsStrategy:
             # items unseen so they're checked next run while still fresh.
             plan["notes"].append(f"CoinGecko unavailable, news checks wait for the next run: "
                                  f"{exc}")
-            for _, item, key in new:
-                plan["seen"].pop(key, None)
-                plan["seen"].pop(seen_key("title|" + re.sub(r"\W+", " ",
-                                                            item["title"].lower()).strip()), None)
+            self._retry_later(plan, new)
             new = []
         coins = coin_index(coins)
+
+        # Exchange headlines name a coin by its ticker. Tickers that aren't
+        # among the biggest coins are looked up in CoinGecko's full coin list
+        # (one call, only on runs that need it, plus one for their prices).
+        by_symbol = {}
+        for x in coins:
+            by_symbol.setdefault(x["symbol"], []).append(x)
+        tickers = {id(i): listing_tickers(i["title"]) for s, i, _ in new
+                   if s.get("kind") == "exchange" and not s.get("coin")}
+        missing = sorted({t for ts in tickers.values() for t in ts if t not in by_symbol})
+        if missing:
+            try:
+                ids = [x["id"] for x in gecko.coin_list() if x["symbol"] in missing][:150]
+                more = gecko.markets(ids=ids) if ids else []
+                coins = coin_index(coins + more)
+                for x in more:
+                    by_symbol.setdefault(x["symbol"], []).append(x)
+            except ApiError as exc:
+                waiting = [x for x in new if set(tickers.get(id(x[1]), [])) & set(missing)]
+                plan["notes"].append(f"CoinGecko's full coin list unavailable, {len(waiting)} "
+                                     f"listing(s) wait for the next run: {exc}")
+                self._retry_later(plan, waiting)
+                new = [x for x in new if x not in waiting]
         by_id = {x["id"]: x for x in coins}
         plan["prices"] = {i: by_id[i]["price"] for i in held if by_id.get(i, {}).get("price")}
 
@@ -554,8 +921,14 @@ class NewsStrategy:
             text = f"{item['title']}. {item['summary']}"
             if source.get("coin"):
                 named = [by_id[source["coin"]]] if source["coin"] in by_id else []
+            elif source.get("kind") == "filing":
+                named = fund_coins(item["title"].split(": ", 1)[-1], coins, c)
             else:
                 named = find_coins(text, coins, c)
+                if id(item) in tickers:
+                    syms = {x["symbol"] for x in named}
+                    named += [x for x in ticker_coins(item["title"], tickers[id(item)], by_symbol)
+                              if x["symbol"] not in syms]
             if not named:
                 unnamed += 1
                 plan["unmatched"].append((source, item))
@@ -570,6 +943,16 @@ class NewsStrategy:
                                  f"{len(unrelated)} not about crypto")
         plan["coingecko_calls"] = gecko.meter["calls"]
         return plan
+
+    def _retry_later(self, plan, items):
+        """Leave these items unseen so they're checked on the next run."""
+        for source, item, key in items:
+            plan["seen"].pop(key, None)
+            for k in duplicate_keys(item, source):
+                plan["seen"].pop(k, None)
+            if source.get("format") == "markets":
+                plan["markets"].pop(source["name"], None)
+                plan["markets_new"].pop(source["name"], None)
 
     def apply(self, plan, issue_details, out=print):
         trader, now, c = self.trader, plan["now"], self.c
@@ -589,6 +972,9 @@ class NewsStrategy:
             trader.state["seen"] = {k: v for k, v in seen.items() if keep(v)}
             trader.state["sources_read"] = plan["sources_read"]
             trader.state["sources"] = {s["name"]: s for s in plan["sources"]}
+            for key in ("markets", "markets_new"):
+                if plan.get(key):
+                    trader.state.setdefault(key, {}).update(plan[key])
 
         for note in plan["notes"]:
             out(f"  ({note})")
@@ -596,11 +982,15 @@ class NewsStrategy:
             out(f"  CoinGecko calls this month: {plan.get('coingecko_calls', 0):,} of "
                 f"{c['coingecko_monthly_calls']:,}")
             for s in plan["sources"]:
-                if s.get("ok"):
-                    out(f"  ok    {s['name']:<22} {s['items']} item(s), {s.get('new', 0)} new, "
-                        f"{s.get('old', 0)} older than {c['max_age_minutes']} min")
+                if s.get("ok") and "markets" in s:
+                    out(f"  ok    {s['name']:<24} {s['markets']} coin(s) listed, "
+                        f"{s.get('new', 0)} new" + (f" ({s['note']})" if s.get("note") else ""))
+                elif s.get("ok"):
+                    out(f"  ok    {s['name']:<24} {s['items']} item(s), {s.get('new', 0)} new, "
+                        f"{s.get('old', 0)} older than {c['max_age_minutes']} min"
+                        + (f", {s['duplicates']} duplicate(s)" if s.get("duplicates") else ""))
                 else:
-                    out(f"  FAIL  {s['name']:<22} {s['error']}")
+                    out(f"  FAIL  {s['name']:<24} {s['error']}")
         if plan.get("unmatched"):
             self._log_unmatched(now, plan["unmatched"])
             out(f"  Crypto news naming no coin (saved to {os.path.basename(self.unmatched_path)}):")
@@ -703,3 +1093,56 @@ class NewsStrategy:
                 "; ".join(f"{ch.name}: {ch.detail}" for ch in checks if ch.status != PASS),
                 " | ".join(f"{ch.name}={ch.status}" for ch in checks),
             ])
+
+
+# ---------------------------------------------------------------------
+# Checking the sources by hand
+# ---------------------------------------------------------------------
+
+def check_sources(cfg, http=None, out=print, now=None):
+    """Read every source once and show what it gives: whether it works, how
+    many items, the newest date and the latest headlines. Read-only: no
+    CoinGecko, nothing saved. Returns the number of failing sources."""
+    http = http or NewsHttp()
+    now = now or now_utc()
+    failing = 0
+    for source in cfg["news"]["sources"]:
+        name = source["name"]
+        if source.get("enabled") is False:
+            out(f"off   {name}: {source.get('note', 'turned off')}")
+            continue
+        plan = {"state": {}, "markets": {}, "markets_new": {}}
+        status = {}
+        try:
+            items = read_source(http, source, now, plan, status)
+        except ApiError as exc:
+            failing += 1
+            out(f"FAIL  {name}: {exc}")
+            continue
+        if "markets" in status:
+            out(f"ok    {name}: {status['markets']} coins listed")
+            continue
+        newest = status.get("newest")
+        extra = f", {status['filings']} filing(s) in all" if "filings" in status else ""
+        out(f"ok    {name}: {len(items)} item(s){extra}, newest "
+            f"{newest[:16].replace('T', ' ') + ' UTC' if newest else 'undated'}")
+        dated = sorted(items, key=lambda i: i["published"] or now, reverse=True)
+        for item in dated[:3]:
+            when = f"{item['published']:%Y-%m-%d %H:%M}" if item["published"] else "undated"
+            out(f"        {when}  {item['title'][:100]}")
+    return failing
+
+
+if __name__ == "__main__":
+    import argparse
+    import sys
+
+    from screener.settings import load_config
+
+    parser = argparse.ArgumentParser(description="The news strategy's sources.")
+    parser.add_argument("--check-sources", action="store_true",
+                        help="read every source once and show what it gives (saves nothing)")
+    args = parser.parse_args()
+    if not args.check_sources:
+        parser.error("nothing to do: use --check-sources")
+    sys.exit(1 if check_sources(load_config()) else 0)

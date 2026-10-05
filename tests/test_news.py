@@ -21,8 +21,11 @@ from screener.demo import (DEMO_COINS, DemoApi, DemoNewsHttp,  # noqa: E402
                            demo_news_items)
 from screener.filters import FAIL  # noqa: E402
 from screener.github_issues import issue_body, issue_title  # noqa: E402
-from screener.news import (NewsStrategy, check_candidate, coin_info,  # noqa: E402
-                           find_coins, parse_binance, parse_feed, why)
+from screener.news import (NewsHttp, NewsStrategy, check_candidate,  # noqa: E402
+                           check_sources, coin_info, company_name, duplicate_keys,
+                           find_coins, fund_coins, is_english, listing_tickers, parse_binance,
+                           parse_bybit, parse_edgar, parse_feed, parse_html, parse_markets,
+                           parse_okx, ticker_coins, why)
 
 CFG = load_config()
 C = CFG["news"]
@@ -265,7 +268,7 @@ class FlowTests(Base):
         class Fixed(DemoNewsHttp):
             broken = True
 
-            def text(self, url):
+            def text(self, url, headers=None):
                 if "businesswire" in url and self.broken:
                     raise ApiError("the feed has no items")
                 if "businesswire" in url:
@@ -286,7 +289,7 @@ class FlowTests(Base):
 
     def test_undated_items_skipped_on_first_read_then_checked(self):
         class Undated(DemoNewsHttp):
-            def text(self, url):
+            def text(self, url, headers=None):
                 if "prnewswire.com/rss/financial" in url:
                     return ("<rss><channel>" + "".join(
                         f"<item><title>Visa Selects Demo Network {n}</title><description>"
@@ -322,7 +325,7 @@ class FlowTests(Base):
 
     def test_one_broken_source_doesnt_stop_the_others(self):
         class Broken(DemoNewsHttp):
-            def text(self, url):
+            def text(self, url, headers=None):
                 if "globenewswire" in url:
                     raise ApiError("globenewswire answered with error 404")
                 return super().text(url)
@@ -341,7 +344,7 @@ class FlowTests(Base):
         self.assertEqual((plan["candidates"], bought), ([], []))
         rows_ = rows(os.path.join(self.folder, "unmatched.csv"))
         self.assertEqual([(r["source"], r["title"]) for r in rows_],
-                         [("PR Newswire crypto",
+                         [("PR Newswire",
                            "Acme Raises $20M for Its Blockchain Payments Platform")])
         self.assertEqual(rows_[0]["url"], "https://example.com/demo-news/0")
         self.assertEqual(rows_[0]["published_utc"], "2026-09-24 13:25:00")
@@ -418,7 +421,7 @@ class IssueAndRunTests(Base):
         body = issue_body(pos, C["paper_trading"], "note", "news")
         self.assertIn("<!-- screener-token: demo-network strategy: news -->", body)
         self.assertIn("**CoinGecko id:** `demo-network`", body)
-        self.assertIn("| Source | PR Newswire crypto |", body)
+        self.assertIn("| Source | PR Newswire |", body)
         self.assertIn("| Take profit: sell half | $105 (+50%) |", body)
         self.assertIn("| Stop loss: sell everything left | $56 (-20%) |", body)
         self.assertIn("(7 days)", body)
@@ -453,6 +456,255 @@ class PaperOnlyTests(unittest.TestCase):
         before = copy.deepcopy(DEMO_COINS)
         DemoNewsHttp(price_moves={"demo-network": 2.0}).json("https://api.coingecko.com/x?page=1")
         self.assertEqual(DEMO_COINS, before)
+
+
+class NewFormatTests(unittest.TestCase):
+    def test_okx_and_bybit(self):
+        (it,) = parse_okx({"code": "0", "data": [{"details": [
+            {"title": "OKX will launch GRVT/USD for spot trading", "url": "https://okx/1",
+             "pTime": "1790254800000"}]}]})
+        self.assertEqual((it["title"], it["url"]), ("OKX will launch GRVT/USD for spot trading",
+                                                    "https://okx/1"))
+        self.assertEqual(it["published"].tzinfo, timezone.utc)
+        (it,) = parse_bybit({"retCode": 0, "result": {"list": [
+            {"title": "New Listing: XYZ/USDT", "url": "https://bybit/1",
+             "publishTime": 1790254800000}]}})
+        self.assertEqual(it["url"], "https://bybit/1")
+        with self.assertRaises(ApiError):
+            parse_okx({"code": "0", "data": []})
+
+    def test_market_lists(self):
+        self.assertEqual(parse_markets("coinbase", [
+            {"base_currency": "SKY", "status": "online"},
+            {"base_currency": "OLD", "status": "delisted"}]), {"SKY": ""})
+        self.assertEqual(parse_markets("upbit", [
+            {"market": "KRW-BERA", "english_name": "Berachain"},
+            {"market": "BTC-BERA", "english_name": "Berachain"}]), {"BERA": "Berachain"})
+        self.assertEqual(parse_markets("okx", {"data": [{"baseCcy": "GRVT"}]}), {"GRVT": ""})
+        with self.assertRaises(ApiError):
+            parse_markets("upbit", [])
+
+    def test_blog_pages_without_a_feed(self):
+        ripple = ('<a href="/insights/the-swell-2026-lineup-is-here/">The Swell 2026 Lineup is '
+                  'Here</a><a href="/insights/the-swell-2026-lineup-is-here/">01 The Swell 2026 '
+                  'Lineup is Here September 29, 2026</a><a href="/insights/">Insights</a>')
+        (it,) = parse_html(ripple, "https://ripple.com/insights/",
+                           "^/insights/[a-z0-9-]{8,}/?$")
+        self.assertEqual(it["title"], "The Swell 2026 Lineup is Here")
+        self.assertEqual(it["url"], "https://ripple.com/insights/the-swell-2026-lineup-is-here/")
+        self.assertEqual(it["published"], datetime(2026, 9, 29, tzinfo=timezone.utc))
+        avax = ('<a href="/about/blog/uaes-identity-system-upgrades">Enterprises 9.14.2026 / '
+                'By Avalanche / 7 Minute Read UAE&#39;s Identity System Upgrades to Avalanche'
+                '</a><a href="/about/blog/uaes-identity-system-upgrades">Read More</a>')
+        (it,) = parse_html(avax, "https://www.avax.network/about/blog",
+                           "^/about/blog/[a-z0-9-]{8,}$")
+        self.assertEqual(it["title"], "UAE's Identity System Upgrades to Avalanche")
+        self.assertEqual(it["published"], datetime(2026, 9, 14, tzinfo=timezone.utc))
+        with self.assertRaisesRegex(ApiError, "no posts"):
+            parse_html("<html></html>", "https://x/", "^/blog/")
+
+    def test_edgar_keeps_fund_filings(self):
+        feed = ('<feed xmlns="http://www.w3.org/2005/Atom">'
+                '<entry><title>S-1/A - Canary PEPE ETF (0002109686) (Filer)</title>'
+                '<link href="https://sec/1"/><id>a1</id><updated>2026-10-02T17:12:55-04:00'
+                '</updated></entry><entry><title>S-1 - BioStem Technologies, Inc. (0001658678) '
+                '(Filer)</title><link href="https://sec/2"/><id>a2</id></entry>'
+                '<entry><title>S-1 - Grayscale Demo Network Trust (0002000000) (Filer)</title>'
+                '<link href="https://sec/3"/><id>a3</id></entry></feed>')
+        items = parse_edgar(parse_feed(feed))
+        self.assertEqual([i["title"] for i in items],
+                         ["S-1/A amendment filed: Canary PEPE ETF",
+                          "S-1 filed: Grayscale Demo Network Trust"])
+
+    def test_feeds_without_a_charset_are_utf8(self):
+        class Resp:
+            status_code = 200
+            headers = {"content-type": "text/xml"}
+            content = "Stellar\u2019s".encode("utf-8")
+            text = content.decode("latin-1")
+
+        http = NewsHttp()
+        http._get = lambda url, headers=None: Resp()
+        self.assertEqual(http.text("https://stellar.org/blog/rss.xml"), "Stellar\u2019s")
+
+
+class BetterMatchingTests(unittest.TestCase):
+    def test_tickers_in_listing_headlines(self):
+        self.assertEqual(listing_tickers("WOJAK is available for trading!"), ["WOJAK"])
+        self.assertEqual(listing_tickers("WOJAK, OUSD and CT are available for trading!"),
+                         ["WOJAK", "OUSD", "CT"])
+        self.assertEqual(listing_tickers("OKX will launch GRVT/USD for spot trading"), ["GRVT"])
+        self.assertEqual(listing_tickers("OKX to list CARDS/USDT (Collector Crypt) for spot "
+                                         "trading"), ["CARDS"])
+        self.assertEqual(listing_tickers("Binance Will List Hyperliquid (HYPE)"), ["HYPE"])
+        self.assertEqual(listing_tickers("Binance Futures Will Launch USD\u24c8-Margined "
+                                         "CTUSDT Perpetual Contract (2026-10-01)"), [])
+
+    def test_ticker_picks_the_coin_named_or_the_biggest(self):
+        small = {"id": "ct-small", "symbol": "CT", "name": "Cat Token", "market_cap": 1e5}
+        big = {"id": "concrete", "symbol": "CT", "name": "Concrete", "market_cap": 9e7}
+        by_symbol = {"CT": [small, big]}
+        self.assertEqual(ticker_coins("CT is available for trading!", ["CT"], by_symbol), [big])
+        self.assertEqual(ticker_coins("Cat Token (CT) is available for trading!", ["CT"],
+                                      by_symbol), [small])
+
+    def test_company_named_after_a_coin(self):
+        bnb = {"id": "binancecoin", "symbol": "BNB", "name": "BNB", "market_cap": 1e11}
+        text = ("BNB Plus Corp. Announces Strategic Shift to Institutional Technology "
+                "Infrastructure for Blockchain and AI. The company builds on BNB Chain.")
+        self.assertEqual(company_name("BNB", text), "BNB Plus Corp.")
+        self.assertEqual(find_coins(text, [bnb], C), [])
+        self.assertEqual(find_coins("Visa selects BNB Chain", [bnb], C), [bnb])
+        # with its ticker, the coin is named after all
+        self.assertEqual(find_coins(text + " It holds 100,000 BNB ($BNB).", [bnb], C), [bnb])
+        # the coin's own company still counts
+        self.assertIsNone(company_name("Quant", "Quant Network Ltd selected by Visa"))
+        self.assertEqual([c["id"] for c in find_coins("Solana Company Inc. buys more SOL",
+                                                      COINS + [{**BY_ID["bitcoin"],
+                                                                "id": "solana", "symbol": "SOL",
+                                                                "name": "Solana"}], C)], [])
+
+    def test_translations_are_duplicates(self):
+        gnw = "https://www.globenewswire.com/news-release/2026/10/02/3373842/0/{}/virtune"
+        en = {"title": "Virtune AB has completed the monthly rebalancing", "url": gnw.format("en"),
+              "published": NOW}
+        sv = {"title": "Virtune AB har genomf\u00f6rt den m\u00e5natliga rebalanseringen",
+              "url": gnw.format("sv"), "published": NOW}
+        self.assertTrue(is_english(en))
+        self.assertFalse(is_english(sv))
+        self.assertTrue(set(duplicate_keys(en, PRESS)) & set(duplicate_keys(sv, PRESS)))
+        prn = "https://www.prnewswire.com/news-releases/er-{}.html"
+        de = {"title": "E&R Engineering er\u00f6ffnet neues Werk in Malaysia",
+              "url": prn.format("302001"), "published": NOW}
+        en2 = {"title": "E&R Engineering to Launch New Malaysia Plant",
+               "url": prn.format("302002"), "published": NOW}
+        other = dict(en2, published=NOW + timedelta(minutes=1))
+        self.assertTrue(set(duplicate_keys(de, PRESS)) & set(duplicate_keys(en2, PRESS)))
+        self.assertFalse(set(duplicate_keys(de, PRESS)) & set(duplicate_keys(other, PRESS)))
+
+    def test_fund_names(self):
+        pepe = {"id": "pepe", "symbol": "PEPE", "name": "Pepe", "market_cap": 2e9}
+        self.assertEqual(fund_coins("Canary PEPE ETF", [pepe] + COINS, C), [pepe])
+        self.assertEqual([c["id"] for c in fund_coins("GRAYSCALE DEMO NETWORK TRUST",
+                                                      COINS, C)], ["demo-network"])
+        self.assertEqual(fund_coins("Acme Biotech Fund", COINS, C), [])
+
+
+def sources(*names):
+    return dict(CFG, news=dict(C, sources=[s for s in C["sources"] if s["name"] in names]))
+
+
+class NewSourceFlowTests(Base):
+    def test_a_new_coinbase_pair_is_a_listing(self):
+        cfg = sources("Coinbase new pairs")
+        _, plan, bought, lines = self.go(DemoNewsHttp(now=NOW), cfg=cfg)
+        self.assertEqual((plan["candidates"], bought), ([], []))      # first read: list saved
+        self.assertTrue(any("first read" in line for line in lines))
+        self.assertEqual(self.state()["markets"]["Coinbase new pairs"], ["BTC"])
+        later = NOW + timedelta(minutes=15)
+        _, plan, bought, lines = self.go(DemoNewsHttp(now=later, markets={"coinbase": ["DEMO"]}),
+                                         now=later, cfg=cfg)
+        (cand,) = plan["candidates"]
+        self.assertEqual(cand["item"]["title"], "Coinbase lists (DEMO) for trading")
+        self.assertEqual(cand["item"]["url"], "https://exchange.coinbase.com/trade/DEMO-USD")
+        self.assertEqual([p["symbol"] for p in bought], ["DEMO"])
+        self.assertEqual(self.state()["markets"]["Coinbase new pairs"], ["BTC", "DEMO"])
+        self.assertTrue(self.state()["sources"]["Coinbase new pairs"]["newest"])
+
+    def test_a_ticker_outside_the_top_coins_uses_the_full_list(self):
+        cfg = sources("Upbit new markets")
+        self.go(DemoNewsHttp(now=NOW, coins=DEMO_COINS[:1]), cfg=cfg)   # baseline
+        later = NOW + timedelta(minutes=15)
+
+        class Pages(DemoNewsHttp):        # DEMO isn't on the top-coins pages
+            def json(self, url, headers=None):
+                if "&page=" in url:
+                    return [c for c in DEMO_COINS if c["id"] != "demo-network"]
+                return super().json(url, headers)
+
+        http = Pages(now=later, markets={"upbit": ["DEMO"]})
+        _, plan, bought, _ = self.go(http, now=later, cfg=cfg)
+        self.assertTrue(any("/coins/list" in u for u in http.calls))
+        self.assertTrue(any("ids=demo-network" in u for u in http.calls))
+        self.assertEqual([p["symbol"] for p in bought], ["DEMO"])
+
+    def test_no_full_list_call_without_listings(self):
+        http = DemoNewsHttp(now=NOW)
+        self.go(http)
+        self.assertFalse([u for u in http.calls if "/coins/list" in u])
+
+    def test_disabled_sources_are_not_read(self):
+        http = DemoNewsHttp(now=NOW)
+        self.go(http)
+        self.assertFalse([u for u in http.calls if "bybit" in u])
+        self.assertNotIn("Bybit listings", self.state()["sources"])
+        self.assertEqual(self.state()["sources"]["SEC EDGAR fund filings"]["filings"], 1)
+
+    def test_sec_press_releases_must_mention_crypto(self):
+        cfg = sources("SEC press releases")
+        http = DemoNewsHttp(now=NOW)
+
+        class Sec(DemoNewsHttp):
+            def text(self, url, headers=None):
+                self.headers = headers
+                return ("<rss><channel>"
+                        "<item><title>SEC Charges Adviser With Fraud</title><link>https://s/1"
+                        f"</link><pubDate>{NOW:%a, %d %b %Y %H:%M:%S} GMT</pubDate></item>"
+                        "</channel></rss>")
+
+        http = Sec(now=NOW)
+        _, plan, _, lines = self.go(http, cfg=cfg)
+        self.assertTrue(any("1 not about crypto" in line for line in lines))
+        self.assertEqual(http.headers["User-Agent"], "trading-bot-news")
+
+    def test_day_only_dates(self):
+        cfg = sources("Chainlink press releases")
+        cfg["news"]["sources"] = [dict(cfg["news"]["sources"][0], coin="demo-network")]
+        day = NOW.replace(hour=0, minute=0)
+
+        class Day(DemoNewsHttp):
+            def text(self, url, headers=None):
+                rows = "".join(
+                    f"<item><title>Visa Selects Demo Network {n}</title><link>https://c/{n}</link>"
+                    f"<pubDate>{d:%a, %d %b %Y} 00:00:00 GMT</pubDate></item>"
+                    for n, d in self.posts)
+                return f"<rss><channel>{rows}</channel></rss>"
+
+        http = Day(now=NOW)
+        http.posts = [(1, day - timedelta(days=5))]
+        self.go(http, cfg=cfg)
+        http.posts.append((2, day))
+        later = NOW + timedelta(minutes=15)
+        _, plan, _, _ = self.go(http, now=later, cfg=cfg)
+        (cand,) = plan["candidates"]          # today's post: "first seen just now"
+        self.assertEqual(cand["item"]["url"], "https://c/2")
+        self.assertIsNone(cand["item"]["published"])
+
+    def test_translation_checked_once_in_english(self):
+        items = [("press", "Visa Selects Demo Network f\u00fcr seine Blockchain", "", 10),
+                 ("press", "Visa Selects Demo Network for Its Blockchain", "JPMorgan", 10)]
+        _, plan, bought, lines = self.go(DemoNewsHttp(now=NOW, items=items))
+        self.assertEqual([c["item"]["title"] for c in plan["candidates"]],
+                         ["Visa Selects Demo Network for Its Blockchain"])
+        self.assertTrue(any("1 duplicate(s)" in line for line in lines))
+
+
+class CheckSourcesTests(unittest.TestCase):
+    def test_reads_every_source_and_saves_nothing(self):
+        lines = []
+        failing = check_sources(CFG, DemoNewsHttp(now=NOW), lines.append, now=NOW)
+        self.assertEqual(failing, 0)
+        text = "\n".join(lines)
+        self.assertIn("ok    Coinbase new pairs: 1 coins listed", text)
+        self.assertIn("off   Bybit listings: Bybit blocks", text)
+        self.assertIn("ok    SEC EDGAR fund filings: 0 item(s), 1 filing(s) in all", text)
+        self.assertIn("ok    Ripple insights: 1 item(s)", text)
+
+        class Broken(DemoNewsHttp):
+            def text(self, url, headers=None):
+                raise ApiError("down")
+
+        self.assertGreater(check_sources(CFG, Broken(now=NOW), lambda *a: None, now=NOW), 10)
 
 
 if __name__ == "__main__":

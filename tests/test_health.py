@@ -16,7 +16,7 @@ from run import load_config, run  # noqa: E402
 from screener.compare import report  # noqa: E402
 from screener.demo import DemoApi, DemoNewsHttp, demo_rpc_factory  # noqa: E402
 from screener.github_issues import GitHubIssues  # noqa: E402
-from screener.health import OK, WARN, health_lines, record_health  # noqa: E402
+from screener.health import INFO, OK, WARN, health_lines, record_health  # noqa: E402
 
 CFG = load_config()
 NOW = datetime(2026, 10, 2, 0, 7, tzinfo=timezone.utc)
@@ -146,10 +146,34 @@ class HealthTests(Base):
     def test_failing_news_source(self):
         gh = self.healthy()
         self.write("news/positions.json", {"sources": {
-            "Chainlink blog": {"ok": False, "error": "not a valid feed | bad"}}})
+            "Chainlink press releases": {"ok": False, "error": "not a valid feed | bad"}}})
         text, rows = self.lines(gh)
-        self.assertIn(f"{WARN} failing: not a valid feed / bad", rows["news: Chainlink blog"])
-        self.assertIn("> - news: Chainlink blog: failing", text)
+        self.assertIn(f"{WARN} failing: not a valid feed / bad",
+                      rows["news: Chainlink press releases"])
+        self.assertIn("> - news: Chainlink press releases: failing", text)
+
+    def test_a_row_for_every_news_source(self):
+        gh = self.healthy()
+        self.write("news/positions.json", {"sources": {
+            "PR Newswire": {"ok": True, "items": 20, "newest": ago(hours=2)},
+            "Quant blog": {"ok": True, "items": 10, "newest": ago(days=40)},
+            "Binance listings": {"ok": True, "items": 20, "newest": ago(days=3)},
+            "Coinbase new pairs": {"ok": True, "items": 0, "markets": 420},
+            "Upbit new markets": {"ok": True, "items": 0, "markets": 250,
+                                  "newest": ago(days=2)}}})
+        text, rows = self.lines(gh)
+        self.assertIn(f"{OK} 20 item(s), newest 2026-10-01", rows["news: PR Newswire"])
+        self.assertIn(f"{WARN} 10 item(s), newest 2026-08-23: nothing new for 40 days "
+                      "(expected within 30)", rows["news: Quant blog"])
+        self.assertIn(OK, rows["news: Binance listings"])
+        self.assertIn(f"{OK} 420 coin(s) listed; no new listing seen yet",
+                      rows["news: Coinbase new pairs"])
+        self.assertIn(f"{OK} 250 coin(s) listed, newest", rows["news: Upbit new markets"])
+        self.assertIn(f"{INFO} not checked yet", rows["news: SEC EDGAR fund filings"])
+        self.assertIn(f"{INFO} turned off: Bybit blocks", rows["news: Bybit listings"])
+        names = [s["name"] for s in CFG["news"]["sources"]]
+        self.assertEqual(sorted(k[6:] for k in rows if k.startswith("news: ")
+                                and k != "news: last successful run"), sorted(names))
 
     def test_launch_never_or_late(self):
         gh = self.healthy()
