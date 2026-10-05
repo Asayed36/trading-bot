@@ -15,6 +15,8 @@ from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 from run import load_config, run  # noqa: E402
 from screener.api import ApiError  # noqa: E402
 from screener.demo import (DEMO_COINS, DemoApi, DemoNewsHttp,  # noqa: E402
@@ -27,7 +29,7 @@ from screener.news import (NewsHttp, NewsStrategy, check_candidate,  # noqa: E40
                            parse_bybit, parse_edgar, parse_feed, parse_html, parse_markets,
                            parse_okx, ticker_coins, why)
 
-CFG = load_config()
+CFG = running(load_config())
 C = CFG["news"]
 NOW = datetime(2026, 9, 24, 13, 30, tzinfo=timezone.utc)
 QUIET = dict(out=lambda *a: None)

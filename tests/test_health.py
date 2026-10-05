@@ -12,13 +12,15 @@ from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 from run import load_config, run  # noqa: E402
 from screener.compare import report  # noqa: E402
 from screener.demo import DemoApi, DemoNewsHttp, demo_rpc_factory  # noqa: E402
 from screener.github_issues import GitHubIssues  # noqa: E402
 from screener.health import INFO, OK, WARN, health_lines, record_health  # noqa: E402
 
-CFG = load_config()
+CFG = running(load_config())
 NOW = datetime(2026, 10, 2, 0, 7, tzinfo=timezone.utc)
 
 

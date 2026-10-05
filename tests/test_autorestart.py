@@ -15,12 +15,14 @@ from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 import launch_bot  # noqa: E402
 import main_1min as m1  # noqa: E402
 from screener.autorestart import CodeWatcher, project_files, restart_message  # noqa: E402
 from screener.settings import HERE, load_config  # noqa: E402
 
-CFG = load_config()
+CFG = running(load_config())
 CONFIG = '[launch]\nbuy = 5\n\n[robinhood]\nmin = 10\n'
 
 

@@ -12,10 +12,12 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 from run import HERE, load_config  # noqa: E402
 from screener.launch import LaunchEngine  # noqa: E402
 
-CFG = load_config()
+CFG = running(load_config())
 L = CFG["launch"]
 T0 = 1_790_000_000.0          # a fixed moment, in seconds
 SOL = 100.0                   # $100 per SOL keeps the arithmetic simple

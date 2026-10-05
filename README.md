@@ -85,6 +85,19 @@ To save time and be polite to the free services, tokens that already failed a
 market check aren't sent to RugCheck (they show `skip Safety checks`). Set
 `skip_safety_if_market_fails = false` in `config.toml` to check them all.
 
+## Which strategies are running
+
+Since 2026-10-05, after a review of every strategy's results:
+- **Running:** main (1 min) and its two versions A and B (on your server),
+  momentum 100%/5 min (server), news (GitHub), news (listings) (server),
+  convergence (GitHub) and robinhood (GitHub).
+- **Stopped** (`stopped = true` in `config.toml`): main on GitHub, early,
+  the three launch speeds and momentum 30%/2 min and 50%/3 min. A stopped
+  strategy makes no new buys; positions it still holds finish under its
+  normal exits, then it does nothing. Its journal and files are kept, and
+  the daily comparison still shows it, marked "(stopped)". To restart one,
+  remove its `stopped = true` line.
+
 ## The paper trading rules
 
 - **Buy:** $10 (pretend) of every token that passes all checks. Never the same
@@ -129,6 +142,8 @@ market check aren't sent to RugCheck (they show `skip Safety checks`). Set
   credit use.
 
 ## The "early" strategy (a second, separate paper strategy)
+
+**Stopped on 2026-10-05** (`stopped = true` in `config.toml`): it makes no new buys; positions it still holds finish under the normal exits, and its journal and files are kept. The daily comparison shows it as "(stopped)".
 
 Every run also paper-trades a second strategy that goes after young tokens,
 with its own $10 pretend buys, positions and journal. The main strategy above
@@ -317,6 +332,9 @@ Actions), or set `enabled = false` under `[convergence]`.
 
 ## The "main (1 min)" strategy (the main strategy every minute, on your own server)
 
+(The main strategy on GitHub was stopped on 2026-10-05; its rules live on
+here, checked every minute.)
+
 The same strategy as **main**, checked **every minute** instead of every few
 minutes, to see whether checking more often changes the results. It runs all
 the time on the launch bot's server (`main_1min.py`, the `main-1min`
@@ -344,6 +362,26 @@ service; setup: Part G of
 - **In the daily comparison:** the **main (1 min)** column, next to main,
   and a health row with its last good run, runs and busiest-hour requests,
   and its last push.
+
+### Versions A and B (paper, side by side on the same data)
+
+Two more paper versions run inside the same bot, on exactly the same data
+every minute, each with main's checks plus one extra rule, the same exits
+and costs, and its own files:
+
+| Version | Extra rule | Files |
+|---|---|---|
+| **main (1 min) A** | buys a token only after it passed main's checks on **3 consecutive one-minute checks**. A token that drops off DexScreener's lists while on a run of passes is still checked each minute (for A only). The counts start again if the bot restarts. | `data/main-1min/a/` |
+| **main (1 min) B** | skips tokens **up more than 100% in the last hour**, and needs a **Jupiter organic score of at least 60** (no score = skip). | `data/main-1min/b/` |
+
+They test the two ideas from the review: main (1 min) won on the tokens it
+shared with main but lost on tokens that passed only briefly (A), and
+chasing tokens up more than 100% in an hour lost the most money (B). Each
+has its own column in the daily comparison and a health row (its open
+positions, buys, and the tokens it passed on in the last 24 hours). Jupiter
+is read at most once per token every 10 minutes (shared by B and every
+buy's `entries.csv` row). Settings: `[[main_1min.versions]]` in
+`config.toml`.
 
 ## The "news (listings)" strategy (exchange listings every minute, on your own server)
 
@@ -380,6 +418,10 @@ bot's server (the `news-listings` service; setup: Part J of
   push), each of its sources, and its AI check.
 
 ## The "momentum" strategy (new launches rising fast, on your own server)
+
+**The 30%/2 min and 50%/3 min variants were stopped on 2026-10-05** (losing
+even before costs): no new buys, their journals kept. The 100%/5 min variant
+keeps running.
 
 It tests whether buying a brand-new pump.fun launch **after** it starts
 rising fast on real buying works better than sniping it at creation.
@@ -442,6 +484,12 @@ is kept: only `data/trade-feed-probe/summary.json`. It stops by itself after
 "Trade feed probe (short test)" workflow runs it for 5 minutes on GitHub.
 
 ## The "launch" strategy (a fourth paper strategy, on your own server)
+
+**All three speeds were stopped on 2026-10-05:** no new buys; their last
+positions close within 30 minutes (the time stop), and then the launch-bot
+service can be turned off (Part K of the server guide). Their journals and
+files are kept. (Without the trade feed, the 5s and 30s speeds bought at the
+creation price, so those results are not realistic.)
 
 It tests whether **sniping** brand-new pump.fun tokens could work. Because a
 check every few minutes is far too slow for launches, it doesn't run on

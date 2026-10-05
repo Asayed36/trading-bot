@@ -149,6 +149,10 @@ class MomentumEngine:
             name: MomentumTrader(self.pt, dict(costs, name=name, delay_seconds=0),
                                  os.path.join(self.folder, name))
             for name in self.variants}
+        # A variant with stopped = true makes no new buys (and so no signals
+        # or near misses); its journal stays.
+        for name, v in self.variants.items():
+            self.traders[name].buying = not v.get("stopped")
         self.window_max = max(v["window_minutes"] for v in self.variants.values()) * 60
         self.sol_usd = None
         self.launches = {}            # mint -> launch being followed (first 10 min) or held

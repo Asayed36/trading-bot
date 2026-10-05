@@ -12,6 +12,8 @@ from datetime import timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 from run import load_config, run  # noqa: E402
 from screener.api import ApiError, RateLimited  # noqa: E402
 from screener.compare import report, strategy_stats  # noqa: E402
@@ -22,7 +24,7 @@ from screener.filters import FAIL, PASS, Result  # noqa: E402
 from screener.github_issues import MARKER_RE, issue_body, issue_title, marker  # noqa: E402
 from screener.paper_trader import now_utc  # noqa: E402
 
-CFG = load_config()
+CFG = running(load_config())
 E = CFG["early"]
 QUIET = dict(out=lambda *a: None)
 

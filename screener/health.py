@@ -294,6 +294,48 @@ def add_news_listings(add, folder, cfg, now, github):
         add(f"{label}: AI check", status, detail)
 
 
+def _open_count(strategy_folder):
+    state = _load(os.path.join(strategy_folder, "positions.json")) or {}
+    return len(state.get("open_positions") or [])
+
+
+def add_main_1min_versions(add, folder, cfg, now):
+    """One row per paper version of main (1 min): its open positions, and
+    over the last 24 h its buys, the tokens it passed on (waiting for more
+    passes, or skipped by its extra rules) and Jupiter lookups. Information
+    only: the main (1 min) row above says whether the bot is running."""
+    c = cfg["main_1min"]
+    data = _load(os.path.join(folder, c["folder"], "health.json")) or {}
+    hours = [v for k, v in (data.get("calls_per_hour") or {}).items()
+             if _utc(k) and now - _utc(k) <= timedelta(hours=24)]
+    jupiter = sum(h.get("jupiter", 0) for h in hours)
+    for v in c.get("versions", []):
+        if not v.get("enabled", True):
+            continue
+        name = v.get("label") or f"main (1 min) {v['name']}"
+        rules = []
+        if v.get("consecutive_passes", 1) > 1:
+            rules.append(f"buys after {v['consecutive_passes']} consecutive passes")
+        if v.get("max_change_1h_pct") is not None:
+            rules.append(f"skips tokens up >{v['max_change_1h_pct']:g}% in 1h")
+        if v.get("min_organic_score") is not None:
+            rules.append(f"needs organic score {v['min_organic_score']:g}+")
+        state = (data.get("versions") or {}).get(v["name"])
+        if state is None:
+            add(f"{name}: server", INFO, f"no results yet ({', '.join(rules)})")
+            continue
+        n = lambda key: sum(h.get(f"{v['name']} {key}", 0) for h in hours)  # noqa: E731
+        detail = (f"{state.get('open', 0)} open; last 24 h: {n('buys')} buy(s)")
+        if v.get("consecutive_passes", 1) > 1:
+            detail += (f", {n('waiting')} pass(es) counted toward a buy; watching "
+                       f"{state.get('watching', 0)} token(s) now")
+        if v.get("max_change_1h_pct") is not None or v.get("min_organic_score") is not None:
+            detail += f", {n('skipped')} passed main but skipped by its rules"
+        if v.get("min_organic_score") is not None:
+            detail += f", {jupiter} Jupiter lookup(s) (shared)"
+        add(f"{name}: server", OK, detail + f" ({', '.join(rules)})")
+
+
 def health_lines(folder, cfg, now, github=None):
     """Markdown lines for the health section. `github` is a GitHubIssues
     (or anything with workflow_runs() and last_commit_time()), or None when
@@ -347,6 +389,13 @@ def health_lines(folder, cfg, now, github=None):
     record = (_load(os.path.join(folder, "health.json")) or {}).get("strategies", {})
     for name in GITHUB_STRATEGIES:
         if name != "main" and not cfg.get(name, {}).get("enabled"):
+            continue
+        if cfg.get(name, {}).get("stopped"):
+            # Stopped: no new buys; it only runs while it still holds positions.
+            held = _open_count(os.path.join(folder, "" if name == "main" else name))
+            add(f"{name}: last successful run", INFO,
+                f"stopped (no new buys); {held} open position(s)"
+                + (" finishing under the normal exits" if held else ": finished"))
             continue
         s = record.get(name) or {}
         ok, err_at = _utc(s.get("last_ok")), _utc(s.get("error_at"))
@@ -417,7 +466,13 @@ def health_lines(folder, cfg, now, github=None):
                     f"{s.get('error', 'unknown error')[:120]}")
 
     # 6. The launch bot on your server.
-    if cfg.get("launch", {}).get("enabled"):
+    if cfg.get("launch", {}).get("enabled") and cfg["launch"].get("stopped"):
+        held = sum(_open_count(os.path.join(folder, "launch", s["name"]))
+                   for s in cfg["launch"].get("speeds", []))
+        add("launch: server push", INFO, f"stopped (no new buys); {held} open position(s)"
+            + (" finishing under the normal exits" if held else ": finished, the launch-bot "
+               "service can be turned off (deploy/LAUNCH_SERVER_SETUP.md, Part K)"))
+    elif cfg.get("launch", {}).get("enabled"):
         launch_stale = timedelta(hours=h.get("launch_stale_hours", 3))
         pushed, source = None, ""
         if github is not None:
@@ -441,9 +496,10 @@ def health_lines(folder, cfg, now, github=None):
                 detail += f" (older than {launch_stale.total_seconds() / 3600:.0f} h)"
             add("launch: server push", WARN if late else OK, detail)
 
-    # 7. The main (1 min) strategy on your server.
+    # 7. The main (1 min) strategy on your server, and its paper versions.
     if cfg.get("main_1min", {}).get("enabled"):
         add_main_1min(add, folder, cfg, now, github)
+        add_main_1min_versions(add, folder, cfg, now)
 
     # 8. The momentum strategy on your server.
     if cfg.get("momentum", {}).get("enabled"):

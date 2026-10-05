@@ -15,13 +15,15 @@ import httpx2
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 from run import load_config  # noqa: E402
 from screener.demo import DemoClaude, DemoNewsHttp  # noqa: E402
 from screener.health import INFO, OK, WARN, _news_ai  # noqa: E402
 from screener.news import NewsStrategy  # noqa: E402
 from screener.news_ai import MODEL, SCHEMA, AiChecker, check_ai, says_buy  # noqa: E402
 
-CFG = load_config()
+CFG = running(load_config())
 C = CFG["news"]
 NOW = datetime(2026, 9, 24, 13, 30, tzinfo=timezone.utc)
 REQUEST = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")

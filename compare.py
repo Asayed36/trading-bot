@@ -52,6 +52,19 @@ def post_issue(gh, day, body):
         gh.close(n)
 
 
+def stopped(cfg, name):
+    """True for a strategy with stopped = true in config.toml: no new buys,
+    its last positions finishing under their exits."""
+    if name in ("main", "early"):
+        return bool(cfg.get(name, {}).get("stopped"))
+    if name.startswith("launch "):
+        return bool(cfg.get("launch", {}).get("stopped"))
+    if name.startswith("momentum "):
+        return any(v.get("stopped") for v in cfg.get("momentum", {}).get("variants", [])
+                   if name == f"momentum {v['name']}")
+    return False
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--date", default="today",
@@ -97,6 +110,12 @@ def main():
         # about the GitHub schedule.
         strategies.insert(1, ("main (1 min)", os.path.join(folder, cfg["main_1min"]["folder"]),
                               cfg["paper_trading"]["round_trip_cost_pct"]))
+        # Its paper versions (extra entry rules, same exits and costs): next to it.
+        for i, v in enumerate(v for v in cfg["main_1min"].get("versions", [])
+                              if v.get("enabled", True)):
+            strategies.insert(2 + i, (v.get("label") or f"main (1 min) {v['name']}",
+                                      os.path.join(folder, v["folder"]),
+                                      cfg["paper_trading"]["round_trip_cost_pct"]))
     if cfg.get("news", {}).get("enabled"):
         strategies.append(("news", os.path.join(folder, "news"),
                            cfg["news"]["paper_trading"]["round_trip_cost_pct"]))
@@ -130,6 +149,8 @@ def main():
                                os.path.join(folder, m["folder"], v["name"]), sell_cost))
     if cfg.get("convergence", {}).get("enabled"):
         extra += helius_lines(os.path.join(folder, "convergence"), day)
+    strategies = [(name + (" (stopped)" if stopped(cfg, name) else ""), path, cost)
+                  for name, path, cost in strategies]
     health = health_lines(folder, cfg, now_utc(), gh)
     body = report(strategies, day, extra, health)
     print(body)

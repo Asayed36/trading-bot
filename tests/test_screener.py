@@ -12,6 +12,8 @@ from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 import run as run_module  # noqa: E402
 from run import EXIT_RATE_LIMITED, load_config, run  # noqa: E402
 from screener.api import PublicApi, RateLimited  # noqa: E402
@@ -21,7 +23,7 @@ from screener.demo import GOOD, TOKENS, DemoApi  # noqa: E402
 from screener.filters import FAIL, PASS, WARN, Result  # noqa: E402
 from screener.paper_trader import PaperTrader, now_utc  # noqa: E402
 
-CFG = load_config()
+CFG = running(load_config())
 
 
 def read(path):

@@ -77,6 +77,9 @@ class PaperTrader:
         self.journal_path = os.path.join(data_folder, "journal.csv")
         self.entries_path = os.path.join(data_folder, "entries.csv")
         self.state = self._load()
+        # False for a stopped strategy: no new buys, while the positions it
+        # still holds finish under their normal exits.
+        self.buying = True
 
     # ---- saving & loading ----
 
@@ -113,6 +116,8 @@ class PaperTrader:
         return next((p for p in self.open_positions if p["address"] == address), None)
 
     def can_buy(self, address):
+        if not self.buying:
+            return False
         if any(p["address"] == address for p in self.open_positions):
             return False
         if not self.cfg["allow_rebuy"] and address in self.state["ever_bought"]:

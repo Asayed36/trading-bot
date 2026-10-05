@@ -430,6 +430,15 @@ journalctl -u main-1min -n 20 --no-pager
 Within about an hour the push commits `data/main-1min/` (commits called
 **"Server paper results …"**).
 
+Two paper versions run inside the same bot, on the same data
+(`[[main_1min.versions]]` in `config.toml`): **A** buys only after 3
+consecutive passing minutes, **B** skips tokens up more than 100% in the
+last hour and needs a Jupiter organic score of 60+. Their results go to
+`data/main-1min/a/` and `data/main-1min/b/` and are pushed with the rest.
+The log line shows them at the end (`A: 1 open, P&L $+0.00; B: ...`), and
+their buys and sells are marked `[A]` / `[B]`. They need nothing extra on
+the server.
+
 ---
 
 ## Part H. Measure the free trade feed for 2 hours (one-off, optional)
@@ -622,3 +631,46 @@ hourly push brings new code it uses
 `sudo systemctl disable --now news-listings`. While it's off, the five
 exchange sources aren't read anywhere: to read them on GitHub again,
 remove their `runs_on = "server"` lines in `config.toml`.
+
+---
+
+## Part K. Turn off the launch bot (after it was stopped)
+
+On 2026-10-05 the three launch speeds were stopped (`stopped = true` under
+`[launch]` in `config.toml`): the bot makes no new buys, and the positions it
+still holds close within 30 minutes (the time stop). Its journals and files
+stay in `data/launch/`. The momentum bot, main (1 min) (with its new
+versions A and B) and the news listings bot keep running; they restart by
+themselves when the hourly push brings the new code.
+
+### K1. Get the new code now (instead of waiting up to an hour)
+
+```
+sudo systemctl start launch-push
+cd ~/trading-bot && git log -1 --oneline
+journalctl -u launch-bot -u main-1min -u momentum-bot --since "15 min ago" --no-pager | grep "automatic restart"
+```
+
+### K2. Wait until the launch bot holds nothing, then turn it off
+
+About 30 minutes after the automatic restart, check that every speed is
+down to 0 open positions:
+
+```
+cd ~/trading-bot && for s in 5s 30s 90s; do .venv/bin/python -c "import json; print('$s:', len(json.load(open('data/launch/$s/positions.json'))['open_positions']), 'open')"; done
+```
+
+When all three say `0 open`:
+
+```
+sudo systemctl disable --now launch-bot
+systemctl is-active launch-bot
+```
+
+The last line should say `inactive`. **Don't** turn off `launch-push.timer`:
+the same hourly push sends every server bot's results to GitHub. The health
+check's "launch: server push" row says "stopped" (and "finished" once nothing
+is open).
+
+To bring the launch bot back one day: remove `stopped = true` under
+`[launch]`, then `sudo systemctl enable --now launch-bot`.

@@ -13,13 +13,15 @@ from datetime import timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 from run import load_config  # noqa: E402
 from screener.api import ApiError, RateLimited  # noqa: E402
 from screener.convergence import ConvergenceStrategy  # noqa: E402
 from screener.demo import DemoApi, demo_rpc_factory, demo_trader_history  # noqa: E402
 from screener.paper_trader import now_utc  # noqa: E402
 
-CFG = load_config()
+CFG = running(load_config())
 FAST = dict(CFG, convergence=dict(CFG["convergence"], helius_every_minutes=2))
 WINNER_POOL = "POOL-ROCKET"   # the demo winner's pool
 

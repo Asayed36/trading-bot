@@ -15,13 +15,15 @@ from datetime import timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tests import running  # noqa: E402
+
 from run import load_config, run  # noqa: E402
 from screener.convergence import ConvergenceStrategy  # noqa: E402
 from screener.demo import EARLY_GOOD, GOOD, TOKENS, DemoApi, demo_rpc_factory  # noqa: E402
 from screener.filters import Result, insider_status  # noqa: E402
 from screener.paper_trader import ENTRY_COLUMNS, PaperTrader, now_utc  # noqa: E402
 
-CFG = load_config()
+CFG = running(load_config())
 QUIET = dict(out=lambda *a: None)
 
 
