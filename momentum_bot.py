@@ -121,7 +121,7 @@ class Runner:
                             "it's back; trying %s in %ss", host(url), lasted, str(exc)[:120],
                             host(urls[at % len(urls)]), pause)
             finally:
-                self.engine.disconnected(time.time())
+                self.engine.disconnected(time.time(), stopping=self.stop.is_set())
             if self.stop.is_set():
                 break
             try:

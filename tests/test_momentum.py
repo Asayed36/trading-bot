@@ -436,6 +436,16 @@ class RunnerTests(unittest.TestCase):
                 asyncio.run(r.feed())
         self.assertEqual(pauses, [1, 2, 4, 8, 15, 15])
 
+    def test_stopping_is_not_a_disconnect(self):
+        with tempfile.TemporaryDirectory() as d:
+            r = momentum_bot.Runner(CFG, d, connect=lambda url, **kw: FakeWs([]), api=Api(),
+                                    jupiter=False)
+            with self.assertLogs("momentum_bot", "INFO"):
+                asyncio.run(asyncio.wait_for(r.main(stop_after=0.3), 10))
+        counts = {k: n for hour in r.engine.stats.values() for k, n in hour.items()}
+        self.assertNotIn("feed disconnects", counts)
+        self.assertFalse(r.engine.feed_up)
+
     def test_check_feeds(self):
         note = json.dumps({"jsonrpc": "2.0", "method": "logsNotification", "params": {}})
         ok = asyncio.run(momentum_bot.check_feed("wss://good", 0.2, connect=lambda u, **k: FakeWs(

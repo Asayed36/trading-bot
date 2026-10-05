@@ -228,9 +228,10 @@ class MomentumEngine:
         self.feed_up, self.last_message = True, t
         self.outage_ended = t
 
-    def disconnected(self, t=None):
+    def disconnected(self, t=None, stopping=False):
+        """The feed dropped (counted), or the bot is stopping (not a drop)."""
         t = t or self.clock()
-        if self.feed_up:
+        if self.feed_up and not stopping:
             self._count(t, "feed disconnects")
             if self.endpoint:
                 self._count(t, f"feed disconnects: {self.endpoint}")
