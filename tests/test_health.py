@@ -38,7 +38,7 @@ class FakeGitHub:
         return self.runs
 
     def last_commit_time(self, path):
-        assert path in ("data/launch", "data/main-1min", "data/momentum")
+        assert path in ("data/launch", "data/main-1min", "data/momentum", "data/news-listings")
         return self.pushed if path == "data/launch" else self.pushed_1min
 
 
@@ -76,6 +76,10 @@ class Base(unittest.TestCase):
             "calls_per_hour": {"2026-10-01T23:00": {"runs": 60, "dexscreener": 250,
                                                     "rugcheck": 31}}})
         self.write("momentum/health.json", {"last_ok": ago(minutes=49), "feed_up": True})
+        self.write("news-listings/health.json", {
+            "last_ok": ago(minutes=48), "ai_key": True,
+            "calls_per_hour": {"2026-10-01T23:00": {"runs": 60, "binance.com": 60,
+                                                    "coingecko.com": 4}}})
         self.write("momentum/stats.json", {
             "2026-10-01 23:00": {"feed disconnects": 2, "launches seen": 1800,
                                  "30pct-2min: signals": 4, "30pct-2min: buys": 3}})
@@ -91,6 +95,29 @@ class Base(unittest.TestCase):
 
 
 class HealthTests(Base):
+    def test_news_listings_rows(self):
+        gh = self.healthy()
+        text, rows = self.lines(gh)
+        self.assertIn(f"{OK} last good run 2026-10-01 23:19 UTC (48 min ago); 60 runs in 1 h, "
+                      "4 CoinGecko call(s); last push", rows["news (listings): server"])
+        self.assertNotIn("news: Binance listings", rows)        # read on the server now
+        self.assertIn(INFO, rows["news (listings): AI check"])
+        self.write("news-listings/positions.json", {
+            "sources": {"Binance listings": {"ok": False, "error": "error 502"},
+                        "Coinbase new pairs": {"ok": True, "items": 0, "markets": 406}},
+            "ai": {"day": "2026-10-02", "calls": 3, "last_ok": ago(minutes=30)}})
+        text, rows = self.lines(gh)
+        self.assertIn(f"{WARN} failing: error 502", rows["news (listings): Binance listings"])
+        self.assertIn("406 coin(s) listed", rows["news (listings): Coinbase new pairs"])
+        self.assertIn(f"{INFO} not checked yet", rows["news (listings): Kraken blog"])
+        self.assertIn(f"{OK} 3 of 50 checks today", rows["news (listings): AI check"])
+        self.write("news-listings/health.json", {"last_ok": ago(hours=5)})
+        _, rows = self.lines(gh)
+        self.assertIn("(older than 3 h)", rows["news (listings): server"])
+        self.write("news-listings/health.json", {})
+        _, rows = self.lines(gh)
+        self.assertIn("Part J", rows["news (listings): server"])
+
     def test_all_ok(self):
         text, rows = self.lines(self.healthy())
         self.assertIn("**All checks OK.**", text)
@@ -156,7 +183,8 @@ class HealthTests(Base):
         gh = self.healthy()
         self.write("news/positions.json", {"sources": {
             "PR Newswire": {"ok": True, "items": 20, "newest": ago(hours=2)},
-            "Quant blog": {"ok": True, "items": 10, "newest": ago(days=40)},
+            "Quant blog": {"ok": True, "items": 10, "newest": ago(days=40)}}})
+        self.write("news-listings/positions.json", {"sources": {
             "Binance listings": {"ok": True, "items": 20, "newest": ago(days=3)},
             "Coinbase new pairs": {"ok": True, "items": 0, "markets": 420},
             "Upbit new markets": {"ok": True, "items": 0, "markets": 250,
@@ -165,13 +193,14 @@ class HealthTests(Base):
         self.assertIn(f"{OK} 20 item(s), newest 2026-10-01", rows["news: PR Newswire"])
         self.assertIn(f"{WARN} 10 item(s), newest 2026-08-23: nothing new for 40 days "
                       "(expected within 30)", rows["news: Quant blog"])
-        self.assertIn(OK, rows["news: Binance listings"])
+        self.assertIn(OK, rows["news (listings): Binance listings"])
         self.assertIn(f"{OK} 420 coin(s) listed; no new listing seen yet",
-                      rows["news: Coinbase new pairs"])
-        self.assertIn(f"{OK} 250 coin(s) listed, newest", rows["news: Upbit new markets"])
+                      rows["news (listings): Coinbase new pairs"])
+        self.assertIn(f"{OK} 250 coin(s) listed, newest",
+                      rows["news (listings): Upbit new markets"])
         self.assertIn(f"{INFO} not checked yet", rows["news: SEC EDGAR fund filings"])
         self.assertIn(f"{INFO} turned off: Bybit blocks", rows["news: Bybit listings"])
-        names = [s["name"] for s in CFG["news"]["sources"]]
+        names = [s["name"] for s in CFG["news"]["sources"] if s.get("runs_on") != "server"]
         self.assertEqual(sorted(k[6:] for k in rows if k.startswith("news: ")
                                 and k not in ("news: last successful run", "news: AI check")),
                          sorted(names))

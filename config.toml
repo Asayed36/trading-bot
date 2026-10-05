@@ -431,8 +431,10 @@ every_minutes = 15
 # in the COINGECKO_API_KEY secret). Without a key the public API is tried, but
 # it's often rate-limited on GitHub's shared servers. The bot stops looking up
 # new candidates (but still prices open positions while calls last) at this
-# many calls a month.
-coingecko_monthly_calls = 9000
+# many calls a month. The news listings bot on your server has its own count
+# ([news_listings] coingecko_monthly_calls): together they stay under the
+# free plan's 10,000 even if both use the same key.
+coingecko_monthly_calls = 5500
 # Pages of CoinGecko's coin list (250 coins a page, biggest first) that news
 # is matched against. Only fetched on runs with crypto news to check.
 coin_pages = 2
@@ -522,7 +524,9 @@ institutions = ["JPMorgan", "J.P. Morgan", "Citi", "Citigroup", "Bank of America
 # days counts as first seen when the bot sees it. enabled = false turns a
 # source off. stale_days: how long it may go without anything new before the
 # health check warns (default: press 4, exchange 14, blog 30, regulator 14,
-# filing 4). Each run's log says which sources worked; fix or remove any
+# filing 4). runs_on = "server": read every minute by the news listings bot
+# on your server (news_listings_bot.py, [news_listings] below) instead of
+# here on GitHub. Each run's log says which sources worked; fix or remove any
 # that keep failing. Feed addresses change now and then. To test them all
 # by hand: python -m screener.news --check-sources (or run the "News
 # sources check" workflow on GitHub).
@@ -575,12 +579,14 @@ url = "https://feed.businesswire.com/rss/home/?rss=G1QFDERJXkJcFVJYWQ=="
 # Binance's "New Cryptocurrency Listing" list. It works: Binance simply
 # posts there only every few days.
 name = "Binance listings"
+runs_on = "server"
 kind = "exchange"
 format = "binance"
 url = "https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=1&catalogId=48&pageNo=1&pageSize=20"
 
 [[news.sources]]
 name = "Kraken blog"
+runs_on = "server"
 kind = "exchange"
 url = "https://blog.kraken.com/feed/"
 
@@ -588,6 +594,7 @@ url = "https://blog.kraken.com/feed/"
 # Coinbase posts no listing feed: a coin that appears in its public list of
 # trading pairs is a new listing.
 name = "Coinbase new pairs"
+runs_on = "server"
 kind = "exchange"
 format = "markets"
 exchange = "coinbase"
@@ -599,6 +606,7 @@ trade_url = "https://exchange.coinbase.com/trade/{symbol}-USD"
 # coins are found in its public market list instead (KRW, BTC and USDT
 # markets).
 name = "Upbit new markets"
+runs_on = "server"
 kind = "exchange"
 format = "markets"
 exchange = "upbit"
@@ -619,6 +627,7 @@ stale_days = 120
 
 [[news.sources]]
 name = "OKX new markets"
+runs_on = "server"
 kind = "exchange"
 format = "markets"
 exchange = "okx"
@@ -725,6 +734,26 @@ daily_limit = 100
 must_pass = false
 max_tokens = 400
 timeout_seconds = 20
+
+[news_listings]
+# The news listings bot (news_listings_bot.py) on your server: the
+# [[news.sources]] with runs_on = "server" (the exchange listings: Binance,
+# Kraken, and new coins on Coinbase, Upbit and OKX), checked every minute
+# instead of every 15 minutes on GitHub. It uses the news strategy's coin
+# matching, checks, AI check, costs and exits (everything under [news]),
+# with its own positions and journal in data/news-listings/, so the two can
+# be compared. Paper trading only.
+enabled = true
+folder = "news-listings"
+every_seconds = 60
+# Open positions' prices from CoinGecko only this often (the exits are about
+# days); new listings are always checked at once.
+prices_every_minutes = 15
+# Its own CoinGecko count (see coingecko_monthly_calls under [news]).
+coingecko_monthly_calls = 4000
+# Its own AI check limit a day (the key is on the server: see
+# deploy/LAUNCH_SERVER_SETUP.md, Part J).
+ai_daily_limit = 50
 
 [news.paper_trading]
 # Pretend dollars per buy.

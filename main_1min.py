@@ -38,11 +38,11 @@ import os
 import signal
 import sys
 import tempfile
-import time
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 
 from screener.api import ApiError, PublicApi, RateLimited
-from screener.autorestart import CodeWatcher, restart_message
+from screener.autorestart import CodeWatcher
+from screener.autorestart import forever as run_forever
 from screener.filters import (PASS, best_pair, current_prices, evaluate, find_candidates,
                               market_checks)
 from screener.jupiter import JupiterOrganic
@@ -207,26 +207,11 @@ class MainOneMinute:
         os.replace(tmp, path)
 
 
-def forever(bot, every=60, clock=time.time, sleep=time.sleep, out=print, stop=None,
-            watcher=None):
-    """A run at the start of every minute until `stop()` says so, or until
-    `watcher` (a CodeWatcher) sees new code: then it returns what changed,
-    so the bot exits and systemd starts the new version. A crash in one run
-    is logged and the next minute runs as normal."""
-    stop = stop or (lambda: False)
-    while not stop():
-        try:
-            bot.run_once(datetime.fromtimestamp(clock(), timezone.utc), out)
-        except Exception:  # keep going: one bad answer mustn't stop the bot
-            log.exception("run failed")
-        if stop():
-            break
-        changed = watcher.changed() if watcher is not None else None
-        if changed:
-            log.warning(restart_message(changed))
-            return changed
-        sleep(every - clock() % every)
-    return None
+def forever(bot, every=60, **kw):
+    """A run at the start of every minute (screener/autorestart.py), logged
+    as main_1min."""
+    kw.setdefault("logger", log)
+    return run_forever(bot, every, **kw)
 
 
 def main(argv=None):

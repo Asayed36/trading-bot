@@ -23,6 +23,7 @@ import os
 import sys
 import time
 import tomllib
+from datetime import datetime, timezone
 
 log = logging.getLogger("autorestart")
 
@@ -103,3 +104,25 @@ def restart_message(changed):
     return ("automatic restart: new code from the hourly push in "
             + ", ".join(changed)
             + "; saving everything and exiting so systemd starts the new version")
+
+
+def forever(bot, every=60, clock=time.time, sleep=time.sleep, out=print, stop=None,
+            watcher=None, logger=log):
+    """A run at the start of every minute until `stop()` says so, or until
+    `watcher` (a CodeWatcher) sees new code: then it returns what changed,
+    so the bot exits and systemd starts the new version. A crash in one run
+    is logged and the next minute runs as normal."""
+    stop = stop or (lambda: False)
+    while not stop():
+        try:
+            bot.run_once(datetime.fromtimestamp(clock(), timezone.utc), out)
+        except Exception:  # keep going: one bad answer mustn't stop the bot
+            logger.exception("run failed")
+        if stop():
+            break
+        changed = watcher.changed() if watcher is not None else None
+        if changed:
+            logger.warning(restart_message(changed))
+            return changed
+        sleep(every - clock() % every)
+    return None

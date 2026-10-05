@@ -1,0 +1,36 @@
+# Runs the "news (listings)" paper strategy (the news strategy's exchange
+# listings, every minute) all the time and restarts it if it stops.
+# Paper trading only: it reads Binance, Kraken, Coinbase, Upbit, OKX and
+# CoinGecko's free public data, and asks Anthropic's API about headlines.
+# Install: see deploy/LAUNCH_SERVER_SETUP.md, Part J.
+[Unit]
+Description=News (listings) paper strategy (read-only data, paper trading only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=bot
+WorkingDirectory=/home/bot/trading-bot
+ExecStart=/home/bot/trading-bot/.venv/bin/python news_listings_bot.py
+Restart=always
+RestartSec=10
+# The Claude API key, from a file only root can read. systemd hands it to
+# this service alone (in $CREDENTIALS_DIRECTORY, not in the environment, so
+# it isn't passed on to other programs or shown in "systemctl show"). The
+# file must exist; leave it empty to run without the AI check.
+LoadCredential=claude_api_key:/etc/trading-bot/claude_api_key
+# Lock it down: it can only write to its data folder.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/bot/trading-bot/data
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryMax=300M
+
+[Install]
+WantedBy=multi-user.target
