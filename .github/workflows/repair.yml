@@ -1,0 +1,113 @@
+# Automatic repair (screener/repair.py): once a day, after the daily
+# comparison, each problem in the health check gets a GitHub issue labelled
+# "repair". Problems on your server or about a secret or setting are labelled
+# "needs-you" and left to you. For at most [repair] max_attempts_per_day
+# fixable issue a day (one attempt per issue, within max_daily_usd), Claude
+# Code tries to find the cause and proposes a fix as a DRAFT pull request.
+# Nothing is ever merged automatically: you review and merge.
+#
+# Uses the CLAUDE_API_KEY secret (only in the Claude Code step) and the
+# workflow's own short-lived GITHUB_TOKEN. Claude Code can read and edit the
+# code and run the tests, nothing else: no internet, no pushing (this
+# workflow commits and opens the pull request), no wallet, no keys.
+#
+# Needs: Settings > Actions > General > Workflow permissions > "Allow GitHub
+# Actions to create and approve pull requests" (else the fix is left on a
+# branch and the issue says so).
+
+name: Automatic repair
+
+on:
+  schedule:
+    - cron: "37 0 * * *"     # 00:37 UTC, half an hour after the daily comparison
+  workflow_dispatch:         # by hand from the Actions tab
+    inputs:
+      issue:
+        description: "Repair issue to attempt now (empty: check the health and pick one)"
+        required: false
+
+concurrency:
+  group: repair
+  cancel-in-progress: false
+
+jobs:
+  issues:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write          # open and update the repair issues
+      actions: read          # the health check: failed runs in the last 24 h
+    outputs:
+      issue: ${{ steps.pick.outputs.issue }}
+      model: ${{ steps.pick.outputs.model }}
+      max_turns: ${{ steps.pick.outputs.max_turns }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Open issues and pick one to attempt
+        id: pick
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.inputs.issue }}
+        run: |
+          python repair.py issues ${ISSUE:+--issue "$ISSUE"} | tee -a "$GITHUB_STEP_SUMMARY"
+
+  fix:
+    needs: issues
+    if: needs.issues.outputs.issue != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write        # push the fix's branch
+      pull-requests: write   # open the draft pull request
+      issues: write          # comment on the issue
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt -r requirements-launch.txt
+
+      - name: Mark the issue attempted and write the task
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python repair.py start ${{ needs.issues.outputs.issue }}
+
+      - name: Claude Code looks for a fix
+        id: claude
+        continue-on-error: true
+        timeout-minutes: 20
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.CLAUDE_API_KEY }}
+          github_token: ${{ github.token }}
+          prompt: |
+            Read .repair/task.md and follow it: it describes one problem the daily
+            health check found, and the rules for this repair. Finish by writing
+            .repair/result.md as it says.
+          claude_args: |
+            --model ${{ needs.issues.outputs.model }}
+            --max-turns ${{ needs.issues.outputs.max_turns }}
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(python -m unittest:*),Bash(python -m py_compile:*),Bash(python run.py --demo:*),Bash(git diff:*),Bash(git status:*),Bash(git log:*)"
+            --disallowedTools "WebFetch,WebSearch"
+
+      - name: Open the pull request (or explain), and record the cost
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python repair.py finish ${{ needs.issues.outputs.issue }} \
+            --execution-file "${{ steps.claude.outputs.execution_file }}" | tee -a "$GITHUB_STEP_SUMMARY"

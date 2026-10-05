@@ -834,6 +834,40 @@ your own computer, your local runs change the same files. Pull first
 (`git pull`) and don't commit your local `data/` changes, or the two records
 will get mixed up. Use `python run.py --demo` to try things out safely.
 
+## Automatic repair (issues, and fixes for you to review)
+
+Once a day (00:37 UTC, `.github/workflows/repair.yml`), each problem in the
+daily health check gets a GitHub issue labelled `repair`, with the check, what
+it said, the strategy's last error, failed runs and the files and settings to
+look at. If the issue is still open the next day, only its "Last seen" line is
+updated.
+
+- **Left to you** (`needs-you`, and the issue says why): problems on your
+  server (launch, main (1 min), momentum, news (listings)), which need the
+  server's logs; and secrets, settings or limits (a missing key, a paused
+  Helius budget, a daily limit reached).
+- **Everything else** (`repair-ready`): Claude Code runs on GitHub with the
+  `CLAUDE_API_KEY` secret, reads the issue, looks for the cause and, if it
+  finds one in the code, makes the smallest fix and runs the tests. The
+  workflow then opens a **draft pull request** ("Fixes #N", with the test
+  result and the cost) or, when no code change is needed, explains why on the
+  issue. **Nothing is ever merged automatically.** Claude Code can only read
+  and edit the code and run the tests: no internet, no pushing, never `data/`
+  or the workflow files, no wallet, no keys.
+
+**Limits** (`[repair]` in `config.toml`): one attempt per issue (if you close
+an issue and the problem comes back, it gets a new issue and a new attempt);
+at most `max_attempts_per_day` (1) a day; no attempt once the day's repairs
+cost `max_daily_usd` ($3); each attempt stops after `max_turns` (30) steps or
+20 minutes. Model: `claude-sonnet-5-5` ($2 / $10 per million tokens in / out):
+usually $0.60-1.50 an attempt, about $2 at most. Opening issues costs nothing.
+
+**Setup (once):** Settings > Actions > General > Workflow permissions: tick
+"Allow GitHub Actions to create and approve pull requests". And on
+console.anthropic.com, set a monthly spend limit for the key (the hard
+ceiling). To try it now: Actions > Automatic repair > Run workflow (leave the
+issue number empty, or give one waiting for its attempt).
+
 ## Files in this project
 
 | File | What it does |
@@ -845,6 +879,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/paper_trader.py` | Pretend buys, sells and the journal |
 | `screener/github_issues.py` | Opens and closes the "PASSED" GitHub issues |
 | `screener/early.py` | The early strategy: candidates, checks, pullback entry and exits |
+| `repair.py`, `screener/repair.py` | The automatic repair: issues for health problems, Claude Code's attempt, the draft pull request |
 | `screener/convergence.py` | The convergence strategy: Helius reads, credit budget, wallet scoring, signals and exits |
 | `screener/news.py` | The news strategy: feeds, coin matching, the checks, the candidate log and exits; `--check-sources` tests every source |
 | `screener/news_ai.py` | The news strategy's AI second opinion (Claude Haiku 4.5): verdicts, the daily limit and the fallback; run it to test the key |

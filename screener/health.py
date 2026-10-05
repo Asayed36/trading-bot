@@ -353,10 +353,12 @@ def add_main_1min_versions(add, folder, cfg, now):
         add(f"{name}: server", OK, detail + f" ({', '.join(rules)})")
 
 
-def health_lines(folder, cfg, now, github=None):
+def health_lines(folder, cfg, now, github=None, found=None):
     """Markdown lines for the health section. `github` is a GitHubIssues
     (or anything with workflow_runs() and last_commit_time()), or None when
-    there's no token: those checks then say so instead of guessing."""
+    there's no token: those checks then say so instead of guessing.
+    `found`: a list that gets one {"check", "detail", "summary"} per problem
+    (for the automatic repair issues, repair.py)."""
     h = cfg.get("health", {})
     stale = timedelta(minutes=h.get("stale_minutes", 60))
     rows, problems = [], []
@@ -365,6 +367,8 @@ def health_lines(folder, cfg, now, github=None):
         rows.append(f"| {check} | {status} {detail.replace('|', '/')} |")
         if status == WARN:
             problems.append(problem or f"{check}: {detail}")
+            if found is not None:
+                found.append({"check": check, "detail": detail, "summary": problems[-1]})
 
     # 1. The scheduled GitHub runs.
     if github is None:
