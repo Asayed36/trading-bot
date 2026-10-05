@@ -706,6 +706,26 @@ kind = "blog"
 coin = "stellar"
 url = "https://stellar.org/blog/rss.xml"
 
+[news.ai]
+# An AI second opinion on every crypto-related item (screener/news_ai.py):
+# Claude Haiku 4.5, through Anthropic's API, with the key in the
+# CLAUDE_API_KEY repository secret (Settings -> Secrets and variables ->
+# Actions). It names the coin, says whether the headline is a real positive
+# catalyst, and flags wrong coin matches and repeats. Each verdict is logged
+# next to the rule-based result in data/news/ai_verdicts.csv. Without the
+# key, past the daily limit, or if the API fails, items are logged as "not
+# checked" and the rule-based checks carry on as before.
+enabled = true
+# At most this many AI checks a day (UTC). Each costs about $0.001-0.002, so
+# 100 a day is at most about $0.20.
+daily_limit = 100
+# false: the AI only gives its opinion (logged, for comparing); the
+# rule-based checks alone decide the paper buys. true: a candidate also needs
+# the AI's yes (when the AI gave no answer, the rule-based checks decide).
+must_pass = false
+max_tokens = 400
+timeout_seconds = 20
+
 [news.paper_trading]
 # Pretend dollars per buy.
 buy_amount_usd = 10

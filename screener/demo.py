@@ -251,6 +251,40 @@ def demo_news_items(now=None):
     ]
 
 
+class DemoClaude:
+    """Pretends to be Anthropic's API for the news strategy's AI check: it
+    agrees with the keyword matcher's coin, and calls a headline a catalyst
+    unless it explores, plans or talks. Records every request; no network."""
+
+    def __init__(self, fail=None):
+        self.fail = fail          # an exception to raise instead of answering
+        self.requests = []
+        self.messages = self
+
+    def create(self, **request):
+        import json
+        from types import SimpleNamespace
+        self.requests.append(request)
+        if self.fail is not None:
+            raise self.fail
+        prompt = request["messages"][0]["content"]
+        title = prompt.split("Headline: ", 1)[1].split("\n", 1)[0]
+        match = prompt.split("Keyword matcher's coin: ", 1)[1].split("\n", 1)[0]
+        name, _, sym = match.partition(" (")
+        hype = any(w in title.lower() for w in ("explore", "plan", "talks", "potential"))
+        answer = {"coin_name": None if match == "none" else name,
+                  "coin_symbol": None if match == "none" else sym.rstrip(")"),
+                  "about_one_coin": match != "none" and "," not in match,
+                  "positive_catalyst": match != "none" and not hype,
+                  "catalyst_kind": "none" if hype or match == "none" else "partnership",
+                  "false_match": False, "duplicate": False,
+                  "reason": "Demo verdict (made up)."}
+        return SimpleNamespace(
+            stop_reason="end_turn",
+            content=[SimpleNamespace(type="text", text=json.dumps(answer))],
+            usage=SimpleNamespace(input_tokens=900, output_tokens=80))
+
+
 class DemoNewsHttp:
     """Pretends to be the news sources and CoinGecko. PR Newswire's feeds
     return the demo items; every other source returns one old, unrelated

@@ -8,8 +8,10 @@
 # Read-only: no wallets or private keys are used. The only secrets are the
 # optional HELIUS_API_KEY (a free data-access key for the convergence
 # strategy, see the README; without it that strategy just stays inactive)
-# and the optional COINGECKO_API_KEY (a free CoinGecko Demo key for the news
-# strategy's prices; without it the public API is tried).
+# the optional COINGECKO_API_KEY (a free CoinGecko Demo key for the news
+# strategy's prices; without it the public API is tried) and the optional
+# CLAUDE_API_KEY (an Anthropic API key for the news strategy's AI check of
+# headlines; without it the rule-based checks run alone).
 # The only things it writes are the commit of the data files (only when a run
 # actually changed them) and GitHub issues: one "PASSED: SYMBOL" issue per
 # token that passes the main, early or news strategy, closed with the result when
@@ -73,6 +75,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           HELIUS_API_KEY: ${{ secrets.HELIUS_API_KEY }}
           COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
         run: |
           set +e
           python run.py --github-issues 2>&1 | tee report.txt

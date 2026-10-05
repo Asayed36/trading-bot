@@ -173,7 +173,8 @@ class HealthTests(Base):
         self.assertIn(f"{INFO} turned off: Bybit blocks", rows["news: Bybit listings"])
         names = [s["name"] for s in CFG["news"]["sources"]]
         self.assertEqual(sorted(k[6:] for k in rows if k.startswith("news: ")
-                                and k != "news: last successful run"), sorted(names))
+                                and k not in ("news: last successful run", "news: AI check")),
+                         sorted(names))
 
     def test_launch_never_or_late(self):
         gh = self.healthy()

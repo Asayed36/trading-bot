@@ -10,10 +10,11 @@ spends real money.
 - **Read-only.** It only reads public web pages of data. It never connects to
   a wallet or an exchange.
 - **No wallet secrets.** It never asks for private keys or seed phrases. If
-  anything ever asks you for these, don't give them. The one key it can use
-  is an optional, free Helius API key for the convergence strategy: that's a
-  data-access key (like a library card), not a wallet key, and it can't move
-  or trade anything.
+  anything ever asks you for these, don't give them. The keys it can use are
+  optional data-access keys (like a library card), not wallet keys: free ones
+  for Helius (the convergence strategy) and CoinGecko (the news strategy),
+  and an Anthropic API key for the news strategy's AI check (a paid service,
+  capped at a small daily limit). None of them can move or trade anything.
 - **Paper trading only.** "Buys" and "sells" are just rows in a spreadsheet.
   There's no code anywhere in here that can place a real order.
 
@@ -31,8 +32,10 @@ spends real money.
   wallets' transactions, for the convergence strategy only (below).
 - **Official news feeds** (PR Newswire, GlobeNewswire, Business Wire, project
   blogs, the SEC, exchange announcements and the public market lists of
-  Coinbase, Upbit and OKX, all read-only with no key) and **CoinGecko** (free
-  plan): for the news strategy only (below).
+  Coinbase, Upbit and OKX, all read-only with no key), **CoinGecko** (free
+  plan) and, optionally, **Anthropic's API** (Claude Haiku 4.5, with the
+  `CLAUDE_API_KEY` secret: a second opinion on headlines): for the news
+  strategy only (below).
 - **GoPlus** (`api.gopluslabs.io`, no key) and **Robinhood Chain's public RPC**
   (`rpc.mainnet.chain.robinhood.com`, no key): for the robinhood strategy only
   (below), with GeckoTerminal and DexScreener.
@@ -187,7 +190,8 @@ because young pools are thinner.
   - convergence: how many wallets it tracks (warns under 3, when it can't
     give a signal) and whether Helius is paused;
   - news: each source, ok, turned off, failing with the reason, or with
-    nothing new for longer than usual;
+    nothing new for longer than usual; and the AI check: today's count
+    against its daily limit, not used (no key), or failing;
   - launch: when your server last pushed results (warns after 3 hours or if
     it never has).
 
@@ -564,6 +568,33 @@ counts its calls and stops looking up new candidates at 9,000 a month. It
 only looks up the coin list on runs with crypto news to check, which should
 stay well under that.
 
+**AI second opinion (Claude Haiku 4.5):** every crypto-related item (each
+candidate, and each crypto item that names no coin; never the releases about
+other things) is also sent to Claude Haiku 4.5 through Anthropic's API. It
+answers which coin the item is about, whether the headline is a real
+positive catalyst, whether the rule-based coin match looks wrong (a company
+named after a coin, the wrong coin with the same ticker), and whether it
+repeats a headline from the last 24 hours. Every verdict is saved next to the
+rule-based result in `data/news/ai_verdicts.csv` (with an `agree` column),
+shown under each candidate in the run log, and added to the buy's GitHub
+issue, so you can compare the two over time.
+- **It decides nothing by default:** the rule-based checks alone decide the
+  paper buys. To also require the AI's yes, set `must_pass = true` under
+  `[news.ai]` in `config.toml`.
+- **Key:** create an API key at <https://console.anthropic.com/settings/keys>
+  and add it as the repository secret **`CLAUDE_API_KEY`** (Settings →
+  Secrets and variables → Actions → New repository secret). No wallet is
+  involved; the AI only sees the headline, a short summary, the source's
+  name and the rule-based match.
+- **Cost:** at most `daily_limit` checks a day (100, UTC), each about
+  $0.001-0.002, so at most about $0.20 a day; most days use far fewer. The
+  run log and the health check show today's count.
+- **If anything goes wrong** (no key, the limit reached, an API error), the
+  item is logged as "not checked" and the rule-based checks carry on
+  exactly as before. The health check's "news: AI check" row says which.
+- To test the key, run the **News sources check** workflow: it sends one
+  known headline (The Clearing House choosing Quant) and shows the verdict.
+
 **What it can't do:** it sees news up to 15–20 minutes late (the schedule plus
 GitHub's delays), so catalysts that move within seconds, like big exchange
 listings, will often already be priced in, and the "Not already moved" check
@@ -724,6 +755,7 @@ will get mixed up. Use `python run.py --demo` to try things out safely.
 | `screener/early.py` | The early strategy: candidates, checks, pullback entry and exits |
 | `screener/convergence.py` | The convergence strategy: Helius reads, credit budget, wallet scoring, signals and exits |
 | `screener/news.py` | The news strategy: feeds, coin matching, the checks, the candidate log and exits; `--check-sources` tests every source |
+| `screener/news_ai.py` | The news strategy's AI second opinion (Claude Haiku 4.5): verdicts, the daily limit and the fallback; run it to test the key |
 | `screener/launch.py`, `launch_bot.py` | The launch strategy and the program that runs it on your server |
 | `screener/momentum.py`, `screener/pumpfeed.py`, `momentum_bot.py` | The momentum strategy, pump.fun's on-chain events, and the program that runs it on your server |
 | `trade_feed_probe.py` | A 2-hour, read-only measurement of the free Solana RPC as a pump.fun trade feed (no trading) |

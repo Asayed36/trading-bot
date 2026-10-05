@@ -50,6 +50,7 @@ import requests
 
 from screener.api import ApiError, RateLimited
 from screener.filters import FAIL, PASS, Check, money, to_float
+from screener.news_ai import VERDICT_COLUMNS, AiChecker, describe, says_buy, verdict_row
 from screener.paper_trader import PaperTrader, now_utc
 
 COINGECKO = "https://api.coingecko.com/api/v3"
@@ -750,6 +751,21 @@ def check_candidate(item, source, coins, now, state, c):
 # Paper trader
 # ---------------------------------------------------------------------
 
+def ai_check(verdict):
+    """The AI's verdict as a check (only with news.ai.must_pass = true). When
+    the AI gave no answer it passes: the rule-based checks decide alone."""
+    yes = says_buy(verdict)
+    if yes is None:
+        return Check("AI check", PASS, f"not checked ({verdict.get('note')}); rule-based only")
+    return Check("AI check", PASS if yes else FAIL, describe(verdict))
+
+
+def ai_cost(meter):
+    from screener.news_ai import INPUT_USD, OUTPUT_USD
+    return (meter.get("input_tokens", 0) * INPUT_USD
+            + meter.get("output_tokens", 0) * OUTPUT_USD)
+
+
 class NewsTrader(PaperTrader):
     """Sell half at +50% (PaperTrader), then everything left at -20% from
     entry, 25% below the highest price since entry, or after 7 days."""
@@ -770,7 +786,8 @@ class NewsTrader(PaperTrader):
 # ---------------------------------------------------------------------
 
 class NewsStrategy:
-    def __init__(self, cfg, data_folder, http=None, coingecko_key=None):
+    def __init__(self, cfg, data_folder, http=None, coingecko_key=None, ai_key=None,
+                 ai_client=None):
         self.c = cfg["news"]
         self.pt = self.c["paper_trading"]
         self.folder = os.path.join(data_folder, "news")
@@ -779,6 +796,10 @@ class NewsStrategy:
         self.key = coingecko_key
         self.candidates_path = os.path.join(self.folder, "candidates.csv")
         self.unmatched_path = os.path.join(self.folder, "unmatched.csv")
+        self.ai_path = os.path.join(self.folder, "ai_verdicts.csv")
+        # The AI check (screener/news_ai.py): a key from the CLAUDE_API_KEY
+        # secret, or a made-up client in the tests and the demo.
+        self.ai_key, self.ai_client = ai_key, ai_client
 
     def fetch(self, now=None):
         """Read the sources and CoinGecko, and check every new candidate.
@@ -941,6 +962,17 @@ class NewsStrategy:
                                  f"{len(plan['candidates'])} name a coin, "
                                  f"{unnamed} crypto item(s) name none, "
                                  f"{len(unrelated)} not about crypto")
+        # 4. The AI's second opinion on every crypto item (candidates first),
+        #    within the daily limit. Without a key, or if the API fails, the
+        #    items are logged as not checked and the rule-based checks decide.
+        if c.get("ai") and (plan["candidates"] or plan["unmatched"]):
+            ai = AiChecker(c["ai"], self.ai_key, state, now, self.ai_client)
+            for cand in plan["candidates"]:
+                cand["ai"] = ai.check(cand["item"], cand["source"], cand["coins"])
+                if c["ai"].get("must_pass"):
+                    cand["checks"].append(ai_check(cand["ai"]))
+            plan["ai_unmatched"] = [ai.check(item, source, [])
+                                    for source, item in plan["unmatched"]]
         plan["coingecko_calls"] = gecko.meter["calls"]
         return plan
 
@@ -958,7 +990,7 @@ class NewsStrategy:
         trader, now, c = self.trader, plan["now"], self.c
         state = plan["state"]
         # Keep the trader's positions (updated below) but take fetch's other state.
-        for key in ("last_check", "coingecko"):
+        for key in ("last_check", "coingecko", "ai", "ai_recent"):
             if key in state:
                 trader.state[key] = state[key]
         trader.state.pop("seen_started", None)   # replaced by sources_read
@@ -981,6 +1013,10 @@ class NewsStrategy:
         if plan["checked"]:
             out(f"  CoinGecko calls this month: {plan.get('coingecko_calls', 0):,} of "
                 f"{c['coingecko_monthly_calls']:,}")
+            meter = state.get("ai")
+            if c.get("ai") and meter and meter.get("day") == now.strftime("%Y-%m-%d"):
+                out(f"  AI checks today (Claude Haiku 4.5): {meter['calls']} of "
+                    f"{c['ai']['daily_limit']}, about ${ai_cost(meter):.3f}")
             for s in plan["sources"]:
                 if s.get("ok") and "markets" in s:
                     out(f"  ok    {s['name']:<24} {s['markets']} coin(s) listed, "
@@ -994,8 +1030,12 @@ class NewsStrategy:
         if plan.get("unmatched"):
             self._log_unmatched(now, plan["unmatched"])
             out(f"  Crypto news naming no coin (saved to {os.path.basename(self.unmatched_path)}):")
-            for source, item in plan["unmatched"]:
+            verdicts = plan.get("ai_unmatched") or [None] * len(plan["unmatched"])
+            for (source, item), verdict in zip(plan["unmatched"], verdicts):
                 out(f"    - {source['name']}: {item['title'][:100]}")
+                if verdict:
+                    out(f"        AI: {describe(verdict)}")
+                    self._log_ai(now, source, item, "", "no coin", "", verdict)
         out("")
 
         for s in trader.update(plan["prices"], when=now):
@@ -1014,10 +1054,19 @@ class NewsStrategy:
             out(f"       {item['url']}")
             for ch in checks:
                 out(f"   {'  ok ' if ch.status == PASS else ' FAIL'}  {ch.name:<22} {ch.detail}")
+            if cand.get("ai"):
+                rules = [ch for ch in checks if ch.name != "AI check"]
+                out(f"     AI   {describe(cand['ai'])}")
+                self._log_ai(now, source, item,
+                             coin["id"] if coin else ";".join(x["id"] for x in cand["coins"][:5]),
+                             # the rule-based result alone, without the AI's own check
+                             "PASS" if all(ch.status == PASS for ch in rules) else "FAIL",
+                             "; ".join(f"{ch.name}: {ch.detail}" for ch in rules
+                                       if ch.status != PASS), cand["ai"])
             out("")
             self._log(now, source, item, cand["coins"], passed, checks)
             if passed and coin:
-                pos = self._buy(coin, item, source, checks, now, issue_details)
+                pos = self._buy(coin, item, source, checks, now, issue_details, cand.get("ai"))
                 if pos:
                     bought.append(pos)
                     out(f"  BUY  {coin['symbol']:<10} ${self.pt['buy_amount_usd']} at "
@@ -1029,7 +1078,7 @@ class NewsStrategy:
         trader.save()
         return bought
 
-    def _buy(self, coin, item, source, checks, now, issue_details):
+    def _buy(self, coin, item, source, checks, now, issue_details, ai=None):
         pair = {"priceUsd": coin["price"], "priceChange": {"h1": coin.get("change_1h"),
                                                            "h24": coin.get("change_24h")}}
         result = SimpleNamespace(address=coin["id"], symbol=coin["symbol"], name=coin["name"],
@@ -1055,9 +1104,19 @@ class NewsStrategy:
                 ("1h change", f"{coin['change_1h']:+.1f}%" if coin.get("change_1h") is not None
                  else "unknown"),
                 ("24h volume", money(coin.get("volume"))),
-            ],
+            ] + ([("AI check", describe(ai))] if ai else []),
         }
         return pos
+
+    def _log_ai(self, now, source, item, rule_coin, rule_verdict, rule_failed, verdict):
+        """The AI's verdict next to the rule-based one (data/news/ai_verdicts.csv)."""
+        new = not os.path.exists(self.ai_path)
+        with open(self.ai_path, "a", newline="") as fh:
+            w = csv.writer(fh)
+            if new:
+                w.writerow(VERDICT_COLUMNS)
+            w.writerow(verdict_row(now, source, item, rule_coin, rule_verdict, rule_failed,
+                                   verdict))
 
     def _log_unmatched(self, now, unmatched):
         """Headline and source of each crypto-related item that named no coin."""
