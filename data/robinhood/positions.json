@@ -356,6 +356,13 @@
       "failed": [
         "More buys than sells (1h)"
       ]
+    },
+    "onchain:0xbfdac6235dbe77c0cd6edb01c810c7da858c6c41": {
+      "at": "2026-10-06T21:33:27.160742+00:00",
+      "passed": false,
+      "failed": [
+        "Holders"
+      ]
     }
   },
   "sources": {
@@ -364,7 +371,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-06T21:31:32.707138+00:00",
+      "at": "2026-10-06T21:33:27.160742+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -372,7 +379,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-06T21:31:32.707138+00:00",
+      "at": "2026-10-06T21:33:27.160742+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -380,15 +387,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-06T20:57:59.284976+00:00",
-      "used_this_run": false
+      "at": "2026-10-06T21:33:27.160742+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 16,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-06T21:31:32.707138+00:00",
+      "at": "2026-10-06T21:33:27.160742+00:00",
       "used_this_run": true
     }
   },
@@ -404,7 +411,8 @@
     "onchain:0xfd1c28ef54856dc02f8ef7de71805ea7bf111077": "FAIL|Liquidity: $7,546 (need $10,000+ on Pons)",
     "onchain:0x109b383a42305dc48855b9b791c202002c6b391f": "FAIL|Top 10 holders: 33.4% (need under 30%; pools, launchpad and burn addresses left out)",
     "onchain:0xecfda0dc3b958297311e1696317af500da6f8e75": "FAIL|Liquidity: $5,311 (need $10,000+ on Pons)",
-    "onchain:0x44bd7f46f71a8c1691f0fbdd5feea5916f4f7bee": "FAIL|More buys than sells (1h): 1342 buys vs 1862 sells"
+    "onchain:0x44bd7f46f71a8c1691f0fbdd5feea5916f4f7bee": "FAIL|More buys than sells (1h): 1342 buys vs 1862 sells",
+    "onchain:0xbfdac6235dbe77c0cd6edb01c810c7da858c6c41": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls"
   },
   "launchpad_tokens": {
     "0xe5906b57234b921bdb5854557c649024bbbd05c3": {
@@ -1769,7 +1777,7 @@
       "graduated": "2026-10-05T22:36:47Z",
       "symbol": "MINTRO",
       "title": "MINTRO",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 39665.7848,
       "market_cap_usd": 6824.72203
@@ -1779,7 +1787,7 @@
       "graduated": "2026-10-05T22:50:13Z",
       "symbol": "MINTRO",
       "title": "MINTRO",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 38912.6216,
       "market_cap_usd": 6838.874341
@@ -1789,7 +1797,7 @@
       "graduated": "2026-10-05T23:07:32Z",
       "symbol": "Liege Agents",
       "title": "Liege Agents",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 41193.1447,
       "market_cap_usd": 6987.380072
@@ -1799,7 +1807,7 @@
       "graduated": "2026-10-05T23:00:24Z",
       "symbol": "MINTRO",
       "title": "MINTRO",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 39204.6645,
       "market_cap_usd": 6850.385256
@@ -1809,7 +1817,7 @@
       "graduated": "2026-10-05T23:25:32Z",
       "symbol": "MINTRO",
       "title": "MINTRO",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 41445.2777,
       "market_cap_usd": 6947.482466
@@ -1839,7 +1847,7 @@
       "graduated": "2026-10-05T23:56:04Z",
       "symbol": "FEEBITS",
       "title": "FEEBITS",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 40763.5747,
       "market_cap_usd": 6848.067813
@@ -1869,7 +1877,7 @@
       "graduated": "2026-10-06T01:17:27Z",
       "symbol": "FEEBITS",
       "title": "FEEBITS",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 47724.5951,
       "market_cap_usd": 6894.091686
@@ -1929,7 +1937,7 @@
       "graduated": "2026-10-06T09:21:32Z",
       "symbol": "FEEBITS",
       "title": "FEEBITS",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 38823.9032,
       "market_cap_usd": 6866.827102
@@ -1948,7 +1956,7 @@
       "graduated": "2026-10-06T10:15:44Z",
       "symbol": "FEEBITS",
       "title": "FEEBITS",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 38831.993,
       "market_cap_usd": 6868.491233
@@ -1968,7 +1976,7 @@
       "graduated": "2026-10-06T11:12:08Z",
       "symbol": "GOMO",
       "title": "GOMO",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 38834.1503,
       "market_cap_usd": 6833.638084
@@ -1978,7 +1986,7 @@
       "graduated": "2026-10-06T11:24:36Z",
       "symbol": "SI",
       "title": "SI",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 39061.7442,
       "market_cap_usd": 6884.293538
@@ -1998,7 +2006,7 @@
       "graduated": "2026-10-06T12:02:44Z",
       "symbol": "phubber",
       "title": "phubber",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 38983.5425,
       "market_cap_usd": 6869.923035
@@ -2038,7 +2046,7 @@
       "graduated": "2026-10-06T13:44:07Z",
       "symbol": "RALLY",
       "title": "Rally",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 26960.9764,
       "market_cap_usd": 6813.980901
@@ -2048,7 +2056,7 @@
       "graduated": "2026-10-06T14:04:45Z",
       "symbol": "RALLY",
       "title": "Rally",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 27373.2881,
       "market_cap_usd": 6827.410779
@@ -2058,7 +2066,7 @@
       "graduated": "2026-10-06T14:24:35Z",
       "symbol": "RALLY",
       "title": "Rally",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 27891.5766,
       "market_cap_usd": 6865.656714
@@ -2068,7 +2076,7 @@
       "graduated": "2026-10-06T14:58:35Z",
       "symbol": "DUMBASS",
       "title": "Dumbass",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 26890.8646,
       "market_cap_usd": 6908.654952
@@ -2098,7 +2106,7 @@
       "graduated": "2026-10-06T15:25:14Z",
       "symbol": "DUMBASS",
       "title": "Dumbass",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 26948.4446,
       "market_cap_usd": 6859.555472
@@ -2118,7 +2126,7 @@
       "graduated": "2026-10-06T15:43:07Z",
       "symbol": "Grok 4.7",
       "title": "Grok 4.7",
-      "seen": "2026-10-06T21:31:32.707138+00:00",
+      "seen": "2026-10-06T21:33:27.160742+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 17338.3933,
       "market_cap_usd": 6901.73348
@@ -2438,7 +2446,7 @@
       0
     ],
     "2026-10-06 21:00": [
-      3,
+      4,
       0,
       0
     ]
