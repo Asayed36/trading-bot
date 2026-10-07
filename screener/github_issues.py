@@ -105,6 +105,21 @@ class GitHubIssues:
             url = resp.links.get("next", {}).get("url")
         return runs
 
+    def run_failure(self, run_id):
+        """Why a failed run failed: "no machine" when GitHub never gave it a
+        machine to run on (no runner, no step ran: GitHub's problem), else
+        the name of the step that failed (or "unknown")."""
+        jobs = self._request("GET", f"/actions/runs/{run_id}/jobs").json().get("jobs") or []
+        for job in jobs:
+            if job.get("conclusion") not in ("failure", "cancelled", "timed_out"):
+                continue
+            steps = job.get("steps") or []
+            if not job.get("runner_name") and not steps:
+                return "no machine"
+            failed = [s["name"] for s in steps if s.get("conclusion") == "failure"]
+            return failed[0] if failed else "unknown"
+        return "no machine" if not jobs else "unknown"
+
     def count_runs(self, workflow, start, end, event="schedule"):
         """How many runs of one workflow started between `start` and `end`
         (scheduled ones only by default). One request: GitHub reports the

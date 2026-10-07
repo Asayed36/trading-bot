@@ -85,6 +85,18 @@ class IssueTests(unittest.TestCase):
                              "conclusion": "failure"}], out=lines.append)
         return lines
 
+    def test_failed_runs_say_why(self):
+        lines = []
+        repair.open_issues(self.gh, [{"check": "Scheduled runs (last 24h)", "detail": "x"}],
+                           self.tmp.name, NOW,
+                           [{"run_number": 1, "html_url": "u1", "why": "no machine"},
+                            {"run_number": 2, "html_url": "u2",
+                             "why": "Save results to the repository"},
+                            {"run_number": 3, "html_url": "u3", "why": "unknown"}],
+                           out=lines.append)
+        self.assertIn("[1](u1) (never started: GitHub had no machine free), [2](u2) (failed "
+                      "at \"Save results to the repository\"), [3](u3)", self.gh.issues[0]["body"])
+
     def test_kinds(self):
         self.assertEqual(repair.kind(CODE)[0], "code")
         self.assertEqual(repair.kind(SERVER)[0], "server")
@@ -168,6 +180,31 @@ class PickTests(unittest.TestCase):
         self.assertIn("already 1 attempt(s)", lines[0])
         tomorrow = repair.pick(self.gh, CFG, NOW.replace(day=7), out=lambda *a: None)
         self.assertEqual(tomorrow, 2)                       # never #1 again
+
+    def test_a_new_issue_is_picked_the_day_it_opens(self):
+        # What happened on 2026-10-06: GitHub's list didn't show #311 yet, so
+        # nothing was attempted that day.
+        class Slow(FakeGitHub):
+            def issues_with_label(self):
+                return []                                  # the new issue isn't listed yet
+        gh = Slow()
+        known = repair.open_issues(gh, [CODE], ".", NOW, [], out=lambda *a: None)
+        self.assertEqual(repair.pick(gh, CFG, NOW, known=known, current={CODE["check"]},
+                                     out=lambda *a: None), 1)
+
+    def test_only_problems_still_in_todays_health_check(self):
+        # What happened on 2026-10-07: yesterday's outage (#1 here) got the
+        # day's attempt instead of today's problem.
+        lines = []
+        number = repair.pick(self.gh, CFG, NOW, current={"news: PR Newswire"},
+                             out=lines.append)
+        self.assertEqual(number, 2)
+        number = repair.pick(self.gh, CFG, NOW, current=set(), out=lines.append)
+        self.assertIsNone(number)
+        self.assertIn("weren't in today's health check (#1, #2)", lines[-1])
+        # by hand, any waiting issue
+        self.assertEqual(repair.pick(self.gh, CFG, NOW, wanted="1", current=set(),
+                                     out=lambda *a: None), 1)
 
     def test_daily_dollar_cap(self):
         cfg = dict(CFG, repair=dict(CFG["repair"], max_attempts_per_day=5))

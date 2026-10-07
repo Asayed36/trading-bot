@@ -129,8 +129,13 @@ def problem_details(problem, folder, now, failed_runs):
         out.append("Probably because of this (late, with no error of their own): "
                    + "; ".join(problem["also"]))
     if failed_runs:
+        def why(r):
+            reason = r.get("why")
+            if reason == "no machine":
+                return " (never started: GitHub had no machine free)"
+            return f' (failed at "{reason}")' if reason and reason != "unknown" else ""
         out.append("Failed scheduled runs in the last 24 h: "
-                   + ", ".join(f"[{r.get('run_number', '?')}]({r['html_url']})"
+                   + ", ".join(f"[{r.get('run_number', '?')}]({r['html_url']}){why(r)}"
                                for r in failed_runs[:5]))
     return out
 
@@ -154,6 +159,11 @@ def today_usage(issues, day):
     spent = sum(float(usd) for i in issues
                 for d, usd in COST_RE.findall(i.get("body") or "") if d == day)
     return attempts, spent
+
+
+def problem_key(issue):
+    match = KEY_RE.search(issue.get("body") or "")
+    return match.group(1) if match else None
 
 
 def labels_of(issue):
@@ -203,22 +213,32 @@ def open_issues(gh, problems, folder, now, failed_runs=(), out=print):
             out(f"#{issue['number']} still open: {key}")
             continue
         details = problem_details(problem, folder, now, failed_runs)
-        number = gh.create(issue_title(problem), issue_body(problem, k, why, details, day),
-                           labels=[LABEL, READY if k == "code" else NEEDS_YOU])
+        body = issue_body(problem, k, why, details, day)
+        labels = [LABEL, READY if k == "code" else NEEDS_YOU]
+        number = gh.create(issue_title(problem), body, labels=labels)
+        # GitHub's issue list can take a while to show a new issue: keep it
+        # here, so it can be picked today.
+        issues.append({"number": number, "title": issue_title(problem), "body": body,
+                       "state": "open", "labels": [{"name": x} for x in labels]})
         out(f"#{number} opened ({'Claude Code may try it' if k == 'code' else 'needs you'}): "
             f"{key}")
     return issues
 
 
-def pick(gh, cfg, now, wanted=None, out=print):
+def pick(gh, cfg, now, wanted=None, out=print, known=(), current=None):
     """The one issue to attempt now, or None (and why): open, labelled
-    repair-ready, never attempted; within today's attempt and dollar caps."""
+    repair-ready, never attempted, and (unless asked for by number) still
+    in today's health check (`current`: today's problem checks); within
+    today's attempt and dollar caps. `known`: issues open_issues() just
+    opened or saw, in case GitHub's list doesn't show them yet."""
     c = cfg["repair"]
     if not c.get("enabled", True):
         out("Automatic repairs are turned off ([repair] enabled = false).")
         return None
     day = now.strftime("%Y-%m-%d")
-    issues = list(gh.issues_with_label())
+    issues = {i["number"]: i for i in known}
+    issues.update({i["number"]: i for i in gh.issues_with_label()})
+    issues = list(issues.values())
     attempts, spent = today_usage(issues, day)
     if attempts >= c["max_attempts_per_day"]:
         out(f"No repair today: already {attempts} attempt(s) "
@@ -235,6 +255,14 @@ def pick(gh, cfg, now, wanted=None, out=print):
         if not ready:
             out(f"#{wanted} can't be attempted: it must be an open repair issue labelled "
                 f"{READY} that hasn't had its attempt yet.")
+            return None
+    elif current is not None:
+        # A problem gone from today's health check isn't worth today's attempt.
+        gone = [i for i in ready if problem_key(i) not in current]
+        ready = [i for i in ready if problem_key(i) in current]
+        if gone and not ready:
+            out(f"Nothing to repair: the {len(gone)} issue(s) waiting for their attempt "
+                f"weren't in today's health check (#{', #'.join(str(i['number']) for i in gone)}).")
             return None
     if not ready:
         out("Nothing to repair: no open issue waiting for its attempt.")
@@ -417,5 +445,9 @@ def failed_runs(gh, cfg, now):
                                 now - timedelta(hours=24))
     except Exception:
         return []
-    return [r for r in runs if r.get("conclusion") in ("failure", "timed_out",
-                                                       "startup_failure")]
+    from screener.health import run_reasons
+    failed = [r for r in runs if r.get("conclusion") in ("failure", "timed_out",
+                                                         "startup_failure")]
+    for run, why in zip(failed, run_reasons(gh, failed)):
+        run["why"] = why
+    return failed

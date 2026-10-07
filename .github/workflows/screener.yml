@@ -167,11 +167,14 @@ jobs:
             if [ -f "$f" ]; then git add "$f"; fi
           done
           git commit -m "Paper trading run $(date -u '+%Y-%m-%d %H:%M UTC')"
-          # If someone pushed in the meantime, replay our commit on top and retry.
-          for attempt in 1 2 3; do
+          # If someone pushed in the meantime, replay our commit on top and
+          # retry; also rides out a short GitHub server error ("Internal Server
+          # Error" on push, 2026-10-05): 5 attempts over about 100 seconds.
+          for attempt in 1 2 3 4 5; do
             git push && exit 0
-            sleep $((attempt * 5))
+            [ "$attempt" -lt 5 ] || break
+            sleep $((attempt * 10))
             git pull --rebase
           done
-          echo "Could not push the results after 3 attempts." >&2
+          echo "Could not push the results after 5 attempts." >&2
           exit 1
