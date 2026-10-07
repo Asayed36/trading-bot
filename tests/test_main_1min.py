@@ -83,9 +83,9 @@ class SameAsMainTests(Base):
         self.assertEqual(mine[0]["usd_amount"], "10.00")
         # Only its own folder: none of the GitHub main strategy's files.
         self.assertEqual(sorted(os.listdir(self.d)), ["main-1min"])
-        # (a and b: the versions' own folders, see VersionTests)
+        # (a, b and c: the versions' own folders, see VersionTests)
         self.assertEqual(sorted(os.listdir(os.path.join(self.d, "main-1min"))),
-                         ["a", "b", "entries.csv", "health.json", "journal.csv",
+                         ["a", "b", "c", "entries.csv", "health.json", "journal.csv",
                           "positions.json"])
         self.assertIn("passed", lines[0])
 
@@ -351,6 +351,99 @@ class VersionTests(Base):
         self.assertEqual(data["versions"]["B"]["label"], "main (1 min) B")
 
 
+class VersionCTests(VersionTests):
+    """C: B's two rules, decided once at a token's first passing minute."""
+
+    def test_c_buys_at_the_first_pass_when_both_rules_pass(self):
+        bot, lines = self.go(ChangingApi(h1=40.0), Organic(72))
+        self.assertIn("GOODCAT", self.buys("c"))
+        self.assertTrue(any("[C] BUY  GOODCAT" in line for line in lines))
+        c = rows(os.path.join(self.d, "main-1min", "c", "journal.csv"))
+        self.assertEqual(c[0]["usd_amount"], "10.00")             # the same $10 and costs
+
+    def test_c_never_waits_for_a_token_to_cool_down(self):
+        api, organic = ChangingApi(h1=150.0), Organic(72)
+        self.go(api, organic)                                     # first pass: up 150%
+        self.assertEqual(self.buys("c"), [])
+        api.h1 = 40.0                                             # cooled down
+        self.go(api, organic, minutes=3, start=1)
+        self.assertIn("GOODCAT", self.buys("b"))                  # B waits and buys...
+        self.assertEqual(self.buys("c"), [])                      # ...C decided at once
+        with open(self.path("health.json")) as fh:
+            hour = json.load(fh)["calls_per_hour"][NOW.strftime("%Y-%m-%dT%H:00")]
+        self.assertEqual(hour["C skipped"], 2)                    # GOODCAT and FRENS, once
+        self.assertNotIn("C buys", hour)
+
+    def test_c_skips_a_low_or_unknown_organic_score(self):
+        self.go(ChangingApi(h1=40.0), Organic(45), minutes=2)
+        self.assertEqual(self.buys("c"), [])
+        self.tmp.cleanup()
+        self.tmp = tempfile.TemporaryDirectory()
+        self.d, self.bot_ = self.tmp.name, None
+        self.go(ChangingApi(h1=40.0), None)
+        self.assertEqual(self.buys("c"), [])
+
+    def test_c_remembers_its_decisions_across_restarts(self):
+        api = ChangingApi(h1=150.0)
+        self.go(api, Organic(72))                                 # skipped at first pass
+        api.h1 = 40.0
+        self.bot_ = None                                          # the bot restarts
+        bot, _ = self.go(api, Organic(72), start=1)
+        self.assertEqual(self.buys("c"), [])
+        with open(os.path.join(self.d, "main-1min", "c", "positions.json")) as fh:
+            decided = json.load(fh)["decided"]
+        self.assertIn(GOOD, decided)
+        self.assertEqual(bot.versions[2].name, "C")
+
+    def test_tokens_main_already_passed_count_as_decided(self):
+        api = ChangingApi(h1=40.0)
+        cfg = dict(CFG, main_1min=dict(CFG["main_1min"], versions=[]))
+        m1.MainOneMinute(cfg, self.d, api, Organic(72)).run_once(NOW, lambda *a: None)
+        self.assertIn("GOODCAT", [r["symbol"] for r in rows(self.path("journal.csv"))])
+        self.go(api, Organic(72), start=1)                        # C starts afterwards
+        self.assertEqual(self.buys("c"), [])
+        with open(os.path.join(self.d, "main-1min", "c", "positions.json")) as fh:
+            self.assertEqual(json.load(fh)["decided"][GOOD], "before C started")
+
+    def test_health_shows_c(self):
+        self.go(ChangingApi(h1=40.0), Organic(72))
+        with open(self.path("health.json")) as fh:
+            data = json.load(fh)
+        self.assertEqual(data["versions"]["C"]["label"], "main (1 min) C")
+        self.assertEqual(data["versions"]["C"]["decided"], 2)
+
+
+class StoppedTests(Base):
+    """The real config: main (1 min)'s own buying and version A stopped."""
+
+    def test_main_and_a_buy_nothing_while_b_and_c_carry_on(self):
+        real = load_config()
+        self.assertTrue(real["main_1min"]["stopped"])
+        bot = m1.MainOneMinute(real, self.d, ChangingApi(h1=40.0), Organic(72))
+        lines = []
+        for m in range(4):
+            bot.run_once(NOW + timedelta(minutes=m), lines.append)
+        buys = lambda sub: [r for r in rows(os.path.join(self.d, "main-1min", sub,  # noqa
+                                                         "journal.csv")) if r["action"] == "BUY"]
+        self.assertEqual(buys(""), [])                            # main (1 min): stopped
+        self.assertEqual(buys("a"), [])                           # A: stopped
+        self.assertTrue(buys("b") and buys("c"))                  # B and C still buy
+        self.assertEqual(bot.streaks, {})                         # A watches nothing
+        with open(self.path("health.json")) as fh:
+            self.assertTrue(json.load(fh)["versions"]["A"]["stopped"])
+
+    def test_stopped_positions_still_close(self):
+        bot = self.bot(CFG, ChangingApi(h1=40.0))
+        bot.run_once(NOW, lambda *a: None)                        # bought while running
+        self.assertTrue(rows(self.path("journal.csv")))
+        api = ChangingApi(h1=40.0)
+        Api.__init__(api, {GOOD: 0.5})                            # -50%: the -30% stop
+        m1.MainOneMinute(load_config(), self.d, api).run_once(NOW + timedelta(minutes=1),
+                                                              lambda *a: None)
+        sells = [r for r in rows(self.path("journal.csv")) if r["action"] == "SELL"]
+        self.assertTrue(sells and sells[0]["reason"].startswith("stop loss"))
+
+
 class SafetyTests(unittest.TestCase):
     def test_only_the_read_only_lookups(self):
         api = m1.CountingApi(DemoApi())
@@ -377,10 +470,12 @@ class CompareTests(unittest.TestCase):
         text = out.getvalue()
         header = next(line for line in text.splitlines() if line.startswith("| | main"))
         self.assertTrue(header.startswith(
-            "| | main | main (1 min) | main (1 min) A | main (1 min) B | early"), header)
+            "| | main | main (1 min) | main (1 min) A | main (1 min) B | main (1 min) C | early"),
+            header)
         self.assertIn("| main (1 min): server |", text)
         self.assertIn("| main (1 min) A: server |", text)
         self.assertIn("| main (1 min) B: server |", text)
+        self.assertIn("| main (1 min) C: server |", text)
 
 
 if __name__ == "__main__":

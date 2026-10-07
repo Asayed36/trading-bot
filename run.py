@@ -156,6 +156,13 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
     rh, rh_plan, rh_skipped = None, None, None
     if cfg.get("robinhood", {}).get("enabled") and robinhood_http is not None:
         rh = RobinhoodStrategy(cfg, data_folder, robinhood_http)
+        if cfg["robinhood"].get("stopped"):
+            # No new buys; it only runs (prices and exits) while it still
+            # holds a position.
+            rh.trader.buying = False
+            if not rh.trader.open_positions:
+                rh = None
+    if rh:
         try:
             rh_plan = rh.fetch()
         except ApiError as exc:
@@ -331,7 +338,8 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
     if rh:
         rt = rh.trader
         out("")
-        out("SUMMARY (robinhood strategy)" + ("  - skipped this run" if rh_skipped else ""))
+        out("SUMMARY (robinhood strategy)" + ("  - skipped this run" if rh_skipped else "")
+            + ("  - stopped: no new buys" if cfg["robinhood"].get("stopped") else ""))
         out(f"  Open paper positions: {len(rt.open_positions)}")
         for pos in rt.open_positions:
             change = (pos["last_price"] / pos["entry_price"] - 1) * 100

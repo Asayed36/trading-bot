@@ -449,6 +449,13 @@ class RobinhoodStrategy:
                 if price:
                     plan["prices"][pos["address"]] = price
 
+        # Stopped ([robinhood] stopped = true): no new buys, so only the open
+        # positions' prices are read (their exits still apply).
+        if not trader.buying:
+            plan["notes"].append("stopped: no new buys; only the open positions' prices "
+                                 "are read")
+            return plan
+
         # 2. New launchpad pools from GeckoTerminal, and the Pons graduations
         # read from the chain that GeckoTerminal hasn't listed, into the
         # watchlist.
