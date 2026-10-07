@@ -40,6 +40,7 @@ import html
 import json
 import os
 import re
+import time
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
@@ -1181,13 +1182,16 @@ class NewsStrategy:
 # Checking the sources by hand
 # ---------------------------------------------------------------------
 
-def check_sources(cfg, http=None, out=print, now=None, runs_on=None):
+def check_sources(cfg, http=None, out=print, now=None, runs_on=None, retry_seconds=10,
+                  sleep=time.sleep):
     """Read every source once and show what it gives: whether it works, how
-    many items, the newest date and the latest headlines. Read-only: no
-    CoinGecko, nothing saved. Returns the number of failing sources."""
+    many items, the newest date and the latest headlines. A source that
+    fails is tried once more after retry_seconds (feeds like PR Newswire's
+    answer 404 now and then). Read-only: no CoinGecko, nothing saved.
+    Returns the names of the sources still failing."""
     http = http or NewsHttp()
     now = now or now_utc()
-    failing = 0
+    failing = []
     for source in cfg["news"]["sources"]:
         where = source.get("runs_on", "github")
         if runs_on and where != runs_on:
@@ -1196,14 +1200,23 @@ def check_sources(cfg, http=None, out=print, now=None, runs_on=None):
         if source.get("enabled") is False:
             out(f"off   {name}: {source.get('note', 'turned off')}")
             continue
-        plan = {"state": {}, "markets": {}, "markets_new": {}}
-        status = {}
-        try:
-            items = read_source(http, source, now, plan, status)
-        except ApiError as exc:
-            failing += 1
-            out(f"FAIL  {name}: {exc}")
+        items, error = None, None
+        for attempt in (1, 2):
+            plan = {"state": {}, "markets": {}, "markets_new": {}}
+            status = {}
+            try:
+                items = read_source(http, source, now, plan, status)
+                break
+            except ApiError as exc:
+                error = exc
+                if attempt == 1 and retry_seconds:
+                    sleep(retry_seconds)
+        if items is None:
+            failing.append(name)
+            out(f"FAIL  {name}: {error} (twice)")
             continue
+        if error is not None:
+            out(f"      ({name} failed once, then worked: {error})")
         if "markets" in status:
             out(f"ok    {name}: {status['markets']} coins listed")
             continue
@@ -1218,6 +1231,22 @@ def check_sources(cfg, http=None, out=print, now=None, runs_on=None):
     return failing
 
 
+def check_result(failing, allow, out=print):
+    """The --check-sources exit code: 0 while at most `allow` sources are
+    failing (each one shown as a GitHub warning, so the run stays green but
+    says so), 1 when more are (likely something bigger than one feed)."""
+    for name in failing:
+        out(f"::warning title=News source failing::{name} failed twice in a row (it's "
+            "skipped in the news strategy's runs until it answers again)")
+    if len(failing) > allow:
+        out(f"{len(failing)} sources failing (more than {allow} allowed): "
+            + ", ".join(failing))
+        return 1
+    if failing:
+        out(f"{len(failing)} source(s) failing, within the {allow} allowed: the check passes")
+    return 0
+
+
 if __name__ == "__main__":
     import argparse
     import sys
@@ -1230,7 +1259,12 @@ if __name__ == "__main__":
     parser.add_argument("--runs-on", choices=("github", "server"),
                         help="only the sources read on GitHub, or only those the server's "
                              "news listings bot reads")
+    parser.add_argument("--allow-failing", type=int, default=1, metavar="N",
+                        help="fail (exit 1) only when more than N sources are still failing "
+                             "after their retry (default 1: one unreachable source is a "
+                             "warning, not a failure)")
     args = parser.parse_args()
     if not args.check_sources:
         parser.error("nothing to do: use --check-sources")
-    sys.exit(1 if check_sources(load_config(), runs_on=args.runs_on) else 0)
+    failing = check_sources(load_config(), runs_on=args.runs_on)
+    sys.exit(check_result(failing, args.allow_failing))
