@@ -1,21 +1,85 @@
 {
-  "open_positions": [],
-  "ever_bought": [],
+  "open_positions": [
+    {
+      "address": "pons",
+      "symbol": "PONS",
+      "pair_address": null,
+      "entry_time": "2026-10-07T15:56:00.000161+00:00",
+      "entry_price": 0.402056,
+      "peak_price": 0.406745,
+      "tokens": 24.872157112442046,
+      "cost_usd": 10.0,
+      "remaining_fraction": 1.0,
+      "took_profit": false,
+      "last_price": 0.406745,
+      "news": {
+        "title": "Coinbase lists (PONS) for trading",
+        "url": "https://exchange.coinbase.com/trade/PONS-USD",
+        "source": "Coinbase new pairs"
+      },
+      "issue_details": {
+        "name": "Pons",
+        "url": "https://www.coingecko.com/en/coins/pons",
+        "link_label": "CoinGecko",
+        "address_label": "CoinGecko id",
+        "passed_at": "2026-10-07T15:56:00.000161+00:00",
+        "market_cap_usd": 271839528.0,
+        "change_24h_pct": -0.8262,
+        "extra": [
+          [
+            "News",
+            "[Coinbase lists (PONS) for trading](https://exchange.coinbase.com/trade/PONS-USD)"
+          ],
+          [
+            "Source",
+            "Coinbase new pairs"
+          ],
+          [
+            "Published",
+            "2026-10-07 15:56 UTC"
+          ],
+          [
+            "Catalyst",
+            "\"lists\""
+          ],
+          [
+            "Counterparty",
+            "the exchange itself (Coinbase new pairs)"
+          ],
+          [
+            "1h change",
+            "-2.3%"
+          ],
+          [
+            "24h volume",
+            "$40,494,511"
+          ],
+          [
+            "AI check",
+            "yes: Pons (PONS); catalyst: listing - PONS listing on major exchange Coinbase is a concrete positive catalyst."
+          ]
+        ]
+      }
+    }
+  ],
+  "ever_bought": [
+    "pons"
+  ],
   "running_total_pnl_usd": 0.0,
-  "last_check": "2026-10-07T15:02:00.001287+00:00",
+  "last_check": "2026-10-07T16:01:00.009258+00:00",
   "coingecko": {
     "month": "2026-10",
-    "calls": 13
+    "calls": 16
   },
   "seen": {
-    "366dc8b49eaf": "2026-10-06T15:32",
-    "51f5801d6bdf": "2026-10-06T15:32",
     "33021dea6afe": "2026-10-07T03:02",
     "ac3944bb2666": "2026-10-07T03:02",
     "796a150c8a56": "2026-10-07T04:02",
     "d73dfcf892da": "2026-10-07T04:02",
     "1389e8cc50a7": "2026-10-07T13:44",
-    "8cdddb89883f": "2026-10-07T13:44"
+    "8cdddb89883f": "2026-10-07T13:44",
+    "ce54c0142705": "2026-10-07T15:56",
+    "aa2af78eb5a8": "2026-10-07T15:56"
   },
   "sources_read": [
     "Binance listings",
@@ -37,16 +101,14 @@
     "Kraken blog": {
       "name": "Kraken blog",
       "kind": "exchange",
-      "newest": "2026-10-07T13:43:17+00:00",
-      "items": 10,
-      "ok": true,
-      "old": 9,
-      "new": 0
+      "ok": false,
+      "error": "could not reach https://blog.kraken.com/feed/: ReadTimeout: nectionPool(host='blog.kraken.com', port=443): Read timed out. (read timeout=20)"
     },
     "Coinbase new pairs": {
       "name": "Coinbase new pairs",
       "kind": "exchange",
-      "markets": 405,
+      "markets": 406,
+      "newest": "2026-10-07T15:56:00.000161+00:00",
       "items": 0,
       "ok": true,
       "old": 0,
@@ -347,6 +409,7 @@
       "POL",
       "POLS",
       "POND",
+      "PONS",
       "POPCAT",
       "POWR",
       "PRCL",
@@ -1251,20 +1314,15 @@
   },
   "ai": {
     "day": "2026-10-07",
-    "calls": 3,
-    "input_tokens": 3177,
-    "output_tokens": 252,
+    "calls": 4,
+    "input_tokens": 4201,
+    "output_tokens": 321,
     "errors": 0,
-    "last_ok": "2026-10-07T13:44:00.001833+00:00",
+    "last_ok": "2026-10-07T15:56:00.000161+00:00",
     "limit": 50,
     "off": null
   },
   "ai_recent": [
-    [
-      "2026-10-06T15:32:00.001259+00:00",
-      "Kraken blog",
-      "The Pre-IPO Challenge: Trade OURAx and MOONSHOTx Perps for a share of $10,000 USDG"
-    ],
     [
       "2026-10-07T03:02:00.001279+00:00",
       "Binance listings",
@@ -1279,6 +1337,18 @@
       "2026-10-07T13:44:00.001833+00:00",
       "Kraken blog",
       "New pair available for margin trading: AKT/USD!"
+    ],
+    [
+      "2026-10-07T15:56:00.000161+00:00",
+      "Coinbase new pairs",
+      "Coinbase lists (PONS) for trading"
     ]
-  ]
+  ],
+  "markets_new": {
+    "Coinbase new pairs": "2026-10-07T15:56:00.000161+00:00"
+  },
+  "last_bought": {
+    "pons": "2026-10-07T15:56:00.000161+00:00"
+  },
+  "last_prices": "2026-10-07T15:57:00.001275+00:00"
 }
