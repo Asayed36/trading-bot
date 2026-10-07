@@ -42,9 +42,16 @@ class ConfigTests(unittest.TestCase):
         self.assertTrue(REAL["launch"]["stopped"])
         momentum = {v["name"]: bool(v.get("stopped")) for v in REAL["momentum"]["variants"]}
         self.assertEqual(momentum, {"30pct-2min": True, "50pct-3min": True,
-                                    "100pct-5min": False})
+                                    "100pct-5min": True})
+        # 2026-10-07: robinhood, main (1 min)'s own buying and version A
+        # stopped too; B and the new C keep running inside main (1 min).
+        self.assertTrue(REAL["robinhood"]["stopped"])
+        self.assertTrue(REAL["main_1min"]["stopped"])
+        versions = {v["name"]: bool(v.get("stopped")) for v in REAL["main_1min"]["versions"]}
+        self.assertEqual(versions, {"A": True, "B": False, "C": False})
         for name in ("main_1min", "convergence", "news", "news_listings", "robinhood"):
             self.assertTrue(REAL[name]["enabled"], name)
+        for name in ("convergence", "news", "news_listings"):
             self.assertFalse(REAL[name].get("stopped"), name)
 
 
@@ -174,18 +181,20 @@ class ServerStrategyTests(unittest.TestCase):
         self.assertEqual(launch_bot.close_stuck(running(REAL), self.tmp.name,
                                                 out=lines.append), 1)
 
-    def test_only_the_100pct_momentum_variant_buys(self):
+    def test_no_momentum_variant_buys(self):
         engine = MomentumEngine(REAL, self.tmp.name, clock=lambda: 0.0)
         self.assertEqual({n: t.buying for n, t in engine.traders.items()},
-                         {"30pct-2min": False, "50pct-3min": False, "100pct-5min": True})
+                         {"30pct-2min": False, "50pct-3min": False, "100pct-5min": False})
 
 
 class ReportTests(unittest.TestCase):
     def test_comparison_columns_say_stopped(self):
-        names = ["main", "main (1 min)", "early", "launch 5s", "momentum 30pct-2min",
-                 "momentum 100pct-5min", "robinhood"]
+        names = ["main", "main (1 min)", "main (1 min) A", "main (1 min) B", "main (1 min) C",
+                 "early", "launch 5s", "momentum 30pct-2min", "momentum 100pct-5min",
+                 "robinhood", "convergence", "news"]
         self.assertEqual([n for n in names if compare.stopped(REAL, n)],
-                         ["main", "early", "launch 5s", "momentum 30pct-2min"])
+                         ["main", "main (1 min)", "main (1 min) A", "early", "launch 5s",
+                          "momentum 30pct-2min", "momentum 100pct-5min", "robinhood"])
 
     def test_health_says_stopped_with_open_positions(self):
         with tempfile.TemporaryDirectory() as d:

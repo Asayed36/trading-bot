@@ -17,10 +17,13 @@ new code (screener/autorestart.py; "automatic restart" in
 journalctl -u main-1min).
 
 Paper versions ([[main_1min.versions]]) run inside the same bot, on the same
-data each minute: main's checks plus one extra rule each (A: 3 consecutive
-passing minutes; B: not up more than 100% in the last hour and a Jupiter
-organic score of 60+), the same exits and costs, and their own files in
-data/main-1min/a/ and data/main-1min/b/.
+data each minute: main's checks plus extra rules (A: 3 consecutive passing
+minutes; B: not up more than 100% in the last hour and a Jupiter organic
+score of 60+; C: B's rules, decided once at the minute a token first passes
+main's checks), the same exits and costs, and their own files in
+data/main-1min/<a, b, c>/. With [main_1min] stopped = true, main (1 min)
+buys nothing of its own; its checks still run for the versions. A version
+with stopped = true buys nothing new.
 
 Staying within the free limits, every minute:
   - DexScreener: the latest profiles and boosts, the candidates' pairs (30
@@ -113,6 +116,11 @@ class Version:
         self.max_change_1h = v.get("max_change_1h_pct")
         # ...and require at least this Jupiter organic score.
         self.min_organic = v.get("min_organic_score")
+        # C: decide once, at the minute a token first passes main's checks
+        # (buy or skip for good); never wait for it to change.
+        self.first_pass_only = bool(v.get("first_pass_only"))
+        # stopped = true: no new buys; open positions finish under the exits.
+        self.stopped = bool(v.get("stopped"))
 
     def why_not(self, result, streak, organic):
         """None when this version buys the token (it passed main's checks);
@@ -203,10 +211,14 @@ class MainOneMinute:
         try:
             trader = SafeTrader(self.pt, self.folder)
             trader.organic = self.organic if self.jupiter else None
+            # [main_1min] stopped = true: main (1 min) buys nothing of its
+            # own; its checks still run every minute for the versions.
+            trader.buying = not self.c.get("stopped")
             vtraders = {}
             for v in self.versions:
                 vtraders[v.name] = SafeTrader(self.pt, v.folder)
                 vtraders[v.name].organic = trader.organic
+                vtraders[v.name].buying = not v.stopped
             held, seen = [], set()
             for t in [trader, *vtraders.values()]:
                 for pos in t.open_positions:
@@ -249,6 +261,7 @@ class MainOneMinute:
         main_results = [r for r in results if r.address in listed]
 
         lines, counts = [], {}
+        main_before = list(trader.state.get("ever_bought", []))   # before this minute's buys
         for s in trader.update(prices, when=now):
             lines.append(f"SELL {s['symbol']} {s['reason']} P&L ${s['pnl_usd']:+.2f}")
         for r in main_results:
@@ -260,6 +273,10 @@ class MainOneMinute:
             for s in vt.update(prices, when=now):
                 lines.append(f"[{v.name}] SELL {s['symbol']} {s['reason']} "
                              f"P&L ${s['pnl_usd']:+.2f}")
+            if v.first_pass_only:
+                self._first_pass(v, vt, main_before, main_results, now, counts, lines)
+                vt.save()
+                continue
             for r in (results if v.passes > 1 else main_results):
                 if not r.passed or not vt.can_buy(r.address):
                     continue
@@ -289,6 +306,34 @@ class MainOneMinute:
             + "".join(f"\n  {line}" for line in lines))
         return main_results
 
+    def _first_pass(self, v, vt, main_before, main_results, now, counts, lines):
+        """Version C: each token is decided once, at the first minute it
+        passes main's checks: bought if its extra rules pass then, else
+        skipped for good. Decided tokens are kept in its positions.json
+        ("decided", token -> when), so a restart doesn't give a token a
+        second chance. On its first run, the tokens main (1 min) had already
+        passed (and bought) count as decided: their first pass was earlier."""
+        if "decided" not in vt.state:
+            vt.state["decided"] = {a: "before C started" for a in main_before}
+        decided = vt.state["decided"]
+        for r in main_results:
+            if not r.passed or r.address in decided or not vt.buying:
+                continue
+            decided[r.address] = now.isoformat()
+            why = v.why_not(r, 1, self.organic)
+            if why:
+                counts[f"{v.name} skipped"] = counts.get(f"{v.name} skipped", 0) + 1
+                continue
+            if vt.buy(r, when=now):
+                counts[f"{v.name} buys"] = counts.get(f"{v.name} buys", 0) + 1
+                lines.append(f"[{v.name}] BUY  {r.symbol} ${self.pt['buy_amount_usd']} at "
+                             f"${r.price:.10g}")
+        # Forget decisions older than 14 days (a token that passes again
+        # after that is a new first pass).
+        cutoff = (now - timedelta(days=14)).isoformat()
+        vt.state["decided"] = {a: t for a, t in decided.items()
+                               if not t[:1].isdigit() or t >= cutoff}
+
     def _health(self, now, before, error, counts=None, vtraders=None):
         """data/main-1min/health.json: the last good run, the last error,
         and requests per site per hour (pushed with the results)."""
@@ -316,7 +361,10 @@ class MainOneMinute:
             data["versions"] = {
                 v.name: {"label": v.label, "open": len(vtraders[v.name].open_positions),
                          "watching": sum(1 for a in self.streaks if v.passes > 1
-                                         and vtraders[v.name].can_buy(a))}
+                                         and vtraders[v.name].can_buy(a)),
+                         **({"decided": len(vtraders[v.name].state.get("decided", {}))}
+                            if v.first_pass_only else {}),
+                         **({"stopped": True} if v.stopped else {})}
                 for v in self.versions}
         for old in sorted(calls)[:-HOURS_KEPT]:
             calls.pop(old)

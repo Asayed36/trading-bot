@@ -150,6 +150,13 @@ def add_momentum(add, folder, cfg, now, github):
     moment or the last push is older than [health] launch_stale_hours."""
     name = "momentum: server"
     sub = cfg["momentum"]["folder"]
+    variants = cfg["momentum"].get("variants", [])
+    if variants and all(v.get("stopped") for v in variants):
+        held = sum(_open_count(os.path.join(folder, sub, v["name"])) for v in variants)
+        add(name, INFO, f"stopped (no new buys); {held} open position(s)"
+            + (" finishing under the normal exits" if held else ": finished, the momentum-bot "
+               "service can be turned off (deploy/LAUNCH_SERVER_SETUP.md, Part I)"))
+        return
     late_after = timedelta(hours=cfg.get("health", {}).get("launch_stale_hours", 3))
     data = _load(os.path.join(folder, sub, "health.json")) or {}
     stats = _load(os.path.join(folder, sub, "stats.json")) or {}
@@ -237,6 +244,10 @@ def add_main_1min(add, folder, cfg, now, github):
         detail += f"; skipped since {err_at:%H:%M} UTC: {data.get('last_error', '')[:100]}"
     if data.get("rugcheck_paused_until"):
         detail += f"; RugCheck paused until {data['rugcheck_paused_until'][11:16]} UTC"
+    if cfg["main_1min"].get("stopped"):
+        held = _open_count(os.path.join(folder, cfg["main_1min"]["folder"]))
+        detail += (f"; its own buying is stopped ({held} open position(s) finishing), its "
+                   "checks still run for the versions")
     late = now - ok > late_after or (pushed is not None and now - pushed > late_after)
     if late:
         detail += f" (older than {late_after.total_seconds() / 3600:.0f} h)"
@@ -337,6 +348,13 @@ def add_main_1min_versions(add, folder, cfg, now):
             rules.append(f"skips tokens up >{v['max_change_1h_pct']:g}% in 1h")
         if v.get("min_organic_score") is not None:
             rules.append(f"needs organic score {v['min_organic_score']:g}+")
+        if v.get("first_pass_only"):
+            rules.append("decided once, at a token's first passing minute")
+        if v.get("stopped"):
+            held = _open_count(os.path.join(folder, v["folder"]))
+            add(f"{name}: server", INFO, f"stopped (no new buys); {held} open position(s)"
+                + (" finishing under the normal exits" if held else ": finished"))
+            continue
         state = (data.get("versions") or {}).get(v["name"])
         if state is None:
             add(f"{name}: server", INFO, f"no results yet ({', '.join(rules)})")
@@ -350,6 +368,8 @@ def add_main_1min_versions(add, folder, cfg, now):
             detail += f", {n('skipped')} passed main but skipped by its rules"
         if v.get("min_organic_score") is not None:
             detail += f", {jupiter} Jupiter lookup(s) (shared)"
+        if v.get("first_pass_only"):
+            detail += f"; {state.get('decided', 0)} token(s) decided (kept 14 days)"
         add(f"{name}: server", OK, detail + f" ({', '.join(rules)})")
 
 
@@ -502,7 +522,11 @@ def health_lines(folder, cfg, now, github=None, found=None):
             add("news: AI check", *_news_ai(ai_cfg, news.get("ai"), now))
 
     # 5. The robinhood strategy's data sources (the last run that used each).
-    if cfg.get("robinhood", {}).get("enabled"):
+    if cfg.get("robinhood", {}).get("enabled") and cfg["robinhood"].get("stopped"):
+        held = _open_count(os.path.join(folder, "robinhood"))
+        add("robinhood: data sources", INFO, f"stopped (no new buys): only the {held} open "
+            "position(s)' prices are read" if held else "stopped: finished, no sources read")
+    elif cfg.get("robinhood", {}).get("enabled"):
         rh = _load(os.path.join(folder, "robinhood", "positions.json")) or {}
         sources = rh.get("sources") or {}
         for name in ("geckoterminal", "dexscreener", "goplus", "rpc"):

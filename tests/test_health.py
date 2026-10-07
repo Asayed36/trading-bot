@@ -268,6 +268,35 @@ class MainOneMinuteHealthTests(Base):
     def row(self, gh):
         return self.lines(gh)[1]["main (1 min): server"]
 
+    def test_stopped_main_versions_and_c(self):
+        """The real config (2026-10-07): main (1 min)'s own buying and A
+        stopped, B and C running; robinhood and momentum stopped."""
+        gh = self.healthy()
+        self.write("main-1min/positions.json", {"open_positions": [{"address": "X"}]})
+        self.write("main-1min/a/positions.json", {"open_positions": [{"address": "Y"}]})
+        h = json.load(open(os.path.join(self.d, "main-1min", "health.json")))
+        h["versions"] = {"B": {"open": 1}, "C": {"open": 0, "decided": 37}}
+        hour = list(h["calls_per_hour"])[0]
+        h["calls_per_hour"][hour].update({"C buys": 2, "C skipped": 5})
+        self.write("main-1min/health.json", h)
+        real = load_config()
+        text = "\n".join(health_lines(self.d, real, NOW, gh))
+        rows = {line.split(" | ")[0][2:]: line for line in text.splitlines()
+                if line.startswith("| ") and not line.startswith("| Check")}
+        self.assertIn("its own buying is stopped (1 open position(s) finishing), its checks "
+                      "still run for the versions", rows["main (1 min): server"])
+        self.assertIn(f"{INFO} stopped (no new buys); 1 open position(s) finishing",
+                      rows["main (1 min) A: server"])
+        c = rows["main (1 min) C: server"]
+        self.assertIn(OK, c)
+        self.assertIn("0 open; last 24 h: 2 buy(s), 5 passed main but skipped by its rules", c)
+        self.assertIn("37 token(s) decided (kept 14 days)", c)
+        self.assertIn("decided once, at a token's first passing minute", c)
+        self.assertIn(f"{INFO} stopped: finished, no sources read", rows["robinhood: data sources"])
+        self.assertNotIn("robinhood: geckoterminal", rows)
+        self.assertIn(f"{INFO} stopped (no new buys); 0 open position(s): finished, the "
+                      "momentum-bot service can be turned off", rows["momentum: server"])
+
     def test_ok_with_runs_requests_and_push(self):
         row = self.row(self.healthy())
         self.assertIn(OK, row)

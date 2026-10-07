@@ -96,6 +96,11 @@ stopped = true
 # ---------------------------------------------------------------------
 [main_1min]
 enabled = true
+# main (1 min)'s own buying, stopped on 2026-10-07 (-$267 after costs over
+# 223 trades). stopped = true: no new buys of its own; its open positions
+# finish under the normal exits and its files are kept. Its checks still run
+# every minute for the versions below.
+stopped = true
 folder = "main-1min"
 every_seconds = 60
 # RugCheck is only asked about tokens that pass the market checks, and only
@@ -121,6 +126,8 @@ name = "A"
 label = "main (1 min) A"
 folder = "main-1min/a"
 consecutive_passes = 3
+# Stopped on 2026-10-07: worse than main (1 min) on the same tokens.
+stopped = true
 
 # B: skip tokens up more than 100% in the last hour (DexScreener), and
 # require a Jupiter organic score of at least 60 (unknown = skip).
@@ -130,6 +137,19 @@ label = "main (1 min) B"
 folder = "main-1min/b"
 max_change_1h_pct = 100
 min_organic_score = 60
+
+# C: B's two rules, but decided once, at the minute a token first passes
+# main's checks: bought then if it is up no more than 100% in the last hour
+# and has a Jupiter organic score of 60+, else skipped for good (it never
+# waits for a token to cool down, unlike B). Tokens main (1 min) had already
+# passed before C started count as decided.
+[[main_1min.versions]]
+name = "C"
+label = "main (1 min) C"
+folder = "main-1min/c"
+max_change_1h_pct = 100
+min_organic_score = 60
+first_pass_only = true
 
 # ---------------------------------------------------------------------
 # EARLY STRATEGY: a second paper strategy that runs alongside the one above
@@ -486,6 +506,8 @@ stopped = true
 name = "100pct-5min"
 rise_pct = 100
 window_minutes = 5
+# Stopped on 2026-10-07: 24% wins where 48% were needed (-$353).
+stopped = true
 
 # ---------------------------------------------------------------------
 # NEWS STRATEGY: buy a coin right after real, official news (paper only)
@@ -857,6 +879,10 @@ round_trip_cost_pct = 1
 # ---------------------------------------------------------------------
 [robinhood]
 enabled = true
+# Stopped on 2026-10-07: 17% wins where 61% were needed (-$101). stopped =
+# true: no new buys; it only runs (prices and exits) while it still holds a
+# position; its journal and files are kept.
+stopped = true
 rpc_url = "https://rpc.mainnet.chain.robinhood.com"
 
 # Pools from 30 minutes to 6 hours old are checked; each pool at most every

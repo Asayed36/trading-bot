@@ -87,12 +87,13 @@ market check aren't sent to RugCheck (they show `skip Safety checks`). Set
 
 ## Which strategies are running
 
-Since 2026-10-05, after a review of every strategy's results:
-- **Running:** main (1 min) and its two versions A and B (on your server),
-  momentum 100%/5 min (server), news (GitHub), news (listings) (server),
-  convergence (GitHub) and robinhood (GitHub).
+Since 2026-10-07, after a review of every strategy's results:
+- **Running:** main (1 min)'s versions B and C (on your server; main
+  (1 min)'s own checks run every minute for them), news (GitHub), news
+  (listings) (server) and convergence (GitHub).
 - **Stopped** (`stopped = true` in `config.toml`): main on GitHub, early,
-  the three launch speeds and momentum 30%/2 min and 50%/3 min. A stopped
+  the three launch speeds, all three momentum variants, robinhood, main
+  (1 min)'s own buying and its version A. A stopped
   strategy makes no new buys; positions it still holds finish under its
   normal exits, then it does nothing. Its journal and files are kept, and
   the daily comparison still shows it, marked "(stopped)". To restart one,
@@ -366,9 +367,9 @@ service; setup: Part G of
   and a health row with its last good run, runs and busiest-hour requests,
   and its last push.
 
-### Versions A and B (paper, side by side on the same data)
+### Versions A, B and C (paper, side by side on the same data)
 
-Two more paper versions run inside the same bot, on exactly the same data
+More paper versions run inside the same bot, on exactly the same data
 every minute, each with main's checks plus one extra rule, the same exits
 and costs, and its own files:
 
@@ -376,6 +377,7 @@ and costs, and its own files:
 |---|---|---|
 | **main (1 min) A** | buys a token only after it passed main's checks on **3 consecutive one-minute checks**. A token that drops off DexScreener's lists while on a run of passes is still checked each minute (for A only). The counts start again if the bot restarts. | `data/main-1min/a/` |
 | **main (1 min) B** | skips tokens **up more than 100% in the last hour**, and needs a **Jupiter organic score of at least 60** (no score = skip). | `data/main-1min/b/` |
+| **main (1 min) C** | B's two rules, but **decided once, at the minute a token first passes main's checks**: bought then if it's up no more than 100% in the last hour and has an organic score of 60+, else skipped for good. Unlike B it never waits for a token to cool down (B bought a median 45 minutes after main). Tokens main (1 min) had already passed when C started count as decided; decisions are kept 14 days in its `positions.json`. | `data/main-1min/c/` |
 
 They test the two ideas from the review: main (1 min) won on the tokens it
 shared with main but lost on tokens that passed only briefly (A), and

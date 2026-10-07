@@ -55,8 +55,13 @@ def post_issue(gh, day, body):
 def stopped(cfg, name):
     """True for a strategy with stopped = true in config.toml: no new buys,
     its last positions finishing under their exits."""
-    if name in ("main", "early"):
+    if name in ("main", "early", "robinhood"):
         return bool(cfg.get(name, {}).get("stopped"))
+    if name == "main (1 min)":
+        return bool(cfg.get("main_1min", {}).get("stopped"))
+    for v in cfg.get("main_1min", {}).get("versions", []):
+        if name == (v.get("label") or f"main (1 min) {v['name']}"):
+            return bool(v.get("stopped"))
     if name.startswith("launch "):
         return bool(cfg.get("launch", {}).get("stopped"))
     if name.startswith("momentum "):
