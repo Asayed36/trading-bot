@@ -353,6 +353,22 @@ def add_main_1min_versions(add, folder, cfg, now):
         add(f"{name}: server", OK, detail + f" ({', '.join(rules)})")
 
 
+def run_reasons(github, failed, most=20):
+    """Why each failed run failed ("no machine", a step name, or
+    "unknown"), asking GitHub about the newest `most` of them."""
+    ask = getattr(github, "run_failure", None)
+    reasons = []
+    for i, run in enumerate(failed):
+        reason = "unknown"
+        if ask is not None and i < most and run.get("id") is not None:
+            try:
+                reason = ask(run["id"])
+            except Exception:  # GitHub down: unknown, never a crash
+                reason = "unknown"
+        reasons.append(reason)
+    return reasons
+
+
 def health_lines(folder, cfg, now, github=None, found=None):
     """Markdown lines for the health section. `github` is a GitHubIssues
     (or anything with workflow_runs() and last_commit_time()), or None when
@@ -385,13 +401,28 @@ def health_lines(folder, cfg, now, github=None, found=None):
             failed = [r for r in runs if r.get("conclusion") in FAILED]
             good = [_utc(r.get("updated_at")) for r in runs if r.get("conclusion") == "success"]
             limit = h.get("max_failed_runs_24h", 0)
+            # Runs GitHub never started (no machine was free: GitHub's own
+            # trouble) aren't the code's failures; the others say which step.
+            why = run_reasons(github, failed)
+            never = sum(1 for r in why if r == "no machine")
+            steps = {}
+            for r in why:
+                if r not in ("no machine", "unknown"):
+                    steps[r] = steps.get(r, 0) + 1
+            real = len(failed) - never
             detail = f"{len(failed)} failed of {len(runs)}"
+            if never:
+                detail += (f" ({never} never started: GitHub had no machine free, which is "
+                           "GitHub's trouble, not the code's)")
+            if steps:
+                detail += "; failed at " + ", ".join(
+                    f'"{name}"' + (f" x{n}" if n > 1 else "") for name, n in steps.items())
             if good:
                 detail += f"; last successful run {_at(max(good), now)}"
             else:
                 detail += "; no successful run in 24h"
-            bad = len(failed) > limit or not good or now - max(good) > stale
-            add("Scheduled runs (last 24h)", WARN if bad else OK, detail)
+            bad = real > limit or not good or now - max(good) > stale
+            add("Scheduled runs (last 24h)", WARN if bad else (INFO if never else OK), detail)
             gaps = run_gaps(runs)
             every = cfg.get("schedule", {}).get("run_every_minutes")
             kinds = [r.get("event", "schedule") for r in runs]

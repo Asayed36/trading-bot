@@ -56,8 +56,9 @@ def main(argv=None):
             found = []
             health_lines(folder, cfg, now, gh, found=found)
             print(f"{len(found)} problem(s) in today's health check.")
-            repair.open_issues(gh, found, folder, now, repair.failed_runs(gh, cfg, now))
-            number = repair.pick(gh, cfg, now, wanted=args.issue)
+            known = repair.open_issues(gh, found, folder, now, repair.failed_runs(gh, cfg, now))
+            number = repair.pick(gh, cfg, now, wanted=args.issue, known=known,
+                                 current={p["check"] for p in repair.group(found)})
             output("issue", number or "")
             output("model", cfg["repair"]["model"])
             output("max_turns", cfg["repair"]["max_turns"])

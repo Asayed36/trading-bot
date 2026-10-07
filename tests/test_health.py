@@ -29,9 +29,15 @@ def ago(**kw):
 
 
 class FakeGitHub:
-    def __init__(self, runs=(), pushed=None, broken=False, pushed_1min=None):
+    def __init__(self, runs=(), pushed=None, broken=False, pushed_1min=None, reasons=None):
         self.runs, self.pushed, self.broken = list(runs), pushed, broken
         self.pushed_1min = pushed_1min
+        self.reasons = reasons      # run id -> why it failed (run_failure)
+
+    def run_failure(self, run_id):
+        if self.reasons is None:
+            raise RuntimeError("not asked in this test")
+        return self.reasons[run_id]
 
     def workflow_runs(self, workflow, since):
         if self.broken:
@@ -129,6 +135,25 @@ class HealthTests(Base):
         self.assertIn("5 tracked (list from 2026-10-01)", rows["convergence: wallets"])
         self.assertIn(f"{OK} 20 item(s)", rows["news: PR Newswire crypto"])
         self.assertIn("last push 2026-10-01 23:17 UTC (50 min ago)", rows["launch: server push"])
+
+    def test_runs_github_never_started_are_not_the_codes_failures(self):
+        self.healthy()
+        runs = [dict(run_("failure", 50 + i), id=i) for i in range(9)]
+        runs += [dict(run_("failure", 40), id=9), run_("success", 4)]
+        gh = FakeGitHub(runs, pushed=NOW - timedelta(minutes=50),
+                        pushed_1min=NOW - timedelta(minutes=48),
+                        reasons={**{i: "no machine" for i in range(9)},
+                                 9: "Save results to the repository"})
+        cfg = dict(CFG, health=dict(CFG["health"], max_failed_runs_24h=1))
+        text = "\n".join(health_lines(self.d, cfg, NOW, gh))
+        row = next(r for r in text.splitlines() if r.startswith("| Scheduled runs"))
+        self.assertIn("ℹ️ 10 failed of 11 (9 never started: GitHub had no machine free, "
+                      "which is GitHub's trouble, not the code's); failed at \"Save results to "
+                      "the repository\"; last successful run", row)
+        # more real failures than allowed: a warning again
+        found = []
+        health_lines(self.d, CFG, NOW, gh, found=found)
+        self.assertEqual(found[0]["check"], "Scheduled runs (last 24h)")
 
     def test_failed_runs_and_no_success(self):
         gh = self.healthy()
