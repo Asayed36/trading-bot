@@ -24,7 +24,7 @@ from screener.demo import (DEMO_COINS, DemoApi, DemoNewsHttp,  # noqa: E402
 from screener.filters import FAIL  # noqa: E402
 from screener.github_issues import issue_body, issue_title  # noqa: E402
 from screener.news import (NewsHttp, NewsStrategy, check_candidate,  # noqa: E402
-                           check_sources, coin_info, company_name, duplicate_keys,
+                           check_result, check_sources, coin_info, company_name, duplicate_keys,
                            find_coins, fund_coins, is_english, listing_tickers, parse_binance,
                            parse_bybit, parse_edgar, parse_feed, parse_html, parse_markets,
                            parse_okx, ticker_coins, why)
@@ -698,7 +698,7 @@ class CheckSourcesTests(unittest.TestCase):
     def test_reads_every_source_and_saves_nothing(self):
         lines = []
         failing = check_sources(CFG, DemoNewsHttp(now=NOW), lines.append, now=NOW)
-        self.assertEqual(failing, 0)
+        self.assertEqual(failing, [])
         text = "\n".join(lines)
         self.assertIn("ok    Coinbase new pairs (server): 1 coins listed", text)
         self.assertIn("off   Bybit listings: Bybit blocks", text)
@@ -709,10 +709,48 @@ class CheckSourcesTests(unittest.TestCase):
             def text(self, url, headers=None):
                 raise ApiError("down")
 
-        self.assertGreater(check_sources(CFG, Broken(now=NOW), lambda *a: None, now=NOW), 10)
+        failing = check_sources(CFG, Broken(now=NOW), lambda *a: None, now=NOW, retry_seconds=0)
+        self.assertGreater(len(failing), 10)
+        self.assertEqual(check_result(failing, 1, out=lambda *a: None), 1)  # a wider problem
         lines = []
         check_sources(CFG, DemoNewsHttp(now=NOW), lines.append, now=NOW, runs_on="server")
         self.assertEqual(len([line for line in lines if not line.startswith(" ")]), 5)
+
+    def test_a_failing_feed_is_tried_again_after_a_pause(self):
+        url = next(s["url"] for s in CFG["news"]["sources"] if s["name"] == "PR Newswire")
+
+        class Flaky(DemoNewsHttp):
+            def __init__(self, fails, **kw):
+                super().__init__(**kw)
+                self.fails = fails
+
+            def text(self, u, headers=None):
+                if u == url and self.fails:
+                    self.fails -= 1
+                    raise ApiError(f"{url} answered with error 404")
+                return super().text(u, headers) if headers else super().text(u)
+
+        waits, lines = [], []
+        failing = check_sources(CFG, Flaky(1, now=NOW), lines.append, now=NOW, sleep=waits.append)
+        self.assertEqual((failing, waits), ([], [10]))           # once: fine after the retry
+        self.assertIn("(PR Newswire failed once, then worked: ", "\n".join(lines))
+        lines = []
+        failing = check_sources(CFG, Flaky(2, now=NOW), lines.append, now=NOW, sleep=lambda s: None)
+        self.assertEqual(failing, ["PR Newswire"])
+        self.assertIn("FAIL  PR Newswire: ", "\n".join(lines))
+        self.assertIn("answered with error 404 (twice)", "\n".join(lines))
+
+    def test_one_unreachable_source_only_warns(self):
+        lines = []
+        self.assertEqual(check_result(["PR Newswire"], 1, out=lines.append), 0)
+        self.assertTrue(lines[0].startswith("::warning title=News source failing::PR Newswire "
+                                            "failed twice in a row"))
+        self.assertIn("1 source(s) failing, within the 1 allowed: the check passes", lines[-1])
+        lines = []
+        self.assertEqual(check_result(["PR Newswire", "Quant blog"], 1, out=lines.append), 1)
+        self.assertIn("2 sources failing (more than 1 allowed): PR Newswire, Quant blog",
+                      lines[-1])
+        self.assertEqual(check_result([], 1, out=lines.append), 0)
 
 
 if __name__ == "__main__":

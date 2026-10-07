@@ -590,7 +590,10 @@ wire, 14 for an exchange or the SEC's press releases, 30 for a blog; set
 `stale_days` on a source to change it), which usually means its address
 changed. To test every source by hand, run the **News sources check**
 workflow (Actions tab), or `python -m screener.news --check-sources`; it
-also runs by itself when the news code or `config.toml` changes.
+also runs by itself when the news code or `config.toml` changes. A source
+that fails is tried again 10 seconds later; one source still failing is a
+yellow warning naming it, and the check only fails (red) when two or more
+do (`--allow-failing N` changes that).
 
 **Which coin?** CoinGecko's top 500 coins. A coin counts when its name
 appears with the right capitals. One-word names that are also everyday words
