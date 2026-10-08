@@ -851,6 +851,33 @@ coingecko_monthly_calls = 4000
 # deploy/LAUNCH_SERVER_SETUP.md, Part J).
 ai_daily_limit = 50
 
+# "news (listings) fast": a second paper version that buys the same signals
+# at the same moment and price as news (listings) above, but exits within
+# hours (listing gains tend to come in the first minutes to hours and fade
+# within a week or two). Its own positions and journal in
+# data/news-listings/fast/; news (listings) itself is unchanged.
+[news_listings.fast]
+enabled = true
+label = "news (listings) fast"
+folder = "fast"                 # inside [news_listings] folder
+# Its open positions' prices from CoinGecko this often (while it holds
+# something), counted in news (listings)' CoinGecko calls above.
+prices_every_minutes = 2
+
+[news_listings.fast.paper_trading]
+buy_amount_usd = 10
+# Sell half at +20%...
+take_profit_pct = 20
+take_profit_sell_fraction = 0.5
+# ...then the rest 10% below its highest price since the buy. Before that,
+# and for whatever is left: everything at -10% from entry, or after 6 hours.
+trailing_stop_pct = 10
+stop_loss_pct = 10
+max_hold_hours = 6
+allow_rebuy = true
+# The same costs as news (listings).
+round_trip_cost_pct = 1
+
 [news.paper_trading]
 # Pretend dollars per buy.
 buy_amount_usd = 10

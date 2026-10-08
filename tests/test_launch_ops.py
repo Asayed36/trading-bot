@@ -220,12 +220,16 @@ class GitignoreTests(unittest.TestCase):
                      "data/main-1min/b/entries.csv", "data/momentum/100pct-5min/journal.csv",
                      "data/news-listings/journal.csv", "data/news-listings/positions.json",
                      "data/news-listings/candidates.csv", "data/news-listings/ai_verdicts.csv",
-                     "data/news-listings/health.json", "data/news/ai_verdicts.csv"):
+                     "data/news-listings/health.json", "data/news/ai_verdicts.csv",
+                     "data/news-listings/fast/journal.csv",
+                     "data/news-listings/fast/positions.json",
+                     "data/news-listings/fast/entries.csv"):
             self.assertFalse(self.ignored(path), path)
 
     def test_temporary_and_state_files_stay_out(self):
         for path in ("data/news-listings/positions.json.tmp", "data/news-listings/state.json",
-                     "data/main-1min/a/positions.json.tmp"):
+                     "data/main-1min/a/positions.json.tmp",
+                     "data/news-listings/fast/positions.json.tmp"):
             self.assertTrue(self.ignored(path), path)
 
 

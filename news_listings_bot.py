@@ -17,6 +17,11 @@ GitHub once an hour. When that push brings new code the bot uses, it exits
 by itself between two runs and systemd starts it again with the new code
 (screener/autorestart.py; "automatic restart" in journalctl -u news-listings).
 
+A second paper version, "news (listings) fast" ([news_listings.fast]), buys
+the same signals at the same moment and price but exits within hours: half
+at +20%, the rest 10% below its peak, everything at -10% or after 6 hours.
+Its own positions and journal are in data/news-listings/fast/.
+
 Requests, all read-only and well within the free limits: each source once a
 minute (5 a minute in all); CoinGecko only when there's a new listing to
 match, plus the open positions' prices every [news_listings]
@@ -38,11 +43,12 @@ import os
 import signal
 import sys
 import tempfile
+from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
 from screener.api import ApiError
 from screener.autorestart import CodeWatcher, forever
-from screener.news import NewsHttp, NewsStrategy
+from screener.news import CoinGecko, FastNewsTrader, NewsHttp, NewsStrategy
 from screener.news_ai import api_key
 from screener.paper_trader import now_utc
 from screener.settings import HERE, load_config
@@ -111,10 +117,17 @@ class NewsListings:
         self.http = CountingHttp(http)
         self.coingecko_key, self.ai_key, self.ai_client = coingecko_key, ai_key, ai_client
 
-    def strategy(self):
+    def fast_trader(self):
+        """news (listings) fast's trader, or None when it's turned off."""
+        fast = self.own.get("fast") or {}
+        if not fast.get("enabled"):
+            return None
+        return FastNewsTrader(fast["paper_trading"], os.path.join(self.folder, fast["folder"]))
+
+    def strategy(self, fast=None):
         return NewsStrategy(self.cfg, self.data_folder, self.http, self.coingecko_key,
                             self.ai_key, self.ai_client, folder=self.own["folder"],
-                            runs_on="server")
+                            runs_on="server", followers=[fast] if fast else [])
 
     def run_once(self, now=None, out=print):
         """One run: the news strategy's fetch (read everything, change
@@ -122,7 +135,8 @@ class NewsListings:
         now = now or now_utc()
         before = dict(self.http.calls)
         os.makedirs(self.folder, exist_ok=True)
-        news = self.strategy()
+        fast = self.fast_trader()
+        news = self.strategy(fast)
         try:
             plan = news.fetch(now=now)
         except ApiError as exc:
@@ -131,6 +145,8 @@ class NewsListings:
             return None
         lines = []
         bought = news.apply(plan, None, lines.append)
+        if fast is not None:
+            self._fast_exits(fast, news, plan, now, lines.append)
         # No GitHub issues from the server: forget the ones apply() queues.
         if news.trader.state.pop("issues_to_close", None) is not None:
             news.trader.save()
@@ -147,6 +163,39 @@ class NewsListings:
                 or any(line.lstrip().startswith(("SELL", "BUY")) for line in lines))
         out(summary + ("".join(f"\n  {line}" for line in lines if line.strip()) if busy else ""))
         return bought
+
+    def _fast_exits(self, fast, news, plan, now, out):
+        """news (listings) fast's exits: its open positions' prices every
+        [news_listings.fast] prices_every_minutes (this run's prices for
+        news (listings) are reused; the rest from CoinGecko, in news
+        (listings)' monthly count), then its sells. A position past its time
+        limit with no new price closes at its last known price."""
+        # (not the ones just bought: their price is this moment's)
+        held = [p["address"] for p in fast.open_positions if p["entry_time"] != now.isoformat()]
+        last = fast.state.get("last_prices")
+        every = timedelta(minutes=self.own["fast"]["prices_every_minutes"] - 0.5)
+        if held and (not last or now - datetime.fromisoformat(last) >= every):
+            prices = {i: plan["prices"][i] for i in held if plan["prices"].get(i)}
+            want = [i for i in held if i not in prices]
+            if want:
+                gecko = CoinGecko(self.http, self.coingecko_key, news.trader.state,
+                                  self.cfg["news"]["coingecko_monthly_calls"], now)
+                try:
+                    prices.update({x["id"]: x["price"] for x in gecko.markets(ids=want)
+                                   if x.get("price")})
+                except ApiError as exc:
+                    out(f"  (news (listings) fast: no prices this run: {exc})")
+                news.trader.save()                 # the CoinGecko count
+            fast.state["last_prices"] = now.isoformat()
+            limit = fast.cfg["max_hold_hours"]
+            for p in fast.open_positions:
+                age = (now - datetime.fromisoformat(p["entry_time"])).total_seconds() / 3600
+                if p["address"] not in prices and age >= limit:
+                    prices[p["address"]] = p["last_price"]
+            for s in fast.update(prices, when=now):
+                out(f"  SELL {s['symbol']:<10} {'(fast) ' + s['reason']:<45} "
+                    f"P&L ${s['pnl_usd']:+.2f}")
+        fast.save()
 
     def _health(self, now, before, error, news):
         """data/news-listings/health.json: the last good run, the last

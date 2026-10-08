@@ -126,6 +126,25 @@ class HealthTests(Base):
         _, rows = self.lines(gh)
         self.assertIn("Part J", rows["news (listings): server"])
 
+    def test_news_listings_fast_row(self):
+        gh = self.healthy()
+        _, rows = self.lines(gh)
+        self.assertEqual(rows["news (listings) fast"],
+                         f"| news (listings) fast | {INFO} half at +20%, the rest 10% below its "
+                         "peak, everything at -10% or after 6 h; 0 open |")
+        self.write("news-listings/fast/positions.json", {
+            "last_prices": ago(minutes=4),
+            "open_positions": [{"symbol": "NEW", "entry_time": ago(hours=2)}]})
+        _, rows = self.lines(gh)
+        self.assertIn(f"{INFO} half at", rows["news (listings) fast"])
+        self.assertIn("1 open; prices checked 2026-10-02 00:03 UTC (4 min ago)",
+                      rows["news (listings) fast"])
+        self.write("news-listings/fast/positions.json", {
+            "open_positions": [{"symbol": "OLD", "entry_time": ago(hours=10)}]})
+        text, rows = self.lines(gh)
+        self.assertIn(f"{WARN}", rows["news (listings) fast"])
+        self.assertIn("still open past the 6 h limit: OLD", rows["news (listings) fast"])
+
     def test_all_ok(self):
         text, rows = self.lines(self.healthy())
         self.assertIn("**All checks OK.**", text)

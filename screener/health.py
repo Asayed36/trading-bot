@@ -320,6 +320,34 @@ def add_news_listings(add, folder, cfg, now, github):
             detail = ("not used: no Claude API key on the server (Part J); the rule-based "
                       "checks decide")
         add(f"{label}: AI check", status, detail)
+    _news_listings_fast(add, folder, cfg, now, late_after)
+
+
+def _news_listings_fast(add, folder, cfg, now, late_after):
+    """news (listings) fast: its rules and open positions. A warning when a
+    position is still open well past its time limit (the hourly push allowed
+    for)."""
+    fast = cfg["news_listings"].get("fast") or {}
+    if not fast.get("enabled"):
+        return
+    pt = fast["paper_trading"]
+    state = _load(os.path.join(folder, cfg["news_listings"]["folder"], fast["folder"],
+                               "positions.json")) or {}
+    held = state.get("open_positions") or []
+    detail = (f"half at +{pt['take_profit_pct']:g}%, the rest {pt['trailing_stop_pct']:g}% "
+              f"below its peak, everything at -{pt['stop_loss_pct']:g}% or after "
+              f"{pt['max_hold_hours']:g} h; {len(held)} open")
+    checked = _utc(state.get("last_prices"))
+    if held and checked:
+        detail += f"; prices checked {_at(checked, now)}"
+    limit = timedelta(hours=pt["max_hold_hours"]) + late_after
+    overdue = [p["symbol"] for p in held if _utc(p.get("entry_time"))
+               and now - _utc(p["entry_time"]) > limit]
+    if overdue:
+        detail += f"; still open past the {pt['max_hold_hours']:g} h limit: {', '.join(overdue)}"
+    add(fast.get("label", "news (listings) fast"), WARN if overdue else INFO, detail,
+        *([f"news (listings) fast holds {', '.join(overdue)} past its time limit"]
+          if overdue else []))
 
 
 def _open_count(strategy_folder):
