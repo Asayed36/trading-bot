@@ -33,6 +33,7 @@ from screener.convergence import ConvergenceStrategy
 from screener.early import EarlyStrategy
 from screener.github_issues import GitHubIssues, issue_details, sync
 from screener.health import record_health
+from screener.btc import BtcTrend
 from screener.jupiter import JupiterOrganic
 from screener.news import NewsHttp, NewsStrategy
 from screener.paper_trader import PaperTrader, now_utc
@@ -400,6 +401,8 @@ def main():
         robinhood_http = (RobinhoodHttp.from_config(cfg["robinhood"], cfg["api"]["timeout_seconds"])
                           if cfg.get("robinhood", {}).get("enabled") else None)
         jupiter = JupiterOrganic()
+        # Bitcoin's trend in every paper buy's entries.csv row (logging only).
+        PaperTrader.market = BtcTrend(coingecko_key)
 
     try:
         run(api, cfg, folder, issues=issues, helius_key=helius_key, rpc_factory=rpc_factory,

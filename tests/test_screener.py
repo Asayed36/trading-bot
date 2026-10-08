@@ -193,7 +193,7 @@ class GitHubIssueTests(unittest.TestCase):
         for text in (MARKER.format(GOOD), "Demo GOODCAT", f"`{GOOD}`", pair["url"],
                      "$0.0008 |", "$800,000", "$60,000", "+45%",
                      "$0.0012 (+50%)", "$0.00056 (-30%)", "Starts at $0.00048",
-                     "if the price is still within ±10% of entry",
+                     "(48h) |",
                      CFG["github_issues"]["note"]):
             self.assertIn(text, body)
         self.assertEqual(body.count("| `h"), 9)  # 10 real wallets: whale + 9 of h0..h11
@@ -333,11 +333,25 @@ class PaperTradingTests(unittest.TestCase):
         self.assertAlmostEqual(sells[0]["pnl_usd"], 6 - 5 - 0.15)
         self.assertAlmostEqual(self.trader.state["running_total_pnl_usd"], 4.85 + 0.85)
 
-    def test_time_exit_only_when_flat(self):
-        self.assertEqual(self.at(1.05, 47), [])          # not 48h yet
-        self.assertEqual(self.trader.update({GOOD: 1.15}, when=self.t0 + timedelta(hours=49)), [])
-        sells = self.at(0.95, 50)
-        self.assertIn("time exit", sells[0]["reason"])
+    def test_time_exit_after_48h_whatever_the_move(self):
+        # [paper_trading] time_exit_any_move = true (since 2026-10-09)
+        self.assertTrue(CFG["paper_trading"]["time_exit_any_move"])
+        self.assertEqual(self.at(0.76, 47), [])          # not 48h yet
+        sells = self.at(0.76, 48.5)                      # -24%: between -10% and the stop
+        self.assertEqual(sells[0]["reason"], "time exit: 48h held (-24.0%)")
+        self.assertAlmostEqual(sells[0]["pnl_usd"], 7.6 - 10 - 0.3)
+        self.assertEqual(self.trader.open_positions, [])
+
+    def test_time_exit_only_when_flat_without_the_setting(self):
+        trader = PaperTrader(dict(CFG["paper_trading"], time_exit_any_move=False),
+                             os.path.join(self.tmp.name, "old"))
+        trader.buy(Result(GOOD, "GOODCAT", "Demo", dict(TOKENS[GOOD][0], priceUsd="1.0")),
+                   when=self.t0)
+        later = self.t0 + timedelta(hours=49)
+        self.assertEqual(trader.update({GOOD: 1.15}, when=later), [])
+        self.assertEqual(trader.update({GOOD: 0.76}, when=later), [])    # never sold
+        sells = trader.update({GOOD: 0.95}, when=later)
+        self.assertIn("only -5.0% move", sells[0]["reason"])
         self.assertAlmostEqual(sells[0]["pnl_usd"], 9.5 - 10 - 0.3)
 
     def test_no_price_means_no_action(self):

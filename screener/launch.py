@@ -130,6 +130,10 @@ class LaunchTrader(PaperTrader):
     but launch costs: a priority fee in SOL on every buy and sell, a bot fee
     and pump.fun's fee (both %) and extra slippage (%) on every trade."""
 
+    # The feed's bonding-curve trades; DexScreener after graduation (or when
+    # the feed has gone quiet), named per update where it's known.
+    price_source = "pump.fun feed"
+
     def __init__(self, cfg, speed, folder):
         merged = dict(cfg, round_trip_cost_pct=0)  # costs are handled below
         super().__init__(merged, folder)
@@ -403,7 +407,7 @@ class LaunchEngine:
         t = t or self.clock()
         self.external.update({m: (p, t) for m, p in prices.items() if p})
         self._update_prices({m: p for m, p in prices.items()
-                             if p and self._uses_external(m, t)}, t)
+                             if p and self._uses_external(m, t)}, t, source="DexScreener")
 
     def jupiter_due(self, t=None):
         """Selected launches still waiting for a speed's buy whose Jupiter
@@ -438,10 +442,10 @@ class LaunchEngine:
     def _held(self, mint):
         return any(trader.position(mint) for trader in self.traders.values())
 
-    def _update_prices(self, prices, t):
+    def _update_prices(self, prices, t, source=None):
         when = utc(t)
         for trader in self.traders.values():
-            if trader.update(prices, when=when):
+            if trader.update(prices, when=when, source=source):
                 trader.save()  # a sell: save right away so a crash can't undo it
 
     def _current_usd(self, mint, t=None):
@@ -506,8 +510,11 @@ class LaunchEngine:
                 drop.append(mint)
         # time stops, even when a token has stopped trading
         prices = {m: p for m in self.watch if (p := self._current_usd(m, t))}
-        if prices:
-            self._update_prices(prices, t)
+        for external in (False, True):     # the feed's prices, then DexScreener's
+            part = {m: p for m, p in prices.items()
+                    if (self._uses_external(m, t) and m in self.external) == external}
+            if part:
+                self._update_prices(part, t, source="DexScreener" if external else None)
         self.close_stopped(t)
         for mint in drop:
             self.jupiter.pop(mint, None)

@@ -254,7 +254,7 @@ class Organic:
                 "jupiter_organic_volume_1h_pct": None, "jupiter_organic_buyers_1h_pct": None}
 
 
-class VersionTests(Base):
+class VersionHelpers(Base):
     def go(self, api, organic=None, minutes=1, start=0):
         bot = getattr(self, "bot_", None) or m1.MainOneMinute(CFG, self.d, api, organic)
         self.bot_ = bot
@@ -267,6 +267,8 @@ class VersionTests(Base):
         return [r["symbol"] for r in rows(os.path.join(self.d, "main-1min", sub, "journal.csv"))
                 if r["action"] == "BUY"]
 
+
+class VersionTests(VersionHelpers):
     def test_a_buys_on_the_third_consecutive_pass(self):
         api = ChangingApi()
         self.go(api, minutes=2)
@@ -349,6 +351,98 @@ class VersionTests(Base):
         self.assertEqual(len(organic.asked), len(set(organic.asked)))
         self.assertEqual(data["versions"]["A"]["open"], 2)
         self.assertEqual(data["versions"]["B"]["label"], "main (1 min) B")
+
+
+class FlakyOrganic(Organic):
+    """Jupiter that doesn't answer until `answering` is set."""
+
+    def __init__(self, score):
+        super().__init__(score)
+        self.answering = False
+
+    def __call__(self, mint):
+        values = super().__call__(mint)
+        return values if self.answering else dict(dict.fromkeys(values), jupiter_error="HTTP 503")
+
+
+class AuditFixTests(VersionHelpers):
+    """2026-10-09: prices' source and fetch time, B's and C's 1.5% buy
+    slippage, C deciding only once Jupiter has answered (and why it skipped)."""
+
+    def journal(self, sub=""):
+        return rows(os.path.join(self.d, "main-1min", sub, "journal.csv"))
+
+    def state(self, sub):
+        with open(os.path.join(self.d, "main-1min", sub, "positions.json")) as fh:
+            return json.load(fh)
+
+    def test_b_and_c_pay_1_5_percent_over_the_market_price(self):
+        self.go(ChangingApi(h1=40.0), Organic(72))
+        market = {r["symbol"]: float(r["price_usd"]) for r in self.journal()
+                  if r["action"] == "BUY"}                  # main (1 min): the market price
+        for sub in ("b", "c"):
+            (buy,) = [r for r in self.journal(sub) if r["symbol"] == "GOODCAT"]
+            self.assertAlmostEqual(float(buy["price_usd"]), market["GOODCAT"] * 1.015)
+            self.assertIn("paid +1.5% over the market price", buy["reason"])
+            (pos,) = [p for p in self.state(sub)["open_positions"] if p["symbol"] == "GOODCAT"]
+            self.assertAlmostEqual(pos["entry_price"], market["GOODCAT"] * 1.015)
+            self.assertEqual(pos["market_price_at_entry"], market["GOODCAT"])
+            self.assertEqual(self.state(sub)["buy_slippage"]["pct"], 1.5)
+            entry = rows(os.path.join(self.d, "main-1min", sub, "entries.csv"))[0]
+            self.assertEqual((entry["buy_slippage_pct"], float(entry["price_usd"])),
+                             ("1.5", market["GOODCAT"]))
+        self.assertNotIn("buy_slippage", self.state(""))          # main (1 min) itself: none
+        self.assertNotIn("paid", self.journal()[0]["reason"])
+
+    def test_prices_say_where_they_came_from_and_when(self):
+        api = ChangingApi(h1=40.0)
+        self.go(api, Organic(72))
+        buy = self.journal()[0]
+        self.assertEqual(buy["price_source"], "DexScreener")
+        self.assertRegex(buy["price_time_utc"], r"^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$")
+        api.price_moves = {GOOD: 0.5}                             # -50%: a sell
+        self.go(api, Organic(72), start=1)
+        sell = next(r for r in self.journal() if r["action"] == "SELL")
+        self.assertEqual(sell["price_source"], "DexScreener")
+        self.assertTrue(sell["price_time_utc"])
+        pos = next(p for p in self.state("")["open_positions"])
+        self.assertEqual(pos["last_price_source"], "DexScreener")
+        self.assertTrue(pos["last_price_time"] and pos["entry_price_time"])
+
+    def test_c_waits_for_jupiters_answer(self):
+        organic = FlakyOrganic(72)
+        bot, _ = self.go(ChangingApi(h1=40.0), organic, minutes=2)
+        self.assertEqual(self.buys("c"), [])
+        self.assertNotIn(GOOD, self.state("c")["decided"])        # not decided yet
+        with open(self.path("health.json")) as fh:
+            hour = json.load(fh)["calls_per_hour"][NOW.strftime("%Y-%m-%dT%H:00")]
+        self.assertEqual(hour["C waiting for Jupiter"], 4)        # 2 tokens, 2 minutes
+        self.assertNotIn("C skipped", hour)
+        organic.answering = True
+        self.go(ChangingApi(h1=40.0), organic, start=11)          # the failure's cache expired
+        self.assertIn("GOODCAT", self.buys("c"))
+        self.assertIn(GOOD, self.state("c")["decided"])
+
+    def test_c_saves_why_it_skipped(self):
+        self.go(ChangingApi(h1=150.0), Organic(72))
+        skipped = self.state("c")["skipped"][GOOD]
+        self.assertEqual((skipped["symbol"], skipped["reason"]), ("GOODCAT", "up >100% in 1h"))
+        self.tmp.cleanup()
+        self.tmp = tempfile.TemporaryDirectory()
+        self.d, self.bot_ = self.tmp.name, None
+        self.go(ChangingApi(h1=40.0), Organic(45))
+        self.assertEqual(self.state("c")["skipped"][GOOD]["reason"], "organic score <60")
+
+    def test_48h_exit_whatever_the_move(self):
+        api = ChangingApi(h1=40.0)
+        self.go(api, Organic(72))
+        api.price_moves = {GOOD: 0.76}                            # -24%
+        self.go(api, Organic(72), start=60)
+        self.assertNotIn("SELL", [r["action"] for r in self.journal()
+                                  if r["symbol"] == "GOODCAT"])
+        self.go(api, Organic(72), start=48 * 60 + 1)
+        sell = [r for r in self.journal() if r["symbol"] == "GOODCAT" and r["action"] == "SELL"]
+        self.assertEqual(sell[0]["reason"], "time exit: 48h held (-24.0%)")
 
 
 class VersionCTests(VersionTests):

@@ -53,7 +53,7 @@ import requests
 from screener.api import ApiError, RateLimited
 from screener.filters import FAIL, PASS, Check, money, to_float
 from screener.news_ai import VERDICT_COLUMNS, AiChecker, describe, says_buy, verdict_row
-from screener.paper_trader import PaperTrader, now_utc
+from screener.paper_trader import PaperTrader, append_row, now_utc
 
 COINGECKO = "https://api.coingecko.com/api/v3"
 # Identifies the bot as a feed reader, with a link back to this project.
@@ -64,8 +64,11 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; trading-bot-news/1.0; read-on
 # data/news/unmatched.csv: crypto-related items that named no coin, to check
 # whether the coin matching misses real candidates. Logging only.
 UNMATCHED_COLUMNS = ["time_utc", "source", "kind", "published_utc", "title", "url"]
+# price_usd / price_time_utc: the coin's CoinGecko price when it was checked
+# (bought or not) and when it was fetched; blank for several coins, and in
+# rows from before 2026-10-09.
 CANDIDATE_COLUMNS = ["time_utc", "source", "kind", "published_utc", "title", "url", "coin",
-                     "symbol", "verdict", "failed", "checks"]
+                     "symbol", "verdict", "failed", "checks", "price_usd", "price_time_utc"]
 QUALIFIERS = r"(?:Network|Protocol|Foundation|Labs|Chain|Blockchain|[Tt]oken|[Cc]oin|DAO|Finance)"
 # How long an item is remembered as seen. Dated items are only checked while
 # under max_age_minutes old, so a day is plenty; undated items ("u" after the
@@ -772,6 +775,8 @@ class NewsTrader(PaperTrader):
     """Sell half at +50% (PaperTrader), then everything left at -20% from
     entry, 25% below the highest price since entry, or after 7 days."""
 
+    price_source = "CoinGecko"
+
     def save(self):
         # In one step, so a push (GitHub's commit, or the server's hourly
         # push) never sees a half-written positions.json.
@@ -797,6 +802,14 @@ class FastNewsTrader(NewsTrader):
     everything left at -stop_loss_pct from entry or after max_hold_hours."""
 
     def close_reason(self, pos, change_pct, from_peak, hours):
+        reason = self._close_reason(pos, change_pct, from_peak, hours)
+        stale = pos.pop("stale_price_from", None)
+        if reason and stale:
+            # news_listings_bot.py had no fresh price for it past its time limit
+            reason += f", closed at last known price (from {stale} UTC)"
+        return reason
+
+    def _close_reason(self, pos, change_pct, from_peak, hours):
         c = self.cfg
         if change_pct <= -c["stop_loss_pct"]:
             return f"stop loss: down {-change_pct:.0f}% from entry"
@@ -978,6 +991,8 @@ class NewsStrategy:
                 new = [x for x in new if x not in waiting]
         by_id = {x["id"]: x for x in coins}
         plan["prices"] = {i: by_id[i]["price"] for i in held if by_id.get(i, {}).get("price")}
+        # When the coin data was fetched (for the journal and candidates.csv).
+        plan["fetched_at"] = now_utc() if coins else None
 
         # 3. Candidates: new items that name a coin, with every check.
         unnamed = 0
@@ -1081,7 +1096,8 @@ class NewsStrategy:
                     self._log_ai(now, source, item, "", "no coin", "", verdict)
         out("")
 
-        for s in trader.update(plan["prices"], when=now):
+        fetched_at = plan.get("fetched_at") or now
+        for s in trader.update(plan["prices"], when=now, fetched_at=fetched_at):
             out(f"  SELL {s['symbol']:<10} {s['reason']:<45} P&L ${s['pnl_usd']:+.2f}")
             if s["closed"] and s["position"].get("issue_details"):
                 trader.state.setdefault("issues_to_close", []).append(s["position"])
@@ -1107,9 +1123,12 @@ class NewsStrategy:
                              "; ".join(f"{ch.name}: {ch.detail}" for ch in rules
                                        if ch.status != PASS), cand["ai"])
             out("")
-            self._log(now, source, item, cand["coins"], passed, checks)
+            self._log(now, source, item, cand["coins"], passed, checks, fetched_at)
+            if coin and source.get("kind") == "exchange":
+                self._listing_while_held(coin, item, source, now, fetched_at, out)
             if passed and coin:
-                pos = self._buy(coin, item, source, checks, now, issue_details, cand.get("ai"))
+                pos = self._buy(coin, item, source, checks, now, issue_details, cand.get("ai"),
+                                fetched_at)
                 if pos:
                     bought.append(pos)
                     out(f"  BUY  {coin['symbol']:<10} ${self.pt['buy_amount_usd']} at "
@@ -1121,19 +1140,48 @@ class NewsStrategy:
         trader.save()
         return bought
 
-    def _buy(self, coin, item, source, checks, now, issue_details, ai=None):
+    def _listing_while_held(self, coin, item, source, now, fetched_at, out):
+        """An exchange listing of a coin already held (by this strategy or a
+        follower): recorded with the position, never a second buy. A
+        "LISTING" row in the journal (the P&L ignores it), the listing in the
+        position (later_listings) and in positions.json's
+        listings_while_held (kept after the position closes)."""
+        for trader in [self.trader, *self.followers]:
+            pos = trader.position(coin["id"])
+            if not pos:
+                continue
+            price = coin.get("price")
+            change = (price / pos["entry_price"] - 1) * 100 if price else None
+            record = {"time": now.isoformat(), "source": source["name"],
+                      "title": item["title"][:200], "url": item["url"], "price_usd": price,
+                      "change_since_buy_pct": None if change is None else round(change, 2)}
+            pos.setdefault("later_listings", []).append(record)
+            history = trader.state.setdefault("listings_while_held", [])
+            history.append(dict(record, symbol=pos["symbol"], address=pos["address"],
+                                position_entry_time=pos["entry_time"]))
+            del history[:-200]
+            trader._journal(now, "LISTING", pos,
+                            f"also listed while held: {item['title'][:90]} ({source['name']})"
+                            + (f", {change:+.1f}% since our buy" if change is not None else ""),
+                            price or 0.0, 0.0, price_source="CoinGecko",
+                            price_time=fetched_at if price else None)
+            out(f"  NOTE {pos['symbol']:<10} held since {pos['entry_time'][:16].replace('T', ' ')}"
+                f" UTC: {item['title'][:80]}"
+                + (f" ({change:+.1f}% since our buy)" if change is not None else ""))
+
+    def _buy(self, coin, item, source, checks, now, issue_details, ai=None, fetched_at=None):
         pair = {"priceUsd": coin["price"], "priceChange": {"h1": coin.get("change_1h"),
                                                            "h24": coin.get("change_24h")}}
         result = SimpleNamespace(address=coin["id"], symbol=coin["symbol"], name=coin["name"],
                                  price=coin["price"], pair=pair, insider=None)
-        pos = self.trader.buy(result, when=now)
+        pos = self.trader.buy(result, when=now, fetched_at=fetched_at)
         if not pos:
             return None
         self.trader.state.setdefault("last_bought", {})[coin["id"]] = now.isoformat()
         by = {ch.name: ch.detail for ch in checks}
         pos["news"] = {"title": item["title"], "url": item["url"], "source": source["name"]}
         for follower in self.followers:
-            copy_pos = follower.buy(result, when=now)
+            copy_pos = follower.buy(result, when=now, fetched_at=fetched_at)
             if copy_pos:
                 copy_pos["news"] = dict(pos["news"])
         published = item.get("published")
@@ -1181,24 +1229,22 @@ class NewsStrategy:
                             published.strftime("%Y-%m-%d %H:%M:%S") if published else "",
                             item["title"][:200], item["url"]])
 
-    def _log(self, now, source, item, coins, passed, checks):
-        new = not os.path.exists(self.candidates_path)
+    def _log(self, now, source, item, coins, passed, checks, fetched_at=None):
         coin = coins[0] if len(coins) == 1 else None
         published = item.get("published")
-        with open(self.candidates_path, "a", newline="") as fh:
-            w = csv.writer(fh)
-            if new:
-                w.writerow(CANDIDATE_COLUMNS)
-            w.writerow([
-                now.strftime("%Y-%m-%d %H:%M:%S"), source["name"], source.get("kind", "press"),
-                published.strftime("%Y-%m-%d %H:%M:%S") if published else "",
-                item["title"][:200], item["url"],
-                coin["id"] if coin else ";".join(x["id"] for x in coins[:5]),
-                coin["symbol"] if coin else "",
-                "PASS" if passed else "FAIL",
-                "; ".join(f"{ch.name}: {ch.detail}" for ch in checks if ch.status != PASS),
-                " | ".join(f"{ch.name}={ch.status}" for ch in checks),
-            ])
+        price = coin.get("price") if coin else None
+        append_row(self.candidates_path, CANDIDATE_COLUMNS, [
+            now.strftime("%Y-%m-%d %H:%M:%S"), source["name"], source.get("kind", "press"),
+            published.strftime("%Y-%m-%d %H:%M:%S") if published else "",
+            item["title"][:200], item["url"],
+            coin["id"] if coin else ";".join(x["id"] for x in coins[:5]),
+            coin["symbol"] if coin else "",
+            "PASS" if passed else "FAIL",
+            "; ".join(f"{ch.name}: {ch.detail}" for ch in checks if ch.status != PASS),
+            " | ".join(f"{ch.name}={ch.status}" for ch in checks),
+            f"{price:.10g}" if price else "",
+            (fetched_at or now).strftime("%Y-%m-%d %H:%M:%S") if price else "",
+        ])
 
 
 # ---------------------------------------------------------------------

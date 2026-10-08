@@ -107,8 +107,9 @@ Since 2026-10-07, after a review of every strategy's results:
 - **Stop loss:** if the price falls 30% below the buy price, sell the rest.
 - **Trailing stop:** if the price falls 40% below its highest point since we
   bought, sell the rest.
-- **Time exit:** after 48 hours, if the price has moved less than 10% either
-  way, sell the rest.
+- **Time exit:** after 48 hours, sell the rest, whatever the price has done
+  (since 2026-10-09; before, only if it had moved less than 10% either way,
+  so a position between -10% and -30% was never sold).
 - **Costs:** 3% of the money put in is subtracted per full buy+sell, to
   mimic fees and slippage. (Selling half charges half of that.)
 
@@ -116,7 +117,9 @@ Since 2026-10-07, after a review of every strategy's results:
 
 - `data/journal.csv`: every pretend buy and sell, with the reason, the profit
   or loss (P&L) of that sale, and a running total. Open it in Excel, Google
-  Sheets or Numbers.
+  Sheets or Numbers. Since 2026-10-09 each row also says where its price came
+  from and when it was fetched (`price_source`, `price_time_utc`), and each
+  position in `positions.json` keeps the same for its entry and last price.
 - `data/positions.json`: the pretend positions you currently hold. Delete the
   whole `data/` folder to start over from zero.
 - `data/entries.csv` (and the same file in `data/early/` and
@@ -130,7 +133,12 @@ Since 2026-10-07, after a review of every strategy's results:
   `jupiter_organic_label` low/medium/high, and the share of the last hour's
   buy volume and traders Jupiter counts as organic; from Jupiter's free
   Tokens API, logging only; the news strategy's coins aren't Solana tokens,
-  so its rows leave these blank). Blank or
+  so its rows leave these blank). Since 2026-10-09 also: the price paid
+  (`fill_price_usd`, after any `buy_slippage_pct`), where the price came from
+  and when it was fetched (`price_source`, `price_time_utc`), and Bitcoin's
+  trend that day (`btc_close_usd`, its last daily close; `btc_200d_avg_usd`;
+  `btc_vs_200d` above/below; `btc_7d_change_pct`), from CoinGecko once a
+  day (logging only). Blank or
   `unknown` means the data wasn't available; buys from before a column was
   added have it blank. Rows are never removed, even after the position
   closes. Nothing here affects trading.
@@ -349,7 +357,7 @@ service; setup: Part G of
   `config.toml` and uses main's own code for the checks and the paper trades,
   so the two can't drift apart: the same entry checks, **$10** buys, **3%**
   costs, and the same exits (sell half at +50%; everything left at -30%, 40%
-  below the peak, or after 48 hours if it's still within ±10% of entry).
+  below the peak, or after 48 hours).
 - **Its own files:** `data/main-1min/` (`journal.csv`, `positions.json`,
   `entries.csv`, `health.json`). It never reads or writes the GitHub main
   strategy's files and opens no GitHub issues. The hourly push
@@ -377,7 +385,7 @@ and costs, and its own files:
 |---|---|---|
 | **main (1 min) A** | buys a token only after it passed main's checks on **3 consecutive one-minute checks**. A token that drops off DexScreener's lists while on a run of passes is still checked each minute (for A only). The counts start again if the bot restarts. | `data/main-1min/a/` |
 | **main (1 min) B** | skips tokens **up more than 100% in the last hour**, and needs a **Jupiter organic score of at least 60** (no score = skip). | `data/main-1min/b/` |
-| **main (1 min) C** | B's two rules, but **decided once, at the minute a token first passes main's checks**: bought then if it's up no more than 100% in the last hour and has an organic score of 60+, else skipped for good. Unlike B it never waits for a token to cool down (B bought a median 45 minutes after main). Tokens main (1 min) had already passed when C started count as decided; decisions are kept 14 days in its `positions.json`. | `data/main-1min/c/` |
+| **main (1 min) C** | B's two rules, but **decided once, at the minute a token first passes main's checks**: bought then if it's up no more than 100% in the last hour and has an organic score of 60+, else skipped for good. Unlike B it never waits for a token to cool down (B bought a median 45 minutes after main). If Jupiter doesn't answer, the token isn't decided yet: it's decided at the next minute it passes with an answer. Tokens main (1 min) had already passed when C started count as decided; decisions, and why each token was skipped (`skipped`), are kept 14 days in its `positions.json`. | `data/main-1min/c/` |
 
 They test the two ideas from the review: main (1 min) won on the tokens it
 shared with main but lost on tokens that passed only briefly (A), and
@@ -385,8 +393,10 @@ chasing tokens up more than 100% in an hour lost the most money (B). Each
 has its own column in the daily comparison and a health row (its open
 positions, buys, and the tokens it passed on in the last 24 hours). Jupiter
 is read at most once per token every 10 minutes (shared by B and every
-buy's `entries.csv` row). Settings: `[[main_1min.versions]]` in
-`config.toml`.
+buy's `entries.csv` row). **B and C pay 1.5% over the market price on every
+paper buy** (since 2026-10-09: a person's reaction time; the exits are
+measured from what they paid, and the daily comparison says from when).
+Settings: `[[main_1min.versions]]` in `config.toml`.
 
 ## The "news (listings)" strategy (exchange listings every minute, on your own server)
 
@@ -418,6 +428,14 @@ bot's server (the `news-listings` service; setup: Part J of
   rule-based checks decide, as always.
 - **Updates itself** like the other server bots ("automatic restart" in
   `journalctl -u news-listings`).
+- **Buy slippage:** since 2026-10-09 its paper buys pay 1.5% over CoinGecko's
+  price (a person's reaction time); the daily comparison says from when.
+- **Every listing's price** is in `candidates.csv` (`price_usd`,
+  `price_time_utc`), bought or not. When a coin it holds is listed on another
+  exchange, that is recorded with the position, never bought again: a
+  `LISTING` row in `journal.csv` (no P&L), the listing in the position's
+  `later_listings`, and in `positions.json`'s `listings_while_held` (kept
+  after the position closes).
 - **In the daily comparison:** the **news (listings)** column, next to news,
   and health rows for the bot (last good run, runs, CoinGecko calls, last
   push), each of its sources, and its AI check.
@@ -433,7 +451,10 @@ the same price, but exits fast:
 - the rest **10% below its highest price** since the buy;
 - everything left at **-10%** from entry, or after **6 hours** at most.
 
-The same $10 buys and 1% costs. Its prices are checked every 2 minutes while
+The same $10 buys, 1% costs and 1.5% buy slippage. If it has no fresh price
+when its 6 hours are up, it closes at the last known price and its journal
+says so ("closed at last known price (from ...)"). Its prices are checked
+every 2 minutes while
 it holds something (CoinGecko, in news (listings)' 4,000 a month). Its own
 `journal.csv`, `positions.json` and `entries.csv` in
 `data/news-listings/fast/`, its own column in the daily comparison and a

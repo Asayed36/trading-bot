@@ -21,6 +21,12 @@ from screener.news import FastNewsTrader, NewsStrategy  # noqa: E402
 from screener.settings import HERE, load_config  # noqa: E402
 
 CFG = running(load_config())
+# Without the 1.5% buy slippage, for the tests about the exit rules.
+NOSLIP = dict(CFG, news_listings=dict(
+    {k: v for k, v in CFG["news_listings"].items() if k != "buy_slippage_pct"},
+    fast=dict(CFG["news_listings"]["fast"], paper_trading={
+        k: v for k, v in CFG["news_listings"]["fast"]["paper_trading"].items()
+        if k != "buy_slippage_pct"})))
 NOW = datetime(2026, 9, 24, 13, 30, tzinfo=timezone.utc)
 SERVER = ["Binance listings", "Kraken blog", "Coinbase new pairs", "Upbit new markets",
           "OKX new markets"]
@@ -57,11 +63,13 @@ class SplitTests(Base):
 
     def test_same_checks_costs_and_exits(self):
         c, news = nl.listings_config(CFG)["news"], CFG["news"]
-        for key in ("paper_trading", "max_age_minutes", "min_market_cap_usd", "min_volume_usd",
+        for key in ("max_age_minutes", "min_market_cap_usd", "min_volume_usd",
                     "max_change_1h_pct", "max_change_24h_pct", "cooldown_days", "catalyst_words",
                     "exchange_words", "hype_words", "bad_news_words", "institutions",
                     "unambiguous_names", "crypto_words"):
             self.assertEqual(c[key], news[key], key)
+        # the same paper trading, plus its 1.5% buy slippage
+        self.assertEqual(c["paper_trading"], dict(news["paper_trading"], buy_slippage_pct=1.5))
         self.assertEqual({k: v for k, v in c["ai"].items() if k != "daily_limit"},
                          {k: v for k, v in news["ai"].items() if k != "daily_limit"})
         own = CFG["news_listings"]
@@ -134,11 +142,16 @@ class RunTests(Base):
 
 class FastTests(Base):
     """news (listings) fast: the same signals at the same moment and price,
-    exits within hours, its own files; news (listings) unchanged."""
+    exits within hours, its own files; news (listings) unchanged. (Without
+    the buy slippage, so the moves are from the market price: SlippageTests.)"""
 
     def setUp(self):
         super().setUp()
         self.fast_folder = os.path.join(self.folder, "fast")
+
+    def bot(self, http=None, ai=None):
+        return nl.NewsListings(NOSLIP, self.tmp.name, http or DemoNewsHttp(now=NOW), None,
+                               None, ai or DemoClaude())
 
     def fast_state(self):
         with open(os.path.join(self.fast_folder, "positions.json")) as fh:
@@ -171,10 +184,12 @@ class FastTests(Base):
                           pt["trailing_stop_pct"], pt["stop_loss_pct"], pt["max_hold_hours"]),
                          (20, 0.5, 10, 10, 6))
         news = CFG["news"]["paper_trading"]
-        self.assertEqual((pt["buy_amount_usd"], pt["round_trip_cost_pct"]),
-                         (news["buy_amount_usd"], news["round_trip_cost_pct"]))
-        # news (listings) keeps the news strategy's exits
-        self.assertEqual(nl.listings_config(CFG)["news"]["paper_trading"], news)
+        self.assertEqual((pt["buy_amount_usd"], pt["round_trip_cost_pct"], pt["buy_slippage_pct"]),
+                         (news["buy_amount_usd"], news["round_trip_cost_pct"],
+                          CFG["news_listings"]["buy_slippage_pct"]))
+        # news (listings) keeps the news strategy's exits (plus its buy slippage)
+        self.assertEqual(nl.listings_config(CFG)["news"]["paper_trading"],
+                         dict(news, buy_slippage_pct=1.5))
         self.assertEqual((news["take_profit_pct"], news["max_hold_days"]), (50, 7))
 
     def test_buys_the_same_signal_at_the_same_moment_and_price(self):
@@ -228,7 +243,7 @@ class FastTests(Base):
         self.assertEqual(len(self.state()["open_positions"]), 1)
 
     def test_trailing_stop_only_after_half_is_sold(self):
-        trader = FastNewsTrader(CFG["news_listings"]["fast"]["paper_trading"], self.tmp.name)
+        trader = FastNewsTrader(NOSLIP["news_listings"]["fast"]["paper_trading"], self.tmp.name)
         coin = mock.Mock(address="x", symbol="X", price=1.0, pair=None, insider=None)
         trader.buy(coin, when=NOW)
         later = NOW + timedelta(minutes=10)
@@ -262,13 +277,16 @@ class FastTests(Base):
         self.run_at(bot, 3, 1.04)
         # CoinGecko's monthly count used up
         state = self.state()
-        state["coingecko"]["calls"] = CFG["news_listings"]["coingecko_monthly_calls"]
+        state["coingecko"]["calls"] = NOSLIP["news_listings"]["coingecko_monthly_calls"]
         with open(os.path.join(self.folder, "positions.json"), "w") as fh:
             json.dump(state, fh)
         lines = []
         self.run_at(bot, 6 * 60 + 2, 1.5, lines)
         self.assertEqual(self.fast_state()["open_positions"], [])
-        self.assertEqual(self.journal(self.fast_folder)[-1]["reason"], "time limit: 6 h (+4%)")
+        last = self.journal(self.fast_folder)[-1]
+        self.assertRegex(last["reason"], r"^time limit: 6 h \(\+4%\), closed at last known price "
+                                         r"\(from \d{4}-\d\d-\d\d \d\d:\d\d:\d\d UTC\)$")
+        self.assertEqual(last["price_time_utc"], last["reason"][-24:-5])   # the old price's time
 
     def test_turned_off(self):
         cfg = dict(CFG, news_listings=dict(CFG["news_listings"], fast={"enabled": False}))
@@ -277,6 +295,92 @@ class FastTests(Base):
         self.run_at(bot, 1)
         self.assertEqual(len(self.state()["open_positions"]), 1)
         self.assertFalse(os.path.exists(self.fast_folder))
+
+
+class AuditFixTests(Base):
+    """2026-10-09: 1.5% buy slippage for both listings versions, prices'
+    source and fetch time, every listing's price, and a held coin's later
+    listings recorded with its position (never bought again)."""
+
+    def journal(self, folder):
+        import csv
+        with open(os.path.join(folder, "journal.csv")) as fh:
+            return list(csv.DictReader(fh))
+
+    def candidates(self):
+        import csv
+        with open(os.path.join(self.folder, "candidates.csv")) as fh:
+            return list(csv.DictReader(fh))
+
+    def bought(self):
+        bot = self.bot()
+        bot.run_once(NOW, **QUIET)
+        bot.http.http = DemoNewsHttp(now=NOW, markets={"coinbase": ["DEMO"]})
+        bot.run_once(NOW + timedelta(minutes=1), **QUIET)
+        return bot
+
+    def test_both_versions_pay_1_5_percent_over_coingeckos_price(self):
+        self.bought()
+        fast_folder = os.path.join(self.folder, "fast")
+        for folder in (self.folder, fast_folder):
+            (buy,) = self.journal(folder)
+            self.assertAlmostEqual(float(buy["price_usd"]), 70.0 * 1.015)   # DEMO is $70
+            self.assertIn("paid +1.5% over the market price $70", buy["reason"])
+            self.assertEqual(buy["price_source"], "CoinGecko")
+            self.assertTrue(buy["price_time_utc"])
+            with open(os.path.join(folder, "positions.json")) as fh:
+                state = json.load(fh)
+            self.assertEqual(state["buy_slippage"]["pct"], 1.5)
+            self.assertEqual(state["open_positions"][0]["market_price_at_entry"], 70.0)
+
+    def test_every_listings_price_is_recorded(self):
+        self.bought()
+        (row,) = self.candidates()
+        self.assertEqual((row["symbol"], row["verdict"], row["price_usd"]), ("DEMO", "PASS", "70"))
+        self.assertTrue(row["price_time_utc"])
+
+    def test_a_held_coins_new_listing_is_recorded_not_bought(self):
+        bot = self.bought()
+        bot.http.http = DemoNewsHttp(now=NOW, markets={"coinbase": ["DEMO"], "upbit": ["DEMO"]},
+                                     price_moves={"demo-network": 1.1})
+        lines = []
+        bot.run_once(NOW + timedelta(minutes=2), lines.append)
+        self.assertIn("NOTE DEMO", "\n".join(lines))
+        upbit = self.candidates()[-1]
+        self.assertEqual((upbit["source"], upbit["verdict"], upbit["price_usd"]),
+                         ("Upbit new markets", "FAIL", "77"))
+        for folder in (self.folder, os.path.join(self.folder, "fast")):
+            rows = self.journal(folder)
+            self.assertEqual([r["action"] for r in rows], ["BUY", "LISTING"])   # no second buy
+            self.assertIn("also listed while held: Upbit lists", rows[1]["reason"])
+            self.assertIn("+8.4% since our buy", rows[1]["reason"])   # 77 vs 70 * 1.015
+            self.assertEqual((rows[1]["pnl_usd"], rows[1]["price_source"]), ("0.00", "CoinGecko"))
+            with open(os.path.join(folder, "positions.json")) as fh:
+                state = json.load(fh)
+            (pos,) = state["open_positions"]
+            self.assertEqual(pos["later_listings"][0]["source"], "Upbit new markets")
+            self.assertEqual(state["listings_while_held"][0]["position_entry_time"],
+                             pos["entry_time"])
+        # the daily comparison ignores the LISTING row
+        from screener.compare import strategy_stats
+        stats = strategy_stats(self.folder, 1, "2026-09-24")
+        self.assertEqual((stats["buys_today"], stats["realized"], stats["open"]), (1, 0.0, 1))
+
+    def test_the_comparison_says_from_when_slippage_applies(self):
+        import io
+
+        import compare
+        self.bought()
+        cfg = dict(CFG, files={"data_folder": self.tmp.name})
+        with mock.patch.object(compare, "load_config", lambda: cfg), \
+                mock.patch.dict(os.environ, {"GITHUB_TOKEN": "", "GITHUB_REPOSITORY": ""}), \
+                mock.patch("sys.argv", ["compare.py", "--date", "2026-09-24"]), \
+                mock.patch("sys.stdout", io.StringIO()) as out:
+            self.assertEqual(compare.main(), 0)
+        text = out.getvalue()
+        self.assertRegex(text, r"\*\*Buy slippage:\*\* paper buys pay extra over the market "
+                               r"price, for a person's reaction time: \+1\.5% for news \(listings\), "
+                               r"news \(listings\) fast \(since \d{4}-\d\d-\d\d \d\d:\d\d UTC\)")
 
 
 class CompareTests(Base):

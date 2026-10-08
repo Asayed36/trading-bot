@@ -203,6 +203,29 @@ def helius_lines(folder, day):
     ]
 
 
+def slippage_lines(strategies):
+    """Which strategies' paper buys pay extra over the market price (their
+    positions.json "buy_slippage": the % and since when), for under the table."""
+    groups = {}
+    for name, folder, _ in strategies:
+        path = os.path.join(folder, "positions.json")
+        try:
+            with open(path) as fh:
+                slip = json.load(fh).get("buy_slippage")
+        except (OSError, ValueError):
+            slip = None
+        if slip and slip.get("pct"):
+            since = _when(slip["since"]).strftime("%Y-%m-%d %H:%M")
+            groups.setdefault((slip["pct"], since), []).append(name)
+    if not groups:
+        return []
+    parts = [f"+{pct:g}% for {', '.join(names)} (since {since} UTC)"
+             for (pct, since), names in sorted(groups.items(), key=lambda g: g[0][1])]
+    return [f"**Buy slippage:** paper buys pay extra over the market price, for a person's "
+            f"reaction time: {'; '.join(parts)}. Their results include it from then on; "
+            f"buys before that date were made at the market price.", ""]
+
+
 def report(strategies, day, extra=None, health=None):
     """Markdown table. `strategies` is a list of (name, folder, round_trip_cost_pct).
     `extra` is more Markdown lines to add at the end, `health` lines to put
@@ -240,6 +263,7 @@ def report(strategies, day, extra=None, health=None):
             lambda s: f"{s['open']} ({_usd(s['unrealized'])})"),
         row("**Total P&L**", lambda s: f"**{_usd(s['total'])}**"),
         "",
+        *slippage_lines(strategies),
     ]
     if extra:
         lines += list(extra) + [""]
