@@ -65,14 +65,19 @@ class ParsingTests(unittest.TestCase):
 
         self.assertEqual(JupiterOrganic(get=get)(MINT)["jupiter_organic_score"], 63.46)
         self.assertEqual(calls, [(URL, {"query": MINT})])
-        for answer in (FakeResponse(500, None), FakeResponse(200, ValueError("not json")),
-                       FakeResponse(200, {"error": "x"})):
+        # No answer: blank values, marked so a caller can wait for one.
+        for answer, why in ((FakeResponse(500, None), "HTTP 500"),
+                            (FakeResponse(200, ValueError("not json")), "ValueError")):
             self.assertEqual(JupiterOrganic(get=lambda *a, **k: answer)(MINT),
-                             dict.fromkeys(COLUMNS))
+                             dict(dict.fromkeys(COLUMNS), jupiter_error=why))
 
         def down(*a, **k):
             raise requests.ConnectionError("no network")
-        self.assertEqual(JupiterOrganic(get=down)(MINT), dict.fromkeys(COLUMNS))
+        self.assertEqual(JupiterOrganic(get=down)(MINT),
+                         dict(dict.fromkeys(COLUMNS), jupiter_error="ConnectionError"))
+        # An answer without this token: blank, but an answer.
+        self.assertEqual(JupiterOrganic(get=lambda *a, **k: FakeResponse(200, {"error": "x"}))(
+            MINT), dict.fromkeys(COLUMNS))
 
 
 class EntryTests(unittest.TestCase):

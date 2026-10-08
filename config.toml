@@ -72,6 +72,9 @@ trailing_stop_pct = 40
 # stale_move_pct (up OR down), give up and sell.
 max_hold_hours = 48
 stale_move_pct = 10
+# true (since 2026-10-09): after max_hold_hours, sell whatever the move (a
+# position between -stale_move_pct and the stop loss was otherwise never sold).
+time_exit_any_move = true
 
 # Pretend cost of fees + slippage for one full buy-and-sell, as a % of the
 # money put in. Charged proportionally each time we sell part of a position.
@@ -137,12 +140,17 @@ label = "main (1 min) B"
 folder = "main-1min/b"
 max_change_1h_pct = 100
 min_organic_score = 60
+# Paper buys pay 1.5% over the market price, for a person's reaction time
+# (since 2026-10-09; the daily comparison says from when).
+buy_slippage_pct = 1.5
 
 # C: B's two rules, but decided once, at the minute a token first passes
 # main's checks: bought then if it is up no more than 100% in the last hour
 # and has a Jupiter organic score of 60+, else skipped for good (it never
 # waits for a token to cool down, unlike B). Tokens main (1 min) had already
-# passed before C started count as decided.
+# passed before C started count as decided. A token is decided only once
+# Jupiter has answered (if it doesn't, C asks again at the next minute the
+# token passes); why each token was skipped is kept in its positions.json.
 [[main_1min.versions]]
 name = "C"
 label = "main (1 min) C"
@@ -150,6 +158,7 @@ folder = "main-1min/c"
 max_change_1h_pct = 100
 min_organic_score = 60
 first_pass_only = true
+buy_slippage_pct = 1.5
 
 # ---------------------------------------------------------------------
 # EARLY STRATEGY: a second paper strategy that runs alongside the one above
@@ -850,6 +859,10 @@ coingecko_monthly_calls = 4000
 # Its own AI check limit a day (the key is on the server: see
 # deploy/LAUNCH_SERVER_SETUP.md, Part J).
 ai_daily_limit = 50
+# Paper buys pay 1.5% over CoinGecko's price, for a person's reaction time
+# (since 2026-10-09; the daily comparison says from when). GitHub's news
+# strategy doesn't.
+buy_slippage_pct = 1.5
 
 # "news (listings) fast": a second paper version that buys the same signals
 # at the same moment and price as news (listings) above, but exits within
@@ -875,8 +888,9 @@ trailing_stop_pct = 10
 stop_loss_pct = 10
 max_hold_hours = 6
 allow_rebuy = true
-# The same costs as news (listings).
+# The same costs and buy slippage as news (listings).
 round_trip_cost_pct = 1
+buy_slippage_pct = 1.5
 
 [news.paper_trading]
 # Pretend dollars per buy.

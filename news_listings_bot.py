@@ -50,7 +50,8 @@ from screener.api import ApiError
 from screener.autorestart import CodeWatcher, forever
 from screener.news import CoinGecko, FastNewsTrader, NewsHttp, NewsStrategy
 from screener.news_ai import api_key
-from screener.paper_trader import now_utc
+from screener.btc import BtcTrend
+from screener.paper_trader import PaperTrader, now_utc
 from screener.settings import HERE, load_config
 
 log = logging.getLogger("news_listings")
@@ -62,10 +63,15 @@ CONFIG_SECTIONS = ("news", "news_listings", "api", "files")
 def listings_config(cfg):
     """The news strategy's settings, with the listings bot's own timing and
     limits: checks every run, prices every prices_every_minutes, its own
-    CoinGecko and AI counts. The checks, costs and exits are unchanged."""
+    CoinGecko and AI counts, and its buy slippage. The checks, costs and
+    exits are unchanged."""
     c, own = cfg["news"], cfg["news_listings"]
     news = dict(c, every_minutes=0, prices_every_minutes=own["prices_every_minutes"],
                 coingecko_monthly_calls=own["coingecko_monthly_calls"])
+    if own.get("buy_slippage_pct"):
+        # Its paper buys pay this much over the market price (reaction time).
+        news["paper_trading"] = dict(c["paper_trading"],
+                                     buy_slippage_pct=own["buy_slippage_pct"])
     if c.get("ai"):
         news["ai"] = dict(c["ai"], daily_limit=own["ai_daily_limit"])
     return dict(cfg, news=news)
@@ -176,13 +182,15 @@ class NewsListings:
         every = timedelta(minutes=self.own["fast"]["prices_every_minutes"] - 0.5)
         if held and (not last or now - datetime.fromisoformat(last) >= every):
             prices = {i: plan["prices"][i] for i in held if plan["prices"].get(i)}
+            fetched = {i: plan.get("fetched_at") or now for i in prices}
             want = [i for i in held if i not in prices]
             if want:
                 gecko = CoinGecko(self.http, self.coingecko_key, news.trader.state,
                                   self.cfg["news"]["coingecko_monthly_calls"], now)
                 try:
-                    prices.update({x["id"]: x["price"] for x in gecko.markets(ids=want)
-                                   if x.get("price")})
+                    got = {x["id"]: x["price"] for x in gecko.markets(ids=want) if x.get("price")}
+                    prices.update(got)
+                    fetched.update(dict.fromkeys(got, now_utc()))
                 except ApiError as exc:
                     out(f"  (news (listings) fast: no prices this run: {exc})")
                 news.trader.save()                 # the CoinGecko count
@@ -191,8 +199,11 @@ class NewsListings:
             for p in fast.open_positions:
                 age = (now - datetime.fromisoformat(p["entry_time"])).total_seconds() / 3600
                 if p["address"] not in prices and age >= limit:
+                    # No fresh price: closed at the last one (its sell says so).
                     prices[p["address"]] = p["last_price"]
-            for s in fast.update(prices, when=now):
+                    fetched[p["address"]] = p.get("last_price_time") or ""
+                    p["stale_price_from"] = p.get("last_price_time") or "an earlier run"
+            for s in fast.update(prices, when=now, fetched_at=fetched):
                 out(f"  SELL {s['symbol']:<10} {'(fast) ' + s['reason']:<45} "
                     f"P&L ${s['pnl_usd']:+.2f}")
         fast.save()
@@ -240,6 +251,8 @@ def main(argv=None):
         return 0
     http = NewsHttp(cfg["api"]["timeout_seconds"])
     coingecko_key = secret("coingecko_api_key", "COINGECKO_API_KEY")
+    # Bitcoin's trend in every paper buy's entries.csv row (logging only).
+    PaperTrader.market = BtcTrend(coingecko_key or "")
     ai_key = api_key()
     print(f"AI check: {'on' if ai_key else 'off (no Claude API key: rule-based checks only)'}",
           flush=True)

@@ -52,8 +52,14 @@ def organic_values(token, mint):
     }
 
 
+# In the values when Jupiter didn't answer (an error or no reply), so a
+# caller can tell "no answer yet" from "answered: no score for this token".
+ERROR = "jupiter_error"
+
+
 class JupiterOrganic:
-    """Callable: mint -> the four values. Never raises."""
+    """Callable: mint -> the four values (plus ERROR when Jupiter didn't
+    answer). Never raises."""
 
     def __init__(self, timeout=8, get=requests.get):
         self.timeout = timeout
@@ -63,10 +69,10 @@ class JupiterOrganic:
         try:
             resp = self.get(URL, params={"query": mint}, headers=HEADERS, timeout=self.timeout)
             if resp.status_code != 200:
-                return dict.fromkeys(COLUMNS)
+                return dict(dict.fromkeys(COLUMNS), **{ERROR: f"HTTP {resp.status_code}"})
             rows = resp.json()
-        except (requests.RequestException, ValueError):
-            return dict.fromkeys(COLUMNS)
+        except (requests.RequestException, ValueError) as exc:
+            return dict(dict.fromkeys(COLUMNS), **{ERROR: type(exc).__name__})
         rows = rows if isinstance(rows, list) else []
         token = next((r for r in rows if isinstance(r, dict) and r.get("id") == mint), None)
         return organic_values(token, mint)

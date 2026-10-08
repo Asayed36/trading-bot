@@ -270,8 +270,9 @@ def _main_exit_rows(pos, pt):
         f"| Trailing stop: sell the rest | {trail:g}% below the highest price since entry. "
         f"Starts at {price(entry * (1 - trail / 100))} and rises with the peak |",
         f"| Time stop: sell the rest | {time_stop.strftime('%Y-%m-%d %H:%M UTC')} "
-        f"({pt['max_hold_hours']:g}h), if the price is still within "
-        f"±{pt['stale_move_pct']:g}% of entry |",
+        f"({pt['max_hold_hours']:g}h)"
+        + (" |" if pt.get("time_exit_any_move") else
+           f", if the price is still within ±{pt['stale_move_pct']:g}% of entry |"),
     ]
 
 

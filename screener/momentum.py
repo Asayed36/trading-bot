@@ -430,7 +430,7 @@ class MomentumEngine:
         t = t or self.clock()
         self.external.update({m: (p, t) for m, p in prices.items() if p})
         self._update_prices({m: p for m, p in prices.items()
-                             if p and self._uses_external(m, t)}, t)
+                             if p and self._uses_external(m, t)}, t, source="DexScreener")
 
     def needs_external(self, t=None):
         t = t or self.clock()
@@ -452,9 +452,9 @@ class MomentumEngine:
             return w["price_sol"] * self.sol_usd
         return None
 
-    def _update_prices(self, prices, t):
+    def _update_prices(self, prices, t, source=None):
         for trader in self.traders.values():
-            if trader.update(prices, when=utc(t)):
+            if trader.update(prices, when=utc(t), source=source):
                 trader.save()            # a sell: saved at once so a crash can't undo it
 
     def tick(self, t=None):
@@ -466,8 +466,11 @@ class MomentumEngine:
                 del self.pending[key]
                 self._count(t, f"{key[0]}: not filled (no trade)")
         prices = {m: p for m in self.launches if self._held(m) and (p := self._current_usd(m, t))}
-        if prices:
-            self._update_prices(prices, t)
+        for external in (False, True):     # the feed's prices, then DexScreener's
+            part = {m: p for m, p in prices.items()
+                    if (self._uses_external(m, t) and m in self.external) == external}
+            if part:
+                self._update_prices(part, t, source="DexScreener" if external else None)
         pending = {mint for (_, mint) in self.pending}
         for mint, w in list(self.launches.items()):
             if t - w["created"] > self.c["max_age_seconds"] + 5 and not self._held(mint) \

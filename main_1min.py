@@ -52,8 +52,10 @@ from datetime import timedelta
 from screener.api import ApiError, PublicApi, RateLimited
 from screener.autorestart import CodeWatcher
 from screener.autorestart import forever as run_forever
+from screener.btc import BtcTrend
 from screener.filters import (PASS, best_pair, current_prices, evaluate, find_candidates,
                               market_checks, to_float)
+from screener.jupiter import ERROR as JUPITER_ERROR
 from screener.jupiter import JupiterOrganic
 from screener.paper_trader import PaperTrader, now_utc
 from screener.settings import HERE, load_config
@@ -121,6 +123,8 @@ class Version:
         self.first_pass_only = bool(v.get("first_pass_only"))
         # stopped = true: no new buys; open positions finish under the exits.
         self.stopped = bool(v.get("stopped"))
+        # Paper buys pay this much over the market price (reaction time).
+        self.buy_slippage_pct = float(v.get("buy_slippage_pct") or 0)
 
     def why_not(self, result, streak, organic):
         """None when this version buys the token (it passed main's checks);
@@ -134,12 +138,20 @@ class Version:
             if change > self.max_change_1h:
                 return f"up >{self.max_change_1h:g}% in 1h"
         if self.min_organic is not None:
-            score = to_float(organic(result.address).get("jupiter_organic_score"))
+            values = organic(result.address)
+            if values.get(JUPITER_ERROR):
+                return NO_JUPITER_ANSWER
+            score = to_float(values.get("jupiter_organic_score"))
             if score is None:
                 return "no organic score"
             if score < self.min_organic:
                 return f"organic score <{self.min_organic:g}"
         return None
+
+
+# Version.why_not when Jupiter didn't answer: C waits for an answer before
+# deciding; B skips the token this minute (as before).
+NO_JUPITER_ANSWER = "no Jupiter answer"
 
 
 class MainOneMinute:
@@ -216,7 +228,9 @@ class MainOneMinute:
             trader.buying = not self.c.get("stopped")
             vtraders = {}
             for v in self.versions:
-                vtraders[v.name] = SafeTrader(self.pt, v.folder)
+                pt = dict(self.pt, buy_slippage_pct=v.buy_slippage_pct) \
+                    if v.buy_slippage_pct else self.pt
+                vtraders[v.name] = SafeTrader(pt, v.folder)
                 vtraders[v.name].organic = trader.organic
                 vtraders[v.name].buying = not v.stopped
             held, seen = [], set()
@@ -226,6 +240,7 @@ class MainOneMinute:
                         seen.add(pos["address"])
                         held.append(pos)
             prices = current_prices(self.api, held, self.f["allowed_dexes"])
+            prices_at = now_utc()          # when they were fetched (the journal says)
             addresses = find_candidates(self.api.latest_profiles(), self.api.latest_boosts())
             # Version A also re-checks the tokens on a run of passes that
             # have dropped off DexScreener's lists, after the listed ones (so
@@ -234,6 +249,7 @@ class MainOneMinute:
             watched = [a for a in self.streaks if a not in listed]
             to_check = addresses + watched
             pairs = self.api.pairs_for_tokens(to_check) if to_check else []
+            pairs_at = now_utc()           # the buys' prices
             budget = {"rugcheck": self.c["rugcheck_max_per_run"]}
             results, waiting = [], 0
             for addr in to_check:
@@ -262,19 +278,19 @@ class MainOneMinute:
 
         lines, counts = [], {}
         main_before = list(trader.state.get("ever_bought", []))   # before this minute's buys
-        for s in trader.update(prices, when=now):
+        for s in trader.update(prices, when=now, fetched_at=prices_at):
             lines.append(f"SELL {s['symbol']} {s['reason']} P&L ${s['pnl_usd']:+.2f}")
         for r in main_results:
-            if r.passed and trader.buy(r, when=now):
+            if r.passed and trader.buy(r, when=now, fetched_at=pairs_at):
                 lines.append(f"BUY  {r.symbol} ${self.pt['buy_amount_usd']} at ${r.price:.10g}")
         trader.save()
         for v in self.versions:
             vt = vtraders[v.name]
-            for s in vt.update(prices, when=now):
+            for s in vt.update(prices, when=now, fetched_at=prices_at):
                 lines.append(f"[{v.name}] SELL {s['symbol']} {s['reason']} "
                              f"P&L ${s['pnl_usd']:+.2f}")
             if v.first_pass_only:
-                self._first_pass(v, vt, main_before, main_results, now, counts, lines)
+                self._first_pass(v, vt, main_before, main_results, now, counts, lines, pairs_at)
                 vt.save()
                 continue
             for r in (results if v.passes > 1 else main_results):
@@ -285,7 +301,7 @@ class MainOneMinute:
                     key = f"{v.name} waiting" if why.endswith("passes") else f"{v.name} skipped"
                     counts[key] = counts.get(key, 0) + 1
                     continue
-                if vt.buy(r, when=now):
+                if vt.buy(r, when=now, fetched_at=pairs_at):
                     counts[f"{v.name} buys"] = counts.get(f"{v.name} buys", 0) + 1
                     lines.append(f"[{v.name}] BUY  {r.symbol} ${self.pt['buy_amount_usd']} at "
                                  f"${r.price:.10g}")
@@ -306,25 +322,35 @@ class MainOneMinute:
             + "".join(f"\n  {line}" for line in lines))
         return main_results
 
-    def _first_pass(self, v, vt, main_before, main_results, now, counts, lines):
+    def _first_pass(self, v, vt, main_before, main_results, now, counts, lines, pairs_at=None):
         """Version C: each token is decided once, at the first minute it
         passes main's checks: bought if its extra rules pass then, else
-        skipped for good. Decided tokens are kept in its positions.json
-        ("decided", token -> when), so a restart doesn't give a token a
-        second chance. On its first run, the tokens main (1 min) had already
-        passed (and bought) count as decided: their first pass was earlier."""
+        skipped for good. A token waiting for Jupiter's answer (Jupiter
+        didn't answer) isn't decided yet: it's decided at the first minute
+        it passes with an answer. Decided tokens are kept in its
+        positions.json ("decided", token -> when; "skipped", token -> when,
+        symbol and why), so a restart doesn't give a token a second chance.
+        On its first run, the tokens main (1 min) had already passed (and
+        bought) count as decided: their first pass was earlier."""
         if "decided" not in vt.state:
             vt.state["decided"] = {a: "before C started" for a in main_before}
         decided = vt.state["decided"]
+        skipped = vt.state.setdefault("skipped", {})
         for r in main_results:
             if not r.passed or r.address in decided or not vt.buying:
                 continue
-            decided[r.address] = now.isoformat()
             why = v.why_not(r, 1, self.organic)
+            if why == NO_JUPITER_ANSWER:
+                counts[f"{v.name} waiting for Jupiter"] = \
+                    counts.get(f"{v.name} waiting for Jupiter", 0) + 1
+                continue
+            decided[r.address] = now.isoformat()
             if why:
                 counts[f"{v.name} skipped"] = counts.get(f"{v.name} skipped", 0) + 1
+                skipped[r.address] = {"time": now.isoformat(), "symbol": r.symbol,
+                                      "reason": why}
                 continue
-            if vt.buy(r, when=now):
+            if vt.buy(r, when=now, fetched_at=pairs_at):
                 counts[f"{v.name} buys"] = counts.get(f"{v.name} buys", 0) + 1
                 lines.append(f"[{v.name}] BUY  {r.symbol} ${self.pt['buy_amount_usd']} at "
                              f"${r.price:.10g}")
@@ -333,6 +359,7 @@ class MainOneMinute:
         cutoff = (now - timedelta(days=14)).isoformat()
         vt.state["decided"] = {a: t for a, t in decided.items()
                                if not t[:1].isdigit() or t >= cutoff}
+        vt.state["skipped"] = {a: x for a, x in skipped.items() if x["time"] >= cutoff}
 
     def _health(self, now, before, error, counts=None, vtraders=None):
         """data/main-1min/health.json: the last good run, the last error,
@@ -398,6 +425,8 @@ def main(argv=None):
         print("main_1min is turned off in config.toml ([main_1min] enabled = false).")
         return 0
     api = PublicApi(cfg["api"]["timeout_seconds"], cfg["api"]["rugcheck_delay_seconds"])
+    # Bitcoin's trend in every paper buy's entries.csv row (logging only).
+    PaperTrader.market = BtcTrend()
     if args.test:
         with tempfile.TemporaryDirectory() as folder:
             print("Test run: real data, results in a temporary folder (nothing is saved).")
