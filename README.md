@@ -422,6 +422,24 @@ bot's server (the `news-listings` service; setup: Part J of
   and health rows for the bot (last good run, runs, CoinGecko calls, last
   push), each of its sources, and its AI check.
 
+### "news (listings) fast": the same listings, exits within hours
+
+Exchange-listing gains tend to come in the first minutes to hours and fade
+within a week or two, while news (listings) holds up to 7 days. **news
+(listings) fast** buys every news (listings) signal at the same moment and
+the same price, but exits fast:
+
+- sell half at **+20%**;
+- the rest **10% below its highest price** since the buy;
+- everything left at **-10%** from entry, or after **6 hours** at most.
+
+The same $10 buys and 1% costs. Its prices are checked every 2 minutes while
+it holds something (CoinGecko, in news (listings)' 4,000 a month). Its own
+`journal.csv`, `positions.json` and `entries.csv` in
+`data/news-listings/fast/`, its own column in the daily comparison and a
+health row. news (listings) itself is unchanged, so the two can be compared
+side by side. Settings: `[news_listings.fast]`.
+
 ## The "momentum" strategy (new launches rising fast, on your own server)
 
 **The 30%/2 min and 50%/3 min variants were stopped on 2026-10-05** (losing

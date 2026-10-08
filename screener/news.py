@@ -791,13 +791,29 @@ class NewsTrader(PaperTrader):
         return None
 
 
+class FastNewsTrader(NewsTrader):
+    """news (listings) fast: sell half at +take_profit_pct (PaperTrader),
+    then the rest trailing_stop_pct below its peak; before and after that,
+    everything left at -stop_loss_pct from entry or after max_hold_hours."""
+
+    def close_reason(self, pos, change_pct, from_peak, hours):
+        c = self.cfg
+        if change_pct <= -c["stop_loss_pct"]:
+            return f"stop loss: down {-change_pct:.0f}% from entry"
+        if pos["took_profit"] and from_peak <= -c["trailing_stop_pct"]:
+            return f"trailing stop: down {-from_peak:.0f}% from peak"
+        if hours >= c["max_hold_hours"]:
+            return f"time limit: {hours:.0f} h ({change_pct:+.0f}%)"
+        return None
+
+
 # ---------------------------------------------------------------------
 # The strategy
 # ---------------------------------------------------------------------
 
 class NewsStrategy:
     def __init__(self, cfg, data_folder, http=None, coingecko_key=None, ai_key=None,
-                 ai_client=None, folder="news", runs_on="github"):
+                 ai_client=None, folder="news", runs_on="github", followers=()):
         self.c = cfg["news"]
         self.pt = self.c["paper_trading"]
         # The sources this copy reads: [[news.sources]] with runs_on = "server"
@@ -807,6 +823,9 @@ class NewsStrategy:
         self.sources = [s for s in self.c["sources"] if s.get("runs_on", "github") == runs_on]
         self.folder = os.path.join(data_folder, folder)
         self.trader = NewsTrader(self.pt, self.folder)
+        # Other paper versions that buy every signal at the same moment and
+        # price, with their own exits (news (listings) fast).
+        self.followers = list(followers)
         self.http = http or NewsHttp()
         self.key = coingecko_key
         self.candidates_path = os.path.join(self.folder, "candidates.csv")
@@ -1113,6 +1132,10 @@ class NewsStrategy:
         self.trader.state.setdefault("last_bought", {})[coin["id"]] = now.isoformat()
         by = {ch.name: ch.detail for ch in checks}
         pos["news"] = {"title": item["title"], "url": item["url"], "source": source["name"]}
+        for follower in self.followers:
+            copy_pos = follower.buy(result, when=now)
+            if copy_pos:
+                copy_pos["news"] = dict(pos["news"])
         published = item.get("published")
         pos["issue_details"] = {
             "name": coin["name"], "url": f"https://www.coingecko.com/en/coins/{coin['id']}",

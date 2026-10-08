@@ -17,7 +17,7 @@ from tests import running  # noqa: E402
 
 import news_listings_bot as nl  # noqa: E402
 from screener.demo import DemoClaude, DemoNewsHttp  # noqa: E402
-from screener.news import NewsStrategy  # noqa: E402
+from screener.news import FastNewsTrader, NewsStrategy  # noqa: E402
 from screener.settings import HERE, load_config  # noqa: E402
 
 CFG = running(load_config())
@@ -98,7 +98,10 @@ class RunTests(Base):
         self.assertNotIn(".tmp", " ".join(os.listdir(self.folder)))
 
     def test_open_positions_priced_every_15_minutes(self):
-        bot = self.bot()
+        # news (listings) alone (its fast version's own price checks are
+        # tested in FastTests)
+        cfg = dict(CFG, news_listings=dict(CFG["news_listings"], fast={"enabled": False}))
+        bot = nl.NewsListings(cfg, self.tmp.name, DemoNewsHttp(now=NOW), None, None, DemoClaude())
         bot.run_once(NOW, **QUIET)
         bot.http.http = DemoNewsHttp(now=NOW, markets={"coinbase": ["DEMO"]})
         bot.run_once(NOW + timedelta(minutes=1), **QUIET)          # bought
@@ -127,6 +130,172 @@ class RunTests(Base):
         (pos,) = bot.run_once(NOW + timedelta(minutes=1), **QUIET)
         self.assertEqual(pos["symbol"], "DEMO")
         self.assertFalse(self.health()["ai_key"])
+
+
+class FastTests(Base):
+    """news (listings) fast: the same signals at the same moment and price,
+    exits within hours, its own files; news (listings) unchanged."""
+
+    def setUp(self):
+        super().setUp()
+        self.fast_folder = os.path.join(self.folder, "fast")
+
+    def fast_state(self):
+        with open(os.path.join(self.fast_folder, "positions.json")) as fh:
+            return json.load(fh)
+
+    def journal(self, folder):
+        import csv
+        with open(os.path.join(folder, "journal.csv")) as fh:
+            return list(csv.DictReader(fh))
+
+    def run_at(self, bot, minutes, moves=None, lines=None):
+        bot.http.http = DemoNewsHttp(now=NOW, markets={"coinbase": ["DEMO"]},
+                                     price_moves={"demo-network": moves} if moves else None)
+        bot.run_once(NOW + timedelta(minutes=minutes),
+                     out=(lines.append if lines is not None else lambda *a: None))
+        return bot.http.http.calls
+
+    def bought(self):
+        bot = self.bot()
+        bot.run_once(NOW, **QUIET)
+        self.run_at(bot, 1)                                 # the listing: both buy
+        return bot
+
+    def test_settings(self):
+        fast = CFG["news_listings"]["fast"]
+        self.assertTrue(fast["enabled"])
+        self.assertEqual(fast["label"], "news (listings) fast")
+        pt = fast["paper_trading"]
+        self.assertEqual((pt["take_profit_pct"], pt["take_profit_sell_fraction"],
+                          pt["trailing_stop_pct"], pt["stop_loss_pct"], pt["max_hold_hours"]),
+                         (20, 0.5, 10, 10, 6))
+        news = CFG["news"]["paper_trading"]
+        self.assertEqual((pt["buy_amount_usd"], pt["round_trip_cost_pct"]),
+                         (news["buy_amount_usd"], news["round_trip_cost_pct"]))
+        # news (listings) keeps the news strategy's exits
+        self.assertEqual(nl.listings_config(CFG)["news"]["paper_trading"], news)
+        self.assertEqual((news["take_profit_pct"], news["max_hold_days"]), (50, 7))
+
+    def test_buys_the_same_signal_at_the_same_moment_and_price(self):
+        self.bought()
+        (main,) = self.state()["open_positions"]
+        (fast,) = self.fast_state()["open_positions"]
+        for key in ("address", "symbol", "entry_time", "entry_price", "cost_usd", "news"):
+            self.assertEqual(main[key], fast[key], key)
+        self.assertNotIn("issue_details", fast)
+        for name in ("journal.csv", "entries.csv", "positions.json"):
+            self.assertTrue(os.path.exists(os.path.join(self.fast_folder, name)), name)
+        (row,) = self.journal(self.fast_folder)
+        self.assertEqual((row["action"], row["symbol"]), ("BUY", "DEMO"))
+        self.assertEqual(len(self.journal(self.folder)), 1)   # news (listings)' own journal
+
+    def test_fast_exits_while_news_listings_holds_on(self):
+        bot = self.bot()
+        bot.run_once(NOW, **QUIET)
+        self.run_at(bot, 1)
+        lines = []
+        self.run_at(bot, 3, 1.25, lines)                    # +25%: fast sells half
+        self.assertIn("(fast) take profit: up 25%", "\n".join(lines))
+        (fast,) = self.fast_state()["open_positions"]
+        self.assertEqual(fast["remaining_fraction"], 0.5)
+        self.run_at(bot, 5, 1.30)                           # new peak +30%
+        self.run_at(bot, 7, 1.20)                           # 7.7% below the peak: holds
+        self.assertEqual(len(self.fast_state()["open_positions"]), 1)
+        self.run_at(bot, 9, 1.16)                           # 10.8% below the peak
+        self.assertEqual(self.fast_state()["open_positions"], [])
+        sells = [r["reason"] for r in self.journal(self.fast_folder) if r["action"] == "SELL"]
+        self.assertEqual(sells, ["take profit: up 25%", "trailing stop: down 11% from peak"])
+        # news (listings) is unchanged: +16% is nothing to it
+        (main,) = self.state()["open_positions"]
+        self.assertEqual(main["remaining_fraction"], 1.0)
+
+    def test_stop_loss_and_time_limit(self):
+        bot = self.bought()
+        self.run_at(bot, 3, 0.89)                           # -11%
+        self.assertEqual(self.fast_state()["open_positions"], [])
+        self.assertIn("stop loss: down 11% from entry",
+                      self.journal(self.fast_folder)[-1]["reason"])
+        self.assertEqual(len(self.state()["open_positions"]), 1)   # -20% for news (listings)
+
+    def test_time_limit(self):
+        bot = self.bought()
+        self.run_at(bot, 6 * 60 - 1, 1.05)
+        self.assertEqual(len(self.fast_state()["open_positions"]), 1)
+        self.run_at(bot, 6 * 60 + 1, 1.05)                  # 6 hours after the buy
+        self.assertEqual(self.fast_state()["open_positions"], [])
+        self.assertEqual(self.journal(self.fast_folder)[-1]["reason"], "time limit: 6 h (+5%)")
+        self.assertEqual(len(self.state()["open_positions"]), 1)
+
+    def test_trailing_stop_only_after_half_is_sold(self):
+        trader = FastNewsTrader(CFG["news_listings"]["fast"]["paper_trading"], self.tmp.name)
+        coin = mock.Mock(address="x", symbol="X", price=1.0, pair=None, insider=None)
+        trader.buy(coin, when=NOW)
+        later = NOW + timedelta(minutes=10)
+        self.assertEqual(trader.update({"x": 1.18}, when=later), [])
+        self.assertEqual(trader.update({"x": 1.05}, when=later), [])   # 11% below its peak
+        (sell,) = trader.update({"x": 0.899}, when=later)
+        self.assertEqual(sell["reason"], "stop loss: down 10% from entry")
+
+    def test_prices_every_2_minutes_only_while_holding(self):
+        idle = tempfile.TemporaryDirectory()
+        self.addCleanup(idle.cleanup)
+        bot = nl.NewsListings(CFG, idle.name, DemoNewsHttp(now=NOW), None, None, DemoClaude())
+        calls = []
+        for minute in range(0, 10):                         # nothing held: no price checks
+            bot.http.http = DemoNewsHttp(now=NOW)
+            bot.run_once(NOW + timedelta(minutes=minute), **QUIET)
+            calls += [u for u in bot.http.http.calls if "coingecko" in u]
+        self.assertEqual(calls, [])
+
+        bot = self.bought()
+        calls = []
+        for minute in range(2, 13):
+            calls += [u for u in self.run_at(bot, minute) if "coingecko" in u]
+        # news (listings) at minute 2 (reused by fast); fast's own at 4, 6, 8, 10 and 12
+        self.assertEqual(len(calls), 6)
+        self.assertEqual(self.fast_state()["last_prices"],
+                         (NOW + timedelta(minutes=12)).isoformat())
+
+    def test_time_limit_closes_at_the_last_price_without_coingecko(self):
+        bot = self.bought()
+        self.run_at(bot, 3, 1.04)
+        # CoinGecko's monthly count used up
+        state = self.state()
+        state["coingecko"]["calls"] = CFG["news_listings"]["coingecko_monthly_calls"]
+        with open(os.path.join(self.folder, "positions.json"), "w") as fh:
+            json.dump(state, fh)
+        lines = []
+        self.run_at(bot, 6 * 60 + 2, 1.5, lines)
+        self.assertEqual(self.fast_state()["open_positions"], [])
+        self.assertEqual(self.journal(self.fast_folder)[-1]["reason"], "time limit: 6 h (+4%)")
+
+    def test_turned_off(self):
+        cfg = dict(CFG, news_listings=dict(CFG["news_listings"], fast={"enabled": False}))
+        bot = nl.NewsListings(cfg, self.tmp.name, DemoNewsHttp(now=NOW), None, None, DemoClaude())
+        bot.run_once(NOW, **QUIET)
+        self.run_at(bot, 1)
+        self.assertEqual(len(self.state()["open_positions"]), 1)
+        self.assertFalse(os.path.exists(self.fast_folder))
+
+
+class CompareTests(Base):
+    def test_column_next_to_news_listings(self):
+        import io
+
+        import compare
+        bot = self.bot()
+        bot.run_once(NOW, **QUIET)
+        bot.http.http = DemoNewsHttp(now=NOW, markets={"coinbase": ["DEMO"]})
+        bot.run_once(NOW + timedelta(minutes=1), **QUIET)
+        cfg = dict(CFG, files={"data_folder": self.tmp.name})
+        with mock.patch.object(compare, "load_config", lambda: cfg), \
+                mock.patch.dict(os.environ, {"GITHUB_TOKEN": "", "GITHUB_REPOSITORY": ""}), \
+                mock.patch("sys.argv", ["compare.py", "--date", "2026-09-24"]), \
+                mock.patch("sys.stdout", io.StringIO()) as out:
+            self.assertEqual(compare.main(), 0)
+        header = next(line for line in out.getvalue().splitlines() if line.startswith("| | "))
+        self.assertIn("| news (listings) | news (listings) fast |", header)
 
 
 class SecretTests(unittest.TestCase):
@@ -169,6 +338,7 @@ class DeployTests(unittest.TestCase):
     def test_pushed_hourly_and_compared(self):
         self.assertIn("data/news-listings", self.read("deploy", "push_results.sh"))
         self.assertIn('("news (listings)"', self.read("compare.py"))
+        self.assertIn('fast.get("label", "news (listings) fast")', self.read("compare.py"))
 
     def test_restarts_on_its_own_code_only(self):
         self.assertEqual(nl.CONFIG_SECTIONS, ("news", "news_listings", "api", "files"))

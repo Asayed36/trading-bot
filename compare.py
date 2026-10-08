@@ -135,6 +135,13 @@ def main():
         strategies.append(("news (listings)",
                            os.path.join(folder, cfg["news_listings"]["folder"]),
                            cfg["news"]["paper_trading"]["round_trip_cost_pct"]))
+        fast = cfg["news_listings"].get("fast") or {}
+        if fast.get("enabled"):
+            # The same signals at the same moment, exits within hours: next to it.
+            strategies.append((fast.get("label", "news (listings) fast"),
+                               os.path.join(folder, cfg["news_listings"]["folder"],
+                                            fast["folder"]),
+                               fast["paper_trading"]["round_trip_cost_pct"]))
     if cfg.get("robinhood", {}).get("enabled"):
         # Open positions are valued after selling costs: slippage plus the
         # higher of the launchpads' pool fees.
