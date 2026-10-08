@@ -23,6 +23,7 @@ from screener.health import RUN_EVENTS, health_lines
 from screener.paper_trader import now_utc
 
 LABEL = "daily-comparison"
+TITLE = "Daily comparison: {}"
 
 
 def pick_day(text):
@@ -35,18 +36,22 @@ def pick_day(text):
 
 
 def post_issue(gh, day, body):
-    """Open the comparison issue for `day` (once) and close older ones."""
+    """Open the comparison issue for `day` (once) and close older ones.
+    An issue already there for that day (found by its title or its marker,
+    open or closed) means it was posted: GitHub's schedule and the server's
+    backup trigger can both start a run for the same day."""
     gh.ensure_label(LABEL, "5319e7", "Daily comparison of the paper strategies")
+    title = TITLE.format(day)
     already, older = None, []
     for issue in gh.issues_with_label():
-        if MARKER.format(day) in (issue.get("body") or ""):
+        if issue.get("title") == title or MARKER.format(day) in (issue.get("body") or ""):
             already = issue["number"]
         elif issue.get("state") == "open":
             older.append(issue["number"])
     if already:
         print(f"Comparison for {day} already posted as issue #{already}.")
         return
-    number = gh.create(f"Daily comparison: {day}", body)
+    number = gh.create(title, body)
     print(f"Posted comparison as issue #{number}.")
     for n in older:
         gh.close(n)
