@@ -8,6 +8,7 @@ import os
 import re
 import sys
 import tempfile
+import time
 import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -402,10 +403,40 @@ class RunnerTests(unittest.TestCase):
                                           return_value=fake_jupiter), \
                         mock.patch.object(launch_bot.Runner, "ORGANIC_POLL_SECONDS", 0.1):
                     runner = launch_bot.Runner(cfg, folder)
+                    engine, real_tick = runner.engine, runner.engine.tick
+
+                    # The clock ticks every 0.5 s. On a slow machine the tick
+                    # that selects the launch (0.3 s after creation) could
+                    # also be past the 5s speed's 0.6 s and buy at once,
+                    # before the background lookup has had a chance: the
+                    # entry's Jupiter fields would be blank. To make the order
+                    # certain without waiting longer, this test's clock
+                    # selects a launch on its own (as at 0.3 s), then holds
+                    # its ticks until the background lookup has answered.
+                    def tick(t=None):
+                        t = t or time.time()
+                        for mint, w in engine.watch.items():
+                            if w["status"] == "evaluating" and \
+                                    t - w["created"] >= cfg["launch"]["first_block_seconds"]:
+                                return real_tick(w["created"]  # (+1 ms: float rounding)
+                                                 + cfg["launch"]["first_block_seconds"] + 0.001)
+                            if w["status"] == "selected" and mint not in engine.jupiter:
+                                return None
+                        return real_tick(t)
+
+                    engine.tick = tick
                     task = asyncio.create_task(runner.main())
-                    await asyncio.sleep(3.5)
-                    runner.stop.set()
-                    await asyncio.wait_for(task, 10)
+
+                    # Stop once every speed has bought (not after a fixed
+                    # wait), or give up after 30 s.
+                    async def all_bought():
+                        while not all(tr.state["ever_bought"] for tr in engine.traders.values()):
+                            await asyncio.sleep(0.05)
+                    try:
+                        await asyncio.wait_for(all_bought(), 30)
+                    finally:
+                        runner.stop.set()
+                        await asyncio.wait_for(task, 10)
                     return runner
 
         with tempfile.TemporaryDirectory() as d, self.assertLogs("launch_bot", "INFO") as logs:
