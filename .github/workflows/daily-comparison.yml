@@ -15,6 +15,14 @@ on:
     - cron: "7 0 * * *"      # 00:07 UTC, just after the day it reports on ends
   workflow_dispatch:         # lets you post one by hand from the Actions tab
 
+# GitHub's schedule and the server's backup trigger
+# (deploy/trigger_paper_run.py) can start runs at almost the same moment (on
+# 2026-10-07 both posted, issues 331 and 332). One at a time: a second run
+# waits for the first, then finds its issue and posts nothing.
+concurrency:
+  group: daily-comparison
+  cancel-in-progress: false
+
 permissions:
   contents: read
   issues: write              # needed to post and close the comparison issues
