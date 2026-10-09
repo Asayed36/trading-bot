@@ -138,7 +138,14 @@ Since 2026-10-07, after a review of every strategy's results:
   and when it was fetched (`price_source`, `price_time_utc`), and Bitcoin's
   trend that day (`btc_close_usd`, its last daily close; `btc_200d_avg_usd`;
   `btc_vs_200d` above/below; `btc_7d_change_pct`), from CoinGecko once a
-  day (logging only). Blank or
+  day (logging only). Also, from the same DexScreener answer as the price,
+  the buys and sells of the last 5 minutes (`buys_5m`, `sells_5m`) and the
+  total volume of the last 5 minutes and hour (`volume_5m_usd`,
+  `volume_1h_usd`; DexScreener gives no buy/sell split of volume), and from
+  the same Jupiter answer as the organic score, its distinct traders, buys,
+  sells, buy volume and sell volume for the last hour and 5 minutes
+  (`jupiter_traders_1h`, `jupiter_buys_1h`, ..., `jupiter_sell_volume_5m_usd`).
+  No extra requests. Blank or
   `unknown` means the data wasn't available; buys from before a column was
   added have it blank. Rows are never removed, even after the position
   closes. Nothing here affects trading.
@@ -197,7 +204,15 @@ because young pools are thinner.
   previous day's comparison of all strategies (including the launch bot's latest
   pushed results) as an issue labelled
   `daily-comparison`, and closes the day before's.
-- **A health section at the top** of that issue shows, as of when it's posted,
+- **A real-money checklist at the very top** (since 2026-10-09): one row per
+  running strategy with its closed trades, the number of different days with
+  trades (first – last), P&L after costs, and P&L without its best 1 and
+  best 3 trades. **PASS** only with all four: 30+ closed trades, P&L after
+  costs above $0, still above $0 without the best trade, and trades on 14+
+  different days; otherwise "not yet" and what's missing. The first day a
+  strategy passes, the issue's title says so ("Daily comparison: DATE — PASS:
+  strategy"). A PASS is a reason to look closer, not to trade.
+- **A health section** under it shows, as of when it's posted,
   whether everything is running, with a ⚠️ and a short list of problems
   when something is stale or broken (settings under `[health]` in
   `config.toml`):

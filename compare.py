@@ -16,8 +16,8 @@ import sys
 from datetime import timedelta
 
 from run import HERE, load_config
-from screener.compare import (MARKER, actual_intervals, helius_lines, report,
-                              schedule_lines)
+from screener.compare import (MARKER, PASS_MARKER, actual_intervals, checklist,
+                              helius_lines, report, schedule_lines)
 from screener.github_issues import GitHubError, GitHubIssues
 from screener.health import RUN_EVENTS, health_lines
 from screener.paper_trader import now_utc
@@ -35,24 +35,32 @@ def pick_day(text):
     return text
 
 
-def post_issue(gh, day, body):
+def post_issue(gh, day, body, passed=()):
     """Open the comparison issue for `day` (once) and close older ones.
     An issue already there for that day (found by its title or its marker,
     open or closed) means it was posted: GitHub's schedule and the server's
-    backup trigger can both start a run for the same day."""
+    backup trigger can both start a run for the same day. `passed`: the
+    strategies whose real-money checklist passes; one passing for the first
+    time (no earlier issue says so) is named in the title."""
     gh.ensure_label(LABEL, "5319e7", "Daily comparison of the paper strategies")
-    title = TITLE.format(day)
+    base = TITLE.format(day)
+    issues = list(gh.issues_with_label())
     already, older = None, []
-    for issue in gh.issues_with_label():
-        if issue.get("title") == title or MARKER.format(day) in (issue.get("body") or ""):
+    for issue in issues:
+        title = issue.get("title") or ""
+        if title == base or title.startswith(base + " — PASS") \
+                or MARKER.format(day) in (issue.get("body") or ""):
             already = issue["number"]
         elif issue.get("state") == "open":
             older.append(issue["number"])
     if already:
         print(f"Comparison for {day} already posted as issue #{already}.")
         return
+    first = [name for name in passed
+             if not any(PASS_MARKER.format(name) in (i.get("body") or "") for i in issues)]
+    title = base + (f" — PASS: {', '.join(first)}" if first else "")
     number = gh.create(title, body)
-    print(f"Posted comparison as issue #{number}.")
+    print(f"Posted comparison as issue #{number}" + (f" ({title})" if first else "") + ".")
     for n in older:
         gh.close(n)
 
@@ -177,7 +185,7 @@ def main():
             print("\n--github-issue needs GITHUB_TOKEN and GITHUB_REPOSITORY.")
             return 1
         try:
-            post_issue(gh, day, body)
+            post_issue(gh, day, body, [r["name"] for r in checklist(strategies) if r["passed"]])
         except GitHubError as exc:
             print(f"\nCould not post to GitHub: {exc}")
             return 1

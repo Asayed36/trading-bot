@@ -276,11 +276,17 @@ class HealthTests(Base):
                       rows["Scheduled runs (last 24h)"])
 
     def test_health_is_at_the_top_of_the_report(self):
-        body = report([("main", self.d, 3)], "2026-10-01", health=["### Health (x)", ""])
+        # under the real-money checklist (none for a stopped strategy)
+        body = report([("main (stopped)", self.d, 3)], "2026-10-01",
+                      health=["### Health (x)", ""])
         lines = body.splitlines()
         self.assertEqual(lines[2], "")
         self.assertEqual(lines[3], "### Health (x)")
         self.assertTrue(lines[5].startswith("| | main"))
+        body = report([("main", self.d, 3)], "2026-10-01", health=["### Health (x)", ""])
+        lines = body.splitlines()
+        self.assertEqual(lines[3], "### Real-money checklist")
+        self.assertLess(lines.index("### Real-money checklist"), lines.index("### Health (x)"))
 
 
 class MainOneMinuteHealthTests(Base):
