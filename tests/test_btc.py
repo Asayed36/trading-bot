@@ -133,3 +133,31 @@ class OldJournalTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ActivityTests(unittest.TestCase):
+    """DexScreener's 5-minute buys/sells and 5-minute/1-hour volume, from the
+    same answer as the price (2026-10-09): blank, not 0, when not given."""
+
+    def buy(self, pair):
+        with tempfile.TemporaryDirectory() as d:
+            trader = PaperTrader(CFG["paper_trading"], d)
+            trader.buy(SimpleNamespace(address="X", symbol="X", price=2.0, pair=pair,
+                                       insider=None), when=NOW)
+            with open(trader.entries_path) as fh:
+                return list(csv.DictReader(fh))[0]
+
+    def test_from_the_dexscreener_answer(self):
+        row = self.buy({"priceUsd": "2.0", "txns": {"m5": {"buys": 37, "sells": 0},
+                                                    "h1": {"buys": 575, "sells": 484}},
+                        "volume": {"m5": 6858.65, "h1": 115817.25, "h24": 1}})
+        big = self.buy({"priceUsd": "2.0", "volume": {"h1": 1234567.8}})
+        self.assertEqual(big["volume_1h_usd"], "1234567.8")
+        self.assertEqual([row[k] for k in ("buys_5m", "sells_5m", "volume_5m_usd",
+                                           "volume_1h_usd", "buys_1h", "sells_1h")],
+                         ["37", "0", "6858.65", "115817.25", "575", "484"])
+
+    def test_blank_when_not_given(self):
+        row = self.buy({"priceUsd": "2.0", "txns": {"h1": {"buys": 5, "sells": 1}}})
+        self.assertEqual([row[k] for k in ("buys_5m", "sells_5m", "volume_5m_usd",
+                                           "volume_1h_usd")], ["", "", "", ""])

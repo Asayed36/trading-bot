@@ -10,6 +10,13 @@ from collections import defaultdict
 from datetime import datetime, timezone
 
 MARKER = "<!-- daily-comparison: {} -->"
+# In the body for each strategy whose real-money checklist passes, so the
+# first day it passes can be told from the earlier issues.
+PASS_MARKER = "<!-- checklist-pass: {} -->"
+
+# The real-money checklist: PASS needs all four.
+MIN_CLOSED = 30           # closed trades
+MIN_DAYS = 14             # different UTC days with trades
 
 
 def _read(folder):
@@ -226,6 +233,82 @@ def slippage_lines(strategies):
             f"buys before that date were made at the market price.", ""]
 
 
+def closed_trades(folder):
+    """Each closed trade (a buy and its sells, after costs), oldest first:
+    [{"symbol", "bought", "pnl"}]. A position still open isn't counted."""
+    rows, state = _read(folder)
+    open_now = {p["address"] for p in state.get("open_positions", [])}
+    trades, current = [], {}
+    for r in rows:
+        address = r["token_address"]
+        if r["action"] == "BUY":
+            current[address] = {"symbol": r["symbol"], "bought": _when(r["time_utc"]),
+                                "pnl": 0.0, "sells": 0, "address": address}
+            trades.append(current[address])
+        elif r["action"] == "SELL" and address in current:
+            current[address]["pnl"] += float(r["pnl_usd"])
+            current[address]["sells"] += 1
+    return [t for t in trades if t["sells"]
+            and not (t["address"] in open_now and current[t["address"]] is t)]
+
+
+def checklist(strategies):
+    """The real-money checklist for each running strategy (not stopped):
+    [{"name", "closed", "days", "first", "last", "pnl", "without_1",
+    "without_3", "passed", "missing"}]."""
+    out = []
+    for name, folder, _ in strategies:
+        if name.endswith("(stopped)"):
+            continue
+        trades = closed_trades(folder)
+        pnls = sorted((t["pnl"] for t in trades), reverse=True)
+        days = sorted({t["bought"].date() for t in trades})
+        row = {"name": name, "closed": len(trades), "days": len(days),
+               "first": days[0] if days else None, "last": days[-1] if days else None,
+               "pnl": sum(pnls),
+               "without_1": sum(pnls[1:]) if pnls else None,
+               "without_3": sum(pnls[3:]) if pnls else None}
+        missing = []
+        if row["closed"] < MIN_CLOSED:
+            missing.append(f"{MIN_CLOSED - row['closed']} more closed trades")
+        if row["pnl"] <= 0:
+            missing.append("P&L after costs not above $0")
+        if not pnls or row["without_1"] <= 0:
+            missing.append("not above $0 without the best trade")
+        if row["days"] < MIN_DAYS:
+            missing.append(f"trades on {MIN_DAYS - row['days']} more days")
+        row.update(passed=not missing, missing=missing)
+        out.append(row)
+    return out
+
+
+def checklist_lines(strategies):
+    rows = checklist(strategies)
+    if not rows:
+        return []
+    lines = [
+        "### Real-money checklist",
+        f"PASS needs all four: {MIN_CLOSED}+ closed trades, P&L after costs above $0, "
+        f"still above $0 without the best trade, and trades on {MIN_DAYS}+ different days. "
+        "Paper results only: a PASS is a reason to look closer, not to trade.",
+        "",
+        "| Strategy | Closed trades | Days with trades (first – last) | P&L after costs "
+        "| Without best 1 | Without best 3 | Status |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for r in rows:
+        length = (r["last"] - r["first"]).days + 1 if r["days"] else 0
+        span = (f"{r['days']} ({r['first']:%m-%d} – {r['last']:%m-%d}, "
+                f"{length} day{'s' if length != 1 else ''})" if r["days"] else "0")
+        status = "**PASS**" if r["passed"] else "not yet: " + "; ".join(r["missing"])
+        lines.append(f"| {r['name']} | {r['closed']} | {span} | {_usd(r['pnl'])} | "
+                     f"{_usd(r['without_1']) if r['without_1'] is not None else '–'} | "
+                     f"{_usd(r['without_3']) if r['without_3'] is not None else '–'} | "
+                     f"{status} |")
+    lines += [PASS_MARKER.format(r["name"]) for r in rows if r["passed"]]
+    return lines + [""]
+
+
 def report(strategies, day, extra=None, health=None):
     """Markdown table. `strategies` is a list of (name, folder, round_trip_cost_pct).
     `extra` is more Markdown lines to add at the end, `health` lines to put
@@ -245,6 +328,7 @@ def report(strategies, day, extra=None, health=None):
         MARKER.format(day),
         f"## Paper strategy comparison: {day} (UTC)",
         "",
+        *checklist_lines(strategies),
         *(health or []),
         "| | " + " | ".join(names) + " |",
         "|---|" + "---|" * len(names),

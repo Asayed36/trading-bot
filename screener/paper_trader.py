@@ -28,6 +28,9 @@ JOURNAL_COLUMNS = [
 # the last 5 minutes / hour at the moment of the buy. The jupiter_* columns
 # are Jupiter's organic score at the buy (screener/jupiter.py; logging only,
 # blank when unknown or for non-Solana coins).
+# buys_5m / sells_5m / volume_5m_usd / volume_1h_usd: DexScreener's counts and
+# total volume (it gives no buy/sell split of volume: Jupiter's columns do)
+# from the same answer as the price, since 2026-10-09.
 # price_usd is the market price seen; fill_price_usd what the paper buy paid
 # after buy_slippage_pct (the same when there's none). btc_*: Bitcoin's trend
 # that day (screener/btc.py): its last daily close, its 200-day average,
@@ -38,6 +41,7 @@ ENTRY_COLUMNS = [
     "insider_flagged", "insider_networks", "insider_linked_wallets", "insider_top_holders",
     "price_change_5m_pct", "price_change_1h_pct", *JUPITER_COLUMNS,
     "fill_price_usd", "buy_slippage_pct", "price_source", "price_time_utc", *BTC_COLUMNS,
+    "buys_5m", "sells_5m", "volume_5m_usd", "volume_1h_usd",
 ]
 
 
@@ -69,6 +73,12 @@ def append_row(path, columns, row):
         if new_file:
             writer.writerow(columns)
         writer.writerow(row)
+
+
+def cell(value):
+    """A number for a CSV cell; blank (not 0) when it isn't known."""
+    value = to_float(value)
+    return "" if value is None else f"{value:.10g}"
 
 
 def now_utc():
@@ -200,6 +210,8 @@ class PaperTrader:
         DexScreener's 5-minute and 1-hour price change and Jupiter's organic
         score at the moment of the buy. Blank means the data wasn't available."""
         tx = ((result.pair or {}).get("txns") or {}).get("h1") or {}
+        tx5 = ((result.pair or {}).get("txns") or {}).get("m5") or {}
+        volume = (result.pair or {}).get("volume") or {}
         change = (result.pair or {}).get("priceChange") or {}
         ins = getattr(result, "insider", None)
         if ins is None:
@@ -220,6 +232,8 @@ class PaperTrader:
             f"{pos['entry_price']:.10g}", f"{pos.get('buy_slippage_pct', 0):g}",
             pos.get("entry_price_source", self.price_source), pos.get("entry_price_time", ""),
             *self.btc_cells(),
+            cell(tx5.get("buys")), cell(tx5.get("sells")),
+            cell(volume.get("m5")), cell(volume.get("h1")),
         ])
 
     def btc_cells(self):

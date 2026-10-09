@@ -13,6 +13,13 @@ Values (blank in entries.csv when unknown):
     jupiter_organic_label          "low" / "medium" / "high"
     jupiter_organic_volume_1h_pct  organic buy volume / all buy volume, last hour
     jupiter_organic_buyers_1h_pct  organic buyers / all traders, last hour
+    jupiter_{traders,buys,sells}_{1h,5m}             distinct traders, buys and
+                                   sells over the last hour / 5 minutes
+    jupiter_{buy,sell}_volume_{1h,5m}_usd           buy and sell volume ($)
+                                   (from the same answer: Jupiter's stats1h
+                                   and stats5m numTraders, numBuys, numSells,
+                                   buyVolume and sellVolume; blank when
+                                   Jupiter doesn't give them)
 
 Read-only. A failed or slow lookup just leaves the values blank: it never
 stops or delays a paper buy by more than the timeout.
@@ -24,8 +31,20 @@ from screener.filters import to_float
 
 URL = "https://lite-api.jup.ag/tokens/v2/search"
 HEADERS = {"User-Agent": "memecoin-screener/1.0 (read-only paper trading)"}
+# Logged as they come, per window: column suffix -> Jupiter's field.
+ACTIVITY = {"traders": "numTraders", "buys": "numBuys", "sells": "numSells",
+            "buy_volume": "buyVolume", "sell_volume": "sellVolume"}
+WINDOWS = {"1h": "stats1h", "5m": "stats5m"}
+
+
+def _column(name, window):
+    return f"jupiter_{name}_{window}" + ("_usd" if "volume" in name else "")
+
+
+ACTIVITY_COLUMNS = [_column(name, w) for w in WINDOWS for name in ACTIVITY]
 COLUMNS = ["jupiter_organic_score", "jupiter_organic_label",
-           "jupiter_organic_volume_1h_pct", "jupiter_organic_buyers_1h_pct"]
+           "jupiter_organic_volume_1h_pct", "jupiter_organic_buyers_1h_pct",
+           *ACTIVITY_COLUMNS]
 
 
 def _ratio(part, whole):
@@ -36,13 +55,20 @@ def _ratio(part, whole):
 
 
 def organic_values(token, mint):
-    """The four values from one Tokens API row (None where unknown)."""
+    """The values (COLUMNS) from one Tokens API row (None where unknown)."""
     if not token or token.get("id") != mint:
         return dict.fromkeys(COLUMNS)
     stats = token.get("stats1h") or {}
     score = to_float(token.get("organicScore"))
     label = token.get("organicScoreLabel")
+    activity = {}
+    for w, key in WINDOWS.items():
+        window = token.get(key) or {}
+        for name, field in ACTIVITY.items():
+            value = to_float(window.get(field))
+            activity[_column(name, w)] = None if value is None else round(value, 2)
     return {
+        **activity,
         "jupiter_organic_score": None if score is None else round(score, 2),
         "jupiter_organic_label": label if isinstance(label, str) and label else None,
         "jupiter_organic_volume_1h_pct": _ratio(stats.get("buyOrganicVolume"),
