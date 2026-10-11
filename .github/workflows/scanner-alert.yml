@@ -1,0 +1,81 @@
+# Scanner alerts (screener/scanner_alert.py): opens a GitHub issue labelled
+# "scanner-alert" when a new coin appears on the Coinbase, Upbit, OKX or Kraken
+# lists or in Binance's listing announcements (the feeds the news listings bot
+# reads; the ones GitHub's servers can't reach fail and are named in the run's
+# summary), or when the news AI check flagged a news item as a positive
+# catalyst for one coin (read from the verdicts the news strategy has already
+# saved: no new AI call).
+#
+# ALERTS ONLY: it trades nothing, uses no wallet, key or secret. It uses the
+# workflow's own GITHUB_TOKEN (issues: write, contents: read) and free public
+# APIs. It changes no bot, filter or setting and does not touch the Paper
+# trading run. At most 10 alerts a day (the rest go into one summary issue).
+#
+# GitHub starts a scheduled run every ~17 minutes in practice (not every 5),
+# so each run keeps reading the feeds once a minute for about 13 minutes
+# (free: this repository is public) and the next run takes over.
+#
+# Test it with a made-up event: Actions > Scanner alert > Run workflow, type
+# Coinbase:TESTCOIN in "fake" (tick "dry_run" to only print the issue).
+
+name: Scanner alert
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"    # UTC; GitHub starts it when it can
+  workflow_dispatch:
+    inputs:
+      fake:
+        description: 'A made-up event to test, e.g. "Coinbase:TESTCOIN" or "news:TESTCOIN"'
+        required: false
+      dry_run:
+        description: "Only print the issue that would be opened (nothing is opened or saved)"
+        type: boolean
+        default: false
+      polls:
+        description: "How many one-minute reads (default 13; use 1 for a quick test)"
+        required: false
+
+concurrency:
+  # (a dry-run test changes nothing, so it doesn't wait for a real scan)
+  group: scanner-alert${{ github.event.inputs.dry_run == 'true' && '-dry-run' || '' }}
+  cancel-in-progress: false  # a run waits for the one before it; only one waits at a time
+
+permissions:
+  contents: read             # to read the code and the saved news verdicts
+  issues: write              # to open the alert issues (nothing else)
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Scan and alert
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          FAKE: ${{ github.event.inputs.fake }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+          POLLS: ${{ github.event.inputs.polls }}
+        run: |
+          set -o pipefail
+          args=(--polls "${POLLS:-13}")
+          if [ -n "$FAKE" ]; then args+=(--fake "$FAKE"); fi
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          python scanner_alert.py "${args[@]}" 2>&1 | tee report.txt
+          {
+            echo '## Scanner alert'
+            echo '```'
+            cat report.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
