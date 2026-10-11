@@ -234,6 +234,11 @@ class VerdictTests(unittest.TestCase):
     def test_no_gain_at_all(self):
         text = self.lines((1.0, 0.9), (0.2, 0.1))
         self.assertIn("did not raise the total return of any strategy in either period", text)
+        self.assertIn("clearly cost return", text)                      # (t of 3 in both periods)
+        text = self.lines((1.0, 0.9), (0.2, 0.1), t_tune=-0.5, t_test=-0.5)
+        self.assertIn("**lowered** the total return (but by a margin that could be luck", text)
+        self.assertIn("a in 2020-2023 (-10.0%, t = -0.50)", text)
+        self.assertNotIn("clearly cost", text)
         self.assertIn("In neither: a, buy-and-hold" if False else "In neither: a", text)
 
     def test_a_clear_cost_is_reported(self):

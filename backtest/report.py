@@ -152,15 +152,16 @@ def cycle_verdicts(results):
                      + _names(one_period) + " (see the first line for which).")
 
     # luck: the rough paired t-stat of the daily growth difference
-    luck, beyond, cost = [], [], []
+    luck, beyond, cost, lost = [], [], [], []
     for label, tw_tune, tw_test, *_ in pairs:
         for period, tw in ((tune_name, tw_tune), (test_name, tw_test)):
             t = tw["t_stat"]
             if tw["return_difference"] > 0:
                 (luck if t is None or abs(t) < 2 else beyond).append(
                     f"{label} in {period} ({pct(tw['return_difference'])}, t = {num(t)})")
-            elif tw["return_difference"] < 0 and t is not None and abs(t) >= 2:
-                cost.append(f"{label} in {period} ({pct(tw['return_difference'])}, t = {num(t)})")
+            elif tw["return_difference"] < 0:
+                (cost if t is not None and abs(t) >= 2 else lost).append(
+                    f"{label} in {period} ({pct(tw['return_difference'])}, t = {num(t)})")
     if luck:
         lines.append("**Within luck** (the return gain is not clearly bigger than chance could produce, "
                      "t below 2 in size): " + "; ".join(luck) + ".")
@@ -169,6 +170,9 @@ def cycle_verdicts(results):
                      "this is a guide only): " + "; ".join(beyond) + ".")
     if cost:
         lines.append("Periods where the filter clearly cost return (t of 2 or more): " + "; ".join(cost) + ".")
+    if lost:
+        lines.append("The filter **lowered** the total return (but by a margin that could be luck, t below 2 in "
+                     "size) for: " + "; ".join(lost) + ".")
     if not (luck or beyond):
         lines.append("The filter did not raise the total return of any strategy in either period.")
 
