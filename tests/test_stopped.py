@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from tests import running  # noqa: E402
 
 import compare  # noqa: E402
+import run as run_module  # noqa: E402
 from run import load_config, run  # noqa: E402
 from screener.demo import GOOD, DemoApi  # noqa: E402
 from screener.health import INFO, health_lines  # noqa: E402
@@ -43,15 +44,15 @@ class ConfigTests(unittest.TestCase):
         momentum = {v["name"]: bool(v.get("stopped")) for v in REAL["momentum"]["variants"]}
         self.assertEqual(momentum, {"30pct-2min": True, "50pct-3min": True,
                                     "100pct-5min": True})
-        # 2026-10-07: robinhood, main (1 min)'s own buying and version A
-        # stopped too; B and the new C keep running inside main (1 min).
-        self.assertTrue(REAL["robinhood"]["stopped"])
+        # 2026-10-07: main (1 min)'s own buying and version A stopped too; B and
+        # the new C keep running inside main (1 min). (robinhood was stopped
+        # then too, and restarted on 2026-10-11: RobinhoodRestartTests.)
         self.assertTrue(REAL["main_1min"]["stopped"])
         versions = {v["name"]: bool(v.get("stopped")) for v in REAL["main_1min"]["versions"]}
         self.assertEqual(versions, {"A": True, "B": False, "C": False})
         for name in ("main_1min", "convergence", "news", "news_listings", "robinhood"):
             self.assertTrue(REAL[name]["enabled"], name)
-        for name in ("convergence", "news", "news_listings"):
+        for name in ("convergence", "news", "news_listings", "robinhood"):
             self.assertFalse(REAL[name].get("stopped"), name)
 
 
@@ -187,6 +188,51 @@ class ServerStrategyTests(unittest.TestCase):
                          {"30pct-2min": False, "50pct-3min": False, "100pct-5min": False})
 
 
+class RobinhoodRestartTests(unittest.TestCase):
+    """2026-10-11: robinhood buys again, with exactly the rules, costs and
+    exits it had when it was stopped."""
+
+    def test_running_with_the_same_rules_costs_and_exits(self):
+        rh = REAL["robinhood"]
+        self.assertTrue(rh["enabled"])
+        self.assertNotIn("stopped", rh)
+        self.assertEqual(rh["paper_trading"], {
+            "buy_amount_usd": 10, "take_profit_pct": 50, "take_profit_sell_fraction": 0.5,
+            "stop_loss_pct": 30, "trailing_stop_pct": 40, "max_hold_hours": 48,
+            "stale_move_pct": 10, "allow_rebuy": False, "max_open_positions": 20,
+            "slippage_pct": 2, "gas_usd_per_trade": 0.05})
+        for key, value in (("min_pool_age_minutes", 30), ("max_pool_age_hours", 6),
+                           ("recheck_minutes", 60), ("max_candidates_per_run", 10),
+                           ("min_liquidity_usd", 10000), ("min_market_cap_usd", 25000),
+                           ("max_drop_24h_pct", 50), ("max_creator_pct", 5),
+                           ("max_top10_pct", 30), ("gecko_calls_per_run", 2),
+                           ("goplus_max_per_run", 8), ("holder_checks_per_run", 4)):
+            self.assertEqual(rh[key], value, key)
+
+    def test_the_report_and_the_health_row_say_running(self):
+        self.assertFalse(compare.stopped(REAL, "robinhood"))
+        with tempfile.TemporaryDirectory() as d:
+            from datetime import datetime, timezone
+            text = "\n".join(health_lines(d, REAL, datetime(2026, 10, 11, tzinfo=timezone.utc)))
+        self.assertNotIn("robinhood: data sources", text)       # the "stopped" row
+        self.assertIn("robinhood: geckoterminal", text)         # one row per source it uses
+        self.assertIn("robinhood: rpc", text)
+
+    def test_a_run_looks_for_new_buys_again(self):
+        with tempfile.TemporaryDirectory() as d:
+            strategies = []
+            real = run_module.RobinhoodStrategy
+
+            class Spy(real):
+                def __init__(self, *a, **k):
+                    super().__init__(*a, **k)
+                    strategies.append(self)
+            with mock.patch.object(run_module, "RobinhoodStrategy", Spy):
+                run(DemoApi(), REAL, d, robinhood_http=object(), out=lambda *a: None)
+        self.assertTrue(strategies)
+        self.assertTrue(strategies[0].trader.buying)
+
+
 class ReportTests(unittest.TestCase):
     def test_comparison_columns_say_stopped(self):
         names = ["main", "main (1 min)", "main (1 min) A", "main (1 min) B", "main (1 min) C",
@@ -194,7 +240,7 @@ class ReportTests(unittest.TestCase):
                  "robinhood", "convergence", "news"]
         self.assertEqual([n for n in names if compare.stopped(REAL, n)],
                          ["main", "main (1 min)", "main (1 min) A", "early", "launch 5s",
-                          "momentum 30pct-2min", "momentum 100pct-5min", "robinhood"])
+                          "momentum 30pct-2min", "momentum 100pct-5min"])
 
     def test_health_says_stopped_with_open_positions(self):
         with tempfile.TemporaryDirectory() as d:

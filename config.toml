@@ -928,10 +928,10 @@ round_trip_cost_pct = 1
 # ---------------------------------------------------------------------
 [robinhood]
 enabled = true
-# Stopped on 2026-10-07: 17% wins where 61% were needed (-$101). stopped =
-# true: no new buys; it only runs (prices and exits) while it still holds a
-# position; its journal and files are kept.
-stopped = true
+# Stopped on 2026-10-07 (17% wins where 61% were needed, -$101); restarted on
+# 2026-10-11 with exactly the same rules, costs and exits (its journal and
+# files were kept). stopped = true would stop new buys again: it then only
+# runs (prices and exits) while it still holds a position.
 rpc_url = "https://rpc.mainnet.chain.robinhood.com"
 
 # Pools from 30 minutes to 6 hours old are checked; each pool at most every
