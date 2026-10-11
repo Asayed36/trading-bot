@@ -118,19 +118,21 @@ def sharpe(returns):
 
 
 def paired_t(run, other):
-    """t-statistic of the daily return difference between two runs over the days
-    they share: how many standard errors the average gap is from zero. Below
-    about 2 (in size), a gap this big could easily be luck. None if undefined."""
+    """A rough check on whether one run really out-grew another: the t-statistic
+    of the difference in their daily growth rates (log returns) over the days
+    they share. It has the same sign as the gap in total return. Below about 2
+    in size, a gap this big could easily be luck. (It ignores that days are not
+    independent, so it is a rough guide only.) None if undefined."""
     a_days, a = run.daily_returns()
     b_days, b = other.daily_returns()
     b_by_day = dict(zip(b_days, b))
-    diffs = [x - b_by_day[d] for d, x in zip(a_days, a) if d in b_by_day]
+    diffs = [math.log1p(x) - math.log1p(b_by_day[d]) for d, x in zip(a_days, a) if d in b_by_day]
     n = len(diffs)
     if n < 2:
         return None
     mean = sum(diffs) / n
     var = sum((x - mean) ** 2 for x in diffs) / (n - 1)
-    return None if var <= 0 else mean / math.sqrt(var / n)
+    return None if var <= 1e-24 else mean / math.sqrt(var / n)
 
 
 def cagr(returns):

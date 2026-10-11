@@ -9,7 +9,7 @@ and uses no key, no secret and no wallet. The only thing it writes is the
 ## Run it
 
 - **On GitHub:** Actions > *Backtest (price history)* > *Run workflow*. About
-  5-10 minutes. It runs its own tests first, then the backtest, then saves
+  3-5 minutes. It runs its own tests first, then the backtest, then saves
   `backtests/` to the repository (and attaches it to the run). The
   *quick* option runs 4 coins only and writes to `backtests/quick/`.
 - **Anywhere with Python 3.11+** (nothing to install, standard library only):
@@ -43,7 +43,10 @@ its latest 720 candles, Coinbase's 300 per request). No key is needed.
 
 1. **Coins:** BTC, ETH, SOL and 15 others (BNB, XRP, ADA, DOGE, LINK, AVAX, DOT,
    LTC, ATOM, NEAR, UNI, SUI, ONDO, TAO, RENDER), chosen by hand before any
-   result was seen (`universe.py`). RNDR and RENDER are joined 1:1.
+   result was seen (`universe.py`). RNDR and RENDER are joined 1:1 (Binance
+   renamed the coin in July 2024; the archive has a 3-day gap there, and
+   prices carry on from $7.03 to $6.78). Each coin starts on its first day in
+   the archive, so SUI starts in 2023, TAO in 2024 and ONDO in 2025.
 2. **Costs** on every fill: 0.10% fee per side, plus slippage per side of
    0.05% for BTC/ETH/SOL and 0.20% for the others (buy higher, sell lower).
 3. **Fills:** a decision is made at a daily close and filled at the next day's
@@ -76,6 +79,13 @@ its latest 720 candles, Coinbase's 300 per request). No key is needed.
 | `trades_tuning.csv`, `trades_test.csv` | every trade of the chosen strategies |
 | `data_report.csv` | per coin: first and last day, hours missing, days where hourly and daily candles disagree |
 | `results.json`, `run_info.json` | everything, and when/with what it was made |
+
+## How "run once" was kept
+
+While the tool was being built it was run several times (4 coins, then all 18,
+on the sandbox and on GitHub). No rule, parameter or cost was changed after any
+of those runs; only the report (layout, a noise check) was added. Every run of
+the finished tool is the full protocol, start to end.
 
 ## What it cannot tell you
 

@@ -116,7 +116,8 @@ def summary(results, data_rows, info):
     w("## How it was tested (so you can judge it)")
     w("")
     w(f"- **Coins:** {', '.join(proto['coins'])}. Hourly and daily candles from data.binance.vision, as far back as "
-      "the archive goes. Newer coins (SUI, ONDO, TAO) have only a short history.")
+      "the archive goes. Newer coins (SUI, ONDO, TAO) have only a short history; coverage, gaps and any disagreement between "
+      "hourly and daily candles are listed per coin in data_report.csv.")
     w(f"- **Costs:** {info['fee_per_side'] * 100:.2f}% fee per side, plus slippage per side of "
       f"{info['slippage_majors'] * 100:.2f}% for {', '.join(info['majors'])} and {info['slippage_others'] * 100:.2f}% for the "
       "others. A stop that is hit by a gap fills at the next candle's open, never at the stop price.")
@@ -145,8 +146,9 @@ def summary(results, data_rows, info):
       f"{pct(bh_x['total_return'])} | {pct(bh_x['max_drawdown'])} | – | – | {pct(bh_x['total_return_without_best_1'])} "
       f"(best coin removed) | {pct(bh_x['total_return_without_best_3'])} |")
     w("")
-    w("The t-stat is the average daily gap to buy-and-hold divided by its standard error: below about 2 in size, a gap "
-      "this big could easily be luck.")
+    w("The t-stat is a rough check on that gap: the average daily difference in growth rate from buy-and-hold, divided by "
+      "its standard error. Below about 2 in size, a gap this big could easily be luck (days are not independent, so treat "
+      "it as a guide only).")
     w("")
     w("Each row's trades are round trips in one coin; the win rate and profit factor count them after costs. "
       "\"Without best trade\" removes the one trade that added most to the portfolio and recomputes the total return.")

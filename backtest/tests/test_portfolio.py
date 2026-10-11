@@ -48,12 +48,23 @@ class PairedTTests(unittest.TestCase):
         days = list(range(len(rets)))
         return pf.Run({"A": sleeve("A", days, rets, [-1] * len(rets), [])})
 
-    def test_t_stat(self):
+    def test_t_stat_uses_growth_rates_and_has_the_sign_of_the_gap(self):
+        import math
         a, b = self.run_of([0.01, 0.02, 0.03]), self.run_of([0.0, 0.0, 0.0])
-        self.assertAlmostEqual(pf.paired_t(a, b), 0.02 / (0.01 / 3 ** 0.5))
-        self.assertAlmostEqual(pf.paired_t(b, a), -0.02 / (0.01 / 3 ** 0.5))
+        d = [math.log1p(x) for x in (0.01, 0.02, 0.03)]
+        mean = sum(d) / 3
+        sd = math.sqrt(sum((x - mean) ** 2 for x in d) / 2)
+        self.assertAlmostEqual(pf.paired_t(a, b), mean / (sd / math.sqrt(3)))
+        self.assertAlmostEqual(pf.paired_t(b, a), -pf.paired_t(a, b))
         self.assertIsNone(pf.paired_t(a, a))                      # identical: no spread, undefined
         self.assertIsNone(pf.paired_t(self.run_of([0.1]), self.run_of([0.0])))
+
+    def test_a_steadier_run_with_the_same_average_beats_a_wilder_one(self):
+        # same arithmetic average (1%), but the wild one compounds to less: the sign follows total return
+        steady = self.run_of([0.01] * 40)
+        wild = self.run_of([0.2, -0.18] * 20)
+        self.assertGreater(pf.total_return(steady.daily_returns()[1]), pf.total_return(wild.daily_returns()[1]))
+        self.assertGreater(pf.paired_t(steady, wild), 0)
 
 
 class RunTests(unittest.TestCase):

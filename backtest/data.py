@@ -248,7 +248,7 @@ def build_coin(label, symbols, daily_rows, hourly_rows):
                     break
     gaps = sum(1 for a, b in zip(coin.day, coin.day[1:]) if b - a != 1)
     coin.notes = {"daily_bars": len(coin.day), "hourly_bars": len(coin.h_open),
-                  "days_missing_in_a_row": gaps, "days_with_fewer_than_24_hours": short_days,
+                  "gaps_in_daily_candles": gaps, "days_with_fewer_than_24_hours": short_days,
                   "days_where_hourly_and_daily_disagree": mismatched}
     return coin
 
