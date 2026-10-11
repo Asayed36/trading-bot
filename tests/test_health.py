@@ -321,8 +321,9 @@ class MainOneMinuteHealthTests(Base):
         self.assertIn("0 open; last 24 h: 2 buy(s), 5 passed main but skipped by its rules", c)
         self.assertIn("37 token(s) decided (kept 14 days)", c)
         self.assertIn("decided once, at a token's first passing minute", c)
-        self.assertIn(f"{INFO} stopped: finished, no sources read", rows["robinhood: data sources"])
-        self.assertNotIn("robinhood: geckoterminal", rows)
+        # robinhood runs again (2026-10-11): one row per source, no "stopped" row
+        self.assertNotIn("robinhood: data sources", rows)
+        self.assertIn("robinhood: geckoterminal", rows)
         self.assertIn(f"{INFO} stopped (no new buys); 0 open position(s): finished, the "
                       "momentum-bot service can be turned off", rows["momentum: server"])
 
