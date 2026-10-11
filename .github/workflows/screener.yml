@@ -109,7 +109,8 @@ jobs:
           # credit count, which changes on every run that uses credits; that
           # has to be saved so the monthly limit is never passed.
           journal_changed=$(git status --porcelain -- data/journal.csv data/early/journal.csv \
-            data/convergence/journal.csv data/news/journal.csv data/news/candidates.csv \
+            data/convergence/journal.csv data/convergence/candidates.csv \
+            data/news/journal.csv data/news/candidates.csv \
             data/news/unmatched.csv data/news/ai_verdicts.csv data/robinhood/journal.csv \
             data/robinhood/candidates.csv data/schedule.json)
           if [ -z "$journal_changed" ] && python - <<'PY'
@@ -159,6 +160,7 @@ jobs:
           for f in data/entries.csv data/early/entries.csv data/convergence/entries.csv \
                    data/early/journal.csv data/early/positions.json \
                    data/convergence/journal.csv data/convergence/positions.json \
+                   data/convergence/candidates.csv data/convergence/creator_ledger.json \
                    data/news/journal.csv data/news/positions.json data/news/entries.csv \
                    data/news/candidates.csv data/news/unmatched.csv data/news/ai_verdicts.csv \
                    data/robinhood/journal.csv data/robinhood/positions.json \

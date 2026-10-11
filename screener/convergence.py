@@ -51,6 +51,7 @@ from screener.api import ApiError, RateLimited
 from screener.filters import (FAIL, PASS, Check, Result, best_pair, find_candidates,
                               insider_status, money, real_holders, to_float)
 from screener.paper_trader import PaperTrader, now_utc
+from screener.token_record import CandidateLog, CreatorLedger, record_fields
 
 HELIUS_RPC = "https://mainnet.helius-rpc.com/?api-key={}"
 PUBLIC_RPC = "https://api.mainnet-beta.solana.com"
@@ -378,6 +379,14 @@ class ConvergenceStrategy:
         self.c = cfg["convergence"]
         self.pt = self.c["paper_trading"]
         self.trader = ConvergenceTrader(self.pt, os.path.join(data_folder, "convergence"))
+        # Recording only (screener/token_record.py): candidates.csv (a row for
+        # every converged token the first time it's checked, and its price 1, 6
+        # and 24 hours later) and the creator ledger.
+        self.candidates = CandidateLog(os.path.join(data_folder, "convergence"), "convergence")
+        self.ledger = CreatorLedger(
+            os.path.join(data_folder, "convergence", "creator_ledger.json"),
+            os.path.join(data_folder, "early", "positions.json"))
+        self.trader.ledger = self.ledger
         self.api_key = api_key
         self.rpc_factory = rpc_factory  # tests and --demo pass a fake here
 
@@ -429,6 +438,16 @@ class ConvergenceStrategy:
             price = to_float((pair or {}).get("priceUsd"))
             if price:
                 plan["prices"][pos["address"]] = price
+
+        # Later prices for the candidates log: DexScreener's free batched call,
+        # only when a checkpoint is due. Recording only: a failure changes nothing.
+        try:
+            plan["reprice"] = self.candidates.due(now)
+            plan["reprice_pairs"] = api.pairs_for_tokens(list(plan["reprice"])) \
+                if plan["reprice"] else []
+        except ApiError as exc:
+            plan["reprice"], plan["reprice_pairs"] = {}, []
+            plan["notes"].append(f"candidate prices skipped this run: {exc}")
 
         if not (self.api_key or self.rpc_factory):
             plan["notes"].append("not active: add the HELIUS_API_KEY secret (see README)")
@@ -810,7 +829,31 @@ class ConvergenceStrategy:
             result = Result(mint, base.get("symbol", "?"), base.get("name", "?"), pair, checks)
             result.wallets = sig["wallets"]
             result.insider = insider_status(report)
+            result.report = report
+            try:
+                result.record = record_fields(report, pair, {})   # recording only
+            except Exception:
+                result.record = None
             plan["results"].append(result)
+
+    def _record(self, plan, bought, now):
+        """candidates.csv and the creator ledger, after the trades are saved.
+        Recording only: a failure here is noted and changes nothing."""
+        try:
+            for r in plan["results"]:
+                self.candidates.add(
+                    r, getattr(r, "report", None), getattr(r, "record", None), now,
+                    "PASS" if r.passed else "FAIL",
+                    "; ".join(f"{c.name}: {c.detail}" for c in r.checks if c.status == "FAIL"),
+                    True, "convergence=" + ("bought" if bought.get(r.address) else
+                                            "not bought" if r.passed else "failed checks"),
+                    self.ledger, wallets=len(getattr(r, "wallets", []) or []))
+            if plan.get("reprice"):
+                self.candidates.fill(plan["reprice"], plan.get("reprice_pairs") or [], now, [],
+                                     self.ledger)
+            self.ledger.save()
+        except Exception as exc:
+            print(f"  (candidate record skipped this run: {exc})")
 
     # ---- the paper trades ----
 
@@ -855,6 +898,7 @@ class ConvergenceStrategy:
         for s in trader.update(plan["prices"], when=now):
             out(f"  SELL {s['symbol']:<10} {s['reason']:<45} P&L ${s['pnl_usd']:+.2f}")
 
+        bought = {}
         for r in plan["results"]:
             out(format_report(r))
             out("")
@@ -863,7 +907,9 @@ class ConvergenceStrategy:
             pos = trader.buy(r, when=now)
             if pos:
                 pos["wallets"] = r.wallets
+                bought[r.address] = True
                 out(f"  BUY  {r.symbol:<10} ${self.pt['buy_amount_usd']} at ${r.price:.10g}")
         if not plan["results"]:
             out("  No convergence this run, so nothing was bought.")
         trader.save()
+        self._record(plan, bought, now)

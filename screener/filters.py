@@ -12,6 +12,8 @@ assume a token is safe just because we couldn't find out.
 
 from dataclasses import dataclass, field
 
+from screener.token_record import record_fields
+
 PASS, FAIL, WARN, SKIP = "PASS", "FAIL", "WARN", "SKIP"
 
 
@@ -31,6 +33,7 @@ class Result:
     checks: list = field(default_factory=list)
     top_holders: list = field(default_factory=list)  # the 10 biggest real wallets
     insider: dict | None = None  # insider_status(report), saved at buy time
+    record: dict | None = None   # token_record.record_fields(report): saved at buy time
 
     @property
     def passed(self):
@@ -293,6 +296,10 @@ def evaluate(address, pair, report, f, safety_skipped=False):
         if report:
             result.top_holders = real_holders(report, pair, f)[:10]
             result.insider = insider_status(report)
+            try:
+                result.record = record_fields(report, pair, f)   # recording only
+            except Exception:
+                result.record = None
     return result
 
 

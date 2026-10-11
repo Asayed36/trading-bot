@@ -85,8 +85,8 @@ class SameAsMainTests(Base):
         self.assertEqual(sorted(os.listdir(self.d)), ["main-1min"])
         # (a, b and c: the versions' own folders, see VersionTests)
         self.assertEqual(sorted(os.listdir(os.path.join(self.d, "main-1min"))),
-                         ["a", "b", "c", "entries.csv", "health.json", "journal.csv",
-                          "positions.json"])
+                         ["a", "b", "c", "candidates.csv", "creator_ledger.json", "entries.csv",
+                          "health.json", "journal.csv", "positions.json"])
         self.assertIn("passed", lines[0])
 
     def test_mains_exits_and_costs(self):
