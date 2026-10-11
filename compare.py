@@ -17,7 +17,7 @@ from datetime import timedelta
 
 from run import HERE, load_config
 from screener.compare import (MARKER, PASS_MARKER, actual_intervals, checklist,
-                              helius_lines, report, schedule_lines)
+                              helius_lines, report, schedule_lines, trend_section)
 from screener.github_issues import GitHubError, GitHubIssues
 from screener.health import RUN_EVENTS, health_lines
 from screener.paper_trader import now_utc
@@ -177,7 +177,10 @@ def main():
     strategies = [(name + (" (stopped)" if stopped(cfg, name) else ""), path, cost)
                   for name, path, cost in strategies]
     health = health_lines(folder, cfg, now_utc(), gh)
-    body = report(strategies, day, extra, health)
+    trend_lines, trend_passed = [], []
+    if cfg.get("trend", {}).get("enabled"):
+        trend_lines, trend_passed = trend_section(os.path.join(folder, "trend"), cfg["trend"])
+    body = report(strategies, day, extra, health, trend=trend_lines)
     print(body)
 
     if args.github_issue:
@@ -185,7 +188,8 @@ def main():
             print("\n--github-issue needs GITHUB_TOKEN and GITHUB_REPOSITORY.")
             return 1
         try:
-            post_issue(gh, day, body, [r["name"] for r in checklist(strategies) if r["passed"]])
+            post_issue(gh, day, body, [r["name"] for r in checklist(strategies) if r["passed"]]
+                       + trend_passed)
         except GitHubError as exc:
             print(f"\nCould not post to GitHub: {exc}")
             return 1

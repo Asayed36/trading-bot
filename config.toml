@@ -1167,3 +1167,92 @@ run_every_minutes = 5
 # GitHub phone app pushes only mentions and assignments). Empty = neither.
 # The scanner's memory issue never mentions or assigns anyone.
 notify_user = "Asayed36"
+
+# ---------------------------------------------------------------------
+# TREND: a forward test of a simple trend-following rule on 18 large, liquid
+# coins (screener/trend.py, trend_bot.py, the "Trend forward test" workflow,
+# once a day shortly after 00:00 UTC). Paper only: virtual money, public
+# daily prices (data-api.binance.vision, then data.binance.vision), no key.
+# Three virtual lines from the same start day: "trend", "trend + BTC filter"
+# and an equal-weight "buy and hold". Results are in data/trend/.
+# ---------------------------------------------------------------------
+[trend]
+enabled = true
+# The rule is the backtest tool's "close above its 50-day average" (about
+# +46% in its 2024-2026 test). Not tuned, never changed.
+average_days = 50
+# "trend + BTC filter": enter only while BTC's close is above its 200-day average.
+btc_filter_days = 200
+# A virtual portfolio, in equal fixed parts per coin (portfolio / number of coins).
+portfolio_usdt = 1000
+# Costs per side as in the backtest tool (fee + slippage), but never under
+# this round trip, in %.
+fee_per_side_pct = 0.10
+slippage_major_pct = 0.05
+slippage_other_pct = 0.20
+majors = ["BTC", "ETH", "SOL"]
+min_round_trip_cost_pct = 0.5
+# A line whose value has fallen more than this % from its peak shows FAIL KILL.
+kill_fall_pct = 30
+# Daily candles fetched the first time, and how many days a missing candle is
+# waited for before it is recorded as missing in log.csv.
+history_days = 300
+grace_days = 3
+
+# THE COINS: the backtest tool's 18 (backtest/universe.py), FROZEN on 2026-10-11.
+# Never add or remove one. All still trade and are liquid today: a list of
+# survivors flatters any history.
+[[trend.coins]]
+name = "BTC"
+symbol = "BTCUSDT"
+[[trend.coins]]
+name = "ETH"
+symbol = "ETHUSDT"
+[[trend.coins]]
+name = "SOL"
+symbol = "SOLUSDT"
+[[trend.coins]]
+name = "BNB"
+symbol = "BNBUSDT"
+[[trend.coins]]
+name = "XRP"
+symbol = "XRPUSDT"
+[[trend.coins]]
+name = "ADA"
+symbol = "ADAUSDT"
+[[trend.coins]]
+name = "DOGE"
+symbol = "DOGEUSDT"
+[[trend.coins]]
+name = "LINK"
+symbol = "LINKUSDT"
+[[trend.coins]]
+name = "AVAX"
+symbol = "AVAXUSDT"
+[[trend.coins]]
+name = "DOT"
+symbol = "DOTUSDT"
+[[trend.coins]]
+name = "LTC"
+symbol = "LTCUSDT"
+[[trend.coins]]
+name = "ATOM"
+symbol = "ATOMUSDT"
+[[trend.coins]]
+name = "NEAR"
+symbol = "NEARUSDT"
+[[trend.coins]]
+name = "UNI"
+symbol = "UNIUSDT"
+[[trend.coins]]
+name = "SUI"
+symbol = "SUIUSDT"
+[[trend.coins]]
+name = "ONDO"
+symbol = "ONDOUSDT"
+[[trend.coins]]
+name = "TAO"
+symbol = "TAOUSDT"
+[[trend.coins]]
+name = "RENDER"
+symbol = "RENDERUSDT"

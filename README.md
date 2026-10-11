@@ -824,6 +824,37 @@ issues are titled **PASSED (robinhood): SYMBOL** with the label
   sources with the results in a temporary folder (nothing is saved). The
   "Robinhood Chain probe" workflow does the same on GitHub.
 
+## The "trend" strategy (a forward test on large coins, on GitHub, once a day)
+
+A PAPER forward test of the backtest tool's simplest rule: **hold a coin while its
+daily close is above its 50-day average** (the "close above 50-day average"
+variant, about +46% in the backtest's 2024-2026 test; not re-tuned). 18 large,
+liquid coins (the backtest's list, frozen in `config.toml` under `[trend]`), a
+virtual 1,000 USDT in equal fixed parts of 1,000 / 18 per coin, costs from the
+backtest (0.10% fee + 0.05% / 0.20% slippage per side) but never under 0.5% for
+a round trip.
+
+- **Enter** only on a fresh cross from below to above the average, after the
+  start day (nothing is opened on day 1 for coins already above it). **Exit**
+  when the close is no longer above it. Fills are at that day's close.
+- **Three virtual lines** from the same start day: `trend`, `trend + BTC filter`
+  (enter only while BTC is above its 200-day average; open positions follow the
+  normal exit) and an equal-weight `buy and hold`.
+- **Runs** in the "Trend forward test" workflow at 00:10 UTC (GitHub may start it
+  later), idempotent, catching up by itself after a missed day. Prices:
+  `data-api.binance.vision` first, the daily files of `data.binance.vision` as the
+  fallback; no key, no CoinGecko. Only `GITHUB_TOKEN` is used (to commit).
+- **Files** in `data/trend/`: `trades.csv` (one row per closed trade: entry and exit
+  date and price, cost, % return, R), `equity.csv` (the three lines and their
+  maximum fall from peak), `candles/` (stored daily prices), `state.json`,
+  `log.csv` (missing data, the source used).
+- **In the daily comparison:** a "Trend forward test" table with the same PASS
+  gate as every strategy (30+ closed trades, profit after costs above 0, above 0
+  without the best trade, trades on 14+ different days), buy and hold, each line's
+  maximum fall, and **FAIL KILL** for a line that fell more than 30% from its peak.
+- **Misleading by construction:** the 18 coins all survived to today, so any history
+  flatters them; fills at the signal close are better than a real order gets.
+
 ## Running automatically on GitHub
 
 `.github/workflows/screener.yml` runs the screener every 5 minutes on GitHub
@@ -948,6 +979,7 @@ issue number empty, or give one waiting for its attempt).
 | `main_1min.py` | The main (1 min) strategy: main's checks and exits every minute, on your server |
 | `news_listings_bot.py` | The news (listings) strategy: the news strategy's exchange listings every minute, on your server |
 | `screener/robinhood.py` | The robinhood strategy: GeckoTerminal watchlist, DexScreener prices, GoPlus and RPC holder checks, costs and exits |
+| `screener/trend.py`, `trend_bot.py` | The trend forward test: daily prices, the 50-day-average rule, three virtual lines, trades.csv and equity.csv |
 | `robinhood_probe.py` | Research only: reports what each free data source returns for Robinhood Chain (run by the "Robinhood Chain probe" workflow; no trading) |
 | `deploy/` | Server setup guide, systemd services, the hourly push script for the launch bot, and the paper-run trigger that starts the Paper trading run every 10 minutes (and the Daily strategy comparison when yesterday's issue is missing) |
 | `screener/health.py` | The health section of the daily comparison, and `data/health.json` |
@@ -956,6 +988,7 @@ issue number empty, or give one waiting for its attempt).
 | `tests/` | Automated checks that the rules work. Run with `python -m unittest -v` (first `pip install -r requirements-launch.txt` too: the launch bot's tests need it) |
 | `.github/workflows/screener.yml` | Runs all strategies every 5 minutes on GitHub |
 | `.github/workflows/daily-comparison.yml` | Posts the daily comparison issue |
+| `.github/workflows/trend.yml` | Trend forward test: once a day at 00:10 UTC, commits `data/trend/` |
 | `.github/workflows/news-sources.yml` | News sources check: reads every news source once and shows what it gives (read-only) |
 
 ## Important caveats
