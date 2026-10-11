@@ -1,11 +1,11 @@
 # Backtest summary
 
-Made 2026-10-11T00:42:00+00:00 from Binance spot prices (USDT pairs) up to 2026-10-09, for 18 coins. History only: nothing here trades, and no wallet or key is used.
+Made 2026-10-11T00:45:20+00:00 from Binance spot prices (USDT pairs) up to 2026-10-09, for 18 coins. History only: nothing here trades, and no wallet or key is used.
 
 ## The short answer
 
 - Beat buy-and-hold on total return after costs in 2024-01-01 to 2026-10-09 (buy-and-hold +8.8%): trend following (+45.9%); breakout (+21.1%); momentum (+16.8%).
-- But for trend following (t = -0.20); breakout (t = -0.46); momentum (t = 0.10) the gap to buy-and-hold is not clearly bigger than luck could produce (t below 2).
+- But for trend following (t = 0.36); breakout (t = 0.11); momentum (t = 0.09) the gap to buy-and-hold is not clearly bigger than luck could produce (t below 2).
 - Higher return per unit of risk (Sharpe ratio) than buy-and-hold (0.39): trend following (0.55); momentum (0.43).
 - Smaller worst fall than buy-and-hold (-73.4%): trend following (-52.0%, return +45.9%); breakout (-38.2%, return +21.1%); mean reversion (-32.9%, return -6.2%).
 - Beat buy-and-hold only in the test period, not in 2020-2023: breakout.
@@ -13,7 +13,7 @@ Made 2026-10-11T00:42:00+00:00 from Binance spot prices (USDT pairs) up to 2026-
 
 ## How it was tested (so you can judge it)
 
-- **Coins:** BTC, ETH, SOL, BNB, XRP, ADA, DOGE, LINK, AVAX, DOT, LTC, ATOM, NEAR, UNI, SUI, ONDO, TAO, RENDER. Hourly and daily candles from data.binance.vision, as far back as the archive goes. Newer coins (SUI, ONDO, TAO) have only a short history.
+- **Coins:** BTC, ETH, SOL, BNB, XRP, ADA, DOGE, LINK, AVAX, DOT, LTC, ATOM, NEAR, UNI, SUI, ONDO, TAO, RENDER. Hourly and daily candles from data.binance.vision, as far back as the archive goes. Newer coins (SUI, ONDO, TAO) have only a short history; coverage, gaps and any disagreement between hourly and daily candles are listed per coin in data_report.csv.
 - **Costs:** 0.10% fee per side, plus slippage per side of 0.05% for BTC, ETH, SOL and 0.20% for the others. A stop that is hit by a gap fills at the next candle's open, never at the stop price.
 - **No peeking:** a decision is made at a daily close and filled at the next open. Long only, no leverage.
 - **Tuning period 2020-01-01 to 2023-12-31:** 13 variants were tried (3 trend, 4 breakout, 2 momentum, 4 mean-reversion). For each family the one with the highest Sharpe ratio of the daily portfolio returns in 2020-2023 (ties: fewer trades, then name) was chosen. Candles after the end of this period were not loaded.
@@ -24,13 +24,13 @@ Made 2026-10-11T00:42:00+00:00 from Binance spot prices (USDT pairs) up to 2026-
 
 | Strategy (chosen in 2020-2023) | Trades | Win rate | Profit factor | Total return | Worst fall | Return minus buy-and-hold (points) | t-stat of that gap | Return without best trade | Without best 3 |
 |---|---|---|---|---|---|---|---|---|---|
-| **trend following**: close above 50-day average | 598 | 16.7% | 1.58 | +45.9% | -52.0% | +37.1% | -0.20 | +30.9% | +10.9% |
-| **breakout**: 20-day high, 3 ATR trailing stop | 257 | 38.5% | 1.34 | +21.1% | -38.2% | +12.3% | -0.46 | +11.9% | +0.8% |
-| **mean reversion**: RSI(2), no ADX filter | 981 | 62.4% | 1.03 | -6.2% | -32.9% | -15.0% | -0.77 | -9.6% | -13.0% |
-| **momentum**: top 3 by 30-day return, only if it is above zero | 142 | 39.4% | 1.39 | +16.8% | -77.5% | +8.0% | 0.10 | -21.8% | -55.7% |
+| **trend following**: close above 50-day average | 598 | 16.7% | 1.58 | +45.9% | -52.0% | +37.1% | 0.36 | +30.9% | +10.9% |
+| **breakout**: 20-day high, 3 ATR trailing stop | 257 | 38.5% | 1.34 | +21.1% | -38.2% | +12.3% | 0.11 | +11.9% | +0.8% |
+| **mean reversion**: RSI(2), no ADX filter | 981 | 62.4% | 1.03 | -6.2% | -32.9% | -15.0% | -0.17 | -9.6% | -13.0% |
+| **momentum**: top 3 by 30-day return, only if it is above zero | 142 | 39.4% | 1.39 | +16.8% | -77.5% | +8.0% | 0.09 | -21.8% | -55.7% |
 | **buy-and-hold** of the same coins (each coin is one "trade") | 18 | – | – | +8.8% | -73.4% | – | – | +5.9% (best coin removed) | -0.4% |
 
-The t-stat is the average daily gap to buy-and-hold divided by its standard error: below about 2 in size, a gap this big could easily be luck.
+The t-stat is a rough check on that gap: the average daily difference in growth rate from buy-and-hold, divided by its standard error. Below about 2 in size, a gap this big could easily be luck (days are not independent, so treat it as a guide only).
 
 Each row's trades are round trips in one coin; the win rate and profit factor count them after costs. "Without best trade" removes the one trade that added most to the portfolio and recomputes the total return.
 
