@@ -38,6 +38,11 @@ class Base(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.folder = os.path.join(self.tmp.name, "news-listings")
+        # listing_track.csv has its own tests (TrackTests): off here, so the
+        # other tests count the trading's own requests
+        patch = mock.patch.object(nl, "TRACK_LISTINGS", False)
+        patch.start()
+        self.addCleanup(patch.stop)
 
     def bot(self, http=None, ai=None):
         return nl.NewsListings(CFG, self.tmp.name, http or DemoNewsHttp(now=NOW), None, None,
@@ -456,3 +461,188 @@ class DeployTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TrackTests(Base):
+    """listing_track.csv: a row for every listing signal and the price 1, 5,
+    15 and 60 minutes and 6 hours later. Recording only."""
+
+    def setUp(self):
+        super().setUp()
+        mock.patch.object(nl, "TRACK_LISTINGS", True).start()   # undone by Base's cleanup
+        # the bot stamps prices with the real clock: make it the made-up one
+        self.clock = [NOW]
+        for target in ("news_listings_bot.now_utc", "screener.news.now_utc"):
+            mock.patch(target, lambda: self.clock[0]).start()
+        self.addCleanup(mock.patch.stopall)
+
+    def rows(self):
+        import csv
+        with open(os.path.join(self.folder, "listing_track.csv")) as fh:
+            return list(csv.DictReader(fh))
+
+    def run_at(self, bot, minutes, moves=None, markets=None):
+        bot.http.http = DemoNewsHttp(now=NOW, markets=markets or {"coinbase": ["DEMO"]},
+                                     price_moves={"demo-network": moves} if moves else None)
+        self.clock[0] = NOW + timedelta(minutes=minutes, seconds=2)
+        bot.run_once(NOW + timedelta(minutes=minutes), **QUIET)
+        return [u for u in bot.http.http.calls if "coingecko" in u]
+
+    def test_a_row_per_signal_with_the_detection_price(self):
+        bot = self.bot()
+        bot.run_once(NOW, **QUIET)
+        self.run_at(bot, 1)
+        (row,) = self.rows()
+        self.assertEqual((row["source"], row["coin_id"], row["symbol"], row["verdict"],
+                          row["bought"]), ("Coinbase new pairs", "demo-network", "DEMO",
+                                           "PASS", "yes"))
+        self.assertEqual(row["detected_utc"], "2026-09-24 13:31:00")
+        self.assertEqual(float(row["price_at_detection"]), 70.0)       # the market price
+        self.assertEqual(row["price_time_utc"], "2026-09-24 13:31:02")
+        # a market list gives no real announcement time: said so, not guessed
+        self.assertEqual(row["announced_utc"], "")
+        self.assertIn("not known", row["announced_basis"])
+        self.assertEqual(row["delay_seconds"], "")
+        self.assertEqual(row["price_1m"], "")
+
+    def test_prices_after_1_5_15_60_minutes_and_6_hours(self):
+        bot = self.bot()
+        bot.run_once(NOW, **QUIET)
+        self.run_at(bot, 1)                                   # detected 13:31
+        moves = {2: 1.01, 6: 1.05, 16: 1.20, 61: 0.90, 361: 0.80}
+        for minute in range(2, 362):
+            self.run_at(bot, minute, moves.get(minute, 1.0))
+        (row,) = self.rows()
+        for name, move in (("1m", 1.01), ("5m", 1.05), ("15m", 1.20), ("60m", 0.90),
+                           ("6h", 0.80)):
+            self.assertAlmostEqual(float(row[f"price_{name}"]), 70.0 * move, msg=name)
+        self.assertEqual(row["time_1m"][11:16], "13:32")
+        self.assertEqual(row["time_5m"][11:16], "13:36")
+        self.assertEqual(row["time_15m"][11:16], "13:46")
+        self.assertEqual(row["time_60m"][11:16], "14:31")
+        self.assertEqual(row["time_6h"][11:16], "19:31")
+
+    def test_a_signal_that_was_not_bought_is_followed_too(self):
+        bot = self.bot()
+        bot.run_once(NOW, **QUIET)
+        self.run_at(bot, 1)                                   # bought, so now in cooldown
+        self.run_at(bot, 2, markets={"coinbase": ["DEMO"], "upbit": ["DEMO"]})
+        rows = self.rows()
+        self.assertEqual([(r["source"], r["verdict"], r["bought"]) for r in rows],
+                         [("Coinbase new pairs", "PASS", "yes"),
+                          ("Upbit new markets", "FAIL", "no")])
+        self.assertTrue(rows[1]["price_at_detection"])
+        for minute in range(3, 10):
+            self.run_at(bot, minute, 1.1, markets={"coinbase": ["DEMO"], "upbit": ["DEMO"]})
+        late = self.rows()[1]
+        self.assertAlmostEqual(float(late["price_1m"]), 77.0)
+        self.assertAlmostEqual(float(late["price_5m"]), 77.0)
+
+    def test_a_missed_checkpoint_stays_blank_not_zero(self):
+        bot = self.bot()
+        bot.run_once(NOW, **QUIET)
+        self.run_at(bot, 1)                                   # detected 13:31
+        self.run_at(bot, 30)                                  # the bot was off for 30 minutes
+        row = self.rows()[0]
+        for name in ("1m", "5m", "15m"):
+            self.assertEqual((row[f"price_{name}"], row[f"time_{name}"]), ("", ""), name)
+
+    def test_unmatched_listings_get_a_row_without_a_price(self):
+        bot = self.bot()
+        bot.run_once(NOW, **QUIET)
+        self.run_at(bot, 1, markets={"coinbase": ["ZZZUNKNOWN"]})
+        row = self.rows()[-1]
+        self.assertEqual((row["coin_id"], row["price_at_detection"], row["bought"],
+                          row["verdict"]), ("", "", "", ""))
+        self.assertIn("no coin matched", row["note"])
+
+    def test_the_real_announcement_time_when_the_source_gives_one(self):
+        from screener.listing_track import ListingTrack
+        track = ListingTrack(self.tmp.name)
+        source = {"name": "Kraken blog", "kind": "exchange"}
+        item = {"title": "Kraken lists X", "published": NOW - timedelta(seconds=43)}
+        row = track.signal_row(NOW, source, item, [{"id": "x", "symbol": "X", "price": 2.0}],
+                               True, False, NOW)
+        self.assertEqual((row["announced_utc"], row["announced_basis"], row["delay_seconds"]),
+                         ("2026-09-24 13:29:17", "exchange", "43"))
+
+    def test_trading_is_identical_with_and_without_the_recording(self):
+        """The same trades, prices, positions and files: only the CoinGecko
+        call count differs (and listing_track.csv exists)."""
+        def play(folder, on):
+            with mock.patch.object(nl, "TRACK_LISTINGS", on):
+                bot = nl.NewsListings(CFG, folder, DemoNewsHttp(now=NOW), None, None,
+                                      DemoClaude())
+                bot.run_once(NOW, **QUIET)
+                for minute in range(1, 70):
+                    moves = {3: 1.3, 20: 1.1, 40: 0.7}.get(minute, 1.0)
+                    bot.http.http = DemoNewsHttp(
+                        now=NOW, markets={"coinbase": ["DEMO"]},
+                        price_moves={"demo-network": moves})
+                    self.clock[0] = NOW + timedelta(minutes=minute, seconds=2)
+                    bot.run_once(NOW + timedelta(minutes=minute), **QUIET)
+            out = {}
+            for sub in ("", "fast"):
+                base = os.path.join(folder, "news-listings", sub)
+                for name in ("journal.csv", "entries.csv", "candidates.csv", "positions.json"):
+                    path = os.path.join(base, name)
+                    if os.path.exists(path):
+                        with open(path) as fh:
+                            text = fh.read()
+                        if name == "positions.json":
+                            data = json.loads(text)
+                            data.pop("coingecko", None)
+                            data.pop("last_prices", None)
+                            text = json.dumps(data, sort_keys=True)
+                        out[(sub, name)] = text
+            return out
+        a, b = tempfile.TemporaryDirectory(), tempfile.TemporaryDirectory()
+        self.addCleanup(a.cleanup)
+        self.addCleanup(b.cleanup)
+        off, on = play(a.name, False), play(b.name, True)
+        self.assertEqual(off.keys(), on.keys())
+        for key in off:
+            if key[1] == "positions.json":
+                continue            # last_prices moves with the extra calls: compared below
+            self.assertEqual(off[key], on[key], key)
+        for key in off:
+            if key[1] == "positions.json":
+                x, y = json.loads(off[key]), json.loads(on[key])
+                for field in ("open_positions", "running_total_pnl_usd", "closed_positions"):
+                    self.assertEqual(x.get(field), y.get(field), (key, field))
+
+    def test_no_extra_call_for_a_coin_the_run_already_priced(self):
+        bot = self.bot()
+        bot.run_once(NOW, **QUIET)
+        self.run_at(bot, 1)
+        # minute 2: the 1-minute checkpoint is due AND the open position is priced
+        # (first price check after the buy): one CoinGecko call serves both
+        calls = self.run_at(bot, 2)
+        self.assertEqual(len(calls), 1)
+        self.assertTrue(self.rows()[0]["price_1m"])
+
+    def test_tracking_calls_stop_when_the_monthly_count_is_nearly_used(self):
+        cfg = dict(CFG, news_listings=dict(CFG["news_listings"], fast={"enabled": False}))
+        bot = nl.NewsListings(cfg, self.tmp.name, DemoNewsHttp(now=NOW), None, None, DemoClaude())
+        bot.run_once(NOW, **QUIET)
+        self.run_at(bot, 1)
+        self.run_at(bot, 2)                      # the 1-minute price (and the position's)
+        state = self.state()
+        state["coingecko"]["calls"] = CFG["news_listings"]["coingecko_monthly_calls"] - 100
+        with open(os.path.join(self.folder, "positions.json"), "w") as fh:
+            json.dump(state, fh)
+        bot = nl.NewsListings(cfg, self.tmp.name, DemoNewsHttp(now=NOW), None, None, DemoClaude())
+        calls = self.run_at(bot, 6)              # the 5-minute price is due
+        self.assertEqual(calls, [])              # 100 calls left: kept for the positions
+        self.assertEqual(self.rows()[0]["price_5m"], "")
+        self.assertTrue(self.rows()[0]["price_1m"])
+
+    def test_a_failing_recording_never_stops_the_bot(self):
+        bot = self.bot()
+        bot.run_once(NOW, **QUIET)
+        with mock.patch("news_listings_bot.ListingTrack", side_effect=RuntimeError("boom")):
+            lines = []
+            bot.http.http = DemoNewsHttp(now=NOW, markets={"coinbase": ["DEMO"]})
+            (pos,) = bot.run_once(NOW + timedelta(minutes=1), out=lines.append)
+        self.assertEqual(pos["symbol"], "DEMO")
+        self.assertIn("listing track: skipped this run: boom", "\n".join(lines))
