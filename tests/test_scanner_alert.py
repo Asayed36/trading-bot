@@ -30,6 +30,8 @@ class FakeGitHub:
 
     def __init__(self):
         self.issues, self.labels, self.fail_create = [], set(), 0
+        self.assign_mode = "ok"        # "ok", "refused" (HTTP error) or "dropped" (201, no assignee)
+        self.assigned = {}
 
     def ensure_label(self, name, *a):
         self.labels.add(name)
@@ -46,6 +48,14 @@ class FakeGitHub:
         self.issues.append({"number": n, "title": title, "body": body, "state": "open",
                             "labels": [{"name": x} for x in labels or []]})
         return n
+
+    def assign(self, n, user):
+        if self.assign_mode == "refused":
+            raise GitHubError("POST /issues/1/assignees answered with error 422")
+        if self.assign_mode == "dropped":
+            return False
+        self.assigned[n] = user
+        return True
 
     def issue(self, n):
         return dict(next(i for i in self.issues if i["number"] == n))
@@ -232,6 +242,100 @@ class ListingTests(unittest.TestCase):
         poll(sc, 6, listed)                                    # retried, once
         poll(sc, 7, listed)
         self.assertEqual(gh.titles(), ["ALERT: Coinbase lists DEMO"])
+
+
+class NotifyTests(unittest.TestCase):
+    def alerts_with(self, user="Asayed36", mode="ok", coins=("DEMO",)):
+        cfg = dict(CFG, scanner_alert={"notify_user": user})
+        gh = FakeGitHub()
+        gh.assign_mode = mode
+        sc = sa.Scanner(cfg, Http(), gh, gh, news_rows=lambda: [], out=lambda *a: None)
+        poll(sc, 0)
+        poll(sc, 1, Http(markets={"coinbase": list(coins)}))
+        return sc, gh
+
+    def test_a_listing_alert_mentions_and_assigns_the_user(self):
+        sc, gh = self.alerts_with()
+        (issue,) = gh.alerts()
+        self.assertEqual(issue["body"].split("\n")[0], "@Asayed36")
+        self.assertEqual(gh.assigned, {issue["number"]: "Asayed36"})
+        self.assertEqual(sc.notes, [])
+
+    def test_a_news_alert_mentions_and_assigns_the_user(self):
+        cfg = dict(CFG, scanner_alert={"notify_user": "Asayed36"})
+        gh = FakeGitHub()
+        sc = sa.Scanner(cfg, Http(), gh, gh, news_rows=lambda: [row()], out=lambda *a: None)
+        sc.memory.new = False
+        poll(sc, 0)
+        (issue,) = gh.alerts()
+        self.assertEqual(issue["title"], "ALERT: news FOO")
+        self.assertEqual(issue["body"].split("\n")[0], "@Asayed36")
+        self.assertEqual(gh.assigned, {issue["number"]: "Asayed36"})
+
+    def test_the_daily_cap_summary_issue_too(self):
+        sc, gh = self.alerts_with(coins=[f"C{i:02d}" for i in range(12)])
+        (summary,) = [i for i in gh.alerts() if i["title"].startswith("ALERT summary")]
+        self.assertEqual(summary["body"].split("\n")[0], "@Asayed36")
+        self.assertEqual(gh.assigned[summary["number"]], "Asayed36")
+        self.assertEqual(len(gh.assigned), 11)
+        # a later addition keeps the mention on the first line
+        poll(sc, 2, Http(markets={"coinbase": [f"C{i:02d}" for i in range(12)] + ["LATE"]}))
+        self.assertEqual(gh.issue(summary["number"])["body"].split("\n")[0], "@Asayed36")
+        self.assertEqual(gh.issue(summary["number"])["body"].count("ALERT: Coinbase"), 3)
+
+    def test_the_memory_issue_never_mentions_or_assigns(self):
+        sc, gh = self.alerts_with()
+        (memory,) = [i for i in gh.issues if sa.STATE_LABEL in [x["name"] for x in i["labels"]]]
+        self.assertNotIn("@", memory["body"].split("<!--")[0])
+        self.assertNotIn("Asayed36", memory["body"])
+        self.assertNotIn(memory["number"], gh.assigned)
+        self.assertEqual(memory["title"], sa.STATE_TITLE)
+
+    def test_an_empty_user_means_no_mention_and_no_assignment(self):
+        for cfg in (dict(CFG, scanner_alert={"notify_user": ""}),
+                    {k: v for k, v in CFG.items() if k != "scanner_alert"},
+                    dict(CFG, scanner_alert={"notify_user": "bad name; @x"})):
+            gh = FakeGitHub()
+            sc = sa.Scanner(cfg, Http(), gh, gh, news_rows=lambda: [], out=lambda *a: None)
+            poll(sc, 0)
+            poll(sc, 1, Http(markets={"coinbase": ["DEMO"]}))
+            (issue,) = gh.alerts()
+            self.assertFalse(issue["body"].startswith("@"))
+            self.assertEqual(gh.assigned, {})
+            self.assertEqual(sc.notes, [])
+
+    def test_the_real_config_names_the_user(self):
+        self.assertEqual(sa.notify_user(CFG), "Asayed36")
+        self.assertEqual(sa.notify_user({"scanner_alert": {"notify_user": "@Asayed36 "}}),
+                         "Asayed36")
+
+    def test_a_refused_assignment_still_opens_the_issue_and_is_reported(self):
+        for mode in ("refused", "dropped"):
+            sc, gh = self.alerts_with(mode=mode)
+            (issue,) = gh.alerts()
+            self.assertEqual(issue["body"].split("\n")[0], "@Asayed36", mode)
+            self.assertEqual(gh.assigned, {})
+            (note,) = sc.notes
+            self.assertIn(f"could not assign #{issue['number']} to Asayed36", note)
+            self.assertIn("opened with the @Asayed36 mention only", note)
+            self.assertTrue(any(line.startswith("WARNING could not assign")
+                                for line in sc.summary()))
+            # and it is alerted once, not retried
+            poll(sc, 2, Http(markets={"coinbase": ["DEMO"]}))
+            self.assertEqual(len(gh.alerts()), 1)
+
+    def test_the_dry_run_shows_the_mention(self):
+        printed = []
+        sc = sa.Scanner(CFG, Http(), None, None, news_rows=lambda: [], out=printed.append)
+        sc.run(polls=1, now_fn=lambda: NOW, fake="Kraken:TESTCOIN", dry_run=True)
+        self.assertTrue(any("WOULD OPEN: ALERT: Kraken lists TESTCOIN\n@Asayed36\n" in p
+                            for p in printed))
+
+    def test_the_workflow_needs_no_new_permission(self):
+        text = open(os.path.join(HERE, ".github", "workflows", "scanner-alert.yml")).read()
+        block = text.split("permissions:")[1].split("jobs:")[0]
+        self.assertEqual(re.findall(r"^  (\w+): (\w+)", block, re.M),
+                         [("contents", "read"), ("issues", "write")])
 
 
 class CapTests(unittest.TestCase):

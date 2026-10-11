@@ -1152,3 +1152,10 @@ data_folder = "data"
 # records the date and time in data/schedule.json, and the daily comparison
 # shows results before and after the change separately.
 run_every_minutes = 5
+
+[scanner_alert]
+# Scanner alerts (.github/workflows/scanner-alert.yml): the GitHub username
+# that every ALERT issue @mentions on its first line and is assigned to (the
+# GitHub phone app pushes only mentions and assignments). Empty = neither.
+# The scanner's memory issue never mentions or assigns anyone.
+notify_user = "Asayed36"
