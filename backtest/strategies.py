@@ -14,6 +14,7 @@ The grid that is tried (and nothing else):
 That is 13 variants plus the buy-and-hold benchmark.
 """
 
+from bisect import bisect_right
 from datetime import date
 
 from . import indicators as ind
@@ -30,6 +31,7 @@ LAGUERRE_BUY, LAGUERRE_SELL = 0.10, 0.70   # Laguerre RSI (gamma 0.5), same idea
 ADX_MAX = 25.0                             # the "ranging market" filter
 MEAN_REVERSION_STOP_ATR = 3.0
 MEAN_REVERSION_MAX_DAYS = 10
+CYCLE_DAYS = 200                           # the cycle filter: BTC's close above its 200-day average
 MOMENTUM_LOOKBACK = 30
 MOMENTUM_TOP = 3
 
@@ -201,3 +203,59 @@ def families():
 
 MOMENTUM_VARIANTS = (("top 3 by 30-day return", False),
                      ("top 3 by 30-day return, only if it is above zero", True))
+
+
+class Regime:
+    """The cycle filter's signal: is BTC's daily close above its 200-day
+    average? Worked out from BTC's candles only, and the flag for a day uses
+    that day's close and the 199 before it (never anything later), so it is
+    known at the close, before the next open where it is acted on. A day with
+    no BTC candle uses the last earlier day's flag; before BTC has 200 days of
+    history the flag is False (cash)."""
+
+    def __init__(self, btc, days=CYCLE_DAYS):
+        average = ind.sma(btc.c, days)
+        self.days = list(btc.day)
+        self.flags = [average[i] is not None and btc.c[i] > average[i] for i in range(len(btc))]
+
+    def above(self, day):
+        k = bisect_right(self.days, day) - 1
+        return self.flags[k] if k >= 0 else False
+
+    def share_above(self, first_day, last_day):
+        """The share of the days from first_day to last_day (with a BTC candle) it was True."""
+        flags = [f for d, f in zip(self.days, self.flags) if first_day <= d <= last_day]
+        return sum(flags) / len(flags) if flags else None
+
+    def switches(self, first_day, last_day):
+        """How many times the flag changed between those days."""
+        flags = [f for d, f in zip(self.days, self.flags) if first_day <= d <= last_day]
+        return sum(1 for a, b in zip(flags, flags[1:]) if a != b)
+
+
+class CycleFilter(Strategy):
+    """Wraps any strategy so that it only holds, or opens, a position while
+    the regime says BTC's close is above its 200-day average, and sits in cash
+    otherwise. Nothing else about the wrapped strategy changes: same rules,
+    same stops, same costs.
+
+    * At a close with the flag False: a position is sold at the next open
+      (its own stop still works until then) and no buy is allowed.
+    * With the flag True: the wrapped strategy decides, exactly as unfiltered."""
+
+    def __init__(self, inner, regime):
+        self.inner, self.regime = inner, regime
+        self.family = inner.family
+        self.name = inner.name + " + cycle filter"
+
+    def prepare(self, coin):
+        super().prepare(coin)
+        self.inner.prepare(coin)
+
+    def on_close(self, i, in_position):
+        if self.regime.above(self.coin.day[i]):
+            return self.inner.on_close(i, in_position)
+        if in_position:
+            return Decision(sell=True)
+        self.inner.on_close(i, False)          # (keeps its own bookkeeping in step; buy ignored)
+        return Decision()

@@ -64,7 +64,19 @@ its latest 720 candles, Coinbase's 300 per request). No key is needed.
    memory). For each family, the variant with the best Sharpe ratio is chosen.
    Only those four, and buy-and-hold, are then run once on 2024-01-01 to the
    last day. The result tables show both periods side by side.
-6. **Portfolio:** the money is split equally between the coins that have 200
+6. **The cycle filter (added later):** every variant, and buy-and-hold, also
+   has a twin that opens or keeps a position only while **BTC's daily close is
+   above BTC's 200-day average**, and sits in cash otherwise (a position is
+   sold at the next open after the first close that breaks the rule; its own
+   stops keep working meanwhile). Same rules and costs. The filter is one fixed
+   rule and nothing is chosen with it: the twins of all 13 variants are shown
+   for 2020-2023, and in 2024-now only the twins of the variants chosen
+   *without* the filter are run, once each (4 more runs plus buy-and-hold). The
+   summary shows both versions side by side (return, worst fall, trades, return
+   without the best trade), says when the filter helps in only one period, only
+   in one calendar year, or by a margin within luck, and how many times BTC
+   crossed its average (the filter makes only that many independent calls).
+7. **Portfolio:** the money is split equally between the coins that have 200
    days of history; each coin's share is in the coin while its rule says so and
    in cash otherwise (momentum: three equal slots). Moving money between
    shares is free, for the strategies and for buy-and-hold alike.
@@ -77,6 +89,8 @@ its latest 720 candles, Coinbase's 300 per request). No key is needed.
 | `test_results.csv` | the four chosen strategies in 2024-now: trades, win rate, profit factor, total return, max drawdown, return minus buy-and-hold, return without the best 1 and 3 trades |
 | `tuning_grid.csv` | all 13 variants in 2020-2023 |
 | `trades_tuning.csv`, `trades_test.csv` | every trade of the chosen strategies |
+| `cycle_filter_test.csv`, `cycle_filter_tuning.csv` | with and without the cycle filter, side by side (the tuning file also has all 13 variants) |
+| `trades_tuning_filtered.csv`, `trades_test_filtered.csv` | every trade of the filtered versions |
 | `data_report.csv` | per coin: first and last day, hours missing, days where hourly and daily candles disagree |
 | `results.json`, `run_info.json` | everything, and when/with what it was made |
 
@@ -100,6 +114,6 @@ the finished tool is the full protocol, start to end.
 
 `universe.py` coins and costs - `data.py` download and parsing - `indicators.py`
 SMA, ATR, RSI, ADX, Laguerre RSI - `engine.py` the day-by-day replay of one coin -
-`strategies.py` the strategies and the grid - `portfolio.py` combining coins and
+`strategies.py` the strategies, the grid and the cycle filter - `portfolio.py` combining coins and
 the measures - `run.py` the protocol and the command line - `report.py` the
 output files and `SUMMARY.md`.

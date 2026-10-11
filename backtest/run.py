@@ -7,6 +7,13 @@
    chosen (ties: fewer trades, then name). The choice is written down.
 3. Only those chosen variants (and buy-and-hold) are run on 2024-01-01 to the
    last day available. Exactly once. Nothing is changed afterwards.
+
+The cycle filter (added later) is not a new thing to choose: for every variant
+there is a filtered twin that holds or opens positions only while BTC's daily
+close is above its 200-day average (cash otherwise), with the same rules and
+costs. All 13 twins (and buy-and-hold's) are run on 2020-2023 so they can be
+shown side by side, but NOTHING is chosen from them: in the test period the twin
+of each variant chosen above (unfiltered) is run once, 5 more runs in all.
 """
 
 import argparse
@@ -25,16 +32,32 @@ SELECTION_RULE = "highest Sharpe ratio of the daily portfolio returns in 2020-20
 
 
 class Variant:
-    def __init__(self, family, name, make, slots=None, positive_only=None):
+    def __init__(self, family, name, make, slots=None, positive_only=None, cycle=False):
         self.family, self.name, self.make = family, name, make
-        self.slots, self.positive_only = slots, positive_only
+        self.slots, self.positive_only, self.cycle = slots, positive_only, cycle
+
+    def filtered(self):
+        """The same variant behind the cycle filter."""
+        return Variant(self.family, self.name, self.make, self.slots, self.positive_only, True)
 
     def builder(self, coins):
         """build(coin) -> a fresh strategy, for this set of coins."""
         if self.positive_only is None:
-            return lambda coin: self.make()
-        schedules = strategies.momentum_schedules(coins, self.positive_only)
-        return lambda coin: strategies.Scheduled(self.name, schedules[coin.label])
+            inner = lambda coin: self.make()           # noqa: E731
+        else:
+            schedules = strategies.momentum_schedules(coins, self.positive_only)
+            inner = lambda coin: strategies.Scheduled(self.name, schedules[coin.label])  # noqa: E731
+        if not self.cycle:
+            return inner
+        regime = btc_regime(coins)
+        return lambda coin: strategies.CycleFilter(inner(coin), regime)
+
+
+def btc_regime(coins):
+    btc = next((c for c in coins if c.label == "BTC"), None)
+    if btc is None:
+        raise ValueError("the cycle filter needs BTC")
+    return strategies.Regime(btc)
 
 
 def all_variants():
@@ -54,10 +77,45 @@ def evaluate(coins, variant, start, end):
     return run, measure(run)
 
 
-def benchmark(coins, start, end):
-    sleeves = run_strategy(coins, lambda coin: strategies.BuyHold(), start, end)
+def benchmark(coins, start, end, cycle=False):
+    if cycle:
+        regime = btc_regime(coins)
+        build = lambda coin: strategies.CycleFilter(strategies.BuyHold(), regime)    # noqa: E731
+    else:
+        build = lambda coin: strategies.BuyHold()                                    # noqa: E731
+    sleeves = run_strategy(coins, build, start, end)
     run = Run(sleeves)
     return run, measure(run)
+
+
+def twin(filtered_run, filtered_m, plain_run, plain_m):
+    """How the filtered twin stands against the unfiltered one over the same days."""
+    return {"return_difference": filtered_m["total_return"] - plain_m["total_return"],
+            "worst_fall_difference": filtered_m["max_drawdown"] - plain_m["max_drawdown"],
+            "trades_difference": filtered_m["trades"] - plain_m["trades"],
+            "t_stat": paired_t(filtered_run, plain_run),
+            "higher_return": filtered_m["total_return"] > plain_m["total_return"],
+            "smaller_worst_fall": filtered_m["max_drawdown"] > plain_m["max_drawdown"]}
+
+
+TWIN_KEYS = ("return_difference", "worst_fall_difference", "trades_difference", "t_stat",
+             "higher_return", "smaller_worst_fall")
+
+
+def regime_facts(coins, tune_end, test_start, test_end):
+    """How much of each window BTC was above its 200-day average, and how many times
+    that flipped (each flip is one call the filter had to get right)."""
+    regime = btc_regime(coins)
+    day = lambda d: d.toordinal() - data.EPOCH_ORDINAL              # noqa: E731
+    out = {}
+    for name, first, last in (("tuning", TUNE_START, tune_end), ("test", test_start, test_end)):
+        out[name] = {"share_of_days_above": regime.share_above(day(first), day(last)),
+                     "switches": regime.switches(day(first), day(last))}
+    years = sorted({date.fromordinal(data.EPOCH_ORDINAL + d).year for d in regime.days
+                    if day(TUNE_START) <= d <= day(test_end)})
+    out["by_year"] = {y: regime.share_above(day(date(y, 1, 1)), day(date(y, 12, 31)))
+                      for y in years}
+    return out
 
 
 def compare(m, bh, t_stat=None):
@@ -83,12 +141,23 @@ def run_protocol(coins, log=print, tune_end=TUNE_END, test_start=TEST_START):
     tuning_coins = [c for c in tuning_coins if len(c) > strategies.WARMUP_DAYS]
     log(f"tuning on {TUNE_START} to {tune_end}: {len(tuning_coins)} coins, {len(variants)} variants")
     bh_run, bh_tuning = benchmark(tuning_coins, TUNE_START, tune_end)
-    grid = []
+    grid, plain_runs = [], {}
     for v in variants:
         run, m = evaluate(tuning_coins, v, TUNE_START, tune_end)
+        plain_runs[(v.family, v.name)] = (run, m)
         grid.append({"family": v.family, "name": v.name, "metrics": m,
                      **compare(m, bh_tuning, paired_t(run, bh_run))})
         log(f"  {v.family:16} {v.name:50} return {m['total_return']:+8.1%}  sharpe {m['sharpe']:5.2f}  trades {m['trades']}")
+
+    # ---- 1b. the cycle filter's twins in the same period: shown, never chosen from
+    fbh_run, fbh_tuning = benchmark(tuning_coins, TUNE_START, tune_end, cycle=True)
+    filtered_grid, filtered_runs = [], {}
+    for v in variants:
+        frun, fm = evaluate(tuning_coins, v.filtered(), TUNE_START, tune_end)
+        filtered_runs[(v.family, v.name)] = frun
+        run, m = plain_runs[(v.family, v.name)]
+        filtered_grid.append({"family": v.family, "name": v.name, "metrics": fm,
+                              **twin(frun, fm, run, m)})
 
     # ---- 2. the choice, written down before the test period is touched
     selection = {}
@@ -100,9 +169,11 @@ def run_protocol(coins, log=print, tune_end=TUNE_END, test_start=TEST_START):
     test_end = last_day
     log(f"test on {test_start} to {test_end}: each chosen variant once")
     bh_test_run, bh_test = benchmark(coins, test_start, test_end)
+    fbh_test_run, fbh_test = benchmark(coins, test_start, test_end, cycle=True)
     by_name = {(v.family, v.name): v for v in variants}
     test, trades_test, trades_tuning = [], [], []
-    evaluations = 0
+    filtered_test, filtered_trades_test, filtered_trades_tuning = [], [], []
+    evaluations = filtered_evaluations = 0
     for family, name in selection.items():
         v = by_name[(family, name)]
         run, m = evaluate(coins, v, test_start, test_end)
@@ -118,16 +189,40 @@ def run_protocol(coins, log=print, tune_end=TUNE_END, test_start=TEST_START):
         trades_tuning += trade_rows(trun, f"{family}: {name}")
         log(f"  {family:16} {name:50} return {m['total_return']:+8.1%}  (buy-and-hold {bh_test['total_return']:+.1%})")
 
+        # the same variant behind the cycle filter, once
+        frun_test, fm_test = evaluate(coins, v.filtered(), test_start, test_end)
+        filtered_evaluations += 1
+        ftuning = next(g for g in filtered_grid if g["family"] == family and g["name"] == name)
+        filtered_test.append({"family": family, "name": name, "metrics": fm_test,
+                              **twin(frun_test, fm_test, run, m),
+                              "tuning_metrics": ftuning["metrics"],
+                              "tuning_vs_unfiltered": {k: ftuning[k] for k in TWIN_KEYS}})
+        filtered_trades_test += trade_rows(frun_test, f"{family}: {name} + cycle filter")
+        filtered_trades_tuning += trade_rows(filtered_runs[(family, name)],
+                                             f"{family}: {name} + cycle filter")
+        log(f"  {'+ cycle filter':16} {name:50} return {fm_test['total_return']:+8.1%}  "
+            f"worst fall {fm_test['max_drawdown']:+.1%} (unfiltered {m['max_drawdown']:+.1%})")
+
     return {
+        "regime": regime_facts(coins, tune_end, test_start, test_end),
         "protocol": {"tuning_window": [TUNE_START.isoformat(), tune_end.isoformat()],
                      "test_window": [test_start.isoformat(), test_end.isoformat()],
                      "selection_rule": SELECTION_RULE, "variants_tried": len(variants),
                      "test_evaluations_of_the_chosen_variants": evaluations,
+                     "test_evaluations_of_their_cycle_filter_twins": filtered_evaluations,
                      "coins": [c.label for c in coins]},
-        "tuning": {"benchmark": bh_tuning, "variants": grid},
+        "tuning": {"benchmark": bh_tuning, "variants": grid,
+                   "filtered_benchmark": fbh_tuning,
+                   "filtered_benchmark_vs_unfiltered": twin(fbh_run, fbh_tuning, bh_run, bh_tuning),
+                   "filtered_variants": filtered_grid},
         "selection": selection,
-        "test": {"benchmark": bh_test, "strategies": test},
-        "trades": {"tuning": trades_tuning, "test": trades_test},
+        "test": {"benchmark": bh_test, "strategies": test,
+                 "filtered_benchmark": fbh_test,
+                 "filtered_benchmark_vs_unfiltered": twin(fbh_test_run, fbh_test, bh_test_run,
+                                                          bh_test),
+                 "filtered": filtered_test},
+        "trades": {"tuning": trades_tuning, "test": trades_test,
+                   "filtered_tuning": filtered_trades_tuning, "filtered_test": filtered_trades_test},
     }
 
 
