@@ -157,7 +157,6 @@ class LoadTests(unittest.TestCase):
         self.assertEqual(coin.notes["days_with_fewer_than_24_hours"], 0)
         self.assertEqual(coin.day_hours, [(0, 24), (24, 48), (48, 72)])
         # drop three hours from day 2 and corrupt day 3's high
-        d = [(100, 100, 100, 100)] * 3
         t0 = helpers.day_number(date(2022, 1, 1)) * data.DAY_MS
         daily = [(t0 + k * data.DAY_MS, 100, 100 + (5 if k == 2 else 0), 100, 100, 1) for k in range(3)]
         hourly = [(t0 + k * data.DAY_MS + h * helpers.HOUR_MS, 100, 100, 100, 100, 1)

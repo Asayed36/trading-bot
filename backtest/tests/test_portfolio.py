@@ -1,7 +1,7 @@
 import unittest
 from datetime import date
 
-import helpers
+import helpers  # noqa: F401  (puts the repo on the path)
 
 from backtest import portfolio as pf
 from backtest.engine import Sleeve, Trade

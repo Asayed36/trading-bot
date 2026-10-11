@@ -16,7 +16,7 @@ inside each coin's daily returns (fee and slippage on every fill).
 
 import math
 
-from .data import DAY_MS, EPOCH_ORDINAL
+from .data import EPOCH_ORDINAL
 from .engine import Costs, simulate
 from .strategies import WARMUP_DAYS
 from .universe import FEE, slippage
