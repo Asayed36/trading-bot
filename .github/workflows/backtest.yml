@@ -11,9 +11,6 @@
 name: Backtest (price history)
 
 on:
-  push:                      # TEMPORARY: one validation run from this branch (removed before the merge)
-    branches: [claude/gallant-faraday-y6gzq8]
-    paths: [backtest/run-once.txt]
   workflow_dispatch:
     inputs:
       quick:
