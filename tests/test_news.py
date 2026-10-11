@@ -328,14 +328,16 @@ class FlowTests(Base):
     def test_one_broken_source_doesnt_stop_the_others(self):
         class Broken(DemoNewsHttp):
             def text(self, url, headers=None):
-                if "globenewswire" in url:
-                    raise ApiError("globenewswire answered with error 404")
+                if "businesswire" in url:
+                    raise ApiError("businesswire answered with error 404")
                 return super().text(url)
 
         _, _, bought, lines = self.go(Broken(now=NOW))
         self.assertEqual(len(bought), 1)
-        self.assertTrue(any(l.strip().startswith("FAIL  GlobeNewswire") for l in lines))
-        self.assertEqual(self.state()["sources"]["GlobeNewswire"]["ok"], False)
+        self.assertTrue(any(l.strip().startswith("FAIL  Business Wire") for l in lines))
+        self.assertEqual(self.state()["sources"]["Business Wire"]["ok"], False)
+        # (the three GlobeNewswire feeds are turned off: never read)
+        self.assertNotIn("GlobeNewswire", self.state()["sources"])
 
     def test_crypto_news_naming_no_coin_is_saved(self):
         http = DemoNewsHttp(now=NOW, items=[

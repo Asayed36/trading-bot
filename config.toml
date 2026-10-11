@@ -657,21 +657,29 @@ url = "https://www.prnewswire.com/rss/consumer-technology-latest-news/blockchain
 
 [[news.sources]]
 # GlobeNewswire's latest 20 releases from public companies (its documented
-# feed).
+# feed). All three GlobeNewswire feeds are off: they answer 403 from GitHub's
+# US servers (like Bybit below); turn them on only if the bot runs from
+# somewhere GlobeNewswire serves.
 name = "GlobeNewswire"
 kind = "press"
 url = "https://www.globenewswire.com/RssFeed/orgclass/1/feedTitle/GlobeNewswire%20-%20News%20About%20Public%20Companies"
+enabled = false
+note = "GlobeNewswire blocks GitHub's US servers (error 403)"
 
 [[news.sources]]
 # Releases tagged "cryptocurrency" and "blockchain", from any company.
 name = "GlobeNewswire crypto"
 kind = "press"
 url = "https://www.globenewswire.com/RssFeed/keyword/cryptocurrency"
+enabled = false
+note = "GlobeNewswire blocks GitHub's US servers (error 403)"
 
 [[news.sources]]
 name = "GlobeNewswire blockchain"
 kind = "press"
 url = "https://www.globenewswire.com/RssFeed/keyword/blockchain"
+enabled = false
+note = "GlobeNewswire blocks GitHub's US servers (error 403)"
 
 [[news.sources]]
 # Business Wire's all-news feed.
