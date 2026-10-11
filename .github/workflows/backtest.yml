@@ -1,0 +1,95 @@
+# Backtest: replays simple, standard strategies (trend following, breakout,
+# momentum, mean reversion, and buy-and-hold) on historical prices of liquid
+# coins, to check ideas quickly and honestly. Start it by hand:
+#   Actions > "Backtest (price history)" > Run workflow
+#
+# Completely separate from the paper-trading bots: it reads public price files
+# from data.binance.vision, trades nothing, uses no key, no secret and no
+# wallet, and the only thing it writes is the backtests/ folder (SUMMARY.md
+# first: a plain-language account of what it found). See backtest/README.md.
+
+name: Backtest (price history)
+
+on:
+  workflow_dispatch:
+    inputs:
+      quick:
+        description: "Quick try-out of the tool: 4 coins only (results go to backtests/quick/)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write            # to save the results folder in the repository
+
+# One at a time (a second run would only repeat the first).
+concurrency:
+  group: backtest
+  cancel-in-progress: false
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check that the price source is reachable
+        run: |
+          # data.binance.vision is Binance's public file archive. (Binance's and
+          # Bybit's live APIs refuse GitHub's US servers; this archive does not.)
+          curl -fsS -o /dev/null "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1d/BTCUSDT-1d-2022-06.zip" \
+            || { echo "::error::data.binance.vision is not reachable from this runner"; exit 1; }
+
+      - name: Folder for the downloaded price files
+        run: echo "BACKTEST_CACHE=$RUNNER_TEMP/candles" >> "$GITHUB_ENV"
+
+      # Downloaded months never change, so keep them between runs.
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/candles
+          key: candles-${{ github.run_id }}
+          restore-keys: candles-
+
+      - name: Tests of the backtest tool
+        run: python -m unittest discover -s backtest/tests -v
+
+      - name: Run the backtest
+        env:
+          QUICK: ${{ github.event.inputs.quick }}
+        run: |
+          if [ "$QUICK" = "true" ]; then
+            python -m backtest --quick --out backtests/quick
+          else
+            python -m backtest --out backtests
+          fi
+          cat "$( [ "$QUICK" = "true" ] && echo backtests/quick || echo backtests )/SUMMARY.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backtests
+          path: backtests/
+
+      - name: Save the results to the repository (backtests/ only)
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backtests
+          if git diff --cached --quiet; then
+            echo "The results are the same as the last run, so nothing to save."
+            exit 0
+          fi
+          git commit -m "Backtest results $(date -u '+%Y-%m-%d %H:%M UTC')"
+          # If someone pushed in the meantime, replay our commit on top and retry.
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            [ "$attempt" -lt 5 ] || break
+            sleep $((attempt * 10))
+            git pull --rebase
+          done
+          echo "Could not push the results after 5 attempts." >&2
+          exit 1
