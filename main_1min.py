@@ -36,6 +36,14 @@ Staying within the free limits, every minute:
     wait for the next minute. If RugCheck says "too many requests", it isn't
     asked again for rugcheck_pause_minutes.
 
+Recording only (screener/token_record.py): candidates.csv has a row for every
+token the first time it is checked (bought or skipped, with the failed checks
+and what A, B and C decided) and its price, market cap and liquidity 1, 6 and
+24 hours later, from DexScreener's free batched call (30 tokens a request, at
+most one call every 4 minutes, only when a price is due); entries.csv has
+extra RugCheck / DexScreener columns; creator_ledger.json remembers creators'
+launches. Nothing reads them to decide anything.
+
 PAPER TRADING ONLY. It only READS public data with GET requests. It never
 connects a wallet, never uses a private key, never signs or sends anything.
 """
@@ -59,6 +67,7 @@ from screener.jupiter import ERROR as JUPITER_ERROR
 from screener.jupiter import JupiterOrganic
 from screener.paper_trader import PaperTrader, now_utc
 from screener.settings import HERE, load_config
+from screener.token_record import CandidateLog, CreatorLedger, reprice
 
 log = logging.getLogger("main_1min")
 HOURS_KEPT = 48            # call counts per hour kept in health.json
@@ -170,6 +179,13 @@ class MainOneMinute:
         self.streaks = {}
         self.organic_cache = {}    # token -> (when, Jupiter's values)
         self.now = None
+        # Recording only (screener/token_record.py): candidates.csv, a row for
+        # every token the first time it's checked (bought or not) and its
+        # price 1, 6 and 24 hours later; and the creator ledger.
+        self.candidates = CandidateLog(self.folder, "main (1 min)")
+        self.ledger = CreatorLedger(os.path.join(self.folder, "creator_ledger.json"),
+                                    os.path.join(data_folder, "early", "positions.json"))
+        self.last_reprice = None
 
     def organic(self, address):
         """Jupiter's organic score values, read at most every
@@ -223,6 +239,7 @@ class MainOneMinute:
         try:
             trader = SafeTrader(self.pt, self.folder)
             trader.organic = self.organic if self.jupiter else None
+            trader.ledger = self.ledger
             # [main_1min] stopped = true: main (1 min) buys nothing of its
             # own; its checks still run every minute for the versions.
             trader.buying = not self.c.get("stopped")
@@ -232,6 +249,7 @@ class MainOneMinute:
                     if v.buy_slippage_pct else self.pt
                 vtraders[v.name] = SafeTrader(pt, v.folder)
                 vtraders[v.name].organic = trader.organic
+                vtraders[v.name].ledger = self.ledger
                 vtraders[v.name].buying = not v.stopped
             held, seen = [], set()
             for t in [trader, *vtraders.values()]:
@@ -277,11 +295,17 @@ class MainOneMinute:
         main_results = [r for r in results if r.address in listed]
 
         lines, counts = [], {}
+        decisions = {}             # token -> {version: what it decided} (candidates.csv)
         main_before = list(trader.state.get("ever_bought", []))   # before this minute's buys
         for s in trader.update(prices, when=now, fetched_at=prices_at):
             lines.append(f"SELL {s['symbol']} {s['reason']} P&L ${s['pnl_usd']:+.2f}")
         for r in main_results:
-            if r.passed and trader.buy(r, when=now, fetched_at=pairs_at):
+            bought = r.passed and trader.buy(r, when=now, fetched_at=pairs_at)
+            decisions[r.address] = {"main": "bought" if bought else (
+                "failed main's checks" if not r.passed else
+                "passed, not bought (stopped)" if not trader.buying else
+                "passed, not bought (held or bought before)")}
+            if bought:
                 lines.append(f"BUY  {r.symbol} ${self.pt['buy_amount_usd']} at ${r.price:.10g}")
         trader.save()
         for v in self.versions:
@@ -290,13 +314,16 @@ class MainOneMinute:
                 lines.append(f"[{v.name}] SELL {s['symbol']} {s['reason']} "
                              f"P&L ${s['pnl_usd']:+.2f}")
             if v.first_pass_only:
-                self._first_pass(v, vt, main_before, main_results, now, counts, lines, pairs_at)
+                self._first_pass(v, vt, main_before, main_results, now, counts, lines, pairs_at,
+                                 decisions)
                 vt.save()
                 continue
             for r in (results if v.passes > 1 else main_results):
                 if not r.passed or not vt.can_buy(r.address):
                     continue
                 why = v.why_not(r, self.streaks.get(r.address, 0), self.organic)
+                decisions.setdefault(r.address, {})[v.name] = f"skipped ({why})" if why \
+                    else "bought"
                 if why:
                     key = f"{v.name} waiting" if why.endswith("passes") else f"{v.name} skipped"
                     counts[key] = counts.get(key, 0) + 1
@@ -306,6 +333,7 @@ class MainOneMinute:
                     lines.append(f"[{v.name}] BUY  {r.symbol} ${self.pt['buy_amount_usd']} at "
                                  f"${r.price:.10g}")
             vt.save()
+        self._record(main_results, decisions, now)
         # Only tokens a run-of-passes version could still buy are watched.
         self.streaks = {a: n for a, n in self.streaks.items()
                         if any(vtraders[v.name].can_buy(a) for v in self.versions
@@ -322,7 +350,34 @@ class MainOneMinute:
             + "".join(f"\n  {line}" for line in lines))
         return main_results
 
-    def _first_pass(self, v, vt, main_before, main_results, now, counts, lines, pairs_at=None):
+    def _record(self, main_results, decisions, now):
+        """candidates.csv: a row for every token checked for the first time
+        this minute, then the later prices that are due (DexScreener's free
+        batched call, at most every 4 minutes). Recording only: a failure here
+        is logged and changes nothing."""
+        try:
+            for r in main_results:
+                if r.address in self.candidates.seen():
+                    continue
+                known = decisions.get(r.address, {})
+                for v in self.versions:
+                    known.setdefault(v.name, "not considered (failed main's checks)"
+                                     if not r.passed else "not bought")
+                report = (self.reports.get(r.address) or (None, None))[1]
+                self.candidates.add(
+                    r, report, r.record, now, "PASS" if r.passed else "FAIL",
+                    "; ".join(f"{c.name}: {c.detail}" for c in r.checks if c.status == "FAIL"),
+                    not any(c.status == "SKIP" for c in r.checks),
+                    "; ".join(f"{k}={v}" for k, v in known.items()), self.ledger)
+            if self.last_reprice is None or now - self.last_reprice >= timedelta(minutes=4):
+                self.last_reprice = now
+                reprice(self.candidates, self.api, now, self.f["allowed_dexes"], self.ledger)
+            self.ledger.save()
+        except Exception as exc:          # includes ApiError / RateLimited
+            log.info("candidate record skipped this minute: %s", exc)
+
+    def _first_pass(self, v, vt, main_before, main_results, now, counts, lines, pairs_at=None,
+                    decisions=None):
         """Version C: each token is decided once, at the first minute it
         passes main's checks: bought if its extra rules pass then, else
         skipped for good. A token waiting for Jupiter's answer (Jupiter
@@ -340,6 +395,10 @@ class MainOneMinute:
             if not r.passed or r.address in decided or not vt.buying:
                 continue
             why = v.why_not(r, 1, self.organic)
+            if decisions is not None:
+                decisions.setdefault(r.address, {})[v.name] = (
+                    "waiting for Jupiter" if why == NO_JUPITER_ANSWER
+                    else f"skipped ({why})" if why else "bought")
             if why == NO_JUPITER_ANSWER:
                 counts[f"{v.name} waiting for Jupiter"] = \
                     counts.get(f"{v.name} waiting for Jupiter", 0) + 1

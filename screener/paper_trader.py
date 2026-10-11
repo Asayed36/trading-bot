@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 
 from screener.filters import to_float
 from screener.jupiter import COLUMNS as JUPITER_COLUMNS
+from screener.token_record import RECORD_COLUMNS, cells as record_cells
 
 # price_source / price_time_utc: where the row's price came from (DexScreener,
 # CoinGecko, ...) and when it was fetched. Blank in rows written before
@@ -35,6 +36,13 @@ JOURNAL_COLUMNS = [
 # after buy_slippage_pct (the same when there's none). btc_*: Bitcoin's trend
 # that day (screener/btc.py): its last daily close, its 200-day average,
 # "above"/"below" it, and its % change over 7 days. Blank when unknown.
+# The last columns (screener/token_record.py, logging only, blank when unknown):
+# RugCheck's launchpad, first-seen time and the token's age at the buy, creator
+# and share, top-1 / top-10 holder share, holders, largest insider network,
+# the creator's other tokens (rc_creator_tokens / _dead: only when RugCheck
+# lists them), DexScreener's DEX, pool age, market cap and liquidity, and
+# how many launches / dead tokens the creator ledger knows of (not counting
+# this token). Since 2026-10-11.
 BTC_COLUMNS = ["btc_close_usd", "btc_200d_avg_usd", "btc_vs_200d", "btc_7d_change_pct"]
 ENTRY_COLUMNS = [
     "time_utc", "symbol", "token_address", "price_usd", "buys_1h", "sells_1h",
@@ -42,6 +50,7 @@ ENTRY_COLUMNS = [
     "price_change_5m_pct", "price_change_1h_pct", *JUPITER_COLUMNS,
     "fill_price_usd", "buy_slippage_pct", "price_source", "price_time_utc", *BTC_COLUMNS,
     "buys_5m", "sells_5m", "volume_5m_usd", "volume_1h_usd",
+    *RECORD_COLUMNS,
 ]
 
 
@@ -103,6 +112,8 @@ class PaperTrader:
     # Where this trader's prices come from, for the journal (a caller can
     # give a different source or fetch time per price).
     price_source = "DexScreener"
+    # Optional: a token_record.CreatorLedger (set by a bot; logging only).
+    ledger = None
 
     def __init__(self, cfg, data_folder):
         self.cfg = cfg
@@ -234,7 +245,16 @@ class PaperTrader:
             *self.btc_cells(),
             cell(tx5.get("buys")), cell(tx5.get("sells")),
             cell(volume.get("m5")), cell(volume.get("h1")),
+            *self.record_cells(result, when, pos["address"]),
         ])
+
+    def record_cells(self, result, when, mint):
+        """token_record.RECORD_COLUMNS for entries.csv (blank when unknown)."""
+        try:
+            return record_cells(getattr(result, "record", None), result.pair, when,
+                                self.ledger, mint)
+        except Exception:   # logging only: never stops a buy
+            return [""] * len(RECORD_COLUMNS)
 
     def btc_cells(self):
         """Bitcoin's trend for entries.csv (blank when unknown)."""
