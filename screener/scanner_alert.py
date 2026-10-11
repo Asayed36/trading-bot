@@ -17,6 +17,12 @@ works on "repair" issues alone, and closing an alert changes nothing (what has
 been alerted is remembered in one memory issue, labelled "scanner-alert-state",
 not in the alerts' open/closed state).
 
+Notification: GitHub's phone app pushes only @mentions and assignments, so each
+ALERT issue (listing, news and the daily summary) starts with "@<user>" and is
+assigned to that user ([scanner_alert] notify_user in config.toml; empty = do
+neither). The memory issue never is. If GitHub refuses the assignment the issue
+is still opened with the mention and the run summary says so.
+
 Rules: a coin on an exchange is alerted once, ever; nothing already covered by
 the GitHub news strategy's own issue is alerted again; at most MAX_PER_DAY
 alerts a day, the rest listed in one summary issue for that day.
@@ -81,6 +87,14 @@ class Gh(GitHubIssues):
             resp = self._request("GET", url)
             yield from (i for i in resp.json() if "pull_request" not in i)
             url = resp.links.get("next", {}).get("url")
+
+
+    def assign(self, number, user):
+        """Assign an issue to `user`. True when GitHub did it: it answers 201
+        but silently leaves out a user it won't assign, so the answer is read."""
+        resp = self._request("POST", f"/issues/{number}/assignees", json={"assignees": [user]})
+        return user.lower() in [(a.get("login") or "").lower()
+                                for a in resp.json().get("assignees") or []]
 
 
 class Alert(dict):
@@ -204,6 +218,24 @@ class PriceLookup:
 
 
 # ---------------------------------------------------------------------
+# Who to notify (GitHub's phone app pushes only @mentions and assignments)
+# ---------------------------------------------------------------------
+
+USER_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$")
+
+
+def notify_user(cfg):
+    """[scanner_alert] notify_user in config.toml: a GitHub username, or "" for nobody."""
+    user = str((cfg.get("scanner_alert") or {}).get("notify_user") or "").strip().lstrip("@")
+    return user if USER_RE.match(user) else ""
+
+
+def with_mention(body, user):
+    """The body with @user on its first line (unchanged when there's no user)."""
+    return f"@{user}\n\n{body}" if user else body
+
+
+# ---------------------------------------------------------------------
 # The issue text
 # ---------------------------------------------------------------------
 
@@ -302,6 +334,8 @@ class Scanner:
         self.prices = prices or PriceLookup(http)
         self.news_rows = news_rows or (lambda: git_news_rows(cfg))
         self.out, self.max_per_day = out, max_per_day
+        self.user = notify_user(cfg)
+        self.notes = []               # things to tell in the run summary
         self.sources = [s for s in self.c["sources"]
                         if s.get("kind") == "exchange" and s.get("enabled") is not False]
         self.status = {}              # source name -> {"ok": polls, "failed": polls, "error": str}
@@ -432,7 +466,7 @@ class Scanner:
                 done.append(f"skipped {key}: the news strategy already opened an issue for it")
                 continue
             price = self.prices.lookup(alert["coin"], alert.get("coin_id"))
-            title, body = issue_title(alert), issue_body(alert, price)
+            title, body = issue_title(alert), with_mention(issue_body(alert, price), self.user)
             if dry_run:
                 done.append(f"WOULD OPEN: {title}\n{body}")
                 state["alerted"][key] = now.isoformat()
@@ -442,6 +476,7 @@ class Scanner:
                     self.gh.ensure_label(LABEL, "1d76db", "Scanner alert (not advice, no trade)")
                     number = self.gh.create(title, body, [LABEL])
                     individual.append(key)
+                    self._assign(number)
                     done.append(f"opened #{number}: {title}")
                 else:
                     number = self._summary(day, alert, now)
@@ -456,6 +491,23 @@ class Scanner:
             self.created.append((number, title))
         return done
 
+    def _assign(self, number):
+        """Assign the new alert issue to the notify user. Never fails the alert:
+        if GitHub refuses, the issue stays open with the @mention and the run
+        summary says so."""
+        if not self.user:
+            return
+        try:
+            done = self.gh.assign(number, self.user)
+            why = "" if done else "GitHub left the assignee out (not assignable here)"
+        except Exception as exc:
+            why = str(exc)[:160]
+        if why:
+            note = (f"could not assign #{number} to {self.user} ({why}); it was opened with "
+                    f"the @{self.user} mention only")
+            self.notes.append(note)
+            self.out(note)
+
     def _retry(self, alert):
         pending = self.memory.state.setdefault("pending", [])
         if all(p["key"] != alert["key"] for p in pending):
@@ -469,10 +521,12 @@ class Scanner:
                 + f" <!-- scanner-alert-key: {alert['key']} -->")
         number = state["summary"].get(day)
         if number is None:
-            body = (f"More than {self.max_per_day} scanner alerts on {day}: the rest are listed "
-                    f"here instead of one issue each.\n\n{line}\n\n> {NOT_ADVICE}")
+            body = with_mention(
+                f"More than {self.max_per_day} scanner alerts on {day}: the rest are listed "
+                f"here instead of one issue each.\n\n{line}\n\n> {NOT_ADVICE}", self.user)
             number = self.gh.create(f"ALERT summary: more alerts on {day}", body, [LABEL])
             state["summary"][day] = number
+            self._assign(number)
         else:
             issue = self.gh.issue(number)
             body = (issue.get("body") or "").replace(f"\n\n> {NOT_ADVICE}", f"\n{line}\n\n> "
@@ -516,7 +570,7 @@ class Scanner:
         return self.summary()
 
     def summary(self):
-        lines = []
+        lines = [f"WARNING {note}" for note in self.notes]
         for name, st in self.status.items():
             mark = "ok  " if not st["failed"] else "FAIL" if not st["ok"] else "some"
             lines.append(f"{mark} {name}: {st['ok']} poll(s) read, "

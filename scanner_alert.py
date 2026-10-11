@@ -41,7 +41,8 @@ def main(argv=None):
     print("Sources, as seen from this machine:")
     for line in lines:
         print("  " + line)
-    if lines and all(line.startswith("FAIL") for line in lines):
+    status = [line for line in lines if not line.startswith("WARNING")]
+    if status and all(line.startswith("FAIL") for line in status):
         print("::warning::every exchange feed failed from this machine")
     return 0
 
