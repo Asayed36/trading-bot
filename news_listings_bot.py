@@ -31,6 +31,13 @@ key comes from systemd's credential (deploy/news-listings.service, see
 deploy/LAUNCH_SERVER_SETUP.md, Part J); without it the rule-based checks run
 alone.
 
+Recording only (screener/listing_track.py): listing_track.csv has a row for
+every listing signal, bought or not, with CoinGecko's price at detection and
+about 1, 5, 15 and 60 minutes and 6 hours later. Those later prices are one
+CoinGecko markets call per run with a checkpoint due (none when the coin was
+priced anyway), in the same monthly count; nothing reads the file to decide
+anything.
+
 PAPER TRADING ONLY. It only READS public data with GET requests (and asks
 Anthropic's API about headlines). It never connects a wallet, never uses a
 private key, never signs or sends anything.
@@ -51,11 +58,15 @@ from screener.autorestart import CodeWatcher, forever
 from screener.news import CoinGecko, FastNewsTrader, NewsHttp, NewsStrategy
 from screener.news_ai import api_key
 from screener.btc import BtcTrend
+from screener.listing_track import KEEP_CALLS, ListingTrack
 from screener.paper_trader import PaperTrader, now_utc
 from screener.settings import HERE, load_config
 
 log = logging.getLogger("news_listings")
 HOURS_KEPT = 48            # call counts per hour kept in health.json
+# listing_track.csv (screener/listing_track.py): recording only; the tests turn
+# it off to count the trading's own requests.
+TRACK_LISTINGS = True
 # The config.toml sections the bot reads: only changes there restart it.
 CONFIG_SECTIONS = ("news", "news_listings", "api", "files")
 
@@ -156,6 +167,8 @@ class NewsListings:
         # No GitHub issues from the server: forget the ones apply() queues.
         if news.trader.state.pop("issues_to_close", None) is not None:
             news.trader.save()
+        if TRACK_LISTINGS:
+            self._track_listings(news, plan, bought, now, lines.append)
         self._health(now, before, None, news)
         sources = plan["sources"]
         working = sum(1 for s in sources if s.get("ok"))
@@ -169,6 +182,54 @@ class NewsListings:
                 or any(line.lstrip().startswith(("SELL", "BUY")) for line in lines))
         out(summary + ("".join(f"\n  {line}" for line in lines if line.strip()) if busy else ""))
         return bought
+
+    def _track_listings(self, news, plan, bought, now, out):
+        """data/news-listings/listing_track.csv: a row for every listing signal
+        (bought or not) with CoinGecko's price at detection, and the price
+        about 1, 5, 15 and 60 minutes and 6 hours later. Recording only, after
+        the trading is saved: any failure here is noted and nothing else
+        changes. The later prices come from one CoinGecko markets call per run
+        with a checkpoint due (the same call and monthly count as the open
+        positions' prices; coins this run already priced cost no call)."""
+        try:
+            track = ListingTrack(self.folder)
+            owned = {p["address"] for p in bought}
+            new = []
+            for cand in plan["candidates"]:
+                source, item = cand["source"], cand["item"]
+                if source.get("kind") != "exchange":
+                    continue
+                coin = cand["coins"][0] if len(cand["coins"]) == 1 else None
+                passed = all(ch.status == "PASS" for ch in cand["checks"])
+                new.append(track.signal_row(now, source, item, cand["coins"], passed,
+                                            bool(coin) and coin["id"] in owned,
+                                            plan.get("fetched_at")))
+            for source, item in plan.get("unmatched", []):
+                if source.get("kind") == "exchange":
+                    new.append(track.signal_row(now, source, item, [], False, False, None))
+            track.add(new)
+            due = track.due(now)
+            if not due:
+                return
+            prices = {i: plan["prices"][i] for i in due if plan["prices"].get(i)}
+            fetched = dict.fromkeys(prices, plan.get("fetched_at") or now)
+            want = [i for i in due if i not in prices]
+            if want:
+                gecko = CoinGecko(self.http, self.coingecko_key, news.trader.state,
+                                  self.cfg["news"]["coingecko_monthly_calls"], now)
+                if gecko.left() > KEEP_CALLS:
+                    try:
+                        got = {x["id"]: x["price"] for x in gecko.markets(ids=want)
+                               if x.get("price")}
+                        prices.update(got)
+                        fetched.update(dict.fromkeys(got, now_utc()))
+                    except ApiError as exc:
+                        out(f"  (listing track: no prices this run: {exc})")
+                    news.trader.save()                 # the CoinGecko count
+            if prices:
+                track.fill({i: due[i] for i in due if i in prices}, prices, fetched)
+        except Exception as exc:              # recording must never stop the bot
+            out(f"  (listing track: skipped this run: {exc})")
 
     def _fast_exits(self, fast, news, plan, now, out):
         """news (listings) fast's exits: its open positions' prices every
