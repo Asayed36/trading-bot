@@ -1,0 +1,66 @@
+# Trend forward test (screener/trend.py, trend_bot.py): a PAPER test of a simple
+# trend-following rule on 18 large, liquid coins, with virtual money. Once a day,
+# shortly after the daily candle closes (00:10 UTC; GitHub may start it later),
+# it reads the daily prices from Binance's public market-data endpoint
+# (data-api.binance.vision, no key; the daily files of data.binance.vision as
+# the fallback), updates data/trend/ (candles, state, trades.csv, equity.csv,
+# log.csv) and commits it. It catches up by itself after a missed day, and a
+# second run on the same day changes nothing.
+#
+# Uses only the workflow's own GITHUB_TOKEN (to commit data/trend). No secret, no
+# paid service, no CoinGecko, no wallet, no key, no order. The daily comparison
+# reads data/trend/ for its "Trend forward test" rows.
+
+name: Trend forward test
+
+on:
+  schedule:
+    - cron: "10 0 * * *"     # 00:10 UTC every day
+  workflow_dispatch:         # by hand from the Actions tab
+
+permissions:
+  contents: write            # to commit data/trend/
+
+concurrency:
+  group: trend
+  cancel-in-progress: false
+
+jobs:
+  trend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Tests of the trend strategy
+        run: python -m unittest tests.test_trend
+
+      - name: Run the trend strategy
+        run: python trend_bot.py 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Save the results to the repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/trend
+          if git diff --cached --quiet; then
+            echo "Nothing new to save."
+            exit 0
+          fi
+          git commit -m "Trend forward test $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            [ "$attempt" -lt 5 ] || break
+            sleep $((attempt * 10))
+            git pull --rebase
+          done
+          echo "Could not push the results after 5 attempts." >&2
+          exit 1

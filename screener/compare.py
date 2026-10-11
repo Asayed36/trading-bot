@@ -282,6 +282,89 @@ def checklist(strategies):
     return out
 
 
+TREND_LINES = ("trend", "trend + BTC filter")
+
+
+def trend_section(folder, trend_cfg):
+    """The "trend" forward test (data/trend, screener/trend.py): the two strategy
+    lines with the same real-money gate as every strategy above (MIN_CLOSED
+    closed trades, P&L after costs above 0, above 0 without the best trade,
+    trades on MIN_DAYS different days) plus a line for buy and hold and each
+    line's maximum fall from its peak. A line that has fallen more than
+    kill_fall_pct from its peak shows FAIL KILL. Returns (markdown lines,
+    names that pass)."""
+    kill = float(trend_cfg.get("kill_fall_pct", 30))
+    trades = _csv_rows(os.path.join(folder, "trades.csv"))
+    equity = _csv_rows(os.path.join(folder, "equity.csv"))
+    head = ["### Trend forward test (virtual 1,000 USDT, 18 large coins)"]
+    if not equity:
+        return head + ["No results yet: the first daily run is still to come.", ""], []
+    first, last = equity[0], equity[-1]
+    portfolio = float(trend_cfg.get("portfolio_usdt", 1000))
+    falls = {"trend": float(last["trend_max_fall_pct"]),
+             "trend + BTC filter": float(last["trend_btc_filter_max_fall_pct"]),
+             "buy and hold": float(last["buy_hold_max_fall_pct"])}
+    lines = head + [
+        f"Started {first['date']}, latest day {last['date']}. Virtual money, daily closes, "
+        f"PASS needs all four: {MIN_CLOSED}+ closed trades, profit after costs above 0, still "
+        f"above 0 without the best trade, and trades on {MIN_DAYS}+ different days; a line "
+        f"that fell more than {kill:g}% from its peak shows FAIL KILL. A PASS is a reason to "
+        "look closer, not to trade.",
+        "",
+        "| Line | Closed trades | Wins | Profit after costs | Without the best trade | "
+        "Different trade days | Max fall | Status |",
+        "|---|---|---|---|---|---|---|---|"]
+    passed = []
+    for name in TREND_LINES:
+        mine = [r for r in trades if r["line"] == name]
+        pnls = sorted((float(r["pnl_usdt"]) for r in mine), reverse=True)
+        days = len({r["entry_date"] for r in mine})
+        total = sum(pnls)
+        without = sum(pnls[1:]) if pnls else None
+        missing = []
+        if len(pnls) < MIN_CLOSED:
+            missing.append(f"{MIN_CLOSED - len(pnls)} more closed trades")
+        if total <= 0:
+            missing.append("profit after costs not above 0")
+        if not pnls or without <= 0:
+            missing.append("not above 0 without the best trade")
+        if days < MIN_DAYS:
+            missing.append(f"trades on {MIN_DAYS - days} more days")
+        if falls[name] > kill:
+            status = f"**FAIL KILL** (fell {falls[name]:.1f}% from its peak)"
+        elif missing:
+            status = "not yet: " + "; ".join(missing)
+        else:
+            status = "**PASS**"
+            passed.append(name)
+        lines.append(f"| {name} | {len(pnls)} | {sum(1 for p in pnls if p > 0)} | "
+                     f"{total:+.2f} USDT | {'–' if without is None else f'{without:+.2f} USDT'} | "
+                     f"{days} | {falls[name]:.1f}% | {status} |")
+    value = float(last["buy_hold"])
+    bh = (f"**Buy and hold** (same 18 coins in equal parts from the start day): {value:.2f} USDT "
+          f"({(value / portfolio - 1) * 100:+.1f}%), max fall {falls['buy and hold']:.1f}%"
+          + (" (FAIL KILL level passed: this line is only the comparison)"
+             if falls["buy and hold"] > kill else "") + ".")
+    now = {n: float(last[c]) for n, c in (("trend", "trend"), ("trend + BTC filter", "trend_btc_filter"))}
+    lines += ["", bh,
+              "**Value now:** " + "; ".join(f"{n} {v:.2f} USDT ({(v / portfolio - 1) * 100:+.1f}%)"
+                                            for n, v in now.items()) + ".",
+              "**Max fall from peak:** " + "; ".join(f"{n} {f:.1f}%" for n, f in falls.items()) + ".",
+              "_The 18 coins all still exist and are liquid today, so the history behind this rule "
+              "flatters it (survivorship); fills are at the signal day's close, which no real order "
+              "gets exactly._", ""]
+    lines += [PASS_MARKER.format(n) for n in passed]
+    return lines, passed
+
+
+def _csv_rows(path):
+    try:
+        with open(path, newline="") as fh:
+            return list(csv.DictReader(fh))
+    except OSError:
+        return []
+
+
 def checklist_lines(strategies):
     rows = checklist(strategies)
     if not rows:
@@ -309,7 +392,7 @@ def checklist_lines(strategies):
     return lines + [""]
 
 
-def report(strategies, day, extra=None, health=None):
+def report(strategies, day, extra=None, health=None, trend=None):
     """Markdown table. `strategies` is a list of (name, folder, round_trip_cost_pct).
     `extra` is more Markdown lines to add at the end, `health` lines to put
     at the top (see screener/health.py)."""
@@ -329,6 +412,7 @@ def report(strategies, day, extra=None, health=None):
         f"## Paper strategy comparison: {day} (UTC)",
         "",
         *checklist_lines(strategies),
+        *(trend or []),
         *(health or []),
         "| | " + " | ".join(names) + " |",
         "|---|" + "---|" * len(names),
