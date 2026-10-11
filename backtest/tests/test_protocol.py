@@ -55,16 +55,18 @@ class ProtocolTests(unittest.TestCase):
         end_of_tuning = date(2023, 12, 31).toordinal() - data.EPOCH_ORDINAL
         tuning_calls = [c for c in self.calls_a if c[0] == date(2023, 12, 31)]
         test_calls = [c for c in self.calls_a if c[0] != date(2023, 12, 31)]
-        # 13 variants for the tuning grid + 4 re-runs for the trade list, all on cut-off data
-        self.assertEqual(len(tuning_calls), 13 + 4)
+        # 13 variants for the tuning grid + their 13 cycle-filter twins + 4 re-runs for the
+        # trade list, all on cut-off data
+        self.assertEqual(len(tuning_calls), 13 + 13 + 4)
         self.assertTrue(all(last <= end_of_tuning for _, last in tuning_calls))
         self.assertTrue(all(last > end_of_tuning for _, last in test_calls))
 
     def test_the_test_period_is_run_once_for_the_chosen_variants_only(self):
         test_calls = [c for c in self.calls_a if c[0] != date(2023, 12, 31)]
-        self.assertEqual(len(test_calls), 4)
+        self.assertEqual(len(test_calls), 4 + 4)         # the chosen variants and their filtered twins
         proto = self.a["protocol"]
         self.assertEqual(proto["test_evaluations_of_the_chosen_variants"], 4)
+        self.assertEqual(proto["test_evaluations_of_their_cycle_filter_twins"], 4)
         self.assertEqual(proto["variants_tried"], 13)
         names = [(s["family"], s["name"]) for s in self.a["test"]["strategies"]]
         self.assertEqual(sorted(f for f, _ in names),
@@ -94,6 +96,68 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual("Nothing beat buy-and-hold" in text, not beat)
         self.assertIn("13 variants were tried", text)
         self.assertIn("once (4 runs)", text)
+
+
+    def test_the_cycle_filter_twins_are_the_chosen_variants_and_never_chosen_from(self):
+        filtered = self.a["test"]["filtered"]
+        self.assertEqual([(f["family"], f["name"]) for f in filtered],
+                         [(s["family"], s["name"]) for s in self.a["test"]["strategies"]])
+        self.assertEqual(len(self.a["tuning"]["filtered_variants"]), 13)
+        # the choice is still made on the unfiltered numbers only
+        again = runner.choose([g for g in self.a["tuning"]["variants"] if g["family"] == "breakout"])
+        self.assertEqual(again["name"], self.a["selection"]["breakout"])
+        for plain, f in zip(self.a["test"]["strategies"], filtered):
+            self.assertAlmostEqual(f["return_difference"],
+                                   f["metrics"]["total_return"] - plain["metrics"]["total_return"])
+            self.assertAlmostEqual(f["worst_fall_difference"],
+                                   f["metrics"]["max_drawdown"] - plain["metrics"]["max_drawdown"])
+            self.assertEqual(f["trades_difference"], f["metrics"]["trades"] - plain["metrics"]["trades"])
+            self.assertEqual(f["higher_return"], f["return_difference"] > 0)
+        bh = self.a["test"]
+        self.assertAlmostEqual(bh["filtered_benchmark_vs_unfiltered"]["return_difference"],
+                               bh["filtered_benchmark"]["total_return"] - bh["benchmark"]["total_return"])
+
+    def test_the_future_cannot_change_the_filtered_tuning_numbers_either(self):
+        self.assertEqual(json.dumps(self.a["tuning"]["filtered_variants"], sort_keys=True, default=str),
+                         json.dumps(self.b["tuning"]["filtered_variants"], sort_keys=True, default=str))
+        self.assertEqual(self.a["tuning"]["filtered_benchmark"], self.b["tuning"]["filtered_benchmark"])
+        self.assertEqual(self.a["regime"]["tuning"], self.b["regime"]["tuning"])
+        self.assertEqual(self.a["trades"]["filtered_tuning"], self.b["trades"]["filtered_tuning"])
+        self.assertNotEqual(self.a["test"]["filtered_benchmark"]["total_return"],
+                            self.b["test"]["filtered_benchmark"]["total_return"])
+
+    def test_the_regime_facts_and_the_filtered_outputs(self):
+        regime = self.a["regime"]
+        for part in ("tuning", "test"):
+            self.assertTrue(0.0 <= regime[part]["share_of_days_above"] <= 1.0)
+            self.assertGreaterEqual(regime[part]["switches"], 0)
+        self.assertIn(2020, regime["by_year"])
+        with tempfile.TemporaryDirectory() as out:
+            report.write_outputs(self.a, [{"coin": "BTC"}], {"made_at": "now", "fee_per_side": 0.001,
+                                                             "slippage_majors": 0.0005, "slippage_others": 0.002,
+                                                             "majors": ["BTC", "ETH", "SOL"]}, out)
+            for f in ("cycle_filter_test.csv", "cycle_filter_tuning.csv", "trades_test_filtered.csv",
+                      "trades_tuning_filtered.csv"):
+                self.assertIn(f, os.listdir(out))
+            with open(os.path.join(out, "SUMMARY.md")) as fh:
+                text = fh.read()
+            with open(os.path.join(out, "cycle_filter_test.csv")) as fh:
+                header = fh.readline().strip().split(",")
+        self.assertIn("## The cycle filter", text)
+        self.assertIn("Return, filtered", text)
+        self.assertIn("once (4 runs)", text)                       # the unfiltered protocol is unchanged
+        for column in ("return", "return_filtered", "worst_fall", "worst_fall_filtered", "trades",
+                       "trades_filtered", "return_without_best_trade",
+                       "return_without_best_trade_filtered"):
+            self.assertIn(column, header)
+
+    def test_a_filtered_trade_never_starts_when_btc_was_below_its_average(self):
+        regime = runner.btc_regime(build(0))
+        from backtest.data import EPOCH_ORDINAL
+        from datetime import date as d
+        for t in self.a["trades"]["filtered_test"]:
+            bought = d.fromisoformat(t["bought"]).toordinal() - EPOCH_ORDINAL
+            self.assertTrue(regime.above(bought - 1), t)             # decided at the previous close
 
 
 def fake_results(beats, tuning_beats, total=0.5, without_best=0.2, trades=40, t_stat=3.0):
