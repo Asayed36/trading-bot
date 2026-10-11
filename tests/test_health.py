@@ -246,6 +246,10 @@ class HealthTests(Base):
                       rows["news (listings): Upbit new markets"])
         self.assertIn(f"{INFO} not checked yet", rows["news: SEC EDGAR fund filings"])
         self.assertIn(f"{INFO} turned off: Bybit blocks", rows["news: Bybit listings"])
+        # GlobeNewswire answers 403 from GitHub's servers: off, so info, never a warning
+        for name in ("GlobeNewswire", "GlobeNewswire crypto", "GlobeNewswire blockchain"):
+            self.assertIn(f"{INFO} turned off: GlobeNewswire blocks GitHub's US servers",
+                          rows[f"news: {name}"])
         names = [s["name"] for s in CFG["news"]["sources"] if s.get("runs_on") != "server"]
         self.assertEqual(sorted(k[6:] for k in rows if k.startswith("news: ")
                                 and k not in ("news: last successful run", "news: AI check")),
