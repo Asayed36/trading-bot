@@ -32,7 +32,7 @@ concurrency:
 
 jobs:
   issues:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       contents: read
@@ -64,7 +64,7 @@ jobs:
   fix:
     needs: issues
     if: needs.issues.outputs.issue != ''
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
       contents: write        # push the fix's branch
