@@ -119,8 +119,3 @@ class GitUtilTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-
-class ForcedFailureForProof(unittest.TestCase):
-    def test_forced_failure(self):
-        self.fail("forced setup-test failure to prove the workflow (throwaway branch only)")
