@@ -18,11 +18,12 @@ jobs:
         run: |
           git --version; nproc; df -h /tmp /home/runner | cat; mount | grep -E ' /tmp | / ' | head -3; id; echo "TMPDIR=$TMPDIR"
           git config --system --list 2>&1 | head -20; echo ---; git config --global --list 2>&1 | head
-      - name: The old setUp sequence, 4 in parallel for 240 s (stderr kept)
+      - name: The whole test suite, 12 times in a row (the fixed tests)
         run: |
-          for k in 1 2 3 4; do python tests/_stress_clone.py 240 > /tmp/stress_$k.log 2>&1 & done; wait
-          cat /tmp/stress_*.log
-      - name: The new tests, 40 times in a row
-        run: |
-          pip install -r requirements.txt -q
-          for i in $(seq 1 40); do python -m unittest tests.test_launch_ops tests.test_repair tests.test_gitutil 2>&1 | tail -3 | tr '\n' ' '; echo; done
+          pip install -r requirements.txt -r requirements-launch.txt -q
+          fails=0
+          for i in $(seq 1 12); do
+            python -m unittest > /tmp/suite_$i.log 2>&1 && echo "run $i: OK $(tail -3 /tmp/suite_$i.log | head -1)" || { echo "run $i: FAILED"; fails=$((fails+1)); grep -B2 -A25 -E '^(ERROR|FAIL):' /tmp/suite_$i.log | head -60; }
+          done
+          echo "failed runs: $fails of 12"
+          exit $fails
