@@ -65,8 +65,20 @@ jobs:
       - name: Install
         run: pip install -r requirements.txt -r requirements-launch.txt
 
-      - name: Tests
-        run: python -m unittest -v
+      # The tests run in two groups (tests/run_groups.py lists them). A failed
+      # test is rerun once on its own before it counts as failed.
+      # TRADING tests (the code that decides, buys, sells and records): if one
+      # still fails, this step fails and the round is skipped.
+      - name: Trading tests
+        run: python -m tests.run_groups trading
+
+      # SETUP tests (git, server, repair, probe and alert scripts): a flaky one
+      # must not skip a trading round. If one still fails after its rerun the
+      # round is traded and saved anyway, and the last step turns the run red.
+      - name: Setup tests
+        id: setup_tests
+        continue-on-error: true
+        run: python -m tests.run_groups setup
 
       - name: Screen and paper trade
         id: screen
@@ -179,4 +191,13 @@ jobs:
             git pull --rebase
           done
           echo "Could not push the results after 5 attempts." >&2
+          exit 1
+
+      # Last step, after the round was traded and saved: show a failed setup
+      # test as a red run so it is not missed.
+      - name: Final check - setup tests
+        if: always() && steps.setup_tests.outcome == 'failure'
+        run: |
+          echo "Setup tests: FAILED (trading continued) - this round was traded and saved; see the 'Setup tests' step."
+          echo "::error::Setup tests failed (after one rerun). The round was traded and saved."
           exit 1
