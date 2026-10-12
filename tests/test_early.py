@@ -214,10 +214,10 @@ class RunTogetherTests(unittest.TestCase):
             a = json.loads(read(os.path.join(other, "positions.json")))
             b = json.loads(read(os.path.join(self.tmp.name, "positions.json")))
             self.assertFalse(os.path.exists(os.path.join(other, "early")))
-        strip = [{k: v for k, v in p.items() if k not in ("entry_time", "issue_details")}
-                 for p in a["open_positions"]]
-        self.assertEqual(strip, [{k: v for k, v in p.items()
-                                  if k not in ("entry_time", "issue_details")}
+        # (not the clock's times: two runs a moment apart can straddle a second)
+        skip = ("entry_time", "issue_details", "entry_price_time", "last_price_time")
+        strip = [{k: v for k, v in p.items() if k not in skip} for p in a["open_positions"]]
+        self.assertEqual(strip, [{k: v for k, v in p.items() if k not in skip}
                                  for p in b["open_positions"]])
 
     def test_early_source_rate_limit_skips_only_early(self):

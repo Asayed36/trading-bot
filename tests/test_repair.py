@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from run import HERE, load_config  # noqa: E402
 from screener import repair  # noqa: E402
+from tests import gitutil  # noqa: E402
 
 CFG = load_config()
 NOW = datetime(2026, 10, 6, 0, 37, tzinfo=timezone.utc)
@@ -241,10 +242,11 @@ class FinishTests(unittest.TestCase):
         self.repo = os.path.join(d, "repo")
         env = dict(os.environ, GIT_CONFIG_NOSYSTEM="1", HOME=d)
         self.env = env
-        run = lambda *a, cwd=d: subprocess.run(a, cwd=cwd, env=env, check=True,  # noqa: E731
-                                               capture_output=True)
+        # (git's own message is shown when a step fails, and the checkout is made without
+        # `git clone`, which sometimes failed on GitHub's runners: tests/gitutil.py)
+        run = lambda *a, cwd=d: gitutil.run_git(a[1:], cwd, env, retries=1)  # noqa: E731
         run("git", "init", "-q", "--bare", "-b", "main", "origin.git")
-        run("git", "clone", "-q", "origin.git", "repo")
+        gitutil.init_checkout(os.path.join(d, "origin.git"), self.repo, env)
         os.makedirs(os.path.join(self.repo, "data"))
         self.write("code.py", "x = 1\n")
         self.write("data/state.json", "{}\n")
