@@ -15,6 +15,12 @@
 # so each run keeps reading the feeds once a minute for about 13 minutes
 # (free: this repository is public) and the next run takes over.
 #
+# Each new LISTING alert is opened first and then gets a "Pre-check" section filled in
+# (spot or not, ticker clash, the exchange's own price, basic checks, an optional AI
+# opinion; information only); data/scanner/alert_checks.csv logs every alert and its
+# price 1, 6 and 24 hours later. The keys it uses are the repository's existing
+# CLAUDE_API_KEY and COINGECKO_API_KEY secrets (both optional).
+#
 # Test it with a made-up event: Actions > Scanner alert > Run workflow, type
 # Coinbase:TESTCOIN in "fake" (tick "dry_run" to only print the issue).
 
@@ -42,8 +48,9 @@ concurrency:
   cancel-in-progress: false  # a run waits for the one before it; only one waits at a time
 
 permissions:
-  contents: read             # to read the code and the saved news verdicts
-  issues: write              # to open the alert issues (nothing else)
+  contents: write            # to read the code and the saved news verdicts, and to save the
+                             # pre-check log data/scanner/alert_checks.csv (nothing else is written)
+  issues: write              # to open the alert issues
 
 jobs:
   scan:
@@ -67,6 +74,9 @@ jobs:
           FAKE: ${{ github.event.inputs.fake }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}
           POLLS: ${{ github.event.inputs.polls }}
+          # keys the repository already uses, for the pre-check (both optional)
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
         run: |
           set -o pipefail
           args=(--polls "${POLLS:-13}")
@@ -79,3 +89,24 @@ jobs:
             cat report.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+      # The pre-check log and its 1h / 6h / 24h price follow-ups (data/scanner/alert_checks.csv).
+      - name: Save the pre-check log
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/scanner 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "Nothing new to save."
+            exit 0
+          fi
+          git commit -m "Scanner alert pre-checks $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            [ "$attempt" -lt 5 ] || break
+            sleep $((attempt * 10))
+            git pull --rebase
+          done
+          echo "Could not push the pre-check log after 5 attempts." >&2
+          exit 1

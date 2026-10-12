@@ -331,11 +331,11 @@ class NotifyTests(unittest.TestCase):
         self.assertTrue(any("WOULD OPEN: ALERT: Kraken lists TESTCOIN\n@Asayed36\n" in p
                             for p in printed))
 
-    def test_the_workflow_needs_no_new_permission(self):
+    def test_the_workflow_permissions_are_contents_and_issues_only(self):
         text = open(os.path.join(HERE, ".github", "workflows", "scanner-alert.yml")).read()
         block = text.split("permissions:")[1].split("jobs:")[0]
         self.assertEqual(re.findall(r"^  (\w+): (\w+)", block, re.M),
-                         [("contents", "read"), ("issues", "write")])
+                         [("contents", "write"), ("issues", "write")])
 
 
 class CapTests(unittest.TestCase):
@@ -475,9 +475,11 @@ class IsolationTests(unittest.TestCase):
 
     def test_the_workflow_uses_only_the_github_token(self):
         text = open(os.path.join(HERE, ".github", "workflows", "scanner-alert.yml")).read()
-        self.assertNotIn("secrets.", text)
+        # (2026-10-12: the pre-check uses the repository's existing optional keys, no new secret)
+        self.assertEqual(sorted(set(re.findall(r"secrets\.(\w+)", text))),
+                         ["CLAUDE_API_KEY", "COINGECKO_API_KEY"])
         self.assertEqual(re.findall(r"^  (\w+): (\w+)", text.split("permissions:")[1], re.M)[:2],
-                         [("contents", "read"), ("issues", "write")])
+                         [("contents", "write"), ("issues", "write")])
         self.assertIn("GITHUB_TOKEN: ${{ github.token }}", text)
         self.assertIn("cancel-in-progress: false", text)
 

@@ -14,8 +14,9 @@ import os
 import sys
 
 from screener.news import NewsHttp
+from screener.news_ai import api_key
 from screener.scanner_alert import Gh, Scanner
-from screener.settings import load_config
+from screener.settings import HERE, load_config
 
 
 def main(argv=None):
@@ -34,8 +35,12 @@ def main(argv=None):
     if not args.dry_run and gh is None:
         print("GITHUB_TOKEN and GITHUB_REPOSITORY are needed (or use --dry-run).")
         return 2
+    # The pre-check's log (data/scanner/alert_checks.csv) is written only for real runs.
+    checks = None if args.dry_run else os.path.join(HERE, cfg["files"]["data_folder"], "scanner",
+                                                    "alert_checks.csv")
     scanner = Scanner(cfg, NewsHttp(cfg["api"]["timeout_seconds"]), gh, gh,
-                      out=lambda s: print(s, flush=True))
+                      out=lambda s: print(s, flush=True), ai_key=api_key(),
+                      cg_key=os.environ.get("COINGECKO_API_KEY") or None, checks_path=checks)
     lines = scanner.run(polls=args.polls, interval=args.interval, fake=args.fake or None,
                         dry_run=args.dry_run, fetch_news=bool(gh))
     print("Sources, as seen from this machine:")

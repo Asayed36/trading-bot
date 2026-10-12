@@ -1168,6 +1168,31 @@ run_every_minutes = 5
 # The scanner's memory issue never mentions or assigns anyone.
 notify_user = "Asayed36"
 
+[scanner_alert.precheck]
+# The "Pre-check" section of each new listing alert (screener/precheck.py): information
+# only, it never decides or trades. The basic checks (a failed or unknown part counts
+# as not passed, and is named in the FAILS line):
+#   spot available; not a ticker clash; up less than max_move_since_announcement_pct since
+#   the announcement (the exchange's own price then; measured from detection when the feed
+#   gives no time); less than max_change_24h_pct in 24h; at least min_volume_24h_usdt traded
+#   on that exchange in 24h; not a stablecoin or a wrapped/staked/bridged token.
+enabled = true
+max_move_since_announcement_pct = 15
+max_change_24h_pct = 40
+min_volume_24h_usdt = 100_000
+stablecoin_symbols = ["usdt", "usdc", "dai", "fdusd", "usde", "tusd", "pyusd", "usdd", "usds",
+                      "frax", "lusd", "gusd", "usdp", "eurc", "rlusd", "usd1", "usdtb", "usdg"]
+wrapped_words = ["wrapped", "staked", "bridged", "liquid staking", "liquid staked"]
+# The scanner's own CoinGecko budget for the ticker lookup (at most 2 calls per new alert, never
+# in the 1-minute polling), counted in its memory issue; with the repo's free plan shared
+# with the news strategies (4,000 + 4,000 of 10,000 a month) this leaves room.
+coingecko_monthly_calls = 300
+# The Claude Haiku 4.5 second opinion (screener/news_ai.py): its own daily count, never more
+# than [news.ai] daily_limit.
+ai_daily_limit = 10
+# Give up on the lookups of one alert after this many seconds (the rest is "lookup failed").
+max_seconds = 90
+
 # ---------------------------------------------------------------------
 # TREND: a forward test of a simple trend-following rule on 18 large, liquid
 # coins (screener/trend.py, trend_bot.py, the "Trend forward test" workflow,
