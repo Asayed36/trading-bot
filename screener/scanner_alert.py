@@ -42,6 +42,7 @@ from urllib.parse import quote
 from screener.api import ApiError
 from screener.github_issues import GitHubError, GitHubIssues
 from screener.news import NewsHttp, _words, listing_tickers, read_source
+from screener.precheck import VENUES, AlertChecks, Precheck
 
 LABEL = "scanner-alert"
 STATE_LABEL = "scanner-alert-state"
@@ -249,7 +250,11 @@ def issue_title(alert):
     return f"ALERT: {alert['exchange']} lists {alert['coin']}"
 
 
-def issue_body(alert, price):
+PRECHECK_PENDING = ("### Pre-check (information, not advice)\n_Looking things up: this fills in a few "
+                    "seconds after the alert. If this line is still here, the lookup did not finish._")
+
+
+def issue_body(alert, price, precheck=None):
     seen = utc(alert["seen"])
     ann = alert.get("announced")
     if ann:
@@ -275,7 +280,7 @@ def issue_body(alert, price):
         f"**{'News source' if alert['kind'] == 'news' else 'Exchange'}:** "
         + (alert["source"] if alert["kind"] == "news" else alert["exchange"]),
         f"**Time we saw it:** {seen:%Y-%m-%d %H:%M} UTC ({alert['how']})",
-        f"**The exchange's own announcement time:**" if alert["kind"] == "listing"
+        "**The exchange's own announcement time:**" if alert["kind"] == "listing"
         else "**The news item's own time:**",
     ]
     lines[-1] += f" {announced}"
@@ -286,6 +291,8 @@ def issue_body(alert, price):
         lines.append(f"**Why the AI check flagged it:** {alert['reason']}")
     if alert.get("url"):
         lines.append(f"**Link:** {alert['url']}")
+    if precheck and alert["kind"] == "listing":
+        lines += ["", precheck]
     lines += ["", f"> {NOT_ADVICE_NEWS if alert['kind'] == 'news' else NOT_ADVICE}",
               "> Nothing was traded: this scanner only sends alerts.", "",
               f"<!-- scanner-alert-key: {alert['key']} -->"]
@@ -327,7 +334,8 @@ def git_news_rows(cfg, ref="origin/main", fetch=False):
 
 class Scanner:
     def __init__(self, cfg, http, gh=None, passed_gh=None, memory=None, prices=None,
-                 news_rows=None, out=print, max_per_day=MAX_PER_DAY):
+                 news_rows=None, out=print, max_per_day=MAX_PER_DAY, ai_key=None, ai_client=None,
+                 cg_key=None, checks_path=None, precheck=True):
         self.cfg, self.c = cfg, cfg["news"]
         self.http, self.gh, self.passed_gh = http, gh, passed_gh
         self.memory = memory or Memory(gh)
@@ -336,6 +344,14 @@ class Scanner:
         self.out, self.max_per_day = out, max_per_day
         self.user = notify_user(cfg)
         self.notes = []               # things to tell in the run summary
+        # The pre-check of each new listing alert (screener/precheck.py): information only,
+        # filled into the issue AFTER it is opened. checks_path: data/scanner/alert_checks.csv.
+        conf = (cfg.get("scanner_alert") or {}).get("precheck") or {}
+        self.pre = None
+        if precheck and conf.get("enabled", True) and conf:
+            self.pre = Precheck(cfg, http, self.memory.state.setdefault("precheck", {}), ai_key,
+                                ai_client, cg_key)
+        self.checks = AlertChecks(checks_path) if checks_path else None
         self.sources = [s for s in self.c["sources"]
                         if s.get("kind") == "exchange" and s.get("enabled") is not False]
         self.status = {}              # source name -> {"ok": polls, "failed": polls, "error": str}
@@ -386,7 +402,7 @@ class Scanner:
                 out.append(Alert(
                     kind="listing", exchange=exchange, coin=sym.upper(), coin_id=None,
                     source=source["name"], title=item["title"], url=item.get("url", ""),
-                    seen=now.isoformat(),
+                    text=(item.get("summary") or "")[:500], seen=now.isoformat(),
                     announced=None if market_list or not published else published.isoformat(),
                     how=("a new pair in its public market list" if market_list
                          else f"in {source['name']}"),
@@ -457,6 +473,7 @@ class Scanner:
         state, done = self.memory.state, []
         day = now.strftime("%Y-%m-%d")
         individual = state["days"].setdefault(day, [])
+        todo = []                     # (issue number, alert, price): pre-checks to fill in afterwards
         for alert in alerts:
             key = alert["key"]
             if key in state["alerted"] or key in self._known_keys():
@@ -466,11 +483,17 @@ class Scanner:
                 done.append(f"skipped {key}: the news strategy already opened an issue for it")
                 continue
             price = self.prices.lookup(alert["coin"], alert.get("coin_id"))
-            title, body = issue_title(alert), with_mention(issue_body(alert, price), self.user)
+            listing = self.pre is not None and alert["kind"] == "listing"
+            title = issue_title(alert)
             if dry_run:
-                done.append(f"WOULD OPEN: {title}\n{body}")
+                section = self._precheck(alert, now)[0] if listing else None
+                done.append(f"WOULD OPEN: {title}\n"
+                            + with_mention(issue_body(alert, price, section), self.user))
                 state["alerted"][key] = now.isoformat()
                 continue
+            # (the alert goes out first, with the pre-check still to come)
+            body = with_mention(issue_body(alert, price, PRECHECK_PENDING if listing else None),
+                                self.user)
             try:
                 if len(individual) < self.max_per_day:
                     self.gh.ensure_label(LABEL, "1d76db", "Scanner alert (not advice, no trade)")
@@ -478,6 +501,8 @@ class Scanner:
                     individual.append(key)
                     self._assign(number)
                     done.append(f"opened #{number}: {title}")
+                    if listing:
+                        todo.append((number, alert, price))
                 else:
                     number = self._summary(day, alert, now)
                     done.append(f"over {self.max_per_day} today, added to summary #{number}: "
@@ -489,7 +514,61 @@ class Scanner:
             state["alerted"][key] = now.isoformat()
             self._known_keys().add(key)
             self.created.append((number, title))
+        for number, alert, price in todo:       # after every alert of this poll is out
+            done.append(self._finish_precheck(number, alert, price, now))
         return done
+
+    def _precheck(self, alert, now):
+        """(the section's text, the result or None). Never raises: a failure is written
+        in the section as "lookup failed: <reason>"."""
+        try:
+            result = self.pre.run(alert, now)
+            return result["markdown"], result
+        except Exception as exc:                  # information only: never in the alert's way
+            return (f"### Pre-check (information, not advice)\nlookup failed: {str(exc)[:200]}",
+                    None)
+
+    def _finish_precheck(self, number, alert, price, now):
+        """Fill the pre-check into the issue that is already open, and log it."""
+        section, result = self._precheck(alert, now)
+        body = with_mention(issue_body(alert, price, section), self.user)
+        try:
+            self.gh.set_body(number, body)
+            line = f"pre-check filled into #{number}"
+        except Exception as exc:                  # the alert stays as it was sent
+            line = f"could not fill the pre-check into #{number}: {str(exc)[:120]}"
+            self.notes.append(line)
+        if result is not None and self.checks is not None:
+            try:
+                self.checks.add(self.pre.row(alert, result, number, utc(alert["seen"])))
+            except Exception as exc:
+                self.notes.append(f"could not log #{number}'s pre-check: {str(exc)[:120]}")
+        return line
+
+    def follow_ups(self, now):
+        """The price of every checked alert 1, 6 and 24 hours later (data/scanner/alert_checks.csv):
+        the exchange's own last price, one ticker call per price due. Never raises."""
+        if self.checks is None or self.pre is None:
+            return
+        try:
+            due = self.checks.due(now)
+            if not due:
+                return
+            rows, results, venues = self.checks.rows(), {}, {}
+            for index, name in due:
+                row = rows[index]
+                kind = VENUES.get(row["exchange"])
+                if kind is None:
+                    continue
+                venue = venues.setdefault(row["exchange"], kind(self.http))
+                try:
+                    results[(index, name)] = venue.ticker({"id": row["pair"],
+                                                           "quote": row["quote"]}).get("last")
+                except Exception:
+                    results[(index, name)] = None          # stays blank, tried again until its grace time ends
+            self.checks.fill(results, now)
+        except Exception as exc:
+            self.out(f"  (alert follow-ups skipped this poll: {str(exc)[:120]})")
 
     def _assign(self, number):
         """Assign the new alert issue to the notify user. Never fails the alert:
@@ -560,6 +639,8 @@ class Scanner:
                     alerts = [a for a in alerts if a.get("test")]
                 for line in self.raise_alerts(alerts, now, dry_run=dry_run):
                     self.out(line)
+                if not dry_run:
+                    self.follow_ups(now)
                 self.memory.prune(now)
                 if not dry_run:
                     self.memory.save()
@@ -588,7 +669,8 @@ def fake_alert(spec, now):
                      title="Test headline: something good happened", url="", seen=now.isoformat(),
                      announced=None, how="a test event", key=f"news|{coin}|test", test=True,
                      reason="test event")
-    exchange = exchange.strip().capitalize() or "Coinbase"
+    exchange = {n.lower(): n for n in VENUES}.get(exchange.strip().lower(), exchange.strip().capitalize()) \
+        or "Coinbase"
     return Alert(kind="listing", exchange=exchange, coin=coin, coin_id=None, source="test",
                  title=f"{exchange} lists {coin} (test)", url="", seen=now.isoformat(),
                  announced=None, how="a test event", key=alert_key("listing", exchange, coin),
