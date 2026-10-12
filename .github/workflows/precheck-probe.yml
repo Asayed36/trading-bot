@@ -1,0 +1,37 @@
+# Temporary probe: the scanner's pre-check against the real exchanges, from a GitHub runner.
+name: Pre-check probe
+on:
+  push:
+    branches: [claude/precheck-probe]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Pre-check, dry run, on real coins
+        env:
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+        run: |
+          for spec in Coinbase:SOL Binance:SOL OKX:SOL Kraken:SOL Upbit:SOL OKX:BTC; do
+            echo "=================== $spec"
+            python scanner_alert.py --dry-run --fake "$spec" 2>&1 | sed -n '/### Pre-check/,/AI second opinion/p'
+          done
+          echo "=================== OKX derivatives-only candidates"
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, ".")
+          from screener.news import NewsHttp
+          from screener.precheck import Okx
+          o = Okx(NewsHttp(20))
+          for coin in ("SOL", "BTC", "NOTACOIN"):
+              print(coin, o.spot(coin)["text"])
+          PY
