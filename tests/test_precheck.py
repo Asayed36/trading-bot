@@ -303,6 +303,21 @@ class ThresholdTests(unittest.TestCase):
         self.assertEqual(verdict, "PASS")
         self.assertEqual(checks[1][2], "not on CoinGecko yet")
 
+    def test_only_the_biggest_coin_with_the_ticker_is_judged_wrapped(self):
+        pre = pc.Precheck(CFG, Routes([]), {})
+        alert = sa.Alert(kind="listing", exchange="Coinbase", coin="SOL", source="x", title="t", url="",
+                         text="", seen=NOW.isoformat(), announced=None, how="h", key="k", test=False)
+        many = {"count": 11, "coins": [("Solana", 6e10), ("Binance-Peg SOL", 1e8)],
+                "names": ["Solana", "Binance-Peg SOL", "Wormhole Bridged Wrapped SOL"]}
+        facts = pre._facts(alert, many, {"status": "yes", "text": "SPOT: yes", "pairs": []}, None, None,
+                           None, None, {})
+        self.assertFalse(facts["stable"])                       # Solana itself is not wrapped
+        self.assertEqual(facts["clash_count"], 11)              # ... but the clash is flagged on its own
+        wrapped = dict(many, names=["Wrapped Foo", "Foo"])
+        facts = pre._facts(alert, wrapped, {"status": "yes", "text": "SPOT: yes", "pairs": []}, None, None,
+                           None, None, {})
+        self.assertTrue(facts["stable"])
+
     def test_stablecoins_and_wrapped_tokens(self):
         self.assertTrue(pc.stable_or_wrapped("USDC", [], T)[0])
         self.assertTrue(pc.stable_or_wrapped("WBTC", ["Wrapped Bitcoin"], T)[0])
@@ -404,6 +419,7 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(body.split("\n")[0], "@Asayed36")
         self.assertIn("### Pre-check (information, not advice)", body)
         self.assertIn("1. **What it is:** Demo Network (DEMO) on Coinbase.", body)
+        self.assertNotIn("the biggest of", body)
         self.assertIn("no announcement text: the coin appeared in the exchange's public market list", body)
         self.assertIn("2. **Spot or not:** SPOT: yes (pairs: DEMO-USD)", body)
         self.assertIn("3. **Ticker on CoinGecko:** 1 coin(s) use DEMO: Demo Network (market cap $12,345,678).", body)

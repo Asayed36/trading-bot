@@ -477,7 +477,9 @@ class Precheck:
             f["clash_count"] = cg["count"]
         else:
             f["clash_note"] = lookups.get("clash_error", "unknown")
-        f["stable"], f["stable_note"] = stable_or_wrapped(alert["coin"], (cg or {}).get("names") or [], t)
+        # the biggest coin with this ticker is the one judged (a ticker shared with some bridged
+        # or peg copies is flagged as a clash on its own line)
+        f["stable"], f["stable_note"] = stable_or_wrapped(alert["coin"], ((cg or {}).get("names") or [])[:1], t)
         if ticker and ticker.get("last"):
             f["price"] = ticker["last"]
             f["change_24h_pct"] = ticker.get("change_pct")
@@ -539,7 +541,9 @@ class Precheck:
         f, look = r["facts"], r["lookups"]
         L = ["### Pre-check (information, not advice)"]
         names = (cg or {}).get("names") or []
-        name = names[0] if len(names) == 1 else None
+        count = (cg or {}).get("count") or 0
+        name = (names[0] if count == 1 else f"{names[0]} (the biggest of {count} coins using this ticker)"
+                if names else None)
         if alert.get("how", "").startswith("a new pair"):
             said = "no announcement text: the coin appeared in the exchange's public market list"
         else:
@@ -597,7 +601,7 @@ class Precheck:
         row = {
             "key": alert["key"], "time_utc": now.strftime(TIME), "feed": alert["source"],
             "exchange": alert["exchange"], "ticker": alert["coin"],
-            "name": ((cg or {}).get("names") or [""])[0] if cg and len(cg["names"]) == 1 else "",
+            "name": ((cg or {}).get("names") or [""])[0],
             "issue": issue, "spot": f["spot"], "pairs": spot_pairs, "pair": pair_id,
             "quote": (r.get("pair") or {}).get("quote", ""),
             "clash_count": "" if f.get("clash_count") is None else f["clash_count"],
