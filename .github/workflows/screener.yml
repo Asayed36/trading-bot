@@ -90,7 +90,7 @@ jobs:
           CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
         run: |
           set +e
-          python run.py --github-issues 2>&1 | tee report.txt
+          python run.py 2>&1 | tee report.txt
           code=${PIPESTATUS[0]}
           set -e
           {
