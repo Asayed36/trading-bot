@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import launch_bot  # noqa: E402
 from run import HERE  # noqa: E402
+from tests import gitutil  # noqa: E402
 
 SCRIPT = os.path.join(HERE, "deploy", "push_results.sh")
 
@@ -58,8 +59,10 @@ class PushScriptTests(unittest.TestCase):
         for k in ("GIT_AUTHOR_NAME", "GIT_AUTHOR_EMAIL", "GIT_COMMITTER_NAME",
                   "GIT_COMMITTER_EMAIL"):
             self.env.pop(k, None)
+        # (the checkouts are made without `git clone`, which sometimes failed on GitHub's
+        # runners; a failing git command now shows git's own message: tests/gitutil.py)
         self.git("init", "-q", "--bare", "-b", "main", "origin.git")
-        self.git("clone", "-q", "origin.git", "dev")
+        gitutil.init_checkout(self.path("origin.git"), self.path("dev"), self.env)
         dev = self.path("dev")
         os.makedirs(os.path.join(dev, "deploy"))
         os.makedirs(os.path.join(dev, "data", "launch"))
@@ -70,7 +73,7 @@ class PushScriptTests(unittest.TestCase):
         self.dev("add", "-A")
         self.dev("commit", "-qm", "init")
         self.dev("push", "-q", "origin", "main")
-        self.git("clone", "-q", "origin.git", "server")
+        gitutil.copy_checkout(self.path("dev"), self.path("server"), self.env)
 
     def tearDown(self):
         self.tmp.cleanup()
@@ -87,8 +90,8 @@ class PushScriptTests(unittest.TestCase):
             return fh.read()
 
     def git(self, *args, cwd=None, check=True):
-        return subprocess.run(["git", *args], cwd=cwd or self.d, env=self.env, check=check,
-                              capture_output=True, text=True)
+        # a command that fails is run once more, and then says what git said
+        return gitutil.run_git(args, cwd or self.d, self.env, check=check, retries=1)
 
     def dev(self, *args):
         return self.git("-c", "user.name=dev", "-c", "user.email=dev@x", *args,

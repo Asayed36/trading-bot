@@ -141,7 +141,9 @@ class EntryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as other:
             run(DemoApi(), CFG, other, out=lambda *a: None)
             for name in ("journal.csv", os.path.join("early", "journal.csv")):
-                strip = lambda rs: [{k: v for k, v in r.items() if k != "time_utc"} for r in rs]
+                # (not the fetch times: two runs a moment apart can straddle a second)
+                strip = lambda rs: [{k: v for k, v in r.items()  # noqa: E731
+                                     if k not in ("time_utc", "price_time_utc")} for r in rs]
                 self.assertEqual(strip(rows(os.path.join(self.d, name))),
                                  strip(rows(os.path.join(other, name))))
 
