@@ -487,7 +487,10 @@ def main(argv=None):
     api = PublicApi(cfg["api"]["timeout_seconds"], cfg["api"]["rugcheck_delay_seconds"])
     # Bitcoin's trend in every paper buy's entries.csv row (logging only).
     PaperTrader.market = BtcTrend()
-    PaperTrader.backdrop = MarketBackdrop()   # BTC/ETH/SOL moves (logging only)
+    # BTC/ETH/SOL moves from Binance's public data, no key (logging only).
+    PaperTrader.backdrop = MarketBackdrop(
+        None if args.test else os.path.join(HERE, cfg["files"]["data_folder"],
+                                            "backdrop_cache.json"))
     if args.test:
         with tempfile.TemporaryDirectory() as folder:
             print("Test run: real data, results in a temporary folder (nothing is saved).")

@@ -315,7 +315,10 @@ def main(argv=None):
     coingecko_key = secret("coingecko_api_key", "COINGECKO_API_KEY")
     # Bitcoin's trend in every paper buy's entries.csv row (logging only).
     PaperTrader.market = BtcTrend(coingecko_key or "")
-    PaperTrader.backdrop = MarketBackdrop(coingecko_key or "")   # BTC/ETH/SOL moves (logging only)
+    # BTC/ETH/SOL moves from Binance's public data, no key (logging only).
+    PaperTrader.backdrop = MarketBackdrop(
+        None if args.test else os.path.join(HERE, cfg["files"]["data_folder"],
+                                            "backdrop_cache.json"))
     ai_key = api_key()
     print(f"AI check: {'on' if ai_key else 'off (no Claude API key: rule-based checks only)'}",
           flush=True)

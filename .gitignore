@@ -97,6 +97,9 @@ data/trend/candles/*
 !data/trade-feed-probe/
 data/trade-feed-probe/*
 !data/trade-feed-probe/summary.json
+# The market backdrop's cache (screener/backdrop.py): a machine's last answer, never committed.
+data/backdrop_cache.json
+
 # The momentum strategy (run on your own server) pushes these; its state.json
 # (memory of recent launches) stays on the server.
 !data/momentum/

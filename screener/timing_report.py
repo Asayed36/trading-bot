@@ -271,7 +271,8 @@ def build_report(data_root, min_liquidity, folder="main-1min"):
             table("block", split(dated, lambda t: block_of(t["hour"]), BLOCKS), min_liquidity),
             "", "## Backdrop", "",
             "The same measures, split by Bitcoin's price change at the moment we first checked "
-            "the token (candidates.csv btc_change_1h_pct / btc_change_24h_pct, recorded since "
+            "the token (candidates.csv btc_change_1h_pct / btc_change_24h_pct, from Binance's "
+            "public market data - the first rows saved came from CoinGecko, same meaning - recorded since "
             "2026-10-13; older rows have none and are left out)."]
     for column, name in (("btc_change_1h_pct", "Bitcoin 1 h change"),
                          ("btc_change_24h_pct", "Bitcoin 24 h change")):

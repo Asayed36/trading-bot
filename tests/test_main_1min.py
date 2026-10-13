@@ -213,7 +213,11 @@ class LoopTests(unittest.TestCase):
                 mock.patch.object(m1, "PublicApi", lambda *a: DemoApi()), \
                 mock.patch.object(m1, "JupiterOrganic", lambda: None), \
                 mock.patch.object(m1, "HERE", d), \
+                mock.patch.object(m1.PaperTrader, "market", None), \
+                mock.patch.object(m1.PaperTrader, "backdrop", None), \
                 mock.patch("sys.stdout", io.StringIO()) as out:
+            # (main() sets the two class-wide lookups; they are put back after the test so
+            # later tests never reach for the real websites)
             self.assertEqual(m1.main(["--test"]), 0)
             self.assertEqual(os.listdir(d), [])
         self.assertIn("nothing is saved", out.getvalue())
