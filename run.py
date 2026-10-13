@@ -33,6 +33,7 @@ from screener.convergence import ConvergenceStrategy
 from screener.early import EarlyStrategy
 from screener.github_issues import GitHubIssues, issue_details, sync
 from screener.health import record_health
+from screener.backdrop import MarketBackdrop
 from screener.btc import BtcTrend
 from screener.jupiter import JupiterOrganic
 from screener.news import NewsHttp, NewsStrategy
@@ -403,6 +404,7 @@ def main():
         jupiter = JupiterOrganic()
         # Bitcoin's trend in every paper buy's entries.csv row (logging only).
         PaperTrader.market = BtcTrend(coingecko_key)
+        PaperTrader.backdrop = MarketBackdrop(coingecko_key)   # BTC/ETH/SOL moves (logging only)
 
     try:
         run(api, cfg, folder, issues=issues, helius_key=helius_key, rpc_factory=rpc_factory,

@@ -20,6 +20,13 @@ Blank always means "not known / not saved", never zero.
 3. CreatorLedger: creator -> the tokens we have seen them launch and which
    died (market cap under $5k, as early does). Seeded by early's dead creators.
 
+4. Since 2026-10-13, candidates.csv also has the market backdrop at the first
+   check (screener/backdrop.py: Bitcoin's 1 h / 24 h change, Ethereum's and
+   Solana's 1 h change) and the launch time columns (LAUNCH_COLUMNS: when the
+   token's pool was created, not when we first saw it, with its hour and weekday,
+   how long after creation we first checked, and the hour and weekday of that
+   first check). Blank = not known.
+
 PAPER TRADING ONLY: read-only GET requests, nothing signed or sent.
 """
 
@@ -59,6 +66,15 @@ CANDIDATE_COLUMNS = (
     + [c for name, _, _ in CHECKPOINTS
        for c in (f"price_{name}_usd", f"market_cap_{name}_usd", f"liquidity_{name}_usd",
                  f"time_{name}_utc")])
+
+
+# candidates.csv, appended after the checkpoint columns (2026-10-13).
+LAUNCH_COLUMNS = ["created_at_utc", "created_source", "created_hour_utc", "created_weekday",
+                  "seen_delay_seconds", "seen_hour_utc", "seen_weekday"]
+BACKDROP_COLUMNS = ["btc_change_1h_pct", "btc_change_24h_pct", "eth_change_1h_pct",
+                    "sol_change_1h_pct"]
+CANDIDATE_COLUMNS = CANDIDATE_COLUMNS + BACKDROP_COLUMNS + LAUNCH_COLUMNS
+ISO = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def _num(value):
@@ -140,6 +156,46 @@ def pair_facts(pair, when):
     return {"dex_id": pair.get("dexId") or None, "pool_age_minutes": age,
             "market_cap_usd": _num(pair.get("marketCap")) or _num(pair.get("fdv")),
             "liquidity_usd": _num((pair.get("liquidity") or {}).get("usd"))}
+
+
+def launch_times(first_checked, pool_created_ms=None, rc_first_seen=None, pool_age_minutes=None):
+    """The LAUNCH_COLUMNS values (UTC; weekday 0 = Monday). The creation time
+    is the pool's creation time (DexScreener's pairCreatedAt, or - for rows
+    saved without it - the first check minus pool_age_minutes), else the time
+    RugCheck first saw the token; created_source says which ("pool" or
+    "rugcheck"). Not the time we first saw the token. Blank when unknown."""
+    out = dict.fromkeys(LAUNCH_COLUMNS)
+    seen = first_checked if first_checked.tzinfo else first_checked.replace(tzinfo=timezone.utc)
+    created, source = None, None
+    ms = _num(pool_created_ms)
+    age = _num(pool_age_minutes)
+    if ms:
+        created, source = datetime.fromtimestamp(ms / 1000, timezone.utc), "pool"
+    elif age is not None:
+        created, source = seen - timedelta(minutes=age), "pool"
+    else:
+        rc = _utc(str(rc_first_seen).replace(" ", "T")) if rc_first_seen else None
+        if rc:
+            created, source = rc, "rugcheck"
+    out["seen_hour_utc"], out["seen_weekday"] = seen.hour, seen.weekday()
+    if created:
+        out["created_at_utc"], out["created_source"] = created.strftime(ISO), source
+        out["created_hour_utc"], out["created_weekday"] = created.hour, created.weekday()
+        out["seen_delay_seconds"] = round((seen - created).total_seconds())
+    return out
+
+
+def row_launch_times(row):
+    """LAUNCH_COLUMNS for a candidates.csv row as saved: the columns when the
+    row has them, else worked out from the older columns (first_checked_utc,
+    pool_age_minutes, rc_first_seen_utc) with the same rule."""
+    if (row.get("created_at_utc") or "") != "":
+        return {k: row.get(k) for k in LAUNCH_COLUMNS}
+    try:
+        first = datetime.strptime(row["first_checked_utc"], TIME).replace(tzinfo=timezone.utc)
+    except (KeyError, TypeError, ValueError):
+        return dict.fromkeys(LAUNCH_COLUMNS)
+    return launch_times(first, None, row.get("rc_first_seen_utc"), row.get("pool_age_minutes"))
 
 
 def token_age_hours(first_seen, when):
@@ -239,8 +295,9 @@ class CandidateLog:
     """candidates.csv of a strategy's folder: a row per token the first time
     it is checked, and its later prices. Its own memory is the file."""
 
-    def __init__(self, folder, strategy, name="candidates.csv"):
+    def __init__(self, folder, strategy, name="candidates.csv", backdrop=None):
         self.path, self.strategy = os.path.join(folder, name), strategy
+        self.backdrop = backdrop      # callable () -> BACKDROP_COLUMNS values; else PaperTrader's
         self._seen = None
 
     # -- the file --
@@ -301,10 +358,27 @@ class CandidateLog:
             "creator_ledger_launches": launches, "creator_ledger_dead": dead,
             **facts,
         }
+        row.update(self._backdrop())
+        try:
+            row.update(launch_times(when, pair.get("pairCreatedAt"),
+                                    (record or {}).get("rc_first_seen_utc"),
+                                    row.get("pool_age_minutes")))
+        except Exception:            # recording only: the columns stay blank
+            pass
         from screener.paper_trader import append_row
         append_row(self.path, CANDIDATE_COLUMNS, [_cell(row.get(c)) for c in CANDIDATE_COLUMNS])
         self.seen().add(result.address)
         return True
+
+    def _backdrop(self):
+        """BACKDROP_COLUMNS values from one cached lookup (screener/backdrop.py);
+        empty when unknown. Never raises."""
+        try:
+            from screener.paper_trader import PaperTrader
+            source = self.backdrop or PaperTrader.backdrop
+            return dict(source() or {}) if source else {}
+        except Exception:
+            return {}
 
     # -- later prices --
 
