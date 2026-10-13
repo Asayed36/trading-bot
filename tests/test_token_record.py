@@ -241,8 +241,10 @@ class EntriesTests(unittest.TestCase):
                "insider_flagged", "insider_networks", "insider_linked_wallets",
                "insider_top_holders", "price_change_5m_pct", "price_change_1h_pct"]
         self.assertEqual(ENTRY_COLUMNS[:len(old)], old)
-        self.assertEqual(ENTRY_COLUMNS[-len(tr.RECORD_COLUMNS):], tr.RECORD_COLUMNS)
-        self.assertEqual(ENTRY_COLUMNS[-len(tr.RECORD_COLUMNS) - 4:-len(tr.RECORD_COLUMNS)],
+        # (btc_change_1h_pct, added 2026-10-13, comes after them: tests/test_timing.py)
+        self.assertEqual(ENTRY_COLUMNS[-1], "btc_change_1h_pct")
+        self.assertEqual(ENTRY_COLUMNS[-len(tr.RECORD_COLUMNS) - 1:-1], tr.RECORD_COLUMNS)
+        self.assertEqual(ENTRY_COLUMNS[-len(tr.RECORD_COLUMNS) - 5:-len(tr.RECORD_COLUMNS) - 1],
                          ["buys_5m", "sells_5m", "volume_5m_usd", "volume_1h_usd"])
 
     def test_a_buy_saves_the_new_columns_and_an_old_file_is_extended(self):

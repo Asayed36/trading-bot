@@ -57,6 +57,7 @@ from screener.api import ApiError
 from screener.autorestart import CodeWatcher, forever
 from screener.news import CoinGecko, FastNewsTrader, NewsHttp, NewsStrategy
 from screener.news_ai import api_key
+from screener.backdrop import MarketBackdrop
 from screener.btc import BtcTrend
 from screener.listing_track import KEEP_CALLS, ListingTrack
 from screener.paper_trader import PaperTrader, now_utc
@@ -314,6 +315,7 @@ def main(argv=None):
     coingecko_key = secret("coingecko_api_key", "COINGECKO_API_KEY")
     # Bitcoin's trend in every paper buy's entries.csv row (logging only).
     PaperTrader.market = BtcTrend(coingecko_key or "")
+    PaperTrader.backdrop = MarketBackdrop(coingecko_key or "")   # BTC/ETH/SOL moves (logging only)
     ai_key = api_key()
     print(f"AI check: {'on' if ai_key else 'off (no Claude API key: rule-based checks only)'}",
           flush=True)

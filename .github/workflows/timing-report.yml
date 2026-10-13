@@ -1,0 +1,60 @@
+# Timing report (screener/timing_report.py): once a day at 00:20 UTC, or by hand,
+# it reads the saved data files (data/main-1min/candidates.csv and the paper
+# journals) and rewrites data/main-1min/timing_report.md - when tokens were
+# launched, what became of them by hour / weekday / 6-hour block, the same split
+# by Bitcoin's move, and our own paper buys by hour. Report only: it changes no
+# bot, rule or setting, and makes no request to any website.
+#
+# Uses only the workflow's own GITHUB_TOKEN (to commit that one report file). No
+# secret, no API key, no paid service, no wallet.
+
+name: Timing report
+
+on:
+  schedule:
+    - cron: "20 0 * * *"     # 00:20 UTC every day (GitHub may start it a little later)
+  workflow_dispatch:         # by hand from the Actions tab
+
+permissions:
+  contents: write            # to commit data/main-1min/timing_report.md
+
+concurrency:
+  group: timing-report
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Write the report
+        run: |
+          python timing_report.py
+          cat data/main-1min/timing_report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Save the report to the repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/main-1min/timing_report.md
+          if git diff --cached --quiet; then
+            echo "The report has not changed."
+            exit 0
+          fi
+          git commit -m "Timing report $(date -u '+%Y-%m-%d %H:%M UTC')"
+          # The paper runs push to the same branch: if someone pushed in the
+          # meantime, replay our commit on top and retry (5 attempts).
+          for attempt in 1 2 3 4 5; do
+            git push && exit 0
+            [ "$attempt" -lt 5 ] || break
+            sleep $((attempt * 10))
+            git pull --rebase
+          done
+          echo "Could not push the report after 5 attempts." >&2
+          exit 1

@@ -60,6 +60,7 @@ from datetime import timedelta
 from screener.api import ApiError, PublicApi, RateLimited
 from screener.autorestart import CodeWatcher
 from screener.autorestart import forever as run_forever
+from screener.backdrop import MarketBackdrop
 from screener.btc import BtcTrend
 from screener.filters import (PASS, best_pair, current_prices, evaluate, find_candidates,
                               market_checks, to_float)
@@ -486,6 +487,7 @@ def main(argv=None):
     api = PublicApi(cfg["api"]["timeout_seconds"], cfg["api"]["rugcheck_delay_seconds"])
     # Bitcoin's trend in every paper buy's entries.csv row (logging only).
     PaperTrader.market = BtcTrend()
+    PaperTrader.backdrop = MarketBackdrop()   # BTC/ETH/SOL moves (logging only)
     if args.test:
         with tempfile.TemporaryDirectory() as folder:
             print("Test run: real data, results in a temporary folder (nothing is saved).")

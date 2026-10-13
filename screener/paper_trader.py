@@ -44,13 +44,15 @@ JOURNAL_COLUMNS = [
 # how many launches / dead tokens the creator ledger knows of (not counting
 # this token). Since 2026-10-11.
 BTC_COLUMNS = ["btc_close_usd", "btc_200d_avg_usd", "btc_vs_200d", "btc_7d_change_pct"]
+# btc_change_1h_pct: Bitcoin's price change over the hour before the buy
+# (screener/backdrop.py; logging only; blank when unknown and in older rows).
 ENTRY_COLUMNS = [
     "time_utc", "symbol", "token_address", "price_usd", "buys_1h", "sells_1h",
     "insider_flagged", "insider_networks", "insider_linked_wallets", "insider_top_holders",
     "price_change_5m_pct", "price_change_1h_pct", *JUPITER_COLUMNS,
     "fill_price_usd", "buy_slippage_pct", "price_source", "price_time_utc", *BTC_COLUMNS,
     "buys_5m", "sells_5m", "volume_5m_usd", "volume_1h_usd",
-    *RECORD_COLUMNS,
+    *RECORD_COLUMNS, "btc_change_1h_pct",
 ]
 
 
@@ -109,6 +111,10 @@ class PaperTrader:
     # callable () -> Bitcoin's trend values (BTC_COLUMNS), saved in
     # entries.csv at each buy (screener/btc.BtcTrend). None = blank.
     market = None
+    # Optional, for every trader at once: a callable () -> the market
+    # backdrop values (screener/backdrop.MarketBackdrop); entries.csv gets
+    # btc_change_1h_pct and candidates.csv the rest. Logging only.
+    backdrop = None
     # Where this trader's prices come from, for the journal (a caller can
     # give a different source or fetch time per price).
     price_source = "DexScreener"
@@ -246,6 +252,7 @@ class PaperTrader:
             cell(tx5.get("buys")), cell(tx5.get("sells")),
             cell(volume.get("m5")), cell(volume.get("h1")),
             *self.record_cells(result, when, pos["address"]),
+            self.backdrop_cell("btc_change_1h_pct"),
         ])
 
     def record_cells(self, result, when, mint):
@@ -255,6 +262,16 @@ class PaperTrader:
                                 self.ledger, mint)
         except Exception:   # logging only: never stops a buy
             return [""] * len(RECORD_COLUMNS)
+
+    def backdrop_cell(self, column):
+        """One market backdrop value for entries.csv (blank when unknown)."""
+        source = type(self).backdrop
+        try:
+            value = (source() if source else None) or {}
+            value = value.get(column)
+        except Exception:   # logging only: never stops a buy
+            value = None
+        return "" if value is None else value
 
     def btc_cells(self):
         """Bitcoin's trend for entries.csv (blank when unknown)."""
