@@ -35,10 +35,25 @@ jobs:
       - name: Install
         run: pip install -r requirements.txt -r requirements-launch.txt
 
-      - name: Measure
-        env:
-          MINUTES: ${{ github.event.inputs.minutes || '5' }}
+      - name: THROWAWAY proof of the Binance backdrop
         run: |
-          python trade_feed_probe.py --minutes "$MINUTES" --out "$RUNNER_TEMP/probe" | tee report.txt
-          { echo '```'; cat report.txt; echo '```'; echo; echo '```json';
-            cat "$RUNNER_TEMP/probe/summary.json"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          python - <<'PY'
+          import os, tempfile, requests
+          from screener.backdrop import MarketBackdrop
+          calls = []
+          def counting_get(url, **kw):
+              calls.append((url, kw))
+              r = requests.get(url, **kw)
+              print("REQUEST", r.status_code, r.url)
+              return r
+          cache = os.path.join(tempfile.mkdtemp(), "backdrop_cache.json")
+          first = MarketBackdrop(cache, get=counting_get)
+          print("FIRST PROCESS VALUES:", first())
+          print("FIRST PROCESS AGAIN (memory cache):", first())
+          print("REQUESTS SO FAR:", len(calls))
+          second = MarketBackdrop(cache, get=counting_get)       # a new process, same file
+          print("SECOND PROCESS VALUES (from the file):", second())
+          print("REQUESTS IN TOTAL:", len(calls))
+          print("EXTRA KWARGS SENT:", sorted({k for _, kw in calls for k in kw}))
+          print("CACHE FILE:", open(cache).read())
+          PY
