@@ -35,10 +35,12 @@ jobs:
       - name: Install
         run: pip install -r requirements.txt -r requirements-launch.txt
 
-      - name: Measure
-        env:
-          MINUTES: ${{ github.event.inputs.minutes || '5' }}
+      - name: THROWAWAY proof of the timing report
         run: |
-          python trade_feed_probe.py --minutes "$MINUTES" --out "$RUNNER_TEMP/probe" | tee report.txt
-          { echo '```'; cat report.txt; echo '```'; echo; echo '```json';
-            cat "$RUNNER_TEMP/probe/summary.json"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          python - <<'PY'
+          from screener.backdrop import MarketBackdrop
+          print("LIVE BACKDROP:", MarketBackdrop(key="")())
+          PY
+          python timing_report.py
+          echo "=====REPORT====="
+          cat data/main-1min/timing_report.md
