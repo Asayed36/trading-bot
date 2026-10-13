@@ -30,12 +30,24 @@ MINT = "MintAAAA"
 PAIR = {"dexId": "pumpswap", "pairAddress": "P1", "priceUsd": "0.5", "marketCap": 250000,
         "liquidity": {"usd": 40000}, "pairCreatedAt": int(CREATED.timestamp() * 1000),
         "baseToken": {"address": MINT, "symbol": "AAA", "name": "Aaa"}}
-COINS = [
-    {"id": "bitcoin", "price_change_percentage_1h_in_currency": 0.4567,
-     "price_change_percentage_24h_in_currency": -2.5},
-    {"id": "ethereum", "price_change_percentage_1h_in_currency": 1.234},
-    {"id": "solana", "price_change_percentage_1h_in_currency": None},
-]
+# Binance's rolling-window ticker answers (priceChangePercent is a string)
+H1 = [{"symbol": "BTCUSDT", "priceChangePercent": "0.4567"},
+      {"symbol": "ETHUSDT", "priceChangePercent": "1.234"},
+      {"symbol": "SOLUSDT", "priceChangePercent": "-0.5"}]
+D1 = [{"symbol": "BTCUSDT", "priceChangePercent": "-2.5"},
+      {"symbol": "ETHUSDT", "priceChangePercent": "-3.1"},
+      {"symbol": "SOLUSDT", "priceChangePercent": "-4.0"}]
+VALUES = {"btc_change_1h_pct": 0.46, "btc_change_24h_pct": -2.5,
+          "eth_change_1h_pct": 1.23, "sol_change_1h_pct": -0.5}
+
+
+def fake_binance(calls=None):
+    """A get() that answers the 1h and 1d ticker calls like Binance."""
+    def get(url, **kw):
+        if calls is not None:
+            calls.append((url, kw))
+        return Resp(H1 if kw["params"]["windowSize"] == "1h" else D1)
+    return get
 
 
 def rows(path):
@@ -52,29 +64,83 @@ class Resp:
 
 
 class BackdropTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.cache = os.path.join(self.tmp.name, "backdrop_cache.json")
+
     def test_parse_keeps_only_the_values_it_was_given(self):
-        self.assertEqual(bd.parse(COINS), {"btc_change_1h_pct": 0.46, "btc_change_24h_pct": -2.5,
-                                           "eth_change_1h_pct": 1.23})
-        self.assertEqual(bd.parse([]), {})
-        self.assertEqual(bd.parse([{"id": "bitcoin", "price_change_percentage_1h_in_currency": "x"}]), {})
+        self.assertEqual(bd.parse("1h", H1), {"btc_change_1h_pct": 0.46, "eth_change_1h_pct": 1.23,
+                                              "sol_change_1h_pct": -0.5})
+        self.assertEqual(bd.parse("1d", D1), {"btc_change_24h_pct": -2.5})
+        self.assertEqual(bd.parse("1h", []), {})
+        for junk in ([{"symbol": "BTCUSDT", "priceChangePercent": "x"}], [{"symbol": "BTCUSDT"}],
+                     [{"symbol": "BTCUSDT", "priceChangePercent": "nan"}], ["junk"], [None]):
+            self.assertEqual(bd.parse("1h", junk), {})
 
-    def test_one_cached_lookup_for_many_calls(self):
-        clock = [NOW]
+    def test_it_asks_binance_publicly_without_any_key_or_header(self):
         calls = []
+        b = bd.MarketBackdrop(get=fake_binance(calls), clock=lambda: NOW)
+        self.assertEqual(b(), VALUES)
+        self.assertEqual(len(calls), 2)                      # one per window
+        self.assertEqual({c[1]["params"]["windowSize"] for c in calls}, {"1h", "1d"})
+        for url, kw in calls:
+            self.assertEqual(url, "https://data-api.binance.vision/api/v3/ticker")
+            self.assertEqual(kw["params"]["symbols"], '["BTCUSDT","ETHUSDT","SOLUSDT"]')
+            self.assertEqual(set(kw), {"params", "timeout"})     # no headers, no key
+            self.assertEqual(kw["timeout"], 5)
+        self.assertNotIn("coingecko", bd.URL.lower())
 
-        def get(url, **kw):
-            calls.append(kw)
-            return Resp(COINS)
-        b = bd.MarketBackdrop(key="k", get=get, clock=lambda: clock[0])
+    def test_the_answer_is_cached_for_15_minutes(self):
+        clock, calls = [NOW], []
+        b = bd.MarketBackdrop(get=fake_binance(calls), clock=lambda: clock[0])
         for _ in range(50):
             self.assertEqual(b()["btc_change_1h_pct"], 0.46)
-        self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0]["timeout"], bd.TIMEOUT_SECONDS)
-        self.assertEqual(calls[0]["headers"], {"x-cg-demo-api-key": "k"})
-        self.assertEqual(calls[0]["params"]["ids"], "bitcoin,ethereum,solana")
-        clock[0] = NOW + timedelta(minutes=bd.CACHE_MINUTES, seconds=1)
+        self.assertEqual(len(calls), 2)
+        clock[0] = NOW + timedelta(minutes=14, seconds=59)
         b()
         self.assertEqual(len(calls), 2)
+        clock[0] = NOW + timedelta(minutes=15, seconds=1)
+        b()
+        self.assertEqual(len(calls), 4)
+
+    def test_nothing_is_asked_while_nothing_is_checked(self):
+        calls = []
+        bd.MarketBackdrop(get=fake_binance(calls), clock=lambda: NOW)
+        self.assertEqual(calls, [])
+
+    def test_a_new_process_reuses_the_file_while_it_is_under_15_minutes_old(self):
+        clock, calls = [NOW], []
+        first = bd.MarketBackdrop(self.cache, get=fake_binance(calls), clock=lambda: clock[0])
+        first()
+        self.assertEqual(len(calls), 2)
+        clock[0] = NOW + timedelta(minutes=14)
+        second = bd.MarketBackdrop(self.cache, get=fake_binance(calls), clock=lambda: clock[0])
+        self.assertEqual(second(), VALUES)
+        self.assertEqual(len(calls), 2)                      # no new request
+        clock[0] = NOW + timedelta(minutes=16)
+        third = bd.MarketBackdrop(self.cache, get=fake_binance(calls), clock=lambda: clock[0])
+        self.assertEqual(third(), VALUES)
+        self.assertEqual(len(calls), 4)                      # too old: asked again
+
+    def test_a_broken_or_future_cache_file_is_ignored(self):
+        for text in ("not json", "{}", '{"fetched_at": "x", "values": {"btc_change_1h_pct": 1}}',
+                     '{"fetched_at": "2030-01-01T00:00:00+00:00", "values": {"btc_change_1h_pct": 1}}',
+                     '{"fetched_at": "%s", "values": {}}' % NOW.isoformat()):
+            with open(self.cache, "w") as fh:
+                fh.write(text)
+            calls = []
+            b = bd.MarketBackdrop(self.cache, get=fake_binance(calls), clock=lambda: NOW)
+            self.assertEqual(b(), VALUES, text)
+            self.assertEqual(len(calls), 2, text)
+
+    def test_the_cache_file_is_in_gitignore_and_is_never_added_by_the_workflows(self):
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(os.path.join(here, ".gitignore")) as fh:
+            self.assertIn("data/backdrop_cache.json", fh.read().splitlines())
+        for name in os.listdir(os.path.join(here, ".github", "workflows")):
+            with open(os.path.join(here, ".github", "workflows", name)) as fh:
+                self.assertNotIn("backdrop_cache", fh.read())
 
     def test_a_failed_lookup_is_blank_never_raises_and_is_retried_later(self):
         clock, calls = [NOW], []
@@ -82,18 +148,53 @@ class BackdropTests(unittest.TestCase):
         def get(url, **kw):
             calls.append(1)
             raise OSError("no network")
-        b = bd.MarketBackdrop(key="", get=get, clock=lambda: clock[0])
+        b = bd.MarketBackdrop(self.cache, get=get, clock=lambda: clock[0])
         self.assertEqual(b(), {})
         self.assertEqual(b(), {})
-        self.assertEqual(len(calls), 1)             # not hammered
+        self.assertEqual(len(calls), 2)                      # both windows once, then waits
+        self.assertFalse(os.path.exists(self.cache))         # a failure is never saved
         clock[0] = NOW + timedelta(seconds=bd.RETRY_SECONDS + 1)
         b()
-        self.assertEqual(len(calls), 2)
+        self.assertEqual(len(calls), 4)
+
+    def test_one_window_failing_leaves_only_its_columns_blank(self):
+        def get(url, **kw):
+            if kw["params"]["windowSize"] == "1d":
+                raise OSError("down")
+            return Resp(H1)
+        values = bd.MarketBackdrop(get=get, clock=lambda: NOW)()
+        self.assertEqual(set(values), {"btc_change_1h_pct", "eth_change_1h_pct", "sol_change_1h_pct"})
 
     def test_bad_answers_are_blank(self):
-        for resp in (Resp({"status": {"error_code": 429}}, 429), Resp("junk"), Resp(None, 200)):
-            b = bd.MarketBackdrop(key="", get=lambda *a, **k: resp, clock=lambda: NOW)
+        for resp in (Resp({"code": -1121, "msg": "bad"}, 400), Resp("junk"), Resp(None, 200),
+                     Resp({"code": 0}, 451)):
+            b = bd.MarketBackdrop(get=lambda *a, **k: resp, clock=lambda: NOW)
             self.assertEqual(b(), {})
+
+    def test_it_never_raises_even_when_the_clock_or_the_file_system_fails(self):
+        def broken_clock():
+            raise RuntimeError("clock")
+        self.assertEqual(bd.MarketBackdrop(get=fake_binance(), clock=broken_clock)(), {})
+        blocked = os.path.join(self.tmp.name, "afile")
+        open(blocked, "w").close()
+        b = bd.MarketBackdrop(os.path.join(blocked, "sub", "c.json"), get=fake_binance(),
+                              clock=lambda: NOW)
+        self.assertEqual(b(), VALUES)                        # cannot save the file: still answers
+
+
+class CallersTests(unittest.TestCase):
+    def test_the_three_bots_create_the_backdrop_without_any_key(self):
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        for name in ("run.py", "main_1min.py", "news_listings_bot.py"):
+            with open(os.path.join(here, name)) as fh:
+                text = fh.read()
+            i = text.index("PaperTrader.backdrop = MarketBackdrop(")
+            j = text.index("backdrop_cache.json", i)
+            call = text[i:j + 21]
+            self.assertLess(j - i, 250, name)
+            self.assertIn("backdrop_cache.json", call, name)
+            self.assertNotIn("coingecko", call.lower(), name)
+            self.assertNotIn("key", call.lower(), name)
 
 
 class LaunchTimeTests(unittest.TestCase):
@@ -141,12 +242,12 @@ class RecordingTests(unittest.TestCase):
         return log.add(Result(mint, "AAA", "Aaa", pair), None, {}, NOW, "FAIL", "x", True, "d")
 
     def test_new_columns_are_written(self):
-        log = tr.CandidateLog(self.d, "test", backdrop=lambda: bd.parse(COINS))
+        log = tr.CandidateLog(self.d, "test", backdrop=lambda: dict(VALUES))
         self.assertTrue(self.add(log))
         (row,) = rows(os.path.join(self.d, "candidates.csv"))
         self.assertEqual((row["btc_change_1h_pct"], row["btc_change_24h_pct"],
                           row["eth_change_1h_pct"], row["sol_change_1h_pct"]),
-                         ("0.46", "-2.5", "1.23", ""))
+                         ("0.46", "-2.5", "1.23", "-0.5"))
         self.assertEqual((row["created_at_utc"], row["created_hour_utc"], row["created_weekday"],
                           row["seen_delay_seconds"], row["seen_hour_utc"], row["seen_weekday"]),
                          ("2026-10-11T13:00:00Z", "13", "6", "5400", "14", "6"))
@@ -187,7 +288,7 @@ class RecordingTests(unittest.TestCase):
             w.writerow(["2026-10-10 10:00:00" if c == "first_checked_utc" else "OLDMINT"
                         if c == "token_address" else "" for c in old_cols])
         self.assertEqual(len(tr.CandidateLog(self.d, "test").rows()), 1)
-        log = tr.CandidateLog(self.d, "test", backdrop=lambda: bd.parse(COINS))
+        log = tr.CandidateLog(self.d, "test", backdrop=lambda: dict(VALUES))
         self.add(log)
         old, new = rows(path)
         self.assertEqual((old["token_address"], old["btc_change_1h_pct"], old["created_at_utc"]),
@@ -203,7 +304,7 @@ class RecordingTests(unittest.TestCase):
             w.writerow(["2026-10-01 00:00:00", "OLD", "oldmint", "1"])
         trader = PaperTrader(CFG["paper_trading"], self.d)
         result = Result(MINT, "AAA", "Aaa", PAIR)
-        with mock.patch.object(PaperTrader, "backdrop", lambda: bd.parse(COINS)):
+        with mock.patch.object(PaperTrader, "backdrop", lambda: dict(VALUES)):
             self.assertIsNotNone(trader.buy(result, when=NOW))
         old, new = rows(path)
         self.assertEqual((old["symbol"], old["btc_change_1h_pct"]), ("OLD", ""))

@@ -127,7 +127,10 @@ class RateLimitTests(unittest.TestCase):
     def test_main_exits_with_skip_code_when_rate_limited(self):
         with mock.patch.object(run_module, "run", side_effect=RateLimited("429")), \
                 mock.patch.object(sys, "argv", ["run.py"]), \
+                mock.patch.object(PaperTrader, "market", None), \
+                mock.patch.object(PaperTrader, "backdrop", None), \
                 mock.patch("builtins.print"):
+            # (main() sets the two class-wide lookups; they are put back after the test)
             self.assertEqual(run_module.main(), EXIT_RATE_LIMITED)
 
 
