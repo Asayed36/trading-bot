@@ -12,7 +12,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 5.061e-05,
+      "last_price": 4.638e-05,
       "issue_details": {
         "extra": [
           [
@@ -128,7 +128,7 @@
       },
       "issue": 416,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-14 17:52:17"
+      "last_price_time": "2026-10-14 18:01:15"
     }
   ],
   "ever_bought": [
@@ -325,6 +325,16 @@
       "created": "2026-10-14T17:35:20Z",
       "liquidity_usd": 72.1834,
       "market_cap_usd": 818023.5851
+    },
+    "0x13942c27080206f9b7705d71219c2f571d3a4713e96be4e3d8ac713fb1c7ad3a": {
+      "pool": "0x13942c27080206f9b7705d71219c2f571d3a4713e96be4e3d8ac713fb1c7ad3a",
+      "dex": "uniswap-pools-trade",
+      "token": "0x43e65c9000d617fe30d26f957c2c9d742aa20000",
+      "name": "NASDANQ",
+      "title": "NASDANQ 22d32",
+      "created": "2026-10-14T17:52:19Z",
+      "liquidity_usd": 28.1704,
+      "market_cap_usd": 2024015.663
     }
   },
   "checked": {
@@ -354,7 +364,7 @@
       ]
     },
     "0x78f6076943bb9dc28803333d4b147035efb58d4bfe85825ece23503ba12142d4": {
-      "at": "2026-10-14T16:59:30.309301+00:00",
+      "at": "2026-10-14T18:01:15.368529+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -411,6 +421,27 @@
         "Owner can't change balances",
         "No blacklist"
       ]
+    },
+    "0xc84081a8193b8795ccca25894460f8de602b6272fe051377237cb2899f498062": {
+      "at": "2026-10-14T18:01:15.368529+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
+    },
+    "0x4194167d859bc7895642d83299518ab59009fe332c25d355053645666f1eed13": {
+      "at": "2026-10-14T18:01:15.368529+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
+    },
+    "0x9852970ae33602c97985fc6625bfe1918548fd86b38e74849b9d541379bbb807": {
+      "at": "2026-10-14T18:01:15.368529+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
     }
   },
   "sources": {
@@ -419,15 +450,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-14T17:52:17.754234+00:00",
+      "at": "2026-10-14T18:01:15.368529+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 1,
+      "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-14T17:52:17.754234+00:00",
+      "at": "2026-10-14T18:01:15.368529+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -443,12 +474,11 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-14T17:52:17.754234+00:00",
+      "at": "2026-10-14T18:01:15.368529+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x6dcc6bb8e560d9e56fc62dd07052699529390dc6cf1829c674f3bc799130152d": "FAIL|Market cap: $6,335 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
     "0x7f1c0a97ac92c6578e82734e204f8bb34b52f7b1ee20fd24e5d8ee580d48a5be": "FAIL|Market cap: $6,100 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
     "0x2e5d13a9721bb48b878118c2ee98193cb2a5121a3f36cc92b1a07ce6c748068a": "FAIL|Market cap: $6,183 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
     "0xe120c2c7220c87352be68114ee279c8697ea58c5fdbcb0fd830feb20b6bf2e8a": "FAIL|Market cap: $6,146 (need $25,000+); Not down >50% in 24h: -50% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
@@ -459,7 +489,10 @@
     "0xce47e6b81cb9906ad4af543078fb5d9624a4107960810d2b28d3aefccced1397": "FAIL|Liquidity: $3,782 (need $10,000+ on Pons)",
     "onchain:0x5f8804b10b376302355f61b0f34eab9c30db6ca8": "FAIL|Liquidity: $7,043 (need $10,000+ on Pons)",
     "onchain:0xd176c307ca06a75a430020fbb4635de6ef00d0e5": "FAIL|Liquidity: $3,750 (need $10,000+ on Pons)",
-    "onchain:0xd45de5bad7603c47bfa0a583503a80da19174089": "FAIL|Not a honeypot: unknown: GoPlus gave no is_honeypot; Not mintable: unknown: GoPlus gave no is_mintable; No hidden owner: unknown: GoPlus gave no hidden_owner; Owner can't change balances: unknown: GoPlus gave no owner_change_balance; No blacklist: unknown: GoPlus gave no is_blacklisted"
+    "onchain:0xd45de5bad7603c47bfa0a583503a80da19174089": "FAIL|Not a honeypot: unknown: GoPlus gave no is_honeypot; Not mintable: unknown: GoPlus gave no is_mintable; No hidden owner: unknown: GoPlus gave no hidden_owner; Owner can't change balances: unknown: GoPlus gave no owner_change_balance; No blacklist: unknown: GoPlus gave no is_blacklisted",
+    "0xc84081a8193b8795ccca25894460f8de602b6272fe051377237cb2899f498062": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
+    "0x4194167d859bc7895642d83299518ab59009fe332c25d355053645666f1eed13": "FAIL|Liquidity: $198 (need $5,000+ on Pools.trade)",
+    "0x9852970ae33602c97985fc6625bfe1918548fd86b38e74849b9d541379bbb807": "FAIL|Liquidity: $4,999 (need $10,000+ on Pons)"
   },
   "launchpad_tokens": {
     "0x00fe57f4e1737b435e6f768ea303b45f6582e738": {
@@ -1707,7 +1740,7 @@
       "graduated": "2026-10-13T10:34:07Z",
       "symbol": "VRAX",
       "title": "Commander Vrax f925c",
-      "seen": "2026-10-14T17:52:17.754234+00:00",
+      "seen": "2026-10-14T18:01:15.368529+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 2835129.397
@@ -1827,7 +1860,7 @@
       "graduated": "2026-10-13T15:32:21Z",
       "symbol": "Route",
       "title": "AnchorRoute",
-      "seen": "2026-10-14T17:52:17.754234+00:00",
+      "seen": "2026-10-14T18:01:15.368529+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 7167.241,
       "market_cap_usd": 6364.885023
@@ -1857,7 +1890,7 @@
       "graduated": "2026-10-13T16:59:45Z",
       "symbol": "SALUTEFACE",
       "title": "Salute face 13973",
-      "seen": "2026-10-14T17:52:17.754234+00:00",
+      "seen": "2026-10-14T18:01:15.368529+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 348110.8999
@@ -2006,7 +2039,7 @@
       "graduated": "2026-10-14T06:27:57Z",
       "symbol": "$100B",
       "title": "Robinhood $100B",
-      "seen": "2026-10-14T17:52:17.754234+00:00",
+      "seen": "2026-10-14T18:01:15.368529+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16846.2134,
       "market_cap_usd": 6218.199409
@@ -2016,7 +2049,7 @@
       "graduated": "2026-10-14T09:40:51Z",
       "symbol": "AXIS",
       "title": "Axis Robotics",
-      "seen": "2026-10-14T17:52:17.754234+00:00",
+      "seen": "2026-10-14T18:01:15.368529+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 15651.0091,
       "market_cap_usd": 6236.345527
@@ -2026,17 +2059,17 @@
       "graduated": "2026-10-14T11:41:34Z",
       "symbol": "PHASEPUNK",
       "title": "PHASEPUNK",
-      "seen": "2026-10-14T17:52:17.754234+00:00",
+      "seen": "2026-10-14T18:01:15.368529+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 7687.5307,
-      "market_cap_usd": 6318.075045
+      "liquidity_usd": 7670.5868,
+      "market_cap_usd": 6118.901648
     },
     "0xf58a0691a8347fb77b77f9347382b8e1888e1356": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-14T12:09:52Z",
       "symbol": "ULTI",
       "title": "ULTI",
-      "seen": "2026-10-14T17:52:17.754234+00:00",
+      "seen": "2026-10-14T18:01:15.368529+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 7690.2122,
       "market_cap_usd": 6095.2446
@@ -2056,7 +2089,7 @@
       "graduated": "2026-10-14T12:24:23Z",
       "symbol": "ULTI",
       "title": "ULTI",
-      "seen": "2026-10-14T17:52:17.754234+00:00",
+      "seen": "2026-10-14T18:01:15.368529+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 11979.1016,
       "market_cap_usd": 6120.527243
@@ -2066,7 +2099,7 @@
       "graduated": "2026-10-14T13:02:42Z",
       "symbol": "SANTAHOOD",
       "title": "SANTAHOOD",
-      "seen": "2026-10-14T17:52:17.754234+00:00",
+      "seen": "2026-10-14T18:01:15.368529+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 17959.7548,
       "market_cap_usd": 6202.092027
@@ -2086,7 +2119,7 @@
       "graduated": "2026-10-14T15:50:12Z",
       "symbol": "LLL",
       "title": "Lighthouse c8b59",
-      "seen": "2026-10-14T17:52:17.754234+00:00",
+      "seen": "2026-10-14T18:01:15.368529+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 49.4853,
       "market_cap_usd": 12826473.95
@@ -2096,7 +2129,7 @@
       "graduated": "2026-10-14T16:01:24Z",
       "symbol": "LLL",
       "title": "Lighthouse 8d415",
-      "seen": "2026-10-14T17:52:17.754234+00:00",
+      "seen": "2026-10-14T18:01:15.368529+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 908803.4552
@@ -2180,10 +2213,20 @@
       "source": "geckoterminal",
       "liquidity_usd": 72.1834,
       "market_cap_usd": 818023.5851
+    },
+    "0x43e65c9000d617fe30d26f957c2c9d742aa20000": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-14T17:52:19Z",
+      "symbol": "NASDANQ",
+      "title": "NASDANQ 22d32",
+      "seen": "2026-10-14T18:01:15.368529+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 28.1704,
+      "market_cap_usd": 2024015.663
     }
   },
   "graduations": {
-    "at": "2026-10-14T17:52:17.754234+00:00",
+    "at": "2026-10-14T18:01:15.368529+00:00",
     "hours": 24,
     "seen": {
       "0x5e0ebd45ba2c35d8940659cddde0b0fe5df5a03d": "2026-10-13T18:13:13.438400+00:00",
@@ -2223,7 +2266,7 @@
       "0xd45de5bad7603c47bfa0a583503a80da19174089",
       "0xd5d49d68a555f3c50ccda9bd9a8691692e5ce172"
     ],
-    "scanned_to": 88560068,
+    "scanned_to": 88565442,
     "complete": true
   },
   "issues_to_close": [],
@@ -2238,11 +2281,6 @@
     "0xd45de5bad7603c47bfa0a583503a80da19174089": "2026-10-14T17:11:52.208906+00:00"
   },
   "gecko_hours": {
-    "2026-10-13 18:00": [
-      7,
-      0,
-      0
-    ],
     "2026-10-13 19:00": [
       6,
       0,
@@ -2355,6 +2393,11 @@
     ],
     "2026-10-14 17:00": [
       6,
+      0,
+      0
+    ],
+    "2026-10-14 18:00": [
+      1,
       0,
       0
     ]
