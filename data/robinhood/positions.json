@@ -12,7 +12,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 5.038e-05,
+      "last_price": 4.41e-05,
       "issue_details": {
         "extra": [
           [
@@ -128,7 +128,7 @@
       },
       "issue": 416,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-15 02:16:17"
+      "last_price_time": "2026-10-15 02:35:32"
     },
     {
       "address": "0x6c9bedc26365685c68248298ca080ef6984b6195",
@@ -258,7 +258,7 @@
       },
       "issue": 422,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-15 02:16:17"
+      "last_price_time": "2026-10-15 02:35:32"
     },
     {
       "address": "0x917949d9c987df639318bd78893770be0ea3497c",
@@ -272,7 +272,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 2.694e-05,
+      "last_price": 2.935e-05,
       "issue_details": {
         "extra": [
           [
@@ -388,7 +388,7 @@
       },
       "issue": 423,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-15 02:16:17"
+      "last_price_time": "2026-10-15 02:35:32"
     }
   ],
   "ever_bought": [
@@ -590,7 +590,7 @@
       "failed": []
     },
     "0xd326a3265ce65034310a6a719e71a0a56e1f14b7929d9fdd73fea7105aeaaaa7": {
-      "at": "2026-10-15T01:31:52.833439+00:00",
+      "at": "2026-10-15T02:35:32.159725+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -599,7 +599,7 @@
       ]
     },
     "0x96aa4ef1bfa83dd405f8005a944c94e060028b8bc66a69e0e52160544b9ccc39": {
-      "at": "2026-10-15T01:31:52.833439+00:00",
+      "at": "2026-10-15T02:35:32.159725+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -648,11 +648,12 @@
       ]
     },
     "0xcf00c04bf987a7c85d9aa8675779cc2110dfa99c0802d5c9edb7a49190e54c58": {
-      "at": "2026-10-15T01:31:52.833439+00:00",
+      "at": "2026-10-15T02:35:32.159725+00:00",
       "passed": false,
       "failed": [
         "Market cap",
-        "Not down >50% in 24h"
+        "Not down >50% in 24h",
+        "More buys than sells (1h)"
       ]
     },
     "0xb2bfe69eb2f19be7c7f5f21ef868300f7e57c1aab8cca880c4cf738806376e0d": {
@@ -686,7 +687,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-15T02:16:17.558956+00:00",
+      "at": "2026-10-15T02:35:32.159725+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -694,7 +695,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-15T02:16:17.558956+00:00",
+      "at": "2026-10-15T02:35:32.159725+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -706,26 +707,25 @@
       "used_this_run": false
     },
     "rpc": {
-      "calls": 14,
-      "errors": 1,
-      "rate_limited": 1,
-      "error": "Robinhood Chain RPC said 'too many requests' (HTTP 429)",
+      "calls": 4,
+      "errors": 0,
+      "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-15T02:15:04.648559+00:00",
-      "used_this_run": false
+      "at": "2026-10-15T02:35:32.159725+00:00",
+      "used_this_run": true
     }
   },
   "logged": {
     "onchain:0x7980e4c12a618058ea6a69cfa08038479337084c": "FAIL|Top 10 holders: 31.1% (need under 30%; pools, launchpad and burn addresses left out)",
     "0xa82b9ce74eb35d0af1a54ff4377d7d4d6ca42a5c65cb65fea8c22c9430657e3e": "PASS|",
-    "0xd326a3265ce65034310a6a719e71a0a56e1f14b7929d9fdd73fea7105aeaaaa7": "FAIL|Market cap: $6,108 (need $25,000+); Not down >50% in 24h: -82% in 24h; More buys than sells (1h): 0 buys vs 1 sells",
+    "0xd326a3265ce65034310a6a719e71a0a56e1f14b7929d9fdd73fea7105aeaaaa7": "FAIL|Market cap: $6,108 (need $25,000+); Not down >50% in 24h: -82% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x96aa4ef1bfa83dd405f8005a944c94e060028b8bc66a69e0e52160544b9ccc39": "FAIL|Market cap: $6,122 (need $25,000+); Not down >50% in 24h: -82% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0xd48148d06698e686f94187eea198e335ba10bb17ed87cc8fcf7f57b0160e3de8": "FAIL|Market cap: $6,158 (need $25,000+); Not down >50% in 24h: -82% in 24h; More buys than sells (1h): 1 buys vs 2 sells",
     "0x06a37b07a284f6fe5553aecbb03491d6945303cc4ff974d913a456adb33f0659": "FAIL|Market cap: $6,105 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x1cde2be3c2018626d63f7f80836080967c7ddb8668f8ae5f9976955fa0ef6163": "FAIL|Market cap: $6,146 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x3212f615472c88673244c90bb9781de02a0977b1290e144ef7824780c0a1cb93": "PASS|",
     "0xf625b4a2ca0797260f7018e29cde799f811947cf1f0c5b791bfb5e98221060eb": "FAIL|Market cap: $6,113 (need $25,000+); Not down >50% in 24h: -69% in 24h",
-    "0xcf00c04bf987a7c85d9aa8675779cc2110dfa99c0802d5c9edb7a49190e54c58": "FAIL|Market cap: $6,085 (need $25,000+); Not down >50% in 24h: -69% in 24h",
+    "0xcf00c04bf987a7c85d9aa8675779cc2110dfa99c0802d5c9edb7a49190e54c58": "FAIL|Market cap: $6,078 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 0 buys vs 1 sells",
     "0xb2bfe69eb2f19be7c7f5f21ef868300f7e57c1aab8cca880c4cf738806376e0d": "FAIL|Market cap: $6,103 (need $25,000+); Not down >50% in 24h: -82% in 24h",
     "0xff24b8ef9609ae677a4b077bc12d37d5f1d3e62c830f974c758bbe973887a3c7": "FAIL|Market cap: $6,132 (need $25,000+); Not down >50% in 24h: -69% in 24h",
     "0xdd489a4ac5d77e38c71f1b47fd544bfcf5184b2add63bb361e750b007852e11d": "FAIL|Market cap: $6,083 (need $25,000+); Not down >50% in 24h: -82% in 24h"
@@ -2275,9 +2275,9 @@
       "graduated": "2026-10-14T06:27:57Z",
       "symbol": "$100B",
       "title": "Robinhood $100B",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 16677.3159,
+      "liquidity_usd": 16637.9249,
       "market_cap_usd": 6218.199409
     },
     "0x365da1733a07a090b8b9c950997f1af8d1dd5846": {
@@ -2285,9 +2285,9 @@
       "graduated": "2026-10-14T09:40:51Z",
       "symbol": "AXIS",
       "title": "Axis Robotics",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 15494.0945,
+      "liquidity_usd": 15457.4982,
       "market_cap_usd": 6200.69401
     },
     "0x7c9c2ea03d86a5365b81bfc70e0b31bf6ed1305e": {
@@ -2295,9 +2295,9 @@
       "graduated": "2026-10-14T11:41:34Z",
       "symbol": "PHASEPUNK",
       "title": "PHASEPUNK",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 7610.6981,
+      "liquidity_usd": 7592.722,
       "market_cap_usd": 6118.901648
     },
     "0xf58a0691a8347fb77b77f9347382b8e1888e1356": {
@@ -2325,9 +2325,9 @@
       "graduated": "2026-10-14T12:24:23Z",
       "symbol": "ULTI",
       "title": "ULTI",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 11843.4139,
+      "liquidity_usd": 11620.8944,
       "market_cap_usd": 6073.868695
     },
     "0xae46c1d03e86424ecb1d9165c9f68664d3f58e12": {
@@ -2335,9 +2335,9 @@
       "graduated": "2026-10-14T13:02:42Z",
       "symbol": "SANTAHOOD",
       "title": "SANTAHOOD",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 17779.6931,
+      "liquidity_usd": 17737.6983,
       "market_cap_usd": 6202.092027
     },
     "0x7b8892cea949bc60d494681d1bc3ea96071ab0b8": {
@@ -2545,9 +2545,9 @@
       "graduated": "2026-10-14T23:42:59Z",
       "symbol": "WOLFPACK",
       "title": "WOLFPACK",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 36147.0357,
+      "liquidity_usd": 35980.4671,
       "market_cap_usd": 6094.400424
     },
     "0x9bbd3b242e44e9cf54bdf440ecb5e673fa1f6523": {
@@ -2555,9 +2555,9 @@
       "graduated": "2026-10-14T23:51:13Z",
       "symbol": "Obie Fernandez",
       "title": "Obie Fernandez",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 34683.8554,
+      "liquidity_usd": 34584.5435,
       "market_cap_usd": 6114.131635
     },
     "0x73918b556d6d0ab5ca1e8324c6ca452e342eb510": {
@@ -2565,9 +2565,9 @@
       "graduated": "2026-10-15T00:06:34Z",
       "symbol": "VEILTRUMP",
       "title": "VEILTRUMP",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 35120.3023,
+      "liquidity_usd": 34460.4459,
       "market_cap_usd": 6140.543305
     },
     "0x675106529e8d239c5e144688ab1c747d7a73b47c": {
@@ -2575,9 +2575,9 @@
       "graduated": "2026-10-15T00:13:36Z",
       "symbol": "CROSSRATE",
       "title": "Crossrate Markets",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 19597.1409,
+      "liquidity_usd": 19506.8356,
       "market_cap_usd": 6108.645325
     },
     "0x155741cdcd81e2e862aa357fe40bc934de2cd0a7": {
@@ -2585,9 +2585,9 @@
       "graduated": "2026-10-15T00:26:56Z",
       "symbol": "TURBO",
       "title": "Turbo on Robinhood",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 19854.3619,
+      "liquidity_usd": 19762.8713,
       "market_cap_usd": 6183.080224
     },
     "0x6c9bedc26365685c68248298ca080ef6984b6195": {
@@ -2605,9 +2605,9 @@
       "graduated": "2026-10-15T00:43:43Z",
       "symbol": "TURBO",
       "title": "Turbo on Robinhood",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 19567.6728,
+      "liquidity_usd": 19571.2453,
       "market_cap_usd": 6126.573412
     },
     "0x01d2c4fc911846b27cd0b5e7cddcb02f48d5c4dc": {
@@ -2615,9 +2615,9 @@
       "graduated": "2026-10-15T01:03:00Z",
       "symbol": "TURBO",
       "title": "Turbo on Robinhood",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 27663.5522,
+      "liquidity_usd": 27143.7967,
       "market_cap_usd": 6116.417842
     },
     "0x230343a61bc4b86f97da17cc00e26461aa38b24f": {
@@ -2625,9 +2625,9 @@
       "graduated": "2026-10-15T01:02:28Z",
       "symbol": "VEILTRUMP",
       "title": "VEILTRUMP",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 34681.2021,
+      "liquidity_usd": 34029.5957,
       "market_cap_usd": 6066.500978
     },
     "0x0f444f2604b049f1ea5098a935e13e1134dea929": {
@@ -2635,9 +2635,9 @@
       "graduated": "2026-10-15T01:08:04Z",
       "symbol": "VEILTRUMP",
       "title": "VEILTRUMP",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 34856.1674,
+      "liquidity_usd": 34803.5213,
       "market_cap_usd": 6077.110631
     },
     "0x47d28fcf33a238786e3f8529c3caf51124d6ef05": {
@@ -2645,14 +2645,14 @@
       "graduated": "2026-10-15T01:00:43Z",
       "symbol": "TURBO",
       "title": "Turbo on Robinhood",
-      "seen": "2026-10-15T02:16:17.558956+00:00",
+      "seen": "2026-10-15T02:35:32.159725+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 19583.5787,
+      "liquidity_usd": 19215.6335,
       "market_cap_usd": 6062.030713
     }
   },
   "graduations": {
-    "at": "2026-10-15T02:15:04.648559+00:00",
+    "at": "2026-10-15T02:35:32.159725+00:00",
     "hours": 24,
     "seen": {
       "0x4f8eb44cd1a5290d12d5729bc53f3f2bcee78684": "2026-10-14T02:37:41.719000+00:00",
@@ -2686,7 +2686,7 @@
       "0xd45de5bad7603c47bfa0a583503a80da19174089",
       "0xfee0613d27a49079aefc140a1a08f2383877e4f0"
     ],
-    "scanned_to": 88859167,
+    "scanned_to": 88870776,
     "complete": true
   },
   "issues_to_close": [],
@@ -2816,7 +2816,7 @@
       0
     ],
     "2026-10-15 02:00": [
-      3,
+      4,
       0,
       0
     ]
