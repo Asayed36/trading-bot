@@ -12,7 +12,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 0.5,
       "took_profit": true,
-      "last_price": 4.253e-05,
+      "last_price": 2.934e-05,
       "issue_details": {
         "extra": [
           [
@@ -128,7 +128,7 @@
       },
       "issue": 439,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-16 21:21:02",
+      "last_price_time": "2026-10-16 21:29:01",
       "sells": [
         {
           "time": "2026-10-16T21:11:42.249254+00:00",
@@ -208,16 +208,6 @@
   ],
   "running_total_pnl_usd": -228.80799701831702,
   "watch": {
-    "0xcd81877da0b13531a9240426f55a6902061d0009d701fe40c0a8f0d794c3ea28": {
-      "pool": "0xcd81877da0b13531a9240426f55a6902061d0009d701fe40c0a8f0d794c3ea28",
-      "dex": "uniswap-pools-trade",
-      "token": "0x6a4e1926305b432b09528a002010f94cb1fa1e18",
-      "name": "ROADSTER2",
-      "title": "flying tesla roadster",
-      "created": "2026-10-16T15:27:29Z",
-      "liquidity_usd": 9563.0746,
-      "market_cap_usd": 10287.5499
-    },
     "onchain:0x8ea252aa4ec8bf9e2b0ff6e7c067cc878d5e615f": {
       "pool": null,
       "dex": "pons-v2-dex",
@@ -370,14 +360,6 @@
     }
   },
   "checked": {
-    "0xcd81877da0b13531a9240426f55a6902061d0009d701fe40c0a8f0d794c3ea28": {
-      "at": "2026-10-16T21:21:02.170645+00:00",
-      "passed": false,
-      "failed": [
-        "Market cap",
-        "More buys than sells (1h)"
-      ]
-    },
     "onchain:0x8ea252aa4ec8bf9e2b0ff6e7c067cc878d5e615f": {
       "at": "2026-10-16T18:29:16.191486+00:00",
       "passed": true,
@@ -471,6 +453,20 @@
       "failed": [
         "Top 10 holders"
       ]
+    },
+    "0x1fe7ed54b4442911d7a03b3921d731e394a8a49b30ed481439b28ba7d33165d2": {
+      "at": "2026-10-16T21:29:01.026779+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
+    },
+    "0x8b0654a994a7a89ef94cf59ce40ecd250192b4ffa8ec081e91524808608378c5": {
+      "at": "2026-10-16T21:29:01.026779+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
     }
   },
   "sources": {
@@ -479,7 +475,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-16T21:21:02.170645+00:00",
+      "at": "2026-10-16T21:29:01.026779+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -487,7 +483,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-16T21:21:02.170645+00:00",
+      "at": "2026-10-16T21:29:01.026779+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -503,12 +499,11 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-16T21:21:02.170645+00:00",
+      "at": "2026-10-16T21:29:01.026779+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0xcd81877da0b13531a9240426f55a6902061d0009d701fe40c0a8f0d794c3ea28": "FAIL|Market cap: $6,072 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
     "onchain:0x8ea252aa4ec8bf9e2b0ff6e7c067cc878d5e615f": "PASS|",
     "0xfd56eb375981dda718ba62f467e0898a69a4ccb300c544cc12883cd1de4cba9d": "FAIL|Liquidity: $5,299 (need $10,000+ on Pons)",
     "onchain:0xb2d1fa50508550b3488c0e9860d1f08937a29145": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls",
@@ -522,7 +517,9 @@
     "0xc00136ac1829956b07517864827125f13238b3ab1bca5f81b007236ecf77f93f": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
     "0x27b1e4e6e85b55f97e2ce2dd6bdbe26417df10d1e8ee06573dcb34a7e4876b8a": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
     "0x45faabb520066948e85b55e38ddf3cd75985e644e62af526419cd65bcb7d7207": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
-    "onchain:0xc7852f765097439f2eaeba64001d8309b83023e6": "FAIL|Top 10 holders: 32.5% (need under 30%; pools, launchpad and burn addresses left out)"
+    "onchain:0xc7852f765097439f2eaeba64001d8309b83023e6": "FAIL|Top 10 holders: 32.5% (need under 30%; pools, launchpad and burn addresses left out)",
+    "0x1fe7ed54b4442911d7a03b3921d731e394a8a49b30ed481439b28ba7d33165d2": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
+    "0x8b0654a994a7a89ef94cf59ce40ecd250192b4ffa8ec081e91524808608378c5": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)"
   },
   "launchpad_tokens": {
     "0x00fe57f4e1737b435e6f768ea303b45f6582e738": {
@@ -2819,9 +2816,9 @@
       "graduated": "2026-10-15T23:14:33Z",
       "symbol": "OWLDACITY",
       "title": "OWLDACITY",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 36937.5698,
+      "liquidity_usd": 36915.8519,
       "market_cap_usd": 6148.468113
     },
     "0xcb25058d117f6da14b1aed1bdbbbcce50da8a660": {
@@ -2829,9 +2826,9 @@
       "graduated": "2026-10-15T23:25:14Z",
       "symbol": "FTR",
       "title": "FTR",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 35251.5745,
+      "liquidity_usd": 35230.8479,
       "market_cap_usd": 6100.917523
     },
     "0x73f626b24cdf1c41c0a218d1c8d20f0226b77a30": {
@@ -2849,7 +2846,7 @@
       "graduated": "2026-10-15T23:50:28Z",
       "symbol": "GOMO",
       "title": "GOMO",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 35265.6517,
       "market_cap_usd": 6141.471108
@@ -2859,9 +2856,9 @@
       "graduated": "2026-10-15T23:57:05Z",
       "symbol": "GOMO",
       "title": "GOMO",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 34801.1547,
+      "liquidity_usd": 34780.6929,
       "market_cap_usd": 6119.114277
     },
     "0xc902223652c2df365098dcd2af8ffc3cc40c416a": {
@@ -2869,7 +2866,7 @@
       "graduated": "2026-10-16T00:15:25Z",
       "symbol": "TURBO",
       "title": "Turbo on Robinhood",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19553.4195,
       "market_cap_usd": 6155.877715
@@ -2879,7 +2876,7 @@
       "graduated": "2026-10-16T00:29:37Z",
       "symbol": "REGARD",
       "title": "Regard",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19891.9536,
       "market_cap_usd": 6167.780281
@@ -2889,7 +2886,7 @@
       "graduated": "2026-10-16T00:26:51Z",
       "symbol": "REGARD",
       "title": "Regard",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19572.725,
       "market_cap_usd": 6033.704473
@@ -2899,7 +2896,7 @@
       "graduated": "2026-10-16T00:46:21Z",
       "symbol": "PEPECOIN",
       "title": "Make Memes Great Again",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19392.7182,
       "market_cap_usd": 6289.740308
@@ -2909,7 +2906,7 @@
       "graduated": "2026-10-16T01:04:53Z",
       "symbol": "GOMO",
       "title": "GOMO",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 22016.0559,
       "market_cap_usd": 6216.536871
@@ -3019,7 +3016,7 @@
       "graduated": "2026-10-16T06:45:22Z",
       "symbol": "FCR",
       "title": "Flying Claudia Roadster",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 15264.1952,
       "market_cap_usd": 6471.350374
@@ -3079,7 +3076,7 @@
       "graduated": "2026-10-16T09:53:48Z",
       "symbol": "Arcus",
       "title": "Arcus Labs",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 15518.7593,
       "market_cap_usd": 6316.958681
@@ -3099,7 +3096,7 @@
       "graduated": "2026-10-16T11:30:44Z",
       "symbol": "GOMO",
       "title": "GOMO",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16241.1905,
       "market_cap_usd": 6247.089603
@@ -3109,7 +3106,7 @@
       "graduated": "2026-10-16T11:31:10Z",
       "symbol": "Cryptoagent",
       "title": "The OpenAI Cryptoagent",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6168.961873
     },
@@ -3118,7 +3115,7 @@
       "graduated": "2026-10-16T11:37:24Z",
       "symbol": "GOMO",
       "title": "GOMO",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19869.996,
       "market_cap_usd": 6210.870238
@@ -3128,7 +3125,7 @@
       "graduated": "2026-10-16T11:53:14Z",
       "symbol": "FTR",
       "title": "FTR",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 34709.2742,
       "market_cap_usd": 6198.456957
@@ -3138,7 +3135,7 @@
       "graduated": "2026-10-16T12:29:10Z",
       "symbol": "GNEX",
       "title": "GlowNexus",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 15495.3539,
       "market_cap_usd": 6262.399306
@@ -3188,10 +3185,10 @@
       "graduated": "2026-10-16T15:27:29Z",
       "symbol": "ROADSTER2",
       "title": "flying tesla roadster",
-      "seen": "2026-10-16T21:21:02.170645+00:00",
+      "seen": "2026-10-16T21:29:01.026779+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 9961.7815,
-      "market_cap_usd": 6063.994481
+      "liquidity_usd": 9967.1455,
+      "market_cap_usd": 6048.2692
     },
     "0x8ea252aa4ec8bf9e2b0ff6e7c067cc878d5e615f": {
       "dex": "pons-v2-dex",
@@ -3354,7 +3351,7 @@
     }
   },
   "graduations": {
-    "at": "2026-10-16T21:21:02.170645+00:00",
+    "at": "2026-10-16T21:29:01.026779+00:00",
     "hours": 24,
     "seen": {
       "0x143185685456e50b88412d6cfc3a6f8d4fd18afa": "2026-10-15T22:15:40.376000+00:00",
@@ -3404,7 +3401,7 @@
       "0xf125a5ba63bd93f524e901dadd7fba887910a662",
       "0xfcc86d9c23ffb9f27258534ea316c096f1af51b9"
     ],
-    "scanned_to": 90395121,
+    "scanned_to": 90399868,
     "complete": true
   },
   "issues_to_close": [],
@@ -3542,7 +3539,7 @@
       0
     ],
     "2026-10-16 21:00": [
-      3,
+      4,
       0,
       0
     ]
