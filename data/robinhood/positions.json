@@ -68,14 +68,6 @@
   ],
   "running_total_pnl_usd": -232.54422188413542,
   "watch": {
-    "onchain:0xb2d1fa50508550b3488c0e9860d1f08937a29145": {
-      "pool": null,
-      "dex": "pons-v2-dex",
-      "token": "0xb2d1fa50508550b3488c0e9860d1f08937a29145",
-      "name": "EMPIREX",
-      "created": "2026-10-16T19:11:52.090800+00:00",
-      "source": "chain"
-    },
     "onchain:0xc648a307bb7ad5166e0d05cbbfa5f5d252d737bb": {
       "pool": null,
       "dex": "pons-v2-dex",
@@ -365,16 +357,19 @@
       "created": "2026-10-17T00:57:14Z",
       "liquidity_usd": 16176.9003,
       "market_cap_usd": 31718.61797
+    },
+    "0xf3566f47dbb77dbb5ce1265d1608d5a5cc133611f0be60caf3987c2c643660c0": {
+      "pool": "0xf3566f47dbb77dbb5ce1265d1608d5a5cc133611f0be60caf3987c2c643660c0",
+      "dex": "uniswap-pools-trade",
+      "token": "0x9411e57b565550cfd9af5eb13c0971b5e405e83c",
+      "name": "PEPECOIN",
+      "title": "Make Memes Great Again",
+      "created": "2026-10-17T01:12:42Z",
+      "liquidity_usd": 17772.7687,
+      "market_cap_usd": 44352.68867
     }
   },
   "checked": {
-    "onchain:0xb2d1fa50508550b3488c0e9860d1f08937a29145": {
-      "at": "2026-10-17T01:11:02.475927+00:00",
-      "passed": false,
-      "failed": [
-        "No equal-balance cluster"
-      ]
-    },
     "onchain:0xc648a307bb7ad5166e0d05cbbfa5f5d252d737bb": {
       "at": "2026-10-17T00:41:42.766999+00:00",
       "passed": false,
@@ -572,6 +567,14 @@
         "Market cap",
         "Not down >50% in 24h"
       ]
+    },
+    "0x65957884d34bbdd2a2d384ccd458d6a547dd09c40469dc33060c5483666cb514": {
+      "at": "2026-10-17T01:20:40.966762+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h"
+      ]
     }
   },
   "sources": {
@@ -580,15 +583,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-17T01:11:02.475927+00:00",
+      "at": "2026-10-17T01:20:40.966762+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 3,
+      "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-17T01:11:02.475927+00:00",
+      "at": "2026-10-17T01:20:40.966762+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -597,20 +600,18 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-10-17T01:11:02.475927+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "rpc": {
-      "calls": 22,
-      "errors": 6,
-      "rate_limited": 3,
-      "error": "Robinhood Chain RPC said 'too many requests' (HTTP 429)",
+      "calls": 4,
+      "errors": 0,
+      "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-17T01:11:02.475927+00:00",
+      "at": "2026-10-17T01:20:40.966762+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "onchain:0xb2d1fa50508550b3488c0e9860d1f08937a29145": "FAIL|No equal-balance cluster: 9 wallets hold the same amount (9.0% together; fails at 5+ wallets holding 3%+ together)",
     "onchain:0xc648a307bb7ad5166e0d05cbbfa5f5d252d737bb": "FAIL|Liquidity: $4,530 (need $10,000+ on Pons)",
     "onchain:0xcf9aaca9b71b383046b01090c88317e593e032f3": "PASS|",
     "0x16e19388b6ef78965372e13970e3889879fa0d6607aab424ef0920b55fda755a": "FAIL|More buys than sells (1h): 31 buys vs 41 sells",
@@ -638,7 +639,8 @@
     "0x8d47e4be73f23f6a3ee648d9de28e5657fa0202665ec1e979b5451ec9feb49d8": "FAIL|Market cap: $6,086 (need $25,000+); Not down >50% in 24h: -69% in 24h",
     "0xe8bb7fa46937d72856c7391768b3e5fee6ae31f91937be6ec10a85e5294b6edd": "FAIL|Market cap: $6,083 (need $25,000+); Not down >50% in 24h: -69% in 24h",
     "0x37de255f4431845939ba95a1a4e4af1eb5219ded52793b332a6941a49dc0e271": "FAIL|Market cap: $6,095 (need $25,000+); Not down >50% in 24h: -69% in 24h",
-    "0xfe23a2f4658f6a17f00635c5ab8d65197cd2d909613245f493ac96b87c4b0504": "FAIL|Market cap: $6,154 (need $25,000+); Not down >50% in 24h: -69% in 24h"
+    "0xfe23a2f4658f6a17f00635c5ab8d65197cd2d909613245f493ac96b87c4b0504": "FAIL|Market cap: $6,154 (need $25,000+); Not down >50% in 24h: -69% in 24h",
+    "0x65957884d34bbdd2a2d384ccd458d6a547dd09c40469dc33060c5483666cb514": "FAIL|Market cap: $6,125 (need $25,000+); Not down >50% in 24h: -69% in 24h"
   },
   "launchpad_tokens": {
     "0x00fe57f4e1737b435e6f768ea303b45f6582e738": {
@@ -2995,7 +2997,7 @@
       "graduated": "2026-10-16T00:29:37Z",
       "symbol": "REGARD",
       "title": "Regard",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19964.9946,
       "market_cap_usd": 6167.780281
@@ -3015,7 +3017,7 @@
       "graduated": "2026-10-16T00:46:21Z",
       "symbol": "PEPECOIN",
       "title": "Make Memes Great Again",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19463.6841,
       "market_cap_usd": 6289.740308
@@ -3025,7 +3027,7 @@
       "graduated": "2026-10-16T01:04:53Z",
       "symbol": "GOMO",
       "title": "GOMO",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 22096.8963,
       "market_cap_usd": 6216.536871
@@ -3135,7 +3137,7 @@
       "graduated": "2026-10-16T06:45:22Z",
       "symbol": "FCR",
       "title": "Flying Claudia Roadster",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 15320.2435,
       "market_cap_usd": 6471.350374
@@ -3195,7 +3197,7 @@
       "graduated": "2026-10-16T09:53:48Z",
       "symbol": "Arcus",
       "title": "Arcus Labs",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 15575.7424,
       "market_cap_usd": 6316.958681
@@ -3215,7 +3217,7 @@
       "graduated": "2026-10-16T11:30:44Z",
       "symbol": "GOMO",
       "title": "GOMO",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16300.8263,
       "market_cap_usd": 6247.089603
@@ -3225,7 +3227,7 @@
       "graduated": "2026-10-16T11:31:10Z",
       "symbol": "Cryptoagent",
       "title": "The OpenAI Cryptoagent",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6168.961873
     },
@@ -3234,7 +3236,7 @@
       "graduated": "2026-10-16T11:37:24Z",
       "symbol": "GOMO",
       "title": "GOMO",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19942.9563,
       "market_cap_usd": 6210.870238
@@ -3244,7 +3246,7 @@
       "graduated": "2026-10-16T11:53:14Z",
       "symbol": "FTR",
       "title": "FTR",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 34836.7226,
       "market_cap_usd": 6198.456957
@@ -3254,7 +3256,7 @@
       "graduated": "2026-10-16T12:29:10Z",
       "symbol": "GNEX",
       "title": "GlowNexus",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 15552.251,
       "market_cap_usd": 6262.399306
@@ -3304,7 +3306,7 @@
       "graduated": "2026-10-16T15:27:29Z",
       "symbol": "ROADSTER2",
       "title": "flying tesla roadster",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 10000.0553,
       "market_cap_usd": 6048.2692
@@ -3583,9 +3585,9 @@
       "graduated": "2026-10-17T00:24:13Z",
       "symbol": "PEPECOIN",
       "title": "Make Memes Great Again",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 19964.7728,
+      "liquidity_usd": 19961.5573,
       "market_cap_usd": 6073.81838
     },
     "0x73ebae7329d355d02c02dc4367e6c290923b616e": {
@@ -3603,9 +3605,9 @@
       "graduated": "2026-10-17T00:32:22Z",
       "symbol": "PEPECOIN",
       "title": "Make Memes Great Again",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 19835.4679,
+      "liquidity_usd": 19832.2732,
       "market_cap_usd": 6144.869927
     },
     "0xebf99a02537e367be7920940d94f19f9dc25cb55": {
@@ -3613,9 +3615,9 @@
       "graduated": "2026-10-17T00:29:09Z",
       "symbol": "PEPECOIN",
       "title": "Make Memes Great Again",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 22000.9617,
+      "liquidity_usd": 21997.4182,
       "market_cap_usd": 6083.164492
     },
     "0x3bdec92b6b667eed074ee7a63a713392d8233b92": {
@@ -3623,9 +3625,9 @@
       "graduated": "2026-10-17T00:42:03Z",
       "symbol": "PEPECOIN",
       "title": "Make Memes Great Again",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 21907.3159,
+      "liquidity_usd": 21914.3762,
       "market_cap_usd": 6119.668399
     },
     "0x239f092079bb5ce2ba982610cc481bff6f01feba": {
@@ -3633,14 +3635,24 @@
       "graduated": "2026-10-17T00:57:14Z",
       "symbol": "PEPECOIN",
       "title": "Make Memes Great Again",
-      "seen": "2026-10-17T01:11:02.475927+00:00",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 19990.2201,
-      "market_cap_usd": 6132.00664
+      "liquidity_usd": 19991.9546,
+      "market_cap_usd": 6120.080837
+    },
+    "0x9411e57b565550cfd9af5eb13c0971b5e405e83c": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-17T01:12:42Z",
+      "symbol": "PEPECOIN",
+      "title": "Make Memes Great Again",
+      "seen": "2026-10-17T01:20:40.966762+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 17772.7687,
+      "market_cap_usd": 44352.68867
     }
   },
   "graduations": {
-    "at": "2026-10-17T01:11:02.475927+00:00",
+    "at": "2026-10-17T01:20:40.966762+00:00",
     "hours": 24,
     "seen": {
       "0x25df0a75818ba97ee98e628361f125dc938c0d99": "2026-10-16T01:42:55.415800+00:00",
@@ -3696,7 +3708,7 @@
       "0xf125a5ba63bd93f524e901dadd7fba887910a662",
       "0xfcc86d9c23ffb9f27258534ea316c096f1af51b9"
     ],
-    "scanned_to": 90531112,
+    "scanned_to": 90536768,
     "complete": true
   },
   "issues_to_close": [],
@@ -3835,7 +3847,7 @@
       0
     ],
     "2026-10-17 01:00": [
-      2,
+      3,
       0,
       0
     ]
