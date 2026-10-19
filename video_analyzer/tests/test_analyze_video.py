@@ -248,6 +248,46 @@ class FetchInfoTests(unittest.TestCase):
                 av.fetch_info("https://youtu.be/abc")
         self.assertEqual(str(ctx.exception), av.BOT_CHECK_HELP)
 
+    def test_a_site_that_answers_403_gets_its_own_clear_message_and_no_youtube_retries(self):
+        module, tried = self.fake_module(works_with=[])
+
+        def extract(self, url, download=False):
+            raise RuntimeError("[Rumble] x: Unable to download webpage: HTTP Error 403: Forbidden")
+        module.YoutubeDL.extract_info = extract
+        with mock.patch.dict(sys.modules, {"yt_dlp": module}):
+            with self.assertRaises(av.ToolError) as ctx:
+                av.fetch_info("https://rumble.com/v7eqs3g-some-video.html")
+        self.assertEqual(str(ctx.exception), av.SITE_BLOCK_HELP)
+        self.assertNotIn("link opens in your browser", str(ctx.exception))
+        self.assertIn("download the video", str(ctx.exception))
+        self.assertEqual(tried, [None])                    # the YouTube-only ways are not tried
+
+    def test_a_youtube_403_gets_the_youtube_message_not_the_website_one(self):
+        self.assertEqual(av.explain_failure([RuntimeError("HTTP Error 403: Forbidden")],
+                                            "https://youtu.be/abc"), av.BOT_CHECK_HELP)
+        self.assertEqual(av.explain_failure([RuntimeError("HTTP Error 403: Forbidden")],
+                                            "https://rumble.com/x"), av.SITE_BLOCK_HELP)
+        self.assertIsNone(av.explain_failure([RuntimeError("Unsupported URL")], "https://x.com/a"))
+
+    def test_any_other_failure_keeps_its_own_first_line(self):
+        module, _ = self.fake_module(works_with=[])
+
+        def extract(self, url, download=False):
+            raise RuntimeError("ERROR: [generic] Unsupported URL: https://example.com/x\nmore")
+        module.YoutubeDL.extract_info = extract
+        with mock.patch.dict(sys.modules, {"yt_dlp": module}):
+            with self.assertRaises(av.ToolError) as ctx:
+                av.fetch_info("https://example.com/x")
+        self.assertIn("Unsupported URL", str(ctx.exception))
+        self.assertNotIn("more", str(ctx.exception).split("\n")[0])
+
+    def test_is_youtube(self):
+        for url in ("https://youtu.be/abc", "https://www.youtube.com/watch?v=abc",
+                    "http://m.youtube.com/x", "https://youtube.com"):
+            self.assertTrue(av._is_youtube(url), url)
+        for url in ("https://rumble.com/x", "https://notyoutube.com/x", "https://youtube.com.evil.io/x"):
+            self.assertFalse(av._is_youtube(url), url)
+
     def test_the_bot_check_gives_one_clear_message(self):
         module, tried = self.fake_module(works_with=[])
         with mock.patch.dict(sys.modules, {"yt_dlp": module}):
