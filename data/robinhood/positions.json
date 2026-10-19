@@ -12,7 +12,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 4.011e-05,
+      "last_price": 4.096e-05,
       "issue_details": {
         "extra": [
           [
@@ -128,7 +128,7 @@
       },
       "issue": 458,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-19 13:41:45"
+      "last_price_time": "2026-10-19 13:51:17"
     }
   ],
   "ever_bought": [
@@ -738,18 +738,19 @@
   "sources": {
     "geckoterminal": {
       "calls": 2,
-      "errors": 0,
+      "errors": 1,
       "rate_limited": 0,
+      "error": "could not reach api.geckoterminal.com: HTTPSConnectionPool(host='api.geckoterminal.com', port=443): Read timed out. (read timeout=20)",
       "ok": true,
-      "at": "2026-10-19T13:41:45.663718+00:00",
+      "at": "2026-10-19T13:51:17.713187+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 3,
+      "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T13:41:45.663718+00:00",
+      "at": "2026-10-19T13:51:17.713187+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -765,7 +766,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T13:41:45.663718+00:00",
+      "at": "2026-10-19T13:51:17.713187+00:00",
       "used_this_run": true
     }
   },
@@ -800,16 +801,6 @@
     "0x0691c6450583bb095176aebbd9f7d103b848d9ce9dbe92d6fd0bdfb0faac5e6e": "FAIL|Market cap: $21,959 (need $25,000+)"
   },
   "launchpad_tokens": {
-    "0x4da581e31261d6a188c0c1dc92e4a383629824bd": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-12T07:44:06Z",
-      "symbol": "ELIZA",
-      "title": "Eliza",
-      "seen": "2026-10-12T07:51:23.169583+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 6449.2241,
-      "market_cap_usd": 6459.1708
-    },
     "0x5e3a6b8ee7acb617d0808466edf3307f3c64bb85": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-12T08:18:31Z",
@@ -4453,7 +4444,7 @@
     }
   },
   "graduations": {
-    "at": "2026-10-19T13:41:45.663718+00:00",
+    "at": "2026-10-19T13:51:17.713187+00:00",
     "hours": 24,
     "seen": {
       "0x957a4122ef075a0de26e6e7472c037e75b829a08": "2026-10-18T17:17:57.051200+00:00",
@@ -4481,7 +4472,7 @@
       "0xc081f170df4642f49186be6b5573d0c6fb78da1b",
       "0xffb390e5b6136704905e2635afc3e5150e768a26"
     ],
-    "scanned_to": 92657849,
+    "scanned_to": 92663562,
     "complete": true
   },
   "issues_to_close": [],
@@ -4608,7 +4599,7 @@
       0
     ],
     "2026-10-19 13:00": [
-      5,
+      6,
       0,
       0
     ]
