@@ -12,7 +12,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 7.822e-05,
+      "last_price": 7.414e-05,
       "issue_details": {
         "extra": [
           [
@@ -128,7 +128,7 @@
       },
       "issue": 455,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-19 09:05:38"
+      "last_price_time": "2026-10-19 09:21:55"
     }
   ],
   "ever_bought": [
@@ -370,6 +370,26 @@
       "created": "2026-10-19T09:00:10Z",
       "liquidity_usd": 9.2456,
       "market_cap_usd": 55815.5609
+    },
+    "0x6351e71780d23d6df84f4cd32323218fb21556632593699b5c44c54c239e747b": {
+      "pool": "0x6351e71780d23d6df84f4cd32323218fb21556632593699b5c44c54c239e747b",
+      "dex": "uniswap-pools-trade",
+      "token": "0x9ae06a8aab278c1ab64da7f929491c9813a10000",
+      "name": "IAF",
+      "title": "Invest America Fund 8dc99",
+      "created": "2026-10-19T09:17:04Z",
+      "liquidity_usd": 8.7619,
+      "market_cap_usd": 57398.444
+    },
+    "0x1e514898ca04a029f1de607fba437b3f42bfe0119019623199bb55ae5e3b0139": {
+      "pool": "0x1e514898ca04a029f1de607fba437b3f42bfe0119019623199bb55ae5e3b0139",
+      "dex": "pons-v2-dex",
+      "token": "0x295a701e7038a7a7b9b23d700e096416b074f526",
+      "name": "IAF",
+      "title": "Invest America Fund",
+      "created": "2026-10-19T09:16:08Z",
+      "liquidity_usd": 31246.5416,
+      "market_cap_usd": 141435.7786
     }
   },
   "checked": {
@@ -468,6 +488,14 @@
         "Owner can't change balances",
         "No blacklist"
       ]
+    },
+    "0xad56d7d312aaa541f53e0021269902ecef52b2a1e29004d657226677c1dcda84": {
+      "at": "2026-10-19T09:21:55.571075+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "More buys than sells (1h)"
+      ]
     }
   },
   "sources": {
@@ -476,15 +504,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T09:05:38.339726+00:00",
+      "at": "2026-10-19T09:21:55.571075+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 1,
+      "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T09:05:38.339726+00:00",
+      "at": "2026-10-19T09:21:55.571075+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -500,8 +528,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T09:01:04.691870+00:00",
-      "used_this_run": false
+      "at": "2026-10-19T09:21:55.571075+00:00",
+      "used_this_run": true
     }
   },
   "logged": {
@@ -517,19 +545,10 @@
     "0xcc9eeef5bd199a30b4405862ef59204366d613d6c6f4a6a516fbc90c3a44a40c": "PASS|",
     "0xc12f3b8369a58a2aab691377a31173d98c65c472e23c36b3af191e5b39da57c4": "FAIL|Liquidity: $30 (need $5,000+ on Pools.trade)",
     "0x3112cfcb9d766c15dea7e947110dbec17b714fd7ed134e7b28a3cd8bfad0be09": "FAIL|Liquidity: $30 (need $5,000+ on Pools.trade)",
-    "0x046263235248c46e946ef328170b548ab54a8523b134d46f36ac68accca1642e": "FAIL|Not a honeypot: unknown: GoPlus gave no is_honeypot; Not mintable: unknown: GoPlus gave no is_mintable; No hidden owner: unknown: GoPlus gave no hidden_owner; Owner can't change balances: unknown: GoPlus gave no owner_change_balance; No blacklist: unknown: GoPlus gave no is_blacklisted"
+    "0x046263235248c46e946ef328170b548ab54a8523b134d46f36ac68accca1642e": "FAIL|Not a honeypot: unknown: GoPlus gave no is_honeypot; Not mintable: unknown: GoPlus gave no is_mintable; No hidden owner: unknown: GoPlus gave no hidden_owner; Owner can't change balances: unknown: GoPlus gave no owner_change_balance; No blacklist: unknown: GoPlus gave no is_blacklisted",
+    "0xad56d7d312aaa541f53e0021269902ecef52b2a1e29004d657226677c1dcda84": "FAIL|Market cap: $6,190 (need $25,000+); More buys than sells (1h): 254 buys vs 262 sells"
   },
   "launchpad_tokens": {
-    "0xb1da35ddb716a2f66c612d15e6d3ce5b90afb447": {
-      "dex": "pons-v2-dex",
-      "graduated": "2026-10-12T03:15:25.002300+00:00",
-      "symbol": "SI",
-      "title": "smoking Inu",
-      "seen": "2026-10-12T03:22:05.647599+00:00",
-      "source": "chain",
-      "liquidity_usd": 36555.82,
-      "market_cap_usd": 171089.0
-    },
     "0xb0f444a069d9264017610e0674ebf7e1d6e19cbb": {
       "dex": "pons-v2-dex",
       "graduated": "2026-10-12T04:16:24Z",
@@ -3428,7 +3447,7 @@
       "graduated": "2026-10-18T11:40:25Z",
       "symbol": "MINTER",
       "title": "MINTER",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6085.680747
     },
@@ -3437,7 +3456,7 @@
       "graduated": "2026-10-18T11:58:57Z",
       "symbol": "MINTER",
       "title": "MINTER",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 35003.8713,
       "market_cap_usd": 6086.556661
@@ -3447,7 +3466,7 @@
       "graduated": "2026-10-18T12:09:49Z",
       "symbol": "DUG",
       "title": "DUG",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 20134.1754,
       "market_cap_usd": 6433.770544
@@ -3457,7 +3476,7 @@
       "graduated": "2026-10-18T12:05:26Z",
       "symbol": "MINTER",
       "title": "MINTER",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 35056.6716,
       "market_cap_usd": 6040.704548
@@ -3467,7 +3486,7 @@
       "graduated": "2026-10-18T12:29:01Z",
       "symbol": "DUG",
       "title": "DUG",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 7103.9415,
       "market_cap_usd": 6070.217126
@@ -3487,7 +3506,7 @@
       "graduated": "2026-10-18T12:53:05Z",
       "symbol": "MINTER",
       "title": "MINTER",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 15603.8042,
       "market_cap_usd": 5980.375569
@@ -3497,7 +3516,7 @@
       "graduated": "2026-10-18T13:25:44Z",
       "symbol": "TRN",
       "title": "Trion",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 11917.0347,
       "market_cap_usd": 5995.376778
@@ -3707,7 +3726,7 @@
       "graduated": "2026-10-19T00:07:34Z",
       "symbol": "TURBO",
       "title": "Turbo on Robinhood",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 22334.0077,
       "market_cap_usd": 6108.391395
@@ -3727,7 +3746,7 @@
       "graduated": "2026-10-19T00:46:19Z",
       "symbol": "KIRBY",
       "title": "Kirby",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 20551.4829,
       "market_cap_usd": 6100.608758
@@ -3737,7 +3756,7 @@
       "graduated": "2026-10-19T00:42:39Z",
       "symbol": "KIRBY",
       "title": "Kirby",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 21763.2563,
       "market_cap_usd": 6082.98768
@@ -3747,7 +3766,7 @@
       "graduated": "2026-10-19T00:41:06Z",
       "symbol": "KIRBY",
       "title": "Kirby",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19752.8804,
       "market_cap_usd": 6080.096708
@@ -3757,7 +3776,7 @@
       "graduated": "2026-10-19T01:00:51Z",
       "symbol": "Gloob",
       "title": "The Rangers",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 20609.1193,
       "market_cap_usd": 6161.370069
@@ -3827,9 +3846,9 @@
       "graduated": "2026-10-19T06:21:55Z",
       "symbol": "W",
       "title": "W",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 18996.965,
+      "liquidity_usd": 18982.5276,
       "market_cap_usd": 6261.555543
     },
     "0x5f895fd2238ea36a7f0b3592eef108e797817777": {
@@ -3917,9 +3936,9 @@
       "graduated": "2026-10-19T08:40:22Z",
       "symbol": "UHI",
       "title": "Universal High Income",
-      "seen": "2026-10-19T09:05:38.339726+00:00",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 31732.1705,
+      "liquidity_usd": 31743.7762,
       "market_cap_usd": 6169.15208
     },
     "0xb9a714b0ce56eee65702ac2d172960336601bd05": {
@@ -3941,10 +3960,30 @@
       "source": "geckoterminal",
       "liquidity_usd": 9.2456,
       "market_cap_usd": 55815.5609
+    },
+    "0x9ae06a8aab278c1ab64da7f929491c9813a10000": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-19T09:17:04Z",
+      "symbol": "IAF",
+      "title": "Invest America Fund 8dc99",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 8.7619,
+      "market_cap_usd": 57398.444
+    },
+    "0x295a701e7038a7a7b9b23d700e096416b074f526": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-10-19T09:16:08Z",
+      "symbol": "IAF",
+      "title": "Invest America Fund",
+      "seen": "2026-10-19T09:21:55.571075+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 31246.5416,
+      "market_cap_usd": 141435.7786
     }
   },
   "graduations": {
-    "at": "2026-10-19T09:01:04.691870+00:00",
+    "at": "2026-10-19T09:21:55.571075+00:00",
     "hours": 24,
     "seen": {
       "0x957a4122ef075a0de26e6e7472c037e75b829a08": "2026-10-18T17:17:57.051200+00:00",
@@ -3954,10 +3993,12 @@
       "0x14310763fd050894d1e4f75362503796d56a7016": "2026-10-19T04:03:41.377600+00:00",
       "0xb54ef4bd0a97083862e81a97d13af14594f4203d": "2026-10-19T04:45:51.899400+00:00",
       "0xffb390e5b6136704905e2635afc3e5150e768a26": "2026-10-19T07:06:06.391200+00:00",
-      "0x9758a9cf6318211d3548f3005ddd4464df12a407": "2026-10-19T08:15:00.150500+00:00"
+      "0x9758a9cf6318211d3548f3005ddd4464df12a407": "2026-10-19T08:15:00.150500+00:00",
+      "0x295a701e7038a7a7b9b23d700e096416b074f526": "2026-10-19T09:16:08.134000+00:00"
     },
     "tokens": [
       "0x14310763fd050894d1e4f75362503796d56a7016",
+      "0x295a701e7038a7a7b9b23d700e096416b074f526",
       "0x3f2ca931a8e99f3c6a521575c681ab6076232b11",
       "0x93a4b85928e78324631e6b024ba39fdc8e44e186",
       "0x957a4122ef075a0de26e6e7472c037e75b829a08",
@@ -3966,7 +4007,7 @@
       "0xb54ef4bd0a97083862e81a97d13af14594f4203d",
       "0xffb390e5b6136704905e2635afc3e5150e768a26"
     ],
-    "scanned_to": 92494280,
+    "scanned_to": 92506345,
     "complete": true
   },
   "issues_to_close": [],
@@ -4092,7 +4133,7 @@
       0
     ],
     "2026-10-19 09:00": [
-      2,
+      3,
       0,
       0
     ]
