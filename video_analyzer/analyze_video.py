@@ -1,0 +1,396 @@
+"""Video analyzer: turns a video (YouTube, TikTok, ... or a file on your computer)
+into material you can read: frames, a transcript with timestamps and a timeline.
+
+    python video_analyzer/analyze_video.py "https://www.youtube.com/watch?v=..."
+    python video_analyzer/analyze_video.py my_video.mp4
+    python video_analyzer/analyze_video.py --check          # are the tools installed?
+
+Everything goes into  video_analyzer/output/<video name>/  (never uploaded to GitHub).
+Strategy notes you write from it go into  video_analyzer/strategies/  (these ARE kept).
+
+This tool is separate from the trading bot: it reads public videos only and never uses a
+wallet, a key, an order or any of the bot's files.
+"""
+
+import argparse
+import csv
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+from datetime import datetime
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_ROOT = os.path.join(HERE, "output")
+BLOCK_SECONDS = 30          # the timeline groups the transcript and frames in blocks of this size
+SCENE_GAP_SECONDS = 2.0     # two screen-change frames are at least this far apart (no flood when a chart flickers)
+SAME_MOMENT_SECONDS = 0.5   # a screen-change frame is skipped if any frame is this close already
+
+INSTALL_HELP = {
+    "ffmpeg": ("FFmpeg is missing. Install it:\n"
+               "  macOS:    brew install ffmpeg\n"
+               "  Windows:  winget install ffmpeg      (then open a new terminal window)\n"
+               "  Ubuntu:   sudo apt install ffmpeg"),
+    "yt-dlp": "yt-dlp is missing. Install it:   pip install yt-dlp",
+    "faster-whisper": "faster-whisper (Whisper) is missing. Install it:   pip install faster-whisper",
+}
+
+
+class ToolError(Exception):
+    """A problem to show to the user in plain words (no traceback)."""
+
+
+# ---------------------------------------------------------------------
+# small helpers
+# ---------------------------------------------------------------------
+
+def slugify(text, limit=60):
+    """A safe folder name: letters, digits and dashes only."""
+    text = re.sub(r"[^A-Za-z0-9]+", "-", str(text or "")).strip("-").lower()
+    return (text[:limit].strip("-")) or "video"
+
+
+def clock(seconds):
+    """hh:mm:ss"""
+    seconds = int(max(0, seconds))
+    return f"{seconds // 3600:02d}:{(seconds % 3600) // 60:02d}:{seconds % 60:02d}"
+
+
+def srt_clock(seconds):
+    ms = int(round(max(0.0, seconds) * 1000))
+    return f"{ms // 3600000:02d}:{(ms % 3600000) // 60000:02d}:{(ms % 60000) // 1000:02d},{ms % 1000:03d}"
+
+
+def run(cmd):
+    """Run a program; on failure raise ToolError with the end of its own error text."""
+    try:
+        done = subprocess.run(cmd, capture_output=True, text=True)
+    except FileNotFoundError:
+        raise ToolError(INSTALL_HELP.get(os.path.basename(cmd[0]), f"{cmd[0]} is missing."))
+    if done.returncode != 0:
+        tail = "\n".join((done.stderr or done.stdout or "").strip().splitlines()[-6:])
+        raise ToolError(f"{cmd[0]} failed (exit {done.returncode}):\n{tail}")
+    return done
+
+
+def check_tools(need_download=True, need_transcribe=True):
+    """List of problems (empty when everything needed is installed)."""
+    problems = []
+    for tool in ("ffmpeg", "ffprobe"):
+        if not shutil.which(tool):
+            problems.append(INSTALL_HELP["ffmpeg"])
+            break
+    if need_download:
+        try:
+            import yt_dlp  # noqa: F401
+        except ImportError:
+            problems.append(INSTALL_HELP["yt-dlp"])
+    if need_transcribe:
+        try:
+            import faster_whisper  # noqa: F401
+        except ImportError:
+            problems.append(INSTALL_HELP["faster-whisper"])
+    return problems
+
+
+# ---------------------------------------------------------------------
+# 1. get the video
+# ---------------------------------------------------------------------
+
+def is_link(text):
+    return bool(re.match(r"^https?://", text.strip(), re.I))
+
+
+def fetch_info(url):
+    """Title, id and length of the video, without downloading it."""
+    import yt_dlp
+    opts = {"quiet": True, "no_warnings": True, "noplaylist": True, "skip_download": True}
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            return ydl.extract_info(url, download=False)
+    except Exception as exc:
+        raise ToolError(f"Could not read that link: {str(exc)[-300:]}\n"
+                        "Check the link opens in your browser; for a site that stopped working try "
+                        "updating the downloader:  pip install -U yt-dlp")
+
+
+def download(url, folder):
+    """Download the video (at most 720p, to keep files small) into `folder` as video.<ext>."""
+    import yt_dlp
+    opts = {"quiet": True, "no_warnings": True, "noplaylist": True,
+            "format": "bv*[height<=720]+ba/b[height<=720]/b",
+            "merge_output_format": "mp4", "outtmpl": os.path.join(folder, "video.%(ext)s")}
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            ydl.download([url])
+    except Exception as exc:
+        raise ToolError(f"The download failed: {str(exc)[-300:]}")
+    for name in sorted(os.listdir(folder)):
+        if name.startswith("video.") and not name.endswith((".part", ".ytdl")):
+            return os.path.join(folder, name)
+    raise ToolError("The download finished but no video file was found.")
+
+
+def duration_seconds(video):
+    done = run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                "-of", "default=nw=1:nk=1", video])
+    try:
+        return float(done.stdout.strip())
+    except ValueError:
+        raise ToolError("Could not read the length of the video (is it a real video file?).")
+
+
+# ---------------------------------------------------------------------
+# 2. frames
+# ---------------------------------------------------------------------
+
+def scene_change_times(video, threshold):
+    """Seconds at which the picture changes a lot (FFmpeg's scene detection; a lower
+    threshold finds more changes)."""
+    cmd = ["ffmpeg", "-hide_banner", "-nostats", "-i", video, "-an", "-vf",
+           f"scale=320:-2,select='gt(scene,{threshold})',showinfo", "-f", "null", "-"]
+    done = run(cmd)
+    return [float(m) for m in re.findall(r"pts_time:([0-9]+(?:\.[0-9]+)?)", done.stderr)]
+
+
+def plan_frame_times(duration, interval, scene_times, max_frames):
+    """[(second, reason)] sorted: one frame every `interval` seconds, plus a frame at each
+    screen change (unless a frame is already within SAME_MOMENT_SECONDS, or another
+    screen-change frame within SCENE_GAP_SECONDS). If there are more than `max_frames`, an
+    evenly spread subset is kept. Returns (plan, thinned)."""
+    plan, t = [], 0.0
+    while t < duration - 0.05:
+        plan.append((round(t, 2), "every %gs" % interval))
+        t += interval
+    every = [p[0] for p in plan]
+    kept_scenes = []
+    for s in sorted(scene_times):
+        if s >= duration - 0.05:
+            continue
+        if any(abs(s - x) < SAME_MOMENT_SECONDS for x in every + kept_scenes):
+            continue
+        if any(abs(s - x) < SCENE_GAP_SECONDS for x in kept_scenes):
+            continue
+        kept_scenes.append(s)
+    plan += [(round(s, 2), "screen changed") for s in kept_scenes]
+    plan.sort()
+    thinned = len(plan) > max_frames
+    if thinned:
+        step = len(plan) / max_frames
+        plan = [plan[int(i * step)] for i in range(max_frames)]
+    return plan, thinned
+
+
+def frame_name(number, seconds):
+    s = int(seconds)
+    return f"frame_{number:04d}_t{s // 3600:02d}-{(s % 3600) // 60:02d}-{s % 60:02d}.jpg"
+
+
+def extract_frames(video, folder, plan, say=print):
+    """Save one picture per planned second; returns [{file, seconds, time, reason}]."""
+    os.makedirs(folder, exist_ok=True)
+    frames = []
+    for i, (t, reason) in enumerate(plan, 1):
+        name = frame_name(i, t)
+        path = os.path.join(folder, name)
+        run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-ss", f"{t:.3f}", "-i", video,
+             "-frames:v", "1", "-vf", "scale='min(1280,iw)':-2", "-q:v", "3", path])
+        if os.path.exists(path):
+            frames.append({"file": name, "seconds": t, "time": clock(t), "reason": reason})
+        if i % 50 == 0:
+            say(f"    {i} of {len(plan)} frames saved")
+    with open(os.path.join(folder, "index.csv"), "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=["file", "seconds", "time", "reason"])
+        w.writeheader()
+        w.writerows(frames)
+    return frames
+
+
+# ---------------------------------------------------------------------
+# 3. audio and transcript
+# ---------------------------------------------------------------------
+
+def extract_audio(video, path):
+    """Mono 16 kHz WAV (what Whisper wants). Returns False when the video has no sound."""
+    probe = run(["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries",
+                 "stream=index", "-of", "csv=p=0", video])
+    if not probe.stdout.strip():
+        return False
+    run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", video, "-vn", "-ac", "1",
+         "-ar", "16000", path])
+    return True
+
+
+def transcribe(audio, model_name="base", language=None, model_factory=None):
+    """Whisper (faster-whisper, on the CPU) -> (segments, language) where each segment is
+    {start, end, text}. The first run downloads the model (base is about 140 MB)."""
+    if model_factory is None:
+        try:
+            from faster_whisper import WhisperModel
+        except ImportError:
+            raise ToolError(INSTALL_HELP["faster-whisper"])
+
+        def model_factory(name):
+            return WhisperModel(name, device="cpu", compute_type="int8")
+    try:
+        model = model_factory(model_name)
+        segments, info = model.transcribe(audio, language=language, vad_filter=True)
+        out = [{"start": float(s.start), "end": float(s.end), "text": s.text.strip()}
+               for s in segments if s.text.strip()]
+    except ToolError:
+        raise
+    except Exception as exc:
+        raise ToolError(f"Transcription failed: {str(exc)[-300:]}\n"
+                        "(The first run needs internet to download the Whisper model.)")
+    return out, getattr(info, "language", language)
+
+
+def write_transcripts(folder, segments, language):
+    with open(os.path.join(folder, "transcript.txt"), "w") as fh:
+        for s in segments:
+            fh.write(f"[{clock(s['start'])}] {s['text']}\n")
+    with open(os.path.join(folder, "transcript.srt"), "w") as fh:
+        for i, s in enumerate(segments, 1):
+            fh.write(f"{i}\n{srt_clock(s['start'])} --> {srt_clock(s['end'])}\n{s['text']}\n\n")
+    with open(os.path.join(folder, "transcript.json"), "w") as fh:
+        json.dump({"language": language, "segments": segments}, fh, indent=1)
+
+
+# ---------------------------------------------------------------------
+# 4. the timeline (the file to read, or to give to Claude)
+# ---------------------------------------------------------------------
+
+def build_timeline(meta, segments, frames, block=BLOCK_SECONDS):
+    lines = [f"# {meta.get('title') or 'Video'}", ""]
+    for key, label in (("source", "Source"), ("uploader", "Channel"), ("duration", "Length"),
+                       ("language", "Spoken language"), ("analyzed", "Analyzed")):
+        if meta.get(key):
+            lines.append(f"- {label}: {meta[key]}")
+    lines += [f"- Frames saved: {len(frames)} (in `frames/`, list in `frames/index.csv`)",
+              f"- Transcript pieces: {len(segments)} (`transcript.txt`, `.srt`, `.json`)", "",
+              "Read this top to bottom. Each block is 30 seconds: what was said, then the frames "
+              "taken in that block (open them to see the chart or screen at that moment).", ""]
+    end = max([s["end"] for s in segments] + [f["seconds"] for f in frames] + [0])
+    for start in range(0, int(end) + 1, block):
+        said = [s for s in segments if start <= s["start"] < start + block]
+        shown = [f for f in frames if start <= f["seconds"] < start + block]
+        if not said and not shown:
+            continue
+        lines.append(f"## {clock(start)} - {clock(start + block)}")
+        if said:
+            lines.append("")
+            lines.append(" ".join(s["text"] for s in said))
+        for f in shown:
+            lines.append(f"- Frame {f['time']} ({f['reason']}): `frames/{f['file']}`")
+        lines.append("")
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------
+# the whole job
+# ---------------------------------------------------------------------
+
+def analyze(source, output_root=OUTPUT_ROOT, interval=5.0, scene_threshold=0.3, max_frames=600,
+            model="base", language=None, do_frames=True, do_transcribe=True, say=print,
+            transcriber=transcribe):
+    """Run every step for a link or a video file. Returns the output folder."""
+    problems = check_tools(need_download=is_link(source), need_transcribe=do_transcribe)
+    if problems:
+        raise ToolError("\n\n".join(problems))
+
+    say("Step 1/5: finding the video")
+    meta = {"analyzed": datetime.now().strftime("%Y-%m-%d %H:%M")}
+    if is_link(source):
+        info = fetch_info(source)
+        name = slugify(info.get("title")) + "-" + slugify(info.get("id"), 20)
+        meta.update(title=info.get("title"), source=source, uploader=info.get("uploader"))
+    else:
+        if not os.path.isfile(source):
+            raise ToolError(f"No such file: {source}")
+        name = slugify(os.path.splitext(os.path.basename(source))[0])
+        meta.update(title=os.path.basename(source), source=os.path.abspath(source))
+    folder = os.path.join(output_root, name)
+    os.makedirs(folder, exist_ok=True)
+    say(f"  Folder: {folder}")
+
+    say("Step 2/5: downloading" if is_link(source) else "Step 2/5: using the file you gave (no download)")
+    video = download(source, folder) if is_link(source) else os.path.abspath(source)
+    duration = duration_seconds(video)
+    meta["duration"] = clock(duration)
+    say(f"  Length: {meta['duration']}")
+
+    frames = []
+    if do_frames:
+        say("Step 3/5: finding the moments where the screen changes, then saving frames")
+        scenes = scene_change_times(video, scene_threshold)
+        plan, thinned = plan_frame_times(duration, interval, scenes, max_frames)
+        if thinned:
+            say(f"  Note: more than {max_frames} frames were planned, so an evenly spread "
+                f"{max_frames} are kept (use --interval with a bigger number for fewer).")
+        say(f"  {len(plan)} frames planned ({len(scenes)} screen changes found)")
+        frames = extract_frames(video, os.path.join(folder, "frames"), plan, say)
+    else:
+        say("Step 3/5: skipped (frames)")
+
+    segments = []
+    if do_transcribe:
+        say("Step 4/5: pulling out the sound and writing the transcript (the slow step)")
+        audio = os.path.join(folder, "audio.wav")
+        if extract_audio(video, audio):
+            segments, lang = transcriber(audio, model, language)
+            meta["language"] = lang
+            write_transcripts(folder, segments, lang)
+            say(f"  {len(segments)} transcript pieces, language: {lang}")
+        else:
+            say("  This video has no sound, so there is no transcript.")
+    else:
+        say("Step 4/5: skipped (transcript)")
+
+    say("Step 5/5: writing the timeline")
+    with open(os.path.join(folder, "timeline.md"), "w") as fh:
+        fh.write(build_timeline(meta, segments, frames))
+    with open(os.path.join(folder, "metadata.json"), "w") as fh:
+        json.dump(dict(meta, interval_seconds=interval, scene_threshold=scene_threshold,
+                       model=model, frames=len(frames), segments=len(segments)), fh, indent=1)
+    return folder
+
+
+def main(argv=None):
+    p = argparse.ArgumentParser(description="Download a video, save frames and a transcript.")
+    p.add_argument("source", nargs="?", help="a video link (YouTube, TikTok, ...) or a video file")
+    p.add_argument("--check", action="store_true", help="only check that the tools are installed")
+    p.add_argument("--interval", type=float, default=5.0, help="seconds between frames (default 5)")
+    p.add_argument("--scene-threshold", type=float, default=0.3,
+                   help="0-1; lower saves more extra frames when the screen changes (default 0.3)")
+    p.add_argument("--max-frames", type=int, default=600, help="most frames to save (default 600)")
+    p.add_argument("--model", default="base", help="Whisper model: tiny, base, small ... (default base)")
+    p.add_argument("--language", default=None, help="spoken language code, e.g. en (default: detect)")
+    p.add_argument("--no-frames", action="store_true", help="skip the frames")
+    p.add_argument("--no-transcript", action="store_true", help="skip the transcript")
+    p.add_argument("--output", default=OUTPUT_ROOT, help="where to put the video folder")
+    args = p.parse_args(argv)
+    try:
+        if args.check:
+            problems = check_tools()
+            print("\n\n".join(problems) if problems else "Everything is installed: FFmpeg, yt-dlp, Whisper.")
+            return 1 if problems else 0
+        if not args.source:
+            p.print_help()
+            return 2
+        if args.interval <= 0 or args.max_frames <= 0:
+            raise ToolError("--interval and --max-frames must be bigger than 0.")
+        folder = analyze(args.source, args.output, args.interval, args.scene_threshold,
+                         args.max_frames, args.model, args.language,
+                         not args.no_frames, not args.no_transcript)
+    except ToolError as exc:
+        print(f"\nStopped: {exc}", file=sys.stderr)
+        return 1
+    print(f"\nDone. Everything is in:\n  {folder}\nStart with timeline.md. "
+          "Strategy notes go into video_analyzer/strategies/ (see its _TEMPLATE.md).")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
