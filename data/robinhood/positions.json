@@ -12,7 +12,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 3.679e-05,
+      "last_price": 3.651e-05,
       "issue_details": {
         "extra": [
           [
@@ -128,7 +128,7 @@
       },
       "issue": 458,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-19 13:21:19"
+      "last_price_time": "2026-10-19 13:25:59"
     }
   ],
   "ever_bought": [
@@ -491,6 +491,16 @@
       "created": "2026-10-19T13:07:55Z",
       "liquidity_usd": 17831.1063,
       "market_cap_usd": 53059.5082
+    },
+    "0xaa75f879b9c66db3c391bab43055a41250f12fca4b698f0a222be2ced7d6ea87": {
+      "pool": "0xaa75f879b9c66db3c391bab43055a41250f12fca4b698f0a222be2ced7d6ea87",
+      "dex": "uniswap-pools-trade",
+      "token": "0x801559725d985cd4eb8c1dbae3fe9f3b791c8888",
+      "name": "VERANTA",
+      "title": "Veranta a8d05",
+      "created": "2026-10-19T13:23:35Z",
+      "liquidity_usd": 8.9655,
+      "market_cap_usd": 7688997.515
     }
   },
   "checked": {
@@ -658,11 +668,12 @@
       ]
     },
     "0x386847c26c2f198d17f8f5e5d1dd7eeeb9dfdee3bf2cd9e06828c4678f0935b7": {
-      "at": "2026-10-19T12:20:59.008681+00:00",
+      "at": "2026-10-19T13:25:59.591750+00:00",
       "passed": false,
       "failed": [
         "Market cap",
-        "Not down >50% in 24h"
+        "Not down >50% in 24h",
+        "More buys than sells (1h)"
       ]
     },
     "0x6f2a90e12a0deca970935985fa82ad16e4dbb9054462dd5bbe8e45658ffdb202": {
@@ -705,7 +716,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T13:21:19.102782+00:00",
+      "at": "2026-10-19T13:25:59.591750+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -713,7 +724,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T13:21:19.102782+00:00",
+      "at": "2026-10-19T13:25:59.591750+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -722,7 +733,7 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-10-19T13:21:19.102782+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "rpc": {
       "calls": 8,
@@ -730,7 +741,7 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-10-19T13:21:19.102782+00:00",
-      "used_this_run": true
+      "used_this_run": false
     }
   },
   "logged": {
@@ -756,7 +767,7 @@
     "0x7940d482618381d327fca09690b71a045ab304ccf5f3ef041c79f5fe8bec7bdc": "FAIL|Market cap: $6,104 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 0 buys vs 1 sells",
     "0xd335d9d053f4ec714b4893f2463d7f2f31494fe552606850b841dbfa2d9356b0": "FAIL|Market cap: $6,104 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 0 buys vs 1 sells",
     "0xf118f82d5dc475ddcde65891c8935b557ac14330ac785afea951771d7733dc2d": "FAIL|Market cap: $6,104 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 0 buys vs 1 sells",
-    "0x386847c26c2f198d17f8f5e5d1dd7eeeb9dfdee3bf2cd9e06828c4678f0935b7": "FAIL|Market cap: $6,093 (need $25,000+); Not down >50% in 24h: -62% in 24h",
+    "0x386847c26c2f198d17f8f5e5d1dd7eeeb9dfdee3bf2cd9e06828c4678f0935b7": "FAIL|Market cap: $6,106 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 0 buys vs 1 sells",
     "0x6f2a90e12a0deca970935985fa82ad16e4dbb9054462dd5bbe8e45658ffdb202": "FAIL|Market cap: $6,098 (need $25,000+); Not down >50% in 24h: -63% in 24h; More buys than sells (1h): 72 buys vs 76 sells",
     "0x95ed29af085af721cff1873e455b6123a2b8a1ffd79ac3d080365fe580167339": "FAIL|Market cap: $6,100 (need $25,000+); Not down >50% in 24h: -63% in 24h; More buys than sells (1h): 68 buys vs 73 sells",
     "0x9019568cfa949e9441424abc1ebbc426380db7a94414fb3cea1b0c2642105e85": "FAIL|Market cap: $6,111 (need $25,000+); Not down >50% in 24h: -62% in 24h",
@@ -3700,9 +3711,9 @@
       "graduated": "2026-10-18T12:53:05Z",
       "symbol": "MINTER",
       "title": "MINTER",
-      "seen": "2026-10-19T13:21:19.102782+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 15535.8274,
+      "liquidity_usd": 15530.5047,
       "market_cap_usd": 5980.375569
     },
     "0x56df647bd6d7d1da4214eb2c99b9c8b4efd123e9": {
@@ -3710,9 +3721,9 @@
       "graduated": "2026-10-18T13:25:44Z",
       "symbol": "TRN",
       "title": "Trion",
-      "seen": "2026-10-19T13:21:19.102782+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 11865.119,
+      "liquidity_usd": 11861.054,
       "market_cap_usd": 5995.376778
     },
     "0xfacc94e4e74e6c3f448e24566598cd16c660b4a4": {
@@ -3920,9 +3931,9 @@
       "graduated": "2026-10-19T00:07:34Z",
       "symbol": "TURBO",
       "title": "Turbo on Robinhood",
-      "seen": "2026-10-19T13:21:19.102782+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 22236.7114,
+      "liquidity_usd": 22229.0929,
       "market_cap_usd": 6108.391395
     },
     "0xa6620f098b7d916e5279cdfde9261efe14d4aa8b": {
@@ -3940,9 +3951,9 @@
       "graduated": "2026-10-19T00:46:19Z",
       "symbol": "KIRBY",
       "title": "Kirby",
-      "seen": "2026-10-19T13:21:19.102782+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 20461.1951,
+      "liquidity_usd": 20454.185,
       "market_cap_usd": 6100.608758
     },
     "0xd921be67e5006f02ab72781df853b8d7b4c73003": {
@@ -3950,7 +3961,7 @@
       "graduated": "2026-10-19T00:42:39Z",
       "symbol": "KIRBY",
       "title": "Kirby",
-      "seen": "2026-10-19T13:21:19.102782+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 21638.3717,
       "market_cap_usd": 6084.800853
@@ -3960,9 +3971,9 @@
       "graduated": "2026-10-19T00:41:06Z",
       "symbol": "KIRBY",
       "title": "Kirby",
-      "seen": "2026-10-19T13:21:19.102782+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 19666.1011,
+      "liquidity_usd": 19659.3633,
       "market_cap_usd": 6080.096708
     },
     "0xcd1689fbdd8b09d43daa457f277ead400db407eb": {
@@ -3970,9 +3981,9 @@
       "graduated": "2026-10-19T01:00:51Z",
       "symbol": "Gloob",
       "title": "The Rangers",
-      "seen": "2026-10-19T13:21:19.102782+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 20519.3373,
+      "liquidity_usd": 20512.3072,
       "market_cap_usd": 6161.370069
     },
     "0x3f2ca931a8e99f3c6a521575c681ab6076232b11": {
@@ -4040,9 +4051,9 @@
       "graduated": "2026-10-19T06:21:55Z",
       "symbol": "W",
       "title": "W",
-      "seen": "2026-10-19T13:21:19.102782+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 18905.8924,
+      "liquidity_usd": 18899.415,
       "market_cap_usd": 6261.555543
     },
     "0x5f895fd2238ea36a7f0b3592eef108e797817777": {
@@ -4130,9 +4141,9 @@
       "graduated": "2026-10-19T08:40:22Z",
       "symbol": "UHI",
       "title": "Universal High Income",
-      "seen": "2026-10-19T13:21:19.102782+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 31590.8159,
+      "liquidity_usd": 31579.9926,
       "market_cap_usd": 6169.15208
     },
     "0xb9a714b0ce56eee65702ac2d172960336601bd05": {
@@ -4309,9 +4320,9 @@
       "graduated": "2026-10-19T11:44:58Z",
       "symbol": "TRACE",
       "title": "TRACEWORLD",
-      "seen": "2026-10-19T13:11:38.292604+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 9994.2359,
+      "liquidity_usd": 9979.7385,
       "market_cap_usd": 6084.745785
     },
     "0x9b09962749f1fcbfd7e0d0ba97e1e7019a90a7bb": {
@@ -4349,9 +4360,9 @@
       "graduated": "2026-10-19T12:35:30Z",
       "symbol": "MEMECAT",
       "title": "The Meme Cat",
-      "seen": "2026-10-19T13:21:19.102782+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 16628.0221,
+      "liquidity_usd": 16654.1399,
       "market_cap_usd": 6084.762041
     },
     "0xb7ee266b9ebc3a8789079288e81cff9379731d9b": {
@@ -4359,9 +4370,9 @@
       "graduated": "2026-10-19T12:43:57Z",
       "symbol": "BEEPZ",
       "title": "Beepz",
-      "seen": "2026-10-19T13:21:19.102782+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 16312.3048,
+      "liquidity_usd": 16337.9266,
       "market_cap_usd": 6099.861679
     },
     "0x3b1c3e3ecc9fdd494fde2fd79f7c10b7010a3f60": {
@@ -4369,9 +4380,9 @@
       "graduated": "2026-10-19T12:39:44Z",
       "symbol": "WOJAK",
       "title": "Wojak",
-      "seen": "2026-10-19T13:21:19.102782+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 16315.4498,
+      "liquidity_usd": 16341.0767,
       "market_cap_usd": 6086.317488
     },
     "0xa2763c7e526042bc361ea5773a552ed404800000": {
@@ -4389,10 +4400,20 @@
       "graduated": "2026-10-19T13:07:55Z",
       "symbol": "SEA",
       "title": "SEA",
-      "seen": "2026-10-19T13:21:19.102782+00:00",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 29739.4661,
-      "market_cap_usd": 181471.5886
+      "liquidity_usd": 18340.8528,
+      "market_cap_usd": 55803.46564
+    },
+    "0x801559725d985cd4eb8c1dbae3fe9f3b791c8888": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-19T13:23:35Z",
+      "symbol": "VERANTA",
+      "title": "Veranta a8d05",
+      "seen": "2026-10-19T13:25:59.591750+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 8.9655,
+      "market_cap_usd": 7688997.515
     }
   },
   "graduations": {
@@ -4548,7 +4569,7 @@
       0
     ],
     "2026-10-19 13:00": [
-      3,
+      4,
       0,
       0
     ]
