@@ -6,13 +6,13 @@
       "pair_address": "0xcc9eeef5bd199a30b4405862ef59204366d613d6c6f4a6a516fbc90c3a44a40c",
       "entry_time": "2026-10-19T07:38:41.167513+00:00",
       "entry_price": 6.249e-05,
-      "peak_price": 0.0001049,
+      "peak_price": 0.0001161,
       "tokens": 155256.84109457512,
       "cost_usd": 10.05,
       "pool_fee_pct": 1.0,
       "remaining_fraction": 0.5,
       "took_profit": true,
-      "last_price": 0.0001049,
+      "last_price": 0.0001161,
       "issue_details": {
         "extra": [
           [
@@ -128,7 +128,7 @@
       },
       "issue": 455,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-19 11:11:37",
+      "last_price_time": "2026-10-19 11:20:58",
       "sells": [
         {
           "time": "2026-10-19T10:31:43.525499+00:00",
@@ -152,7 +152,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 4.044e-05,
+      "last_price": 4.257e-05,
       "issue_details": {
         "extra": [
           [
@@ -268,7 +268,7 @@
       },
       "issue": 458,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-19 11:11:37"
+      "last_price_time": "2026-10-19 11:20:58"
     }
   ],
   "ever_bought": [
@@ -611,6 +611,26 @@
       "created": "2026-10-19T10:48:58Z",
       "liquidity_usd": 18.6697,
       "market_cap_usd": 167027.3153
+    },
+    "0xbcda42b8c06fe10149ab4fb195c32a94719c4394f27a06b40a19ea3b8466dd3e": {
+      "pool": "0xbcda42b8c06fe10149ab4fb195c32a94719c4394f27a06b40a19ea3b8466dd3e",
+      "dex": "uniswap-pools-trade",
+      "token": "0x41e4281d3e08daacb74ecbdb3c72eec2146e8888",
+      "name": "MRCY",
+      "title": "Mercury efcb3",
+      "created": "2026-10-19T11:18:26Z",
+      "liquidity_usd": 28.4885,
+      "market_cap_usd": 1857492.345
+    },
+    "0xb5a215de2f449c003b216bfb191d86fce5c4609caf2b79dfb829561b2d17fd69": {
+      "pool": "0xb5a215de2f449c003b216bfb191d86fce5c4609caf2b79dfb829561b2d17fd69",
+      "dex": "pons-v2-dex",
+      "token": "0xc081f170df4642f49186be6b5573d0c6fb78da1b",
+      "name": "MRCY",
+      "title": "Mercury",
+      "created": "2026-10-19T11:13:45Z",
+      "liquidity_usd": 19540.6995,
+      "market_cap_usd": 46256.8891
     }
   },
   "checked": {
@@ -761,7 +781,7 @@
       ]
     },
     "0x9e54f2aa14748b2e0846edb9c05f429b0d1e3f6dc71922cc5752c3b00885aafd": {
-      "at": "2026-10-19T10:18:26.612882+00:00",
+      "at": "2026-10-19T11:20:58.191397+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
@@ -794,6 +814,13 @@
       "failed": [
         "Liquidity"
       ]
+    },
+    "0x57dbda8b6ccd2996e1f3aae396dbf5fe9f685713b3bd7fa9a04311ce50c2310f": {
+      "at": "2026-10-19T11:20:58.191397+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
     }
   },
   "sources": {
@@ -802,7 +829,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T11:11:37.202416+00:00",
+      "at": "2026-10-19T11:20:58.191397+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -810,7 +837,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T11:11:37.202416+00:00",
+      "at": "2026-10-19T11:20:58.191397+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -819,14 +846,14 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-10-19T11:11:37.202416+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "rpc": {
       "calls": 4,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T11:11:37.202416+00:00",
+      "at": "2026-10-19T11:20:58.191397+00:00",
       "used_this_run": true
     }
   },
@@ -855,19 +882,10 @@
     "0x5904f2587b6ab58d060cc913dd11081fa5895ae71c2a007eb997c09a4e91fdcb": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
     "0xe25cf3a72c5bda5bbcdd3affa213b1f5eedd69b27da21437b0453ca358bc64cd": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
     "0x6fa8164575cf7072831b20acf6812284bdb357abd6971351be52ab311200d7fa": "FAIL|Liquidity: $38 (need $5,000+ on Pools.trade)",
-    "0xf1b40ca91542375d309589684327137096febea834cbbe5b17e878ef253eb214": "FAIL|Liquidity: $37 (need $5,000+ on Pools.trade)"
+    "0xf1b40ca91542375d309589684327137096febea834cbbe5b17e878ef253eb214": "FAIL|Liquidity: $37 (need $5,000+ on Pools.trade)",
+    "0x57dbda8b6ccd2996e1f3aae396dbf5fe9f685713b3bd7fa9a04311ce50c2310f": "FAIL|Liquidity: $24 (need $5,000+ on Pools.trade)"
   },
   "launchpad_tokens": {
-    "0x8eeef3cfead8f3449837041828b780d2ea148888": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-12T05:20:09Z",
-      "symbol": "MOTION",
-      "title": "MOTION 02bd5",
-      "seen": "2026-10-14T15:54:22.078462+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 0.0,
-      "market_cap_usd": 244460.369
-    },
     "0x4da581e31261d6a188c0c1dc92e4a383629824bd": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-12T07:44:06Z",
@@ -3746,7 +3764,7 @@
       "graduated": "2026-10-18T11:40:25Z",
       "symbol": "MINTER",
       "title": "MINTER",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6085.680747
     },
@@ -3755,7 +3773,7 @@
       "graduated": "2026-10-18T11:58:57Z",
       "symbol": "MINTER",
       "title": "MINTER",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 34881.8781,
       "market_cap_usd": 6086.556661
@@ -3765,7 +3783,7 @@
       "graduated": "2026-10-18T12:09:49Z",
       "symbol": "DUG",
       "title": "DUG",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 20063.2629,
       "market_cap_usd": 6433.770544
@@ -3775,7 +3793,7 @@
       "graduated": "2026-10-18T12:05:26Z",
       "symbol": "MINTER",
       "title": "MINTER",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 34934.4943,
       "market_cap_usd": 6040.704548
@@ -3785,7 +3803,7 @@
       "graduated": "2026-10-18T12:29:01Z",
       "symbol": "DUG",
       "title": "DUG",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 7081.4022,
       "market_cap_usd": 6070.217126
@@ -3805,7 +3823,7 @@
       "graduated": "2026-10-18T12:53:05Z",
       "symbol": "MINTER",
       "title": "MINTER",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 15549.4228,
       "market_cap_usd": 5980.375569
@@ -3815,7 +3833,7 @@
       "graduated": "2026-10-18T13:25:44Z",
       "symbol": "TRN",
       "title": "Trion",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 11879.2244,
       "market_cap_usd": 5995.376778
@@ -4025,7 +4043,7 @@
       "graduated": "2026-10-19T00:07:34Z",
       "symbol": "TURBO",
       "title": "Turbo on Robinhood",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 22263.1466,
       "market_cap_usd": 6108.391395
@@ -4045,7 +4063,7 @@
       "graduated": "2026-10-19T00:46:19Z",
       "symbol": "KIRBY",
       "title": "Kirby",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 20485.5196,
       "market_cap_usd": 6100.608758
@@ -4055,7 +4073,7 @@
       "graduated": "2026-10-19T00:42:39Z",
       "symbol": "KIRBY",
       "title": "Kirby",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 21693.4037,
       "market_cap_usd": 6082.98768
@@ -4065,7 +4083,7 @@
       "graduated": "2026-10-19T00:41:06Z",
       "symbol": "KIRBY",
       "title": "Kirby",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19689.4804,
       "market_cap_usd": 6080.096708
@@ -4075,7 +4093,7 @@
       "graduated": "2026-10-19T01:00:51Z",
       "symbol": "Gloob",
       "title": "The Rangers",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 20537.2937,
       "market_cap_usd": 6161.370069
@@ -4145,7 +4163,7 @@
       "graduated": "2026-10-19T06:21:55Z",
       "symbol": "W",
       "title": "W",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 18928.3679,
       "market_cap_usd": 6261.555543
@@ -4235,7 +4253,7 @@
       "graduated": "2026-10-19T08:40:22Z",
       "symbol": "UHI",
       "title": "Universal High Income",
-      "seen": "2026-10-19T11:11:37.202416+00:00",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 31628.3713,
       "market_cap_usd": 6169.15208
@@ -4378,10 +4396,30 @@
       "source": "geckoterminal",
       "liquidity_usd": 18.671,
       "market_cap_usd": 167027.3153
+    },
+    "0x41e4281d3e08daacb74ecbdb3c72eec2146e8888": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-19T11:18:26Z",
+      "symbol": "MRCY",
+      "title": "Mercury efcb3",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 28.4885,
+      "market_cap_usd": 1857492.345
+    },
+    "0xc081f170df4642f49186be6b5573d0c6fb78da1b": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-10-19T11:13:45Z",
+      "symbol": "MRCY",
+      "title": "Mercury",
+      "seen": "2026-10-19T11:20:58.191397+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 19540.6995,
+      "market_cap_usd": 46256.8891
     }
   },
   "graduations": {
-    "at": "2026-10-19T11:11:37.202416+00:00",
+    "at": "2026-10-19T11:20:58.191397+00:00",
     "hours": 24,
     "seen": {
       "0x957a4122ef075a0de26e6e7472c037e75b829a08": "2026-10-18T17:17:57.051200+00:00",
@@ -4392,7 +4430,8 @@
       "0xb54ef4bd0a97083862e81a97d13af14594f4203d": "2026-10-19T04:45:51.899400+00:00",
       "0xffb390e5b6136704905e2635afc3e5150e768a26": "2026-10-19T07:06:06.391200+00:00",
       "0x9758a9cf6318211d3548f3005ddd4464df12a407": "2026-10-19T08:15:00.150500+00:00",
-      "0x295a701e7038a7a7b9b23d700e096416b074f526": "2026-10-19T09:16:08.134000+00:00"
+      "0x295a701e7038a7a7b9b23d700e096416b074f526": "2026-10-19T09:16:08.134000+00:00",
+      "0xc081f170df4642f49186be6b5573d0c6fb78da1b": "2026-10-19T11:13:48.181600+00:00"
     },
     "tokens": [
       "0x14310763fd050894d1e4f75362503796d56a7016",
@@ -4403,9 +4442,10 @@
       "0x9758a9cf6318211d3548f3005ddd4464df12a407",
       "0xa6620f098b7d916e5279cdfde9261efe14d4aa8b",
       "0xb54ef4bd0a97083862e81a97d13af14594f4203d",
+      "0xc081f170df4642f49186be6b5573d0c6fb78da1b",
       "0xffb390e5b6136704905e2635afc3e5150e768a26"
     ],
-    "scanned_to": 92570257,
+    "scanned_to": 92575666,
     "complete": true
   },
   "issues_to_close": [],
@@ -4531,7 +4571,7 @@
       0
     ],
     "2026-10-19 11:00": [
-      1,
+      2,
       0,
       0
     ]
