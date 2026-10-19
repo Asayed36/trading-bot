@@ -103,30 +103,71 @@ def is_link(text):
     return bool(re.match(r"^https?://", text.strip(), re.I))
 
 
+# YouTube sometimes shows "Sign in to confirm you're not a bot" to cloud servers. The default
+# way of asking is tried first; if that fails, these other ways of asking (no login, no
+# cookies) are tried in turn. The one that worked is remembered for the download.
+FALLBACK_CLIENTS = ["android_vr", "web_safari", "tv"]
+
+
+class _Quiet:
+    """Keeps yt-dlp's own error lines out of the screen; we print one clear message instead."""
+    def debug(self, msg): pass
+    def info(self, msg): pass
+    def warning(self, msg): pass
+    def error(self, msg): pass
+
+
+BOT_CHECK_HELP = (
+    "YouTube is refusing this computer (\"Sign in to confirm you're not a bot\"). It does this "
+    "to cloud servers and sometimes to home connections. What works: run this tool on your own "
+    "computer (see the README), where YouTube normally allows it, or download the video "
+    "yourself and give the tool the file:  python video_analyzer/analyze_video.py my_video.mp4")
+
+
+def _options(client, **extra):
+    opts = {"quiet": True, "no_warnings": True, "noplaylist": True, "logger": _Quiet()}
+    if client:
+        opts["extractor_args"] = {"youtube": {"player_client": [client]}}
+    opts.update(extra)
+    return opts
+
+
+def _first_line(exc):
+    text = str(exc).replace("ERROR: ", "").strip()
+    return text.splitlines()[0][:300] if text else type(exc).__name__
+
+
 def fetch_info(url):
-    """Title, id and length of the video, without downloading it."""
+    """(info, client): title, id and length of the video without downloading it, and the
+    way of asking that worked (None = the default)."""
     import yt_dlp
-    opts = {"quiet": True, "no_warnings": True, "noplaylist": True, "skip_download": True}
-    try:
-        with yt_dlp.YoutubeDL(opts) as ydl:
-            return ydl.extract_info(url, download=False)
-    except Exception as exc:
-        raise ToolError(f"Could not read that link: {str(exc)[-300:]}\n"
-                        "Check the link opens in your browser; for a site that stopped working try "
-                        "updating the downloader:  pip install -U yt-dlp")
+    last, bot_check = None, False
+    for client in [None] + FALLBACK_CLIENTS:
+        try:
+            with yt_dlp.YoutubeDL(_options(client, skip_download=True)) as ydl:
+                return ydl.extract_info(url, download=False), client
+        except Exception as exc:
+            last = exc
+            bot_check = bot_check or "not a bot" in str(exc)
+    if bot_check:
+        raise ToolError(BOT_CHECK_HELP)
+    raise ToolError(f"Could not read that link: {_first_line(last)}\n"
+                    "Check the link opens in your browser. If the site changed, update the "
+                    "downloader:  pip install -U yt-dlp")
 
 
-def download(url, folder):
+def download(url, folder, client=None):
     """Download the video (at most 720p, to keep files small) into `folder` as video.<ext>."""
     import yt_dlp
-    opts = {"quiet": True, "no_warnings": True, "noplaylist": True,
-            "format": "bv*[height<=720]+ba/b[height<=720]/b",
-            "merge_output_format": "mp4", "outtmpl": os.path.join(folder, "video.%(ext)s")}
+    opts = _options(client, format="bv*[height<=720]+ba/b[height<=720]/b",
+                    merge_output_format="mp4", outtmpl=os.path.join(folder, "video.%(ext)s"))
     try:
         with yt_dlp.YoutubeDL(opts) as ydl:
             ydl.download([url])
     except Exception as exc:
-        raise ToolError(f"The download failed: {str(exc)[-300:]}")
+        if "not a bot" in str(exc):
+            raise ToolError(BOT_CHECK_HELP)
+        raise ToolError(f"The download failed: {_first_line(exc)}")
     for name in sorted(os.listdir(folder)):
         if name.startswith("video.") and not name.endswith((".part", ".ytdl")):
             return os.path.join(folder, name)
@@ -302,8 +343,9 @@ def analyze(source, output_root=OUTPUT_ROOT, interval=5.0, scene_threshold=0.3, 
 
     say("Step 1/5: finding the video")
     meta = {"analyzed": datetime.now().strftime("%Y-%m-%d %H:%M")}
+    client = None
     if is_link(source):
-        info = fetch_info(source)
+        info, client = fetch_info(source)
         name = slugify(info.get("title")) + "-" + slugify(info.get("id"), 20)
         meta.update(title=info.get("title"), source=source, uploader=info.get("uploader"))
     else:
@@ -316,7 +358,7 @@ def analyze(source, output_root=OUTPUT_ROOT, interval=5.0, scene_threshold=0.3, 
     say(f"  Folder: {folder}")
 
     say("Step 2/5: downloading" if is_link(source) else "Step 2/5: using the file you gave (no download)")
-    video = download(source, folder) if is_link(source) else os.path.abspath(source)
+    video = download(source, folder, client) if is_link(source) else os.path.abspath(source)
     duration = duration_seconds(video)
     meta["duration"] = clock(duration)
     say(f"  Length: {meta['duration']}")

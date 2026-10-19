@@ -196,6 +196,68 @@ class EndToEndTests(unittest.TestCase):
         self.assertTrue(os.path.isdir(os.path.join(self.out, "my-test-video", "frames")))
 
 
+class FetchInfoTests(unittest.TestCase):
+    """fetch_info with a stand-in for yt-dlp: which way of asking is tried, in what order."""
+
+    def fake_module(self, works_with):
+        tried = []
+
+        class YDL:
+            def __init__(self, opts):
+                self.client = (opts.get("extractor_args", {}).get("youtube", {})
+                               .get("player_client") or [None])[0]
+                tried.append(self.client)
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+            def extract_info(self, url, download=False):
+                if self.client in works_with:
+                    return {"title": "T", "id": "abc"}
+                raise RuntimeError("ERROR: [youtube] abc: Sign in to confirm you\u2019re not a bot. "
+                                   "Use --cookies-from-browser")
+        return SimpleNamespace(YoutubeDL=YDL), tried
+
+    def test_the_default_way_is_tried_first_then_the_others_in_order(self):
+        module, tried = self.fake_module(works_with=["web_safari"])
+        with mock.patch.dict(sys.modules, {"yt_dlp": module}):
+            info, client = av.fetch_info("https://youtu.be/abc")
+        self.assertEqual((info["title"], client), ("T", "web_safari"))
+        self.assertEqual(tried, [None, "android_vr", "web_safari"])
+
+    def test_no_fallback_when_the_default_works(self):
+        module, tried = self.fake_module(works_with=[None])
+        with mock.patch.dict(sys.modules, {"yt_dlp": module}):
+            _, client = av.fetch_info("https://youtu.be/abc")
+        self.assertEqual((client, tried), (None, [None]))
+
+    def test_the_bot_check_message_wins_even_if_the_last_try_failed_differently(self):
+        module, _ = self.fake_module(works_with=[])
+        original = module.YoutubeDL.extract_info
+
+        def extract(self, url, download=False):
+            if self.client == "tv":
+                raise RuntimeError("The page needs to be reloaded.")
+            return original(self, url, download)
+        module.YoutubeDL.extract_info = extract
+        with mock.patch.dict(sys.modules, {"yt_dlp": module}):
+            with self.assertRaises(av.ToolError) as ctx:
+                av.fetch_info("https://youtu.be/abc")
+        self.assertEqual(str(ctx.exception), av.BOT_CHECK_HELP)
+
+    def test_the_bot_check_gives_one_clear_message(self):
+        module, tried = self.fake_module(works_with=[])
+        with mock.patch.dict(sys.modules, {"yt_dlp": module}):
+            with self.assertRaises(av.ToolError) as ctx:
+                av.fetch_info("https://youtu.be/abc")
+        self.assertEqual(str(ctx.exception), av.BOT_CHECK_HELP)
+        self.assertIn("your own computer", str(ctx.exception))
+        self.assertEqual(len(tried), 1 + len(av.FALLBACK_CLIENTS))
+
+
 class TranscribeTests(unittest.TestCase):
     def test_segments_are_cleaned_and_the_language_is_reported(self):
         seg = lambda a, b, t: SimpleNamespace(start=a, end=b, text=t)           # noqa: E731
