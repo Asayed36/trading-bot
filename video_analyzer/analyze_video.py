@@ -124,6 +124,31 @@ BOT_CHECK_HELP = (
     "yourself and give the tool the file:  python video_analyzer/analyze_video.py my_video.mp4")
 
 
+SITE_BLOCK_HELP = (
+    "The website is refusing automated downloads (it answered \"403 Forbidden\", usually a "
+    "\"checking your browser\" test). The link itself is probably fine and opens in your browser. "
+    "What works: run this tool on your own computer (see the README), or download the video "
+    "yourself in your browser and give the tool the file:  "
+    "python video_analyzer/analyze_video.py my_video.mp4")
+
+
+def explain_failure(errors, url=""):
+    """One plain message for the errors of a failed attempt (a list of exceptions or texts),
+    or None when it is some other problem."""
+    text = " ".join(str(e) for e in errors)
+    refused = "403" in text or "Forbidden" in text or "challenge" in text.lower()
+    if "not a bot" in text or (refused and _is_youtube(url)):
+        return BOT_CHECK_HELP          # YouTube says it either way, depending on the try
+    if refused:
+        return SITE_BLOCK_HELP
+    return None
+
+
+def _is_youtube(url):
+    return bool(re.match(r"^https?://([a-z0-9-]+\.)*(youtube\.com|youtu\.be|youtube-nocookie\.com)([/:?]|$)",
+                         url.strip(), re.I))
+
+
 def _options(client, **extra):
     opts = {"quiet": True, "no_warnings": True, "noplaylist": True, "logger": _Quiet()}
     if client:
@@ -139,20 +164,22 @@ def _first_line(exc):
 
 def fetch_info(url):
     """(info, client): title, id and length of the video without downloading it, and the
-    way of asking that worked (None = the default)."""
+    way of asking that worked (None = the default). The other ways of asking are for
+    YouTube only."""
     import yt_dlp
-    last, bot_check = None, False
-    for client in [None] + FALLBACK_CLIENTS:
+    errors = []
+    for client in [None] + (FALLBACK_CLIENTS if _is_youtube(url) else []):
         try:
             with yt_dlp.YoutubeDL(_options(client, skip_download=True)) as ydl:
                 return ydl.extract_info(url, download=False), client
         except Exception as exc:
-            last = exc
-            bot_check = bot_check or "not a bot" in str(exc)
-    if bot_check:
-        raise ToolError(BOT_CHECK_HELP)
-    raise ToolError(f"Could not read that link: {_first_line(last)}\n"
-                    "Check the link opens in your browser. If the site changed, update the "
+            errors.append(exc)
+    explained = explain_failure(errors, url)
+    if explained:
+        raise ToolError(explained)
+    raise ToolError(f"Could not read that link: {_first_line(errors[-1])}\n"
+                    "Check that it is the page of ONE video (not a channel or a playlist) and that "
+                    "this computer can reach the site. If the site changed, update the "
                     "downloader:  pip install -U yt-dlp")
 
 
@@ -165,9 +192,7 @@ def download(url, folder, client=None):
         with yt_dlp.YoutubeDL(opts) as ydl:
             ydl.download([url])
     except Exception as exc:
-        if "not a bot" in str(exc):
-            raise ToolError(BOT_CHECK_HELP)
-        raise ToolError(f"The download failed: {_first_line(exc)}")
+        raise ToolError(explain_failure([exc], url) or f"The download failed: {_first_line(exc)}")
     for name in sorted(os.listdir(folder)):
         if name.startswith("video.") and not name.endswith((".part", ".ytdl")):
             return os.path.join(folder, name)
