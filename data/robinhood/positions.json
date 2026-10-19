@@ -165,6 +165,16 @@
       "created": "2026-10-19T06:15:04Z",
       "liquidity_usd": 15602.5805,
       "market_cap_usd": 6109.330368
+    },
+    "0xc794498c43cf7c197912d79ea6e9f528d5692f7c364e0c30d2ef37eca4ebcc2f": {
+      "pool": "0xc794498c43cf7c197912d79ea6e9f528d5692f7c364e0c30d2ef37eca4ebcc2f",
+      "dex": "uniswap-pools-trade",
+      "token": "0xb67ab3b454716c6f0a96d8985a5fc5a00e392486",
+      "name": "W",
+      "title": "W",
+      "created": "2026-10-19T06:21:55Z",
+      "liquidity_usd": 19285.8349,
+      "market_cap_usd": 68309.38699
     }
   },
   "checked": {
@@ -201,7 +211,7 @@
       "failed": []
     },
     "onchain:0x3f2ca931a8e99f3c6a521575c681ab6076232b11": {
-      "at": "2026-10-19T05:21:33.780979+00:00",
+      "at": "2026-10-19T06:31:24.427660+00:00",
       "passed": false,
       "failed": [
         "More buys than sells (1h)"
@@ -219,7 +229,7 @@
       ]
     },
     "0x9bece49664b02da134960f7e15bf84cc6c76d6131f49e704b665f0409a0ac775": {
-      "at": "2026-10-19T05:21:33.780979+00:00",
+      "at": "2026-10-19T06:31:24.427660+00:00",
       "passed": false,
       "failed": [
         "Top 10 holders"
@@ -232,7 +242,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T06:21:01.288418+00:00",
+      "at": "2026-10-19T06:31:24.427660+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -240,36 +250,34 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T05:51:53.685865+00:00",
-      "used_this_run": false
+      "at": "2026-10-19T06:31:24.427660+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T05:51:53.685865+00:00",
-      "used_this_run": false
+      "at": "2026-10-19T06:31:24.427660+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 10,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-19T06:21:01.288418+00:00",
+      "at": "2026-10-19T06:31:24.427660+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "onchain:0xa6620f098b7d916e5279cdfde9261efe14d4aa8b": "FAIL|More buys than sells (1h): 0 buys vs 1 sells",
-    "0x12ef8bfae18ec8cf882c5023fc158aadeccc8d5f299b9f02515a6ba52b6350d4": "FAIL|Market cap: $6,119 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x6845eb137cbfaab06ba8fdeb4651af153808a3be886989648a23ea3dc53f13dc": "FAIL|Market cap: $6,106 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x1785bd87845fce5490f90b7cf3caabf15b46b381d5a74a9075d6f97250eaecf8": "FAIL|Market cap: $6,102 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0xdef577ddca69072261b22653b64aa2e63c59ee5c2b4357bb5a69354f0cea10d9": "FAIL|Market cap: $6,128 (need $25,000+); Not down >50% in 24h: -68% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x8c1bd58a1cd302fba386316ef1b84f361c27247db5625b557c8857beacc53d98": "PASS|",
-    "onchain:0x3f2ca931a8e99f3c6a521575c681ab6076232b11": "FAIL|More buys than sells (1h): 6 buys vs 10 sells",
+    "onchain:0x3f2ca931a8e99f3c6a521575c681ab6076232b11": "FAIL|More buys than sells (1h): 19 buys vs 20 sells",
     "0xd7ae980fc64a88dbd3dc9fc1840a65218e093f30b63f985963899291f58ad69e": "FAIL|Not a honeypot: unknown: GoPlus gave no is_honeypot; Not mintable: unknown: GoPlus gave no is_mintable; No hidden owner: unknown: GoPlus gave no hidden_owner; Owner can't change balances: unknown: GoPlus gave no owner_change_balance; No blacklist: unknown: GoPlus gave no is_blacklisted",
-    "0x9bece49664b02da134960f7e15bf84cc6c76d6131f49e704b665f0409a0ac775": "FAIL|Top 10 holders: 34.6% (need under 30%; pools, launchpad and burn addresses left out)"
+    "0x9bece49664b02da134960f7e15bf84cc6c76d6131f49e704b665f0409a0ac775": "FAIL|Top 10 holders: 32.6% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
     "0xf7eb33ce521069dbe2f3e98410e349314f9146ce": {
@@ -281,16 +289,6 @@
       "source": "geckoterminal",
       "liquidity_usd": 5227.985,
       "market_cap_usd": 3087.621946
-    },
-    "0x659ef0912779cd66afb96ef982bff7e8102d23e6": {
-      "dex": "pons-v2-dex",
-      "graduated": "2026-10-12T00:27:39Z",
-      "symbol": "HASHLINGS",
-      "title": "Hashlings",
-      "seen": "2026-10-12T00:33:52.404658+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 5396.7394,
-      "market_cap_usd": 3362.686314
     },
     "0xa539d63b2b6865f539ec37f757d86623272d89ac": {
       "dex": "pons-v2-dex",
@@ -3310,7 +3308,7 @@
       "graduated": "2026-10-18T11:40:25Z",
       "symbol": "MINTER",
       "title": "MINTER",
-      "seen": "2026-10-19T06:21:01.288418+00:00",
+      "seen": "2026-10-19T06:31:24.427660+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6085.680747
     },
@@ -3319,7 +3317,7 @@
       "graduated": "2026-10-18T11:58:57Z",
       "symbol": "MINTER",
       "title": "MINTER",
-      "seen": "2026-10-19T06:21:01.288418+00:00",
+      "seen": "2026-10-19T06:31:24.427660+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 34945.8958,
       "market_cap_usd": 6086.556661
@@ -3329,7 +3327,7 @@
       "graduated": "2026-10-18T12:09:49Z",
       "symbol": "DUG",
       "title": "DUG",
-      "seen": "2026-10-19T06:21:01.288418+00:00",
+      "seen": "2026-10-19T06:31:24.427660+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 20100.0844,
       "market_cap_usd": 6269.396349
@@ -3339,7 +3337,7 @@
       "graduated": "2026-10-18T12:05:26Z",
       "symbol": "MINTER",
       "title": "MINTER",
-      "seen": "2026-10-19T06:21:01.288418+00:00",
+      "seen": "2026-10-19T06:31:24.427660+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 34998.6085,
       "market_cap_usd": 6040.704548
@@ -3349,7 +3347,7 @@
       "graduated": "2026-10-18T12:29:01Z",
       "symbol": "DUG",
       "title": "DUG",
-      "seen": "2026-10-19T06:21:01.288418+00:00",
+      "seen": "2026-10-19T06:31:24.427660+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 7092.1755,
       "market_cap_usd": 6070.217126
@@ -3369,7 +3367,7 @@
       "graduated": "2026-10-18T12:53:05Z",
       "symbol": "MINTER",
       "title": "MINTER",
-      "seen": "2026-10-19T06:21:01.288418+00:00",
+      "seen": "2026-10-19T06:31:24.427660+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 15577.9602,
       "market_cap_usd": 5980.375569
@@ -3379,7 +3377,7 @@
       "graduated": "2026-10-18T13:25:44Z",
       "symbol": "TRN",
       "title": "Trion",
-      "seen": "2026-10-19T06:21:01.288418+00:00",
+      "seen": "2026-10-19T06:31:24.427660+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 11897.2969,
       "market_cap_usd": 5995.376778
@@ -3589,7 +3587,7 @@
       "graduated": "2026-10-19T00:07:34Z",
       "symbol": "TURBO",
       "title": "Turbo on Robinhood",
-      "seen": "2026-10-19T06:21:01.288418+00:00",
+      "seen": "2026-10-19T06:31:24.427660+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 22297.0167,
       "market_cap_usd": 6108.391395
@@ -3609,7 +3607,7 @@
       "graduated": "2026-10-19T00:46:19Z",
       "symbol": "KIRBY",
       "title": "Kirby",
-      "seen": "2026-10-19T06:21:01.288418+00:00",
+      "seen": "2026-10-19T06:31:24.427660+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 20516.6854,
       "market_cap_usd": 6100.608758
@@ -3619,7 +3617,7 @@
       "graduated": "2026-10-19T00:42:39Z",
       "symbol": "KIRBY",
       "title": "Kirby",
-      "seen": "2026-10-19T06:21:01.288418+00:00",
+      "seen": "2026-10-19T06:31:24.427660+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 21726.407,
       "market_cap_usd": 6082.98768
@@ -3629,7 +3627,7 @@
       "graduated": "2026-10-19T00:41:06Z",
       "symbol": "KIRBY",
       "title": "Kirby",
-      "seen": "2026-10-19T06:21:01.288418+00:00",
+      "seen": "2026-10-19T06:31:24.427660+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19719.435,
       "market_cap_usd": 6080.096708
@@ -3639,7 +3637,7 @@
       "graduated": "2026-10-19T01:00:51Z",
       "symbol": "Gloob",
       "title": "The Rangers",
-      "seen": "2026-10-19T06:21:01.288418+00:00",
+      "seen": "2026-10-19T06:31:24.427660+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 20574.9852,
       "market_cap_usd": 6161.370069
@@ -3703,10 +3701,20 @@
       "source": "geckoterminal",
       "liquidity_usd": 15602.5805,
       "market_cap_usd": 6109.330368
+    },
+    "0xb67ab3b454716c6f0a96d8985a5fc5a00e392486": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-19T06:21:55Z",
+      "symbol": "W",
+      "title": "W",
+      "seen": "2026-10-19T06:31:24.427660+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 19285.8349,
+      "market_cap_usd": 68309.38699
     }
   },
   "graduations": {
-    "at": "2026-10-19T06:21:01.288418+00:00",
+    "at": "2026-10-19T06:31:24.427660+00:00",
     "hours": 24,
     "seen": {
       "0x957a4122ef075a0de26e6e7472c037e75b829a08": "2026-10-18T17:17:57.051200+00:00",
@@ -3724,7 +3732,7 @@
       "0xa6620f098b7d916e5279cdfde9261efe14d4aa8b",
       "0xb54ef4bd0a97083862e81a97d13af14594f4203d"
     ],
-    "scanned_to": 92400844,
+    "scanned_to": 92406942,
     "complete": true
   },
   "issues_to_close": [],
@@ -3850,7 +3858,7 @@
       0
     ],
     "2026-10-19 06:00": [
-      3,
+      4,
       0,
       0
     ]
