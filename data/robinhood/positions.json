@@ -12,7 +12,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 0.5,
       "took_profit": true,
-      "last_price": 5.825e-05,
+      "last_price": 5.775e-05,
       "issue_details": {
         "extra": [
           [
@@ -128,7 +128,7 @@
       },
       "issue": 468,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-20 15:01:17",
+      "last_price_time": "2026-10-20 15:11:22",
       "sells": [
         {
           "time": "2026-10-20T03:41:28.223463+00:00",
@@ -386,6 +386,26 @@
       "created": "2026-10-20T14:33:55Z",
       "liquidity_usd": null,
       "market_cap_usd": 6198.687159
+    },
+    "0x60a3a893cd339729a3ce860b591edab577bca3f81bd10a8eb4e211febd16ac2a": {
+      "pool": "0x60a3a893cd339729a3ce860b591edab577bca3f81bd10a8eb4e211febd16ac2a",
+      "dex": "uniswap-pools-trade",
+      "token": "0xfebf0938635021af900e3f25ddb6b4f404401613",
+      "name": "COOK",
+      "title": "Cook Agents 97d32",
+      "created": "2026-10-20T15:09:17Z",
+      "liquidity_usd": 0.0,
+      "market_cap_usd": 230968.3012
+    },
+    "0x7a5c67f232500e394d7aa8b99a9427a0e4aec77529e0af17fd3ad3bc3df4fd1a": {
+      "pool": "0x7a5c67f232500e394d7aa8b99a9427a0e4aec77529e0af17fd3ad3bc3df4fd1a",
+      "dex": "uniswap-pools-trade",
+      "token": "0x32f2167d0fa50c9130b7104f7249f7a7fcb81613",
+      "name": "TADA",
+      "title": "Tada 82781",
+      "created": "2026-10-20T15:07:09Z",
+      "liquidity_usd": 6.1486,
+      "market_cap_usd": 1075795.733
     }
   },
   "checked": {
@@ -510,6 +530,14 @@
       "failed": [
         "Liquidity"
       ]
+    },
+    "0x2cc8a4a8203c4dc646975bfef06f51af983bd197906eee6102a34388a63d58f5": {
+      "at": "2026-10-20T15:11:22.668589+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h"
+      ]
     }
   },
   "sources": {
@@ -518,7 +546,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-20T15:01:17.481368+00:00",
+      "at": "2026-10-20T15:11:22.668589+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -526,7 +554,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-20T15:01:17.481368+00:00",
+      "at": "2026-10-20T15:11:22.668589+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -542,7 +570,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-20T15:01:17.481368+00:00",
+      "at": "2026-10-20T15:11:22.668589+00:00",
       "used_this_run": true
     }
   },
@@ -561,19 +589,10 @@
     "0x3513a544d6cdd5ebd3a90d70a22b2d230fb2883cd7679482db3d2f078a182087": "FAIL|Market cap: $6,117 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 58 buys vs 60 sells",
     "0x865dd6f87c4c3004c88e3315627b19c4687fc0ff9c0dc2d5ace3cff6604db84c": "FAIL|Market cap: $6,219 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 194 buys vs 228 sells",
     "0x14709451e4e84bf344bb977549be28eb3eb598409c317a0cfcb76906d2c665b4": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
-    "0x2ebcc1a8cf5e8e7e8845462696ceed7ed4b315aeeefa6607193fa15c0a88c5be": "FAIL|Liquidity: $6 (need $5,000+ on Pools.trade)"
+    "0x2ebcc1a8cf5e8e7e8845462696ceed7ed4b315aeeefa6607193fa15c0a88c5be": "FAIL|Liquidity: $6 (need $5,000+ on Pools.trade)",
+    "0x2cc8a4a8203c4dc646975bfef06f51af983bd197906eee6102a34388a63d58f5": "FAIL|Market cap: $6,220 (need $25,000+); Not down >50% in 24h: -62% in 24h"
   },
   "launchpad_tokens": {
-    "0x4225f8bd6f8e1b567cef270c36904e0a22fe840f": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-13T09:07:35Z",
-      "symbol": "HUMPH",
-      "title": "HUMPH",
-      "seen": "2026-10-14T10:30:53.185136+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 35919.8261,
-      "market_cap_usd": 6385.916174
-    },
     "0x9fcdf4af74ed9cf3849e6921767f6a1858d08888": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-13T10:34:07Z",
@@ -3670,7 +3689,7 @@
       "graduated": "2026-10-19T13:49:22Z",
       "symbol": "RUSSELL",
       "title": "RUSSELl",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 48969.6392,
       "market_cap_usd": 6307.330174
@@ -3730,7 +3749,7 @@
       "graduated": "2026-10-19T15:17:42Z",
       "symbol": "GHOST",
       "title": "Ghost",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16559.8597,
       "market_cap_usd": 6079.365798
@@ -3907,7 +3926,7 @@
       "graduated": "2026-10-20T00:14:16Z",
       "symbol": "AMERICA",
       "title": "America First 1df58",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 17.4475,
       "market_cap_usd": 69645687.27
@@ -4017,7 +4036,7 @@
       "graduated": "2026-10-20T05:11:05Z",
       "symbol": "MITSU",
       "title": "MITSU",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 61872.4112,
       "market_cap_usd": 6231.238441
@@ -4057,7 +4076,7 @@
       "graduated": "2026-10-20T06:58:48Z",
       "symbol": "TrumpAccount",
       "title": "Ownership in the future",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 10155.9014,
       "market_cap_usd": 6060.9074
@@ -4117,7 +4136,7 @@
       "graduated": "2026-10-20T09:24:25Z",
       "symbol": "SPRITE",
       "title": "Sprite Agent",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 10116.3374,
       "market_cap_usd": 5993.154472
@@ -4137,7 +4156,7 @@
       "graduated": "2026-10-20T11:10:19Z",
       "symbol": "SPRITE",
       "title": "Sprite Agent",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16543.641,
       "market_cap_usd": 6006.361025
@@ -4147,7 +4166,7 @@
       "graduated": "2026-10-20T11:17:25Z",
       "symbol": "SPRITE",
       "title": "Sprite Agent",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16614.6482,
       "market_cap_usd": 6314.699649
@@ -4157,7 +4176,7 @@
       "graduated": "2026-10-20T12:10:35Z",
       "symbol": "TrumpAccount",
       "title": "Ownership in the future",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16554.4535,
       "market_cap_usd": 6015.284826
@@ -4167,7 +4186,7 @@
       "graduated": "2026-10-20T12:35:36Z",
       "symbol": "RSYSTEM",
       "title": "Rack System",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 25396.3884,
       "market_cap_usd": 6045.958033
@@ -4197,17 +4216,17 @@
       "graduated": "2026-10-20T13:11:20Z",
       "symbol": "BRUNO",
       "title": "BRUNO",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 16570.1808,
-      "market_cap_usd": 6029.943279
+      "liquidity_usd": 16600.322,
+      "market_cap_usd": 6220.131961
     },
     "0xe523b7809b25177753ae0f595d9a3666ecbf9993": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-20T13:53:44Z",
       "symbol": "GUEAI",
       "title": "GUEAI",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16483.8842,
       "market_cap_usd": 6032.466955
@@ -4217,7 +4236,7 @@
       "graduated": "2026-10-20T14:07:13Z",
       "symbol": "GUEAI",
       "title": "GUEAI",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16569.6674,
       "market_cap_usd": 6140.377144
@@ -4237,10 +4256,10 @@
       "graduated": "2026-10-20T14:15:00Z",
       "symbol": "RSYSTEM",
       "title": "Rack System",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 29430.5038,
-      "market_cap_usd": 6206.297352
+      "liquidity_usd": 29467.1339,
+      "market_cap_usd": 6218.623034
     },
     "0x5a2f78be6048bc88eaf5cbe6a541a8175a717777": {
       "dex": "uniswap-pools-trade",
@@ -4267,13 +4286,33 @@
       "graduated": "2026-10-20T14:33:55Z",
       "symbol": "RWAOS",
       "title": "RWAOS",
-      "seen": "2026-10-20T15:01:17.481368+00:00",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6198.687159
+    },
+    "0xfebf0938635021af900e3f25ddb6b4f404401613": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-20T15:09:17Z",
+      "symbol": "COOK",
+      "title": "Cook Agents 97d32",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 0.0,
+      "market_cap_usd": 230968.3012
+    },
+    "0x32f2167d0fa50c9130b7104f7249f7a7fcb81613": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-20T15:07:09Z",
+      "symbol": "TADA",
+      "title": "Tada 82781",
+      "seen": "2026-10-20T15:11:22.668589+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 6.1486,
+      "market_cap_usd": 1075795.733
     }
   },
   "graduations": {
-    "at": "2026-10-20T15:01:17.481368+00:00",
+    "at": "2026-10-20T15:11:22.668589+00:00",
     "hours": 24,
     "seen": {
       "0xea0071a8778fa02c12378e88868255e0e0952be6": "2026-10-19T15:58:16.131500+00:00",
@@ -4323,7 +4362,7 @@
       "0xea0071a8778fa02c12378e88868255e0e0952be6",
       "0xea5abf9ca65c6134969befc6f11937dae1c7ac14"
     ],
-    "scanned_to": 93539161,
+    "scanned_to": 93544862,
     "complete": true
   },
   "issues_to_close": [],
@@ -4462,7 +4501,7 @@
       0
     ],
     "2026-10-20 15:00": [
-      1,
+      2,
       0,
       0
     ]
