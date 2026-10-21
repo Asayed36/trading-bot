@@ -12,7 +12,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 3.566e-05,
+      "last_price": 3.301e-05,
       "issue_details": {
         "extra": [
           [
@@ -128,7 +128,7 @@
       },
       "issue": 489,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-21 16:11:24"
+      "last_price_time": "2026-10-21 16:21:25"
     },
     {
       "address": "0x6020a3992fd7dbb8a1622d9c4e0f7497bb819db0",
@@ -136,13 +136,13 @@
       "pair_address": "0x467154dcdcf38f448e4742b81464a9b9e1d2b3a6b538b92f66f77d3436249825",
       "entry_time": "2026-10-21T16:11:24.282299+00:00",
       "entry_price": 8.339e-05,
-      "peak_price": 8.339e-05,
+      "peak_price": 0.0001112,
       "tokens": 116344.88547787504,
       "cost_usd": 10.05,
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 8.339e-05,
+      "last_price": 0.0001112,
       "issue_details": {
         "extra": [
           [
@@ -256,7 +256,9 @@
           }
         ]
       },
-      "issue": 490
+      "issue": 490,
+      "last_price_source": "DexScreener",
+      "last_price_time": "2026-10-21 16:21:25"
     }
   ],
   "ever_bought": [
@@ -563,6 +565,14 @@
       "name": "RANGE",
       "created": "2026-10-21T15:57:45.650400+00:00",
       "source": "chain"
+    },
+    "onchain:0xfcd865e50ac30efc9f4aa8569b2cc5ac11dc6d6f": {
+      "pool": null,
+      "dex": "pons-v2-dex",
+      "token": "0xfcd865e50ac30efc9f4aa8569b2cc5ac11dc6d6f",
+      "name": "VRIL",
+      "created": "2026-10-21T16:20:19.825400+00:00",
+      "source": "chain"
     }
   },
   "checked": {
@@ -644,14 +654,15 @@
       ]
     },
     "onchain:0xfa00410e981dbe10c85b29fa3057dbb5f3be0321": {
-      "at": "2026-10-21T15:10:54.730529+00:00",
+      "at": "2026-10-21T16:21:25.730487+00:00",
       "passed": false,
       "failed": [
-        "Not a copycat"
+        "Market cap",
+        "Not down >50% in 24h"
       ]
     },
     "0xffc629720e64a2740539eab5ebe962da8b8ba74deab014ee715d77a251175900": {
-      "at": "2026-10-21T15:10:54.730529+00:00",
+      "at": "2026-10-21T16:21:25.730487+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -697,6 +708,13 @@
       "at": "2026-10-21T16:11:24.282299+00:00",
       "passed": true,
       "failed": []
+    },
+    "0x285d0d9adff40a78e7bf0ac29e0de7d862e3c14bcb89b9acd7b60d4291679eb6": {
+      "at": "2026-10-21T16:21:25.730487+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
     }
   },
   "sources": {
@@ -705,15 +723,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-21T16:11:24.282299+00:00",
+      "at": "2026-10-21T16:21:25.730487+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 5,
+      "calls": 3,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-21T16:11:24.282299+00:00",
+      "at": "2026-10-21T16:21:25.730487+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -722,14 +740,14 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-10-21T16:11:24.282299+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "rpc": {
-      "calls": 8,
+      "calls": 4,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-21T16:11:24.282299+00:00",
+      "at": "2026-10-21T16:21:25.730487+00:00",
       "used_this_run": true
     }
   },
@@ -745,14 +763,15 @@
     "0xb61fbc2750dd76681e41503aff671cc7838b0a6a9e237fa92986c80688abd010": "FAIL|Market cap: $6,207 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
     "0x6e66f1bafa92f16a11d043ec4c47b3a239469fa1d187e49076a2710c3e98d42b": "PASS|",
     "0x478e7ddde1da2d629dd7d2c7eddc6878c896aeeafc618943d9918ef55b3b6f69": "FAIL|Liquidity: $17 (need $5,000+ on Pools.trade)",
-    "onchain:0xfa00410e981dbe10c85b29fa3057dbb5f3be0321": "FAIL|Not a copycat: 1 earlier Pons/Pools.trade token(s) called IBM in the last 7 days; the first, 0x3a1cf889cfb3bced4d6dba0cd4c95a244b0c0000, graduated 0.3 h before this one (ignored: 1 graduated later)",
-    "0xffc629720e64a2740539eab5ebe962da8b8ba74deab014ee715d77a251175900": "FAIL|Market cap: $6,342 (need $25,000+); More buys than sells (1h): 418 buys vs 552 sells",
+    "onchain:0xfa00410e981dbe10c85b29fa3057dbb5f3be0321": "FAIL|Market cap: $23,149 (need $25,000+); Not down >50% in 24h: -54% in 24h",
+    "0xffc629720e64a2740539eab5ebe962da8b8ba74deab014ee715d77a251175900": "FAIL|Market cap: $6,384 (need $25,000+); More buys than sells (1h): 1 buys vs 3 sells",
     "0x5ea05f9e2145d0a776fd8a1864fcd81b3af7c1126b423436b1bedf0b3f2ca996": "FAIL|Liquidity: $18 (need $5,000+ on Pools.trade)",
     "0xcd49f724343c9dc027fd979a59cdf88358e6c440b4a0e773aa3cae0e9860e6d8": "FAIL|Liquidity: $14 (need $5,000+ on Pools.trade)",
     "onchain:0x492d04fb6fd70ad3a90637d55cc6ea2941019cba": "FAIL|Liquidity: $4,855 (need $10,000+ on Pons)",
     "onchain:0x619d6736fdabd613e36e9c0baf078759f6f8fbac": "FAIL|Liquidity: $5,576 (need $10,000+ on Pons)",
     "0x456bee7a4496083f053af394c09ff70eaacb2c1fc35cb429c984740ae85c2a0b": "FAIL|Not a copycat: 2 earlier Pons/Pools.trade token(s) called IBM in the last 7 days; the first, 0x3a1cf889cfb3bced4d6dba0cd4c95a244b0c0000, graduated 1.2 h before this one (ignored: 1 with liquidity 90%+ of market cap)",
-    "onchain:0x6020a3992fd7dbb8a1622d9c4e0f7497bb819db0": "PASS|"
+    "onchain:0x6020a3992fd7dbb8a1622d9c4e0f7497bb819db0": "PASS|",
+    "0x285d0d9adff40a78e7bf0ac29e0de7d862e3c14bcb89b9acd7b60d4291679eb6": "FAIL|Liquidity: $11 (need $5,000+ on Pools.trade)"
   },
   "launchpad_tokens": {
     "0x7c9c2ea03d86a5365b81bfc70e0b31bf6ed1305e": {
@@ -4059,7 +4078,7 @@
       "graduated": "2026-10-20T13:11:20Z",
       "symbol": "BRUNO",
       "title": "BRUNO",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16644.8703,
       "market_cap_usd": 6152.698085
@@ -4069,7 +4088,7 @@
       "graduated": "2026-10-20T13:53:44Z",
       "symbol": "GUEAI",
       "title": "GUEAI",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16554.279,
       "market_cap_usd": 6119.233027
@@ -4079,7 +4098,7 @@
       "graduated": "2026-10-20T14:07:13Z",
       "symbol": "GUEAI",
       "title": "GUEAI",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16640.674,
       "market_cap_usd": 6128.142113
@@ -4099,7 +4118,7 @@
       "graduated": "2026-10-20T14:15:00Z",
       "symbol": "RSYSTEM",
       "title": "Rack System",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 29556.4871,
       "market_cap_usd": 6161.025664
@@ -4487,7 +4506,7 @@
       "graduated": "2026-10-21T03:08:53Z",
       "symbol": "SHELLBAY",
       "title": "Shellbay",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 48684.3512,
       "market_cap_usd": 6367.546503
@@ -4566,7 +4585,7 @@
       "graduated": "2026-10-21T05:55:59Z",
       "symbol": "USFD",
       "title": "United States Fund Dividend",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16620.6797,
       "market_cap_usd": 6129.913351
@@ -4576,7 +4595,7 @@
       "graduated": "2026-10-21T06:10:19Z",
       "symbol": "UDTF",
       "title": "United Dividend Trust Fund",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 24315.5166,
       "market_cap_usd": 6151.408201
@@ -4596,7 +4615,7 @@
       "graduated": "2026-10-21T06:22:45Z",
       "symbol": "UDTF",
       "title": "United Dividend Trust Fund",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 27403.2756,
       "market_cap_usd": 6225.839998
@@ -4625,7 +4644,7 @@
       "graduated": "2026-10-21T07:01:02Z",
       "symbol": "SHUTTLE",
       "title": "Shuttle",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6263.526836,
       "liquidity_usd": 57773.1105
@@ -4645,7 +4664,7 @@
       "graduated": "2026-10-21T07:32:56Z",
       "symbol": "NDOF",
       "title": "NATIONAL OIL DIVIDEND FUND",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 22430.3766,
       "market_cap_usd": 6256.886326
@@ -4685,7 +4704,7 @@
       "graduated": "2026-10-21T08:24:17Z",
       "symbol": "VQZ",
       "title": "VEIL QZK",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16657.4593,
       "market_cap_usd": 6296.935145
@@ -4705,7 +4724,7 @@
       "graduated": "2026-10-21T09:29:18Z",
       "symbol": "FUNS",
       "title": "Fun Fields",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 24942.2509,
       "market_cap_usd": 6148.130637
@@ -4715,7 +4734,7 @@
       "graduated": "2026-10-21T09:32:42Z",
       "symbol": "FUNS",
       "title": "Fun Fields",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 24642.938,
       "market_cap_usd": 6254.478083
@@ -4844,10 +4863,10 @@
       "graduated": "2026-10-21T14:38:30Z",
       "symbol": "IBM",
       "title": "Infinite Buyback Machine",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 11254.892,
-      "market_cap_usd": 6871.248408
+      "liquidity_usd": 11265.7084,
+      "market_cap_usd": 6370.807446
     },
     "0xfa00410e981dbe10c85b29fa3057dbb5f3be0321": {
       "dex": "pons-v2-dex",
@@ -4903,10 +4922,10 @@
       "graduated": "2026-10-21T15:30:53Z",
       "symbol": "IBM",
       "title": "Infinite Buyback Machine",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 36779.9334,
-      "market_cap_usd": 245573.6647
+      "liquidity_usd": 38815.5723,
+      "market_cap_usd": 280214.7179
     },
     "0x6020a3992fd7dbb8a1622d9c4e0f7497bb819db0": {
       "dex": "pons-v2-dex",
@@ -4933,10 +4952,10 @@
       "graduated": "2026-10-21T16:05:56Z",
       "symbol": "USFD",
       "title": "United States Fund Dividend",
-      "seen": "2026-10-21T16:11:24.282299+00:00",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 23104.5267,
-      "market_cap_usd": 71262.10681
+      "liquidity_usd": 19294.1817,
+      "market_cap_usd": 29769.06915
     },
     "0x0d92477c8d66f2a6a95b83b9526de4e61be1d733": {
       "dex": "pons-v2-dex",
@@ -4947,10 +4966,20 @@
       "source": "chain",
       "liquidity_usd": 31057.76,
       "market_cap_usd": 112100.0
+    },
+    "0xfcd865e50ac30efc9f4aa8569b2cc5ac11dc6d6f": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-10-21T16:20:19.825400+00:00",
+      "symbol": "VRIL",
+      "title": "vril",
+      "seen": "2026-10-21T16:21:25.730487+00:00",
+      "source": "chain",
+      "liquidity_usd": 28492.54,
+      "market_cap_usd": 93313.0
     }
   },
   "graduations": {
-    "at": "2026-10-21T16:11:24.282299+00:00",
+    "at": "2026-10-21T16:21:25.730487+00:00",
     "hours": 24,
     "seen": {
       "0xb11384a6ac2b3708e3d25a834c8a88687accbcd1": "2026-10-20T18:32:46.596300+00:00",
@@ -4969,7 +4998,8 @@
       "0x492d04fb6fd70ad3a90637d55cc6ea2941019cba": "2026-10-21T15:14:10.192000+00:00",
       "0x619d6736fdabd613e36e9c0baf078759f6f8fbac": "2026-10-21T15:21:03.840000+00:00",
       "0x6020a3992fd7dbb8a1622d9c4e0f7497bb819db0": "2026-10-21T15:35:07.129800+00:00",
-      "0x0d92477c8d66f2a6a95b83b9526de4e61be1d733": "2026-10-21T15:57:45.650400+00:00"
+      "0x0d92477c8d66f2a6a95b83b9526de4e61be1d733": "2026-10-21T15:57:45.650400+00:00",
+      "0xfcd865e50ac30efc9f4aa8569b2cc5ac11dc6d6f": "2026-10-21T16:20:19.825400+00:00"
     },
     "tokens": [
       "0x07292f0c46f25ef5ecfdba20935a68718c424a51",
@@ -4988,9 +5018,10 @@
       "0xebfe1c9ac846c5d3bbef0a08fccbc698ded4f516",
       "0xf2e4a05c6faaec17bc999ceeb77b81cf4de5d473",
       "0xf55e8eb43222feb6f709d2b8c72720eae3c6f98e",
-      "0xfa00410e981dbe10c85b29fa3057dbb5f3be0321"
+      "0xfa00410e981dbe10c85b29fa3057dbb5f3be0321",
+      "0xfcd865e50ac30efc9f4aa8569b2cc5ac11dc6d6f"
     ],
-    "scanned_to": 94411825,
+    "scanned_to": 94417596,
     "complete": true
   },
   "issues_to_close": [],
@@ -5006,7 +5037,8 @@
     "0x492d04fb6fd70ad3a90637d55cc6ea2941019cba": "2026-10-21T15:17:57.486945+00:00",
     "0x619d6736fdabd613e36e9c0baf078759f6f8fbac": "2026-10-21T15:31:25.909191+00:00",
     "0x6020a3992fd7dbb8a1622d9c4e0f7497bb819db0": "2026-10-21T15:40:59.861244+00:00",
-    "0x0d92477c8d66f2a6a95b83b9526de4e61be1d733": "2026-10-21T16:11:24.282299+00:00"
+    "0x0d92477c8d66f2a6a95b83b9526de4e61be1d733": "2026-10-21T16:11:24.282299+00:00",
+    "0xfcd865e50ac30efc9f4aa8569b2cc5ac11dc6d6f": "2026-10-21T16:21:25.730487+00:00"
   },
   "gecko_hours": {
     "2026-10-20 17:00": [
@@ -5125,7 +5157,7 @@
       0
     ],
     "2026-10-21 16:00": [
-      1,
+      2,
       0,
       0
     ]
