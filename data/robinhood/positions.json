@@ -95,16 +95,6 @@
   ],
   "running_total_pnl_usd": -319.09451032084195,
   "watch": {
-    "0x65f8ea350d23ba88549b75e853f7abc7708698a3899ac404b0ff2ecc69fbef2f": {
-      "pool": "0x65f8ea350d23ba88549b75e853f7abc7708698a3899ac404b0ff2ecc69fbef2f",
-      "dex": "uniswap-pools-trade",
-      "token": "0x5d8d2b670570cbba7066469035bfbe3310730000",
-      "name": "RELV",
-      "title": "Relevance 2798b",
-      "created": "2026-10-21T07:56:25Z",
-      "liquidity_usd": 0.0,
-      "market_cap_usd": 155388.8516
-    },
     "0x678022324caa1e7c37a80fe3aedb91b0ccd194ddf7072d01b0050874517f0c25": {
       "pool": "0x678022324caa1e7c37a80fe3aedb91b0ccd194ddf7072d01b0050874517f0c25",
       "dex": "pons-v2-dex",
@@ -252,16 +242,19 @@
       "created": "2026-10-21T13:37:13Z",
       "liquidity_usd": 6.1505,
       "market_cap_usd": 833108.7057
+    },
+    "0x6e66f1bafa92f16a11d043ec4c47b3a239469fa1d187e49076a2710c3e98d42b": {
+      "pool": "0x6e66f1bafa92f16a11d043ec4c47b3a239469fa1d187e49076a2710c3e98d42b",
+      "dex": "pons-v2-dex",
+      "token": "0x9d3e705cc59a6b513ebf8aea378b6a4e0ebc838b",
+      "name": "LANISTA",
+      "title": "LANISTA",
+      "created": "2026-10-21T13:58:03Z",
+      "liquidity_usd": 21734.9109,
+      "market_cap_usd": 42416.19931
     }
   },
   "checked": {
-    "0x65f8ea350d23ba88549b75e853f7abc7708698a3899ac404b0ff2ecc69fbef2f": {
-      "at": "2026-10-21T13:41:24.662331+00:00",
-      "passed": false,
-      "failed": [
-        "Liquidity"
-      ]
-    },
     "0x678022324caa1e7c37a80fe3aedb91b0ccd194ddf7072d01b0050874517f0c25": {
       "at": "2026-10-21T13:01:42.607229+00:00",
       "passed": false,
@@ -347,6 +340,13 @@
       "failed": [
         "Liquidity"
       ]
+    },
+    "0x224006cee855cdee7a85f2a1ddb4f6a35d14b56112e9c7f06b0cd1cf41b2532f": {
+      "at": "2026-10-21T14:01:25.695858+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap"
+      ]
     }
   },
   "sources": {
@@ -355,16 +355,16 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-21T13:50:47.792353+00:00",
+      "at": "2026-10-21T14:01:25.695858+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 2,
+      "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-21T13:41:24.662331+00:00",
-      "used_this_run": false
+      "at": "2026-10-21T14:01:25.695858+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -379,12 +379,11 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-21T13:50:47.792353+00:00",
+      "at": "2026-10-21T14:01:25.695858+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x65f8ea350d23ba88549b75e853f7abc7708698a3899ac404b0ff2ecc69fbef2f": "FAIL|Liquidity: $9 (need $5,000+ on Pools.trade)",
     "0x678022324caa1e7c37a80fe3aedb91b0ccd194ddf7072d01b0050874517f0c25": "FAIL|Top 10 holders: 30.4% (need under 30%; pools, launchpad and burn addresses left out)",
     "0x5ffb2306d335b091524beb152cd74d8e1873dde062509f2f8b1730871f60a91b": "FAIL|Market cap: $6,314 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0xd3b43c4ff9275030c2c6967c1ed8131f519567432c0364365f1ff0e7fc3adad9": "FAIL|Liquidity: $9 (need $5,000+ on Pools.trade)",
@@ -396,7 +395,8 @@
     "0x099a05709775573cd1404e8081d7ef493c8fcaee57d24d8b04269205460c6f9d": "FAIL|Liquidity: $29 (need $5,000+ on Pools.trade)",
     "onchain:0x8db8018fc00485c4a0e2e19c10bd9703fc505c8f": "FAIL|Not a copycat: 1 earlier Pons/Pools.trade token(s) called Lovot in the last 7 days; the first, 0x26b4ba38d2f27eb411f013262a715dd76b860000, graduated 1.3 h before this one",
     "0xb8fca4a3b1a5bdb8da2340006cd016c647497360f88ea3aa92b0b5628e3d0145": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
-    "0x997c92ab83111a794a4c628263b8516886f09f5c59e1798631a05e0f762e36fb": "FAIL|Liquidity: $18 (need $5,000+ on Pools.trade)"
+    "0x997c92ab83111a794a4c628263b8516886f09f5c59e1798631a05e0f762e36fb": "FAIL|Liquidity: $18 (need $5,000+ on Pools.trade)",
+    "0x224006cee855cdee7a85f2a1ddb4f6a35d14b56112e9c7f06b0cd1cf41b2532f": "FAIL|Market cap: $6,208 (need $25,000+)"
   },
   "launchpad_tokens": {
     "0x365da1733a07a090b8b9c950997f1af8d1dd5846": {
@@ -3673,7 +3673,7 @@
       "graduated": "2026-10-20T12:10:35Z",
       "symbol": "TrumpAccount",
       "title": "Ownership in the future",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16628.8255,
       "market_cap_usd": 6128.829961
@@ -3683,7 +3683,7 @@
       "graduated": "2026-10-20T12:35:36Z",
       "symbol": "RSYSTEM",
       "title": "Rack System",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 25510.4835,
       "market_cap_usd": 6153.155823
@@ -3713,7 +3713,7 @@
       "graduated": "2026-10-20T13:11:20Z",
       "symbol": "BRUNO",
       "title": "BRUNO",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16644.8703,
       "market_cap_usd": 6152.698085
@@ -3723,7 +3723,7 @@
       "graduated": "2026-10-20T13:53:44Z",
       "symbol": "GUEAI",
       "title": "GUEAI",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16554.279,
       "market_cap_usd": 6119.233027
@@ -3733,7 +3733,7 @@
       "graduated": "2026-10-20T14:07:13Z",
       "symbol": "GUEAI",
       "title": "GUEAI",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16640.674,
       "market_cap_usd": 6128.142113
@@ -3753,7 +3753,7 @@
       "graduated": "2026-10-20T14:15:00Z",
       "symbol": "RSYSTEM",
       "title": "Rack System",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 29556.4871,
       "market_cap_usd": 6161.025664
@@ -3783,7 +3783,7 @@
       "graduated": "2026-10-20T14:33:55Z",
       "symbol": "RWAOS",
       "title": "RWAOS",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6130.887637
     },
@@ -4141,7 +4141,7 @@
       "graduated": "2026-10-21T03:08:53Z",
       "symbol": "SHELLBAY",
       "title": "Shellbay",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 48684.3512,
       "market_cap_usd": 6367.546503
@@ -4220,7 +4220,7 @@
       "graduated": "2026-10-21T05:55:59Z",
       "symbol": "USFD",
       "title": "United States Fund Dividend",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16620.6797,
       "market_cap_usd": 6129.913351
@@ -4230,7 +4230,7 @@
       "graduated": "2026-10-21T06:10:19Z",
       "symbol": "UDTF",
       "title": "United Dividend Trust Fund",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 24315.5166,
       "market_cap_usd": 6151.408201
@@ -4250,7 +4250,7 @@
       "graduated": "2026-10-21T06:22:45Z",
       "symbol": "UDTF",
       "title": "United Dividend Trust Fund",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 27403.2756,
       "market_cap_usd": 6225.839998
@@ -4279,7 +4279,7 @@
       "graduated": "2026-10-21T07:01:02Z",
       "symbol": "SHUTTLE",
       "title": "Shuttle",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6263.526836,
       "liquidity_usd": 57773.1105
@@ -4299,7 +4299,7 @@
       "graduated": "2026-10-21T07:32:56Z",
       "symbol": "NDOF",
       "title": "NATIONAL OIL DIVIDEND FUND",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 22430.3766,
       "market_cap_usd": 6256.886326
@@ -4339,7 +4339,7 @@
       "graduated": "2026-10-21T08:24:17Z",
       "symbol": "VQZ",
       "title": "VEIL QZK",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16657.4593,
       "market_cap_usd": 6296.935145
@@ -4359,7 +4359,7 @@
       "graduated": "2026-10-21T09:29:18Z",
       "symbol": "FUNS",
       "title": "Fun Fields",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 24942.2509,
       "market_cap_usd": 6148.130637
@@ -4369,7 +4369,7 @@
       "graduated": "2026-10-21T09:32:42Z",
       "symbol": "FUNS",
       "title": "Fun Fields",
-      "seen": "2026-10-21T13:50:47.792353+00:00",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 24642.938,
       "market_cap_usd": 6254.478083
@@ -4472,10 +4472,20 @@
       "source": "geckoterminal",
       "liquidity_usd": 6.1505,
       "market_cap_usd": 833108.7057
+    },
+    "0x9d3e705cc59a6b513ebf8aea378b6a4e0ebc838b": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-10-21T13:58:03Z",
+      "symbol": "LANISTA",
+      "title": "LANISTA",
+      "seen": "2026-10-21T14:01:25.695858+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 21734.9109,
+      "market_cap_usd": 42416.19931
     }
   },
   "graduations": {
-    "at": "2026-10-21T13:50:47.792353+00:00",
+    "at": "2026-10-21T14:01:25.695858+00:00",
     "hours": 24,
     "seen": {
       "0x8b39b55857cea6d173af2b5bb1144c2633739960": "2026-10-20T15:38:32.863700+00:00",
@@ -4493,7 +4503,8 @@
       "0xf2e4a05c6faaec17bc999ceeb77b81cf4de5d473": "2026-10-21T04:16:51.311400+00:00",
       "0xdcfa97774ba2cb8a9ded0612524984f6f46d4556": "2026-10-21T08:05:45.065000+00:00",
       "0xf55e8eb43222feb6f709d2b8c72720eae3c6f98e": "2026-10-21T10:25:41.448500+00:00",
-      "0x8db8018fc00485c4a0e2e19c10bd9703fc505c8f": "2026-10-21T11:08:51.006400+00:00"
+      "0x8db8018fc00485c4a0e2e19c10bd9703fc505c8f": "2026-10-21T11:08:51.006400+00:00",
+      "0x9d3e705cc59a6b513ebf8aea378b6a4e0ebc838b": "2026-10-21T13:57:57.343000+00:00"
     },
     "tokens": [
       "0x07292f0c46f25ef5ecfdba20935a68718c424a51",
@@ -4506,6 +4517,7 @@
       "0x8b39b55857cea6d173af2b5bb1144c2633739960",
       "0x8db8018fc00485c4a0e2e19c10bd9703fc505c8f",
       "0x95286bec1b0943d5a0fad60ac048f0c50ec8ccd0",
+      "0x9d3e705cc59a6b513ebf8aea378b6a4e0ebc838b",
       "0xb11384a6ac2b3708e3d25a834c8a88687accbcd1",
       "0xc4802da122182f01edc766bdbc4042db562d8931",
       "0xdcfa97774ba2cb8a9ded0612524984f6f46d4556",
@@ -4513,7 +4525,7 @@
       "0xf2e4a05c6faaec17bc999ceeb77b81cf4de5d473",
       "0xf55e8eb43222feb6f709d2b8c72720eae3c6f98e"
     ],
-    "scanned_to": 94330164,
+    "scanned_to": 94336365,
     "complete": true
   },
   "issues_to_close": [],
@@ -4531,11 +4543,6 @@
     "0x8db8018fc00485c4a0e2e19c10bd9703fc505c8f": "2026-10-21T11:11:24.624730+00:00"
   },
   "gecko_hours": {
-    "2026-10-20 14:00": [
-      6,
-      0,
-      0
-    ],
     "2026-10-20 15:00": [
       7,
       0,
@@ -4648,6 +4655,11 @@
     ],
     "2026-10-21 13:00": [
       6,
+      0,
+      0
+    ],
+    "2026-10-21 14:00": [
+      1,
       0,
       0
     ]
