@@ -6,13 +6,13 @@
       "pair_address": "0x2bb17c564bb78f971ae8c7b6d615dc72ef31e7480e6c9e80f5b714622a5f48e4",
       "entry_time": "2026-10-21T04:31:43.553241+00:00",
       "entry_price": 4.135e-05,
-      "peak_price": 4.135e-05,
+      "peak_price": 4.303e-05,
       "tokens": 234631.19709794436,
       "cost_usd": 10.05,
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 4.135e-05,
+      "last_price": 4.303e-05,
       "issue_details": {
         "extra": [
           [
@@ -126,7 +126,9 @@
           }
         ]
       },
-      "issue": 485
+      "issue": 485,
+      "last_price_source": "DexScreener",
+      "last_price_time": "2026-10-21 04:41:02"
     }
   ],
   "ever_bought": [
@@ -327,6 +329,16 @@
       "name": "ORBIBOT",
       "created": "2026-10-21T04:16:51.311400+00:00",
       "source": "chain"
+    },
+    "0x4d8b314b623da792c33cf1e0c1b2e69e76bd9d8ec4c964e231e47016c861c7a1": {
+      "pool": "0x4d8b314b623da792c33cf1e0c1b2e69e76bd9d8ec4c964e231e47016c861c7a1",
+      "dex": "uniswap-pools-trade",
+      "token": "0x240ffb41c1d2b59b878bede430f9dd5c7b790000",
+      "name": "PERPLY",
+      "title": "Perply Pad 58434",
+      "created": "2026-10-21T04:33:49Z",
+      "liquidity_usd": null,
+      "market_cap_usd": 201454.2187
     }
   },
   "checked": {
@@ -371,7 +383,7 @@
       ]
     },
     "0xa5c2a285aa1a44f3b6bd482d4a853cc94998a6adbe3c9d08043fc59786de70f9": {
-      "at": "2026-10-21T03:40:01.943161+00:00",
+      "at": "2026-10-21T04:41:02.430161+00:00",
       "passed": false,
       "failed": [
         "Market cap"
@@ -388,6 +400,13 @@
       "failed": [
         "Liquidity"
       ]
+    },
+    "0xbbca90d90793ee6959101ad5cffe7643edbca3e4f3efee8f05b9112d1b61c572": {
+      "at": "2026-10-21T04:41:02.430161+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
     }
   },
   "sources": {
@@ -396,15 +415,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-21T04:31:43.553241+00:00",
+      "at": "2026-10-21T04:41:02.430161+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 4,
+      "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-21T04:31:43.553241+00:00",
+      "at": "2026-10-21T04:41:02.430161+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -413,14 +432,14 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-10-21T04:31:43.553241+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "rpc": {
-      "calls": 9,
+      "calls": 4,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-21T04:31:43.553241+00:00",
+      "at": "2026-10-21T04:41:02.430161+00:00",
       "used_this_run": true
     }
   },
@@ -431,9 +450,10 @@
     "0xc915d2c403c7c21e45e2948e214dfe2d97b1dbd10d687a73c80e25cefd6775ef": "FAIL|Liquidity: $4,789 (need $10,000+ on Pons)",
     "onchain:0x07292f0c46f25ef5ecfdba20935a68718c424a51": "PASS|",
     "0x66531bdd4b35cee7b8565172d6b3f0919777213ac3450e61614ebafcde5fb15d": "FAIL|Liquidity: $14 (need $5,000+ on Pools.trade)",
-    "0xa5c2a285aa1a44f3b6bd482d4a853cc94998a6adbe3c9d08043fc59786de70f9": "FAIL|Market cap: $6,389 (need $25,000+)",
+    "0xa5c2a285aa1a44f3b6bd482d4a853cc94998a6adbe3c9d08043fc59786de70f9": "FAIL|Market cap: $6,404 (need $25,000+)",
     "0x2bb17c564bb78f971ae8c7b6d615dc72ef31e7480e6c9e80f5b714622a5f48e4": "PASS|",
-    "0xcbcc94f57efe8df2aacb77484e46946caf7d42180a55c9e6e0304da35b79365b": "FAIL|Liquidity: $16 (need $5,000+ on Pools.trade)"
+    "0xcbcc94f57efe8df2aacb77484e46946caf7d42180a55c9e6e0304da35b79365b": "FAIL|Liquidity: $16 (need $5,000+ on Pools.trade)",
+    "0xbbca90d90793ee6959101ad5cffe7643edbca3e4f3efee8f05b9112d1b61c572": "FAIL|Liquidity: $14 (need $5,000+ on Pools.trade)"
   },
   "launchpad_tokens": {
     "0x2cffb19d89f1695669390564bb936f790981dfd2": {
@@ -3630,7 +3650,7 @@
       "graduated": "2026-10-20T05:11:05Z",
       "symbol": "MITSU",
       "title": "MITSU",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 61500.0271,
       "market_cap_usd": 6231.238441
@@ -3670,7 +3690,7 @@
       "graduated": "2026-10-20T06:58:48Z",
       "symbol": "TrumpAccount",
       "title": "Ownership in the future",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 10094.7773,
       "market_cap_usd": 6197.50821
@@ -3730,7 +3750,7 @@
       "graduated": "2026-10-20T09:24:25Z",
       "symbol": "SPRITE",
       "title": "Sprite Agent",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 10055.6957,
       "market_cap_usd": 6130.169331
@@ -3750,7 +3770,7 @@
       "graduated": "2026-10-20T11:10:19Z",
       "symbol": "SPRITE",
       "title": "Sprite Agent",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16444.5602,
       "market_cap_usd": 6129.71327
@@ -3760,7 +3780,7 @@
       "graduated": "2026-10-20T11:17:25Z",
       "symbol": "SPRITE",
       "title": "Sprite Agent",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16510.999,
       "market_cap_usd": 6224.197869
@@ -3770,7 +3790,7 @@
       "graduated": "2026-10-20T12:10:35Z",
       "symbol": "TrumpAccount",
       "title": "Ownership in the future",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16454.8192,
       "market_cap_usd": 6128.829961
@@ -3780,7 +3800,7 @@
       "graduated": "2026-10-20T12:35:36Z",
       "symbol": "RSYSTEM",
       "title": "Rack System",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 25243.5382,
       "market_cap_usd": 6153.155823
@@ -3810,7 +3830,7 @@
       "graduated": "2026-10-20T13:11:20Z",
       "symbol": "BRUNO",
       "title": "BRUNO",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16470.6961,
       "market_cap_usd": 6152.698085
@@ -3820,7 +3840,7 @@
       "graduated": "2026-10-20T13:53:44Z",
       "symbol": "GUEAI",
       "title": "GUEAI",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16381.0526,
       "market_cap_usd": 6119.233027
@@ -3830,7 +3850,7 @@
       "graduated": "2026-10-20T14:07:13Z",
       "symbol": "GUEAI",
       "title": "GUEAI",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16466.5436,
       "market_cap_usd": 6128.142113
@@ -3850,7 +3870,7 @@
       "graduated": "2026-10-20T14:15:00Z",
       "symbol": "RSYSTEM",
       "title": "Rack System",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 29247.2039,
       "market_cap_usd": 6161.025664
@@ -3880,7 +3900,7 @@
       "graduated": "2026-10-20T14:33:55Z",
       "symbol": "RWAOS",
       "title": "RWAOS",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6130.887637
     },
@@ -4118,7 +4138,7 @@
       "graduated": "2026-10-20T19:57:34Z",
       "symbol": "TRF",
       "title": "trumpfuntrump e8029",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 476.856,
       "market_cap_usd": 57779.85058
@@ -4238,9 +4258,9 @@
       "graduated": "2026-10-21T03:08:53Z",
       "symbol": "SHELLBAY",
       "title": "Shellbay",
-      "seen": "2026-10-21T04:31:43.553241+00:00",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 48110.5763,
+      "liquidity_usd": 48088.7134,
       "market_cap_usd": 6414.803385
     },
     "0xebfe1c9ac846c5d3bbef0a08fccbc698ded4f516": {
@@ -4282,10 +4302,19 @@
       "source": "chain",
       "liquidity_usd": 23757.82,
       "market_cap_usd": 67089.0
+    },
+    "0x240ffb41c1d2b59b878bede430f9dd5c7b790000": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-21T04:33:49Z",
+      "symbol": "PERPLY",
+      "title": "Perply Pad 58434",
+      "seen": "2026-10-21T04:41:02.430161+00:00",
+      "source": "geckoterminal",
+      "market_cap_usd": 201454.2187
     }
   },
   "graduations": {
-    "at": "2026-10-21T04:31:43.553241+00:00",
+    "at": "2026-10-21T04:41:02.430161+00:00",
     "hours": 24,
     "seen": {
       "0xaa5265e27c7de70063544ca3a7bbefccda3015a8": "2026-10-20T04:51:45.521100+00:00",
@@ -4323,7 +4352,7 @@
       "0xebfe1c9ac846c5d3bbef0a08fccbc698ded4f516",
       "0xf2e4a05c6faaec17bc999ceeb77b81cf4de5d473"
     ],
-    "scanned_to": 94004939,
+    "scanned_to": 94010348,
     "complete": true
   },
   "issues_to_close": [],
@@ -4458,7 +4487,7 @@
       0
     ],
     "2026-10-21 04:00": [
-      4,
+      5,
       0,
       0
     ]
