@@ -12,7 +12,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 5.493e-05,
+      "last_price": 5.488e-05,
       "issue_details": {
         "extra": [
           [
@@ -128,7 +128,7 @@
       },
       "issue": 491,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-21 22:11:02"
+      "last_price_time": "2026-10-21 22:21:53"
     },
     {
       "address": "0xb815559286e633a902621c4a5dbf08976092855b",
@@ -136,13 +136,13 @@
       "pair_address": "0xedb0f576ceb12c79bac96c1ff02c8778ce30780ef0dd54efea21985d95e91b56",
       "entry_time": "2026-10-21T21:41:43.704286+00:00",
       "entry_price": 0.0001304,
-      "peak_price": 0.0001711,
+      "peak_price": 0.0002722,
       "tokens": 74401.84049079755,
       "cost_usd": 10.05,
       "pool_fee_pct": 1.0,
-      "remaining_fraction": 1.0,
-      "took_profit": false,
-      "last_price": 0.0001711,
+      "remaining_fraction": 0.5,
+      "took_profit": true,
+      "last_price": 0.0002722,
       "issue_details": {
         "extra": [
           [
@@ -258,7 +258,17 @@
       },
       "issue": 493,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-21 22:11:02"
+      "last_price_time": "2026-10-21 22:21:53",
+      "sells": [
+        {
+          "time": "2026-10-21T22:21:53.582033+00:00",
+          "fraction": 0.5,
+          "price": 0.0002722,
+          "reason": "take profit: up 109%",
+          "proceeds_usd": 9.774332994171779,
+          "pnl_usd": 4.749332994171779
+        }
+      ]
     }
   ],
   "ever_bought": [
@@ -359,16 +369,8 @@
     "0xe6fcaf560ed1b9067407e70a7ead037d65b6b759",
     "0xb815559286e633a902621c4a5dbf08976092855b"
   ],
-  "running_total_pnl_usd": -327.3711774474131,
+  "running_total_pnl_usd": -322.62184445324135,
   "watch": {
-    "onchain:0xfcd865e50ac30efc9f4aa8569b2cc5ac11dc6d6f": {
-      "pool": null,
-      "dex": "pons-v2-dex",
-      "token": "0xfcd865e50ac30efc9f4aa8569b2cc5ac11dc6d6f",
-      "name": "VRIL",
-      "created": "2026-10-21T16:20:19.825400+00:00",
-      "source": "chain"
-    },
     "0xd408eb549f41bcdce4376de1ea3907ef328e53d5f8f2ab84f687c4811e8283e6": {
       "pool": "0xd408eb549f41bcdce4376de1ea3907ef328e53d5f8f2ab84f687c4811e8283e6",
       "dex": "pons-v2-dex",
@@ -538,42 +540,45 @@
       "created": "2026-10-21T21:04:25Z",
       "liquidity_usd": 17619.415,
       "market_cap_usd": 168031.0354
+    },
+    "0x076195b56eb9d941afaf06c6ab37312ce8194d3cd42e796bfec49eee1311d0fc": {
+      "pool": "0x076195b56eb9d941afaf06c6ab37312ce8194d3cd42e796bfec49eee1311d0fc",
+      "dex": "uniswap-pools-trade",
+      "token": "0x29905c9d4083070ae6108b84a8b2ece8169c5cd4",
+      "name": "MACCA",
+      "title": "Macca the Gator",
+      "created": "2026-10-21T22:17:46Z",
+      "liquidity_usd": 14530.5389,
+      "market_cap_usd": 27100.1957
     }
   },
   "checked": {
-    "onchain:0xfcd865e50ac30efc9f4aa8569b2cc5ac11dc6d6f": {
-      "at": "2026-10-21T21:20:55.205440+00:00",
-      "passed": false,
-      "failed": [
-        "Not a copycat"
-      ]
-    },
     "onchain:0x54f79a21c71071685369013fe12d7f6cd2528b5b": {
-      "at": "2026-10-21T21:20:55.205440+00:00",
+      "at": "2026-10-21T22:21:53.582033+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
     "0xd408eb549f41bcdce4376de1ea3907ef328e53d5f8f2ab84f687c4811e8283e6": {
-      "at": "2026-10-21T21:20:55.205440+00:00",
+      "at": "2026-10-21T22:21:53.582033+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
     "onchain:0x1fe1cb1b1ea7e1e5a966972918bb3716ec38c026": {
-      "at": "2026-10-21T21:20:55.205440+00:00",
+      "at": "2026-10-21T22:21:53.582033+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
     "0x398bd873f16c9206dc4b3bb2c6b63b7b3e03d330302a843764e60f5626b8bd9a": {
-      "at": "2026-10-21T21:20:55.205440+00:00",
+      "at": "2026-10-21T22:21:53.582033+00:00",
       "passed": false,
       "failed": [
-        "More buys than sells (1h)"
+        "Liquidity"
       ]
     },
     "0xdbb14e40ed534249d3c5cf2e7a228a0bd5882cdacda8367aab49a86cf99209f1": {
@@ -645,22 +650,21 @@
       ]
     },
     "0xef33e73f97a5a0ad8db18960588617cdf6d3a54f4d885ebd6520c5e87d75c5d9": {
-      "at": "2026-10-21T21:11:35.886576+00:00",
+      "at": "2026-10-21T22:21:53.582033+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
     "onchain:0x5c14911d853e13e9ba07c911bc4da452c8a191ca": {
-      "at": "2026-10-21T21:20:55.205440+00:00",
+      "at": "2026-10-21T22:21:53.582033+00:00",
       "passed": false,
       "failed": [
-        "Market cap",
-        "Not down >50% in 24h"
+        "Liquidity"
       ]
     },
     "0x74d95d5918f8c7eb4ee6899cf477db3f3bd071a0c0c84ea85c772a33306b6b58": {
-      "at": "2026-10-21T21:20:55.205440+00:00",
+      "at": "2026-10-21T22:21:53.582033+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
@@ -678,15 +682,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-21T22:11:02.402033+00:00",
+      "at": "2026-10-21T22:21:53.582033+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 1,
+      "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-21T22:11:02.402033+00:00",
+      "at": "2026-10-21T22:21:53.582033+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -702,19 +706,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-21T22:11:02.402033+00:00",
+      "at": "2026-10-21T22:21:53.582033+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x285d0d9adff40a78e7bf0ac29e0de7d862e3c14bcb89b9acd7b60d4291679eb6": "FAIL|Liquidity: $11 (need $5,000+ on Pools.trade)",
-    "onchain:0x0d92477c8d66f2a6a95b83b9526de4e61be1d733": "FAIL|Creator share: 5.59% (need under 5%)",
-    "0xeb1bb70d5b505094742f2ae6e316c8425dd350d512526f2a79fb488d9c6d4a13": "FAIL|Market cap: $6,416 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "onchain:0xfcd865e50ac30efc9f4aa8569b2cc5ac11dc6d6f": "FAIL|Not a copycat: 1 earlier Pons/Pools.trade token(s) called VRIL in the last 7 days; the first, 0x2246c103bfc3ac20d9eb86a30cdd2271caf60000, graduated 5.3 h before this one",
-    "onchain:0x54f79a21c71071685369013fe12d7f6cd2528b5b": "FAIL|Liquidity: $9,359 (need $10,000+ on Pons)",
-    "0xd408eb549f41bcdce4376de1ea3907ef328e53d5f8f2ab84f687c4811e8283e6": "FAIL|Liquidity: $8,188 (need $10,000+ on Pons)",
-    "onchain:0x1fe1cb1b1ea7e1e5a966972918bb3716ec38c026": "FAIL|Liquidity: $5,077 (need $10,000+ on Pons)",
-    "0x398bd873f16c9206dc4b3bb2c6b63b7b3e03d330302a843764e60f5626b8bd9a": "FAIL|More buys than sells (1h): 4 buys vs 17 sells",
+    "onchain:0x54f79a21c71071685369013fe12d7f6cd2528b5b": "FAIL|Liquidity: $8,305 (need $10,000+ on Pons)",
+    "0xd408eb549f41bcdce4376de1ea3907ef328e53d5f8f2ab84f687c4811e8283e6": "FAIL|Liquidity: $6,223 (need $10,000+ on Pons)",
+    "onchain:0x1fe1cb1b1ea7e1e5a966972918bb3716ec38c026": "FAIL|Liquidity: $5,084 (need $10,000+ on Pons)",
+    "0x398bd873f16c9206dc4b3bb2c6b63b7b3e03d330302a843764e60f5626b8bd9a": "FAIL|Liquidity: $7,635 (need $10,000+ on Pons)",
     "0xdbb14e40ed534249d3c5cf2e7a228a0bd5882cdacda8367aab49a86cf99209f1": "FAIL|Market cap: $6,420 (need $25,000+); Not down >50% in 24h: -67% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x4c07610fbc45edb0fe789f088a411876dc3f92e22e2193b415983951c4d00539": "PASS|",
     "0xcc21457595048aa775bbfa039da4fe070b479d5f5c5e359794beefbbecf3c577": "PASS|",
@@ -726,7 +726,7 @@
     "0x1252ae8ffb25626bc170eafdb80c82779599aaa787006f7623e7c4cff16f7fb2": "FAIL|Liquidity: $11 (need $5,000+ on Pools.trade)",
     "0x3f650966c5e977ec50e7c4466339d229e32baa631d18d95332fbca27baad1c00": "FAIL|Liquidity: $14 (need $5,000+ on Pools.trade)",
     "0xef33e73f97a5a0ad8db18960588617cdf6d3a54f4d885ebd6520c5e87d75c5d9": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
-    "onchain:0x5c14911d853e13e9ba07c911bc4da452c8a191ca": "FAIL|Market cap: $22,121 (need $25,000+); Not down >50% in 24h: -59% in 24h",
+    "onchain:0x5c14911d853e13e9ba07c911bc4da452c8a191ca": "FAIL|Liquidity: $7,437 (need $10,000+ on Pons)",
     "0x74d95d5918f8c7eb4ee6899cf477db3f3bd071a0c0c84ea85c772a33306b6b58": "FAIL|Liquidity: $10 (need $5,000+ on Pools.trade)",
     "0xedb0f576ceb12c79bac96c1ff02c8778ce30780ef0dd54efea21985d95e91b56": "PASS|"
   },
@@ -4383,7 +4383,7 @@
       "graduated": "2026-10-21T03:08:53Z",
       "symbol": "SHELLBAY",
       "title": "Shellbay",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 49253.1568,
       "market_cap_usd": 6367.546503
@@ -4462,7 +4462,7 @@
       "graduated": "2026-10-21T05:55:59Z",
       "symbol": "USFD",
       "title": "United States Fund Dividend",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16814.8681,
       "market_cap_usd": 6129.913351
@@ -4472,7 +4472,7 @@
       "graduated": "2026-10-21T06:10:19Z",
       "symbol": "UDTF",
       "title": "United Dividend Trust Fund",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 24599.6079,
       "market_cap_usd": 6151.408201
@@ -4492,7 +4492,7 @@
       "graduated": "2026-10-21T06:22:45Z",
       "symbol": "UDTF",
       "title": "United Dividend Trust Fund",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 27723.4429,
       "market_cap_usd": 6225.839998
@@ -4521,7 +4521,7 @@
       "graduated": "2026-10-21T07:01:02Z",
       "symbol": "SHUTTLE",
       "title": "Shuttle",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6263.526836,
       "liquidity_usd": 58448.1049
@@ -4541,7 +4541,7 @@
       "graduated": "2026-10-21T07:32:56Z",
       "symbol": "NDOF",
       "title": "NATIONAL OIL DIVIDEND FUND",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 22692.4428,
       "market_cap_usd": 6256.886326
@@ -4581,7 +4581,7 @@
       "graduated": "2026-10-21T08:24:17Z",
       "symbol": "VQZ",
       "title": "VEIL QZK",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16852.0774,
       "market_cap_usd": 6296.935145
@@ -4601,7 +4601,7 @@
       "graduated": "2026-10-21T09:29:18Z",
       "symbol": "FUNS",
       "title": "Fun Fields",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 25233.6647,
       "market_cap_usd": 6148.130637
@@ -4611,7 +4611,7 @@
       "graduated": "2026-10-21T09:32:42Z",
       "symbol": "FUNS",
       "title": "Fun Fields",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 24990.1809,
       "market_cap_usd": 6254.478083
@@ -4740,7 +4740,7 @@
       "graduated": "2026-10-21T14:38:30Z",
       "symbol": "IBM",
       "title": "Infinite Buyback Machine",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 11211.7434,
       "market_cap_usd": 6370.807446
@@ -4799,7 +4799,7 @@
       "graduated": "2026-10-21T15:30:53Z",
       "symbol": "IBM",
       "title": "Infinite Buyback Machine",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19342.7598,
       "market_cap_usd": 6615.576968
@@ -4829,7 +4829,7 @@
       "graduated": "2026-10-21T16:05:56Z",
       "symbol": "USFD",
       "title": "United States Fund Dividend",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 25709.6444,
       "market_cap_usd": 6390.410772
@@ -4898,7 +4898,7 @@
       "graduated": "2026-10-21T17:31:56Z",
       "symbol": "SUSHIPOLY",
       "title": "Sushipoly",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6405.273102
     },
@@ -4916,7 +4916,7 @@
       "graduated": "2026-10-21T17:40:45Z",
       "symbol": "SUSHIPOLY",
       "title": "Sushipoly",
-      "seen": "2026-10-21T22:11:02.402033+00:00",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19367.3278,
       "market_cap_usd": 6418.628473
@@ -5030,10 +5030,20 @@
       "source": "geckoterminal",
       "liquidity_usd": 17619.415,
       "market_cap_usd": 168031.0354
+    },
+    "0x29905c9d4083070ae6108b84a8b2ece8169c5cd4": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-21T22:17:46Z",
+      "symbol": "MACCA",
+      "title": "Macca the Gator",
+      "seen": "2026-10-21T22:21:53.582033+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 14113.4684,
+      "market_cap_usd": 21257.04824
     }
   },
   "graduations": {
-    "at": "2026-10-21T22:11:02.402033+00:00",
+    "at": "2026-10-21T22:21:53.582033+00:00",
     "hours": 24,
     "seen": {
       "0x4edbdca8b9ef88a34404d2a533fe54467475bbeb": "2026-10-21T00:00:43.651600+00:00",
@@ -5087,7 +5097,7 @@
       "0xfa00410e981dbe10c85b29fa3057dbb5f3be0321",
       "0xfcd865e50ac30efc9f4aa8569b2cc5ac11dc6d6f"
     ],
-    "scanned_to": 94620007,
+    "scanned_to": 94626039,
     "complete": true
   },
   "issues_to_close": [],
@@ -5226,7 +5236,7 @@
       0
     ],
     "2026-10-21 22:00": [
-      2,
+      3,
       0,
       0
     ]
