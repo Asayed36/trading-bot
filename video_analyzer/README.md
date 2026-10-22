@@ -44,6 +44,11 @@ transcript, slower), `--language en`, `--no-frames`, `--no-transcript`, `--max-f
 A long video makes many frames; if it plans more than `--max-frames` (600) it keeps an
 evenly spread selection and tells you.
 
+Size options: `--max-height` (highest video height to download, 240 to 1080, default 720) and
+`--frame-width` (widest saved frame picture, 320 to 1920, default 1280). Lower numbers make
+smaller files, but charts and small text get harder to read; `--max-height 480
+--frame-width 960` is a good size for talking videos. Both are saved in `metadata.json`.
+
 ## Working on a video with Claude
 
 1. Run the script on your computer (Claude's cloud session cannot reach YouTube).
