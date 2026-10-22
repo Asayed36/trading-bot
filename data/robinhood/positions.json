@@ -12,7 +12,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 0.5,
       "took_profit": true,
-      "last_price": 0.0001945,
+      "last_price": 0.000196,
       "issue_details": {
         "extra": [
           [
@@ -128,7 +128,7 @@
       },
       "issue": 493,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-22 00:31:36",
+      "last_price_time": "2026-10-22 00:34:54",
       "sells": [
         {
           "time": "2026-10-21T22:21:53.582033+00:00",
@@ -468,10 +468,10 @@
   },
   "checked": {
     "onchain:0x16c93795477fab5730a00889e042d5815be90bfc": {
-      "at": "2026-10-21T23:31:46.031424+00:00",
+      "at": "2026-10-22T00:34:54.297720+00:00",
       "passed": false,
       "failed": [
-        "Holders"
+        "More buys than sells (1h)"
       ]
     },
     "0x286353d70b45f6a761a31281bb5185d846e398c8248168708d98dc5a7ef87cb2": {
@@ -489,7 +489,7 @@
       ]
     },
     "0x3f650966c5e977ec50e7c4466339d229e32baa631d18d95332fbca27baad1c00": {
-      "at": "2026-10-21T23:31:46.031424+00:00",
+      "at": "2026-10-22T00:34:54.297720+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
@@ -641,7 +641,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-22T00:31:36.868071+00:00",
+      "at": "2026-10-22T00:34:54.297720+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -649,7 +649,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-22T00:31:36.868071+00:00",
+      "at": "2026-10-22T00:34:54.297720+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -666,11 +666,11 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-10-22T00:31:36.868071+00:00",
-      "used_this_run": true
+      "used_this_run": false
     }
   },
   "logged": {
-    "onchain:0x16c93795477fab5730a00889e042d5815be90bfc": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls",
+    "onchain:0x16c93795477fab5730a00889e042d5815be90bfc": "FAIL|More buys than sells (1h): 15 buys vs 19 sells",
     "0x286353d70b45f6a761a31281bb5185d846e398c8248168708d98dc5a7ef87cb2": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
     "0x1252ae8ffb25626bc170eafdb80c82779599aaa787006f7623e7c4cff16f7fb2": "FAIL|Liquidity: $14 (need $5,000+ on Pools.trade)",
     "0x3f650966c5e977ec50e7c4466339d229e32baa631d18d95332fbca27baad1c00": "FAIL|Liquidity: $14 (need $5,000+ on Pools.trade)",
@@ -4237,7 +4237,7 @@
       "graduated": "2026-10-21T03:08:53Z",
       "symbol": "SHELLBAY",
       "title": "Shellbay",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 48733.2637,
       "market_cap_usd": 6367.546503
@@ -4316,7 +4316,7 @@
       "graduated": "2026-10-21T05:55:59Z",
       "symbol": "USFD",
       "title": "United States Fund Dividend",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16637.3783,
       "market_cap_usd": 6129.913351
@@ -4326,7 +4326,7 @@
       "graduated": "2026-10-21T06:10:19Z",
       "symbol": "UDTF",
       "title": "United Dividend Trust Fund",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 24339.946,
       "market_cap_usd": 6151.408201
@@ -4346,7 +4346,7 @@
       "graduated": "2026-10-21T06:22:45Z",
       "symbol": "UDTF",
       "title": "United Dividend Trust Fund",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 27430.8074,
       "market_cap_usd": 6225.839998
@@ -4375,7 +4375,7 @@
       "graduated": "2026-10-21T07:01:02Z",
       "symbol": "SHUTTLE",
       "title": "Shuttle",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6263.526836,
       "liquidity_usd": 57831.1544
@@ -4395,7 +4395,7 @@
       "graduated": "2026-10-21T07:32:56Z",
       "symbol": "NDOF",
       "title": "NATIONAL OIL DIVIDEND FUND",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 22452.9121,
       "market_cap_usd": 6256.886326
@@ -4435,7 +4435,7 @@
       "graduated": "2026-10-21T08:24:17Z",
       "symbol": "VQZ",
       "title": "VEIL QZK",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16674.1949,
       "market_cap_usd": 6296.935145
@@ -4455,7 +4455,7 @@
       "graduated": "2026-10-21T09:29:18Z",
       "symbol": "FUNS",
       "title": "Fun Fields",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 24967.3101,
       "market_cap_usd": 6148.130637
@@ -4465,9 +4465,9 @@
       "graduated": "2026-10-21T09:32:42Z",
       "symbol": "FUNS",
       "title": "Fun Fields",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 24782.8783,
+      "liquidity_usd": 24779.1756,
       "market_cap_usd": 6286.04227
     },
     "0x26b4ba38d2f27eb411f013262a715dd76b860000": {
@@ -4594,7 +4594,7 @@
       "graduated": "2026-10-21T14:38:30Z",
       "symbol": "IBM",
       "title": "Infinite Buyback Machine",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 11093.3975,
       "market_cap_usd": 6370.807446
@@ -4653,7 +4653,7 @@
       "graduated": "2026-10-21T15:30:53Z",
       "symbol": "IBM",
       "title": "Infinite Buyback Machine",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19174.6417,
       "market_cap_usd": 6539.373949
@@ -4683,7 +4683,7 @@
       "graduated": "2026-10-21T16:05:56Z",
       "symbol": "USFD",
       "title": "United States Fund Dividend",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 25438.2655,
       "market_cap_usd": 6390.410772
@@ -4752,7 +4752,7 @@
       "graduated": "2026-10-21T17:31:56Z",
       "symbol": "SUSHIPOLY",
       "title": "Sushipoly",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6405.273102
     },
@@ -4770,7 +4770,7 @@
       "graduated": "2026-10-21T17:40:45Z",
       "symbol": "SUSHIPOLY",
       "title": "Sushipoly",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19162.8954,
       "market_cap_usd": 6418.628473
@@ -4890,7 +4890,7 @@
       "graduated": "2026-10-21T22:17:46Z",
       "symbol": "MACCA",
       "title": "Macca the Gator",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 16385.5926,
       "market_cap_usd": 6266.356374
@@ -4900,7 +4900,7 @@
       "graduated": "2026-10-21T22:26:16Z",
       "symbol": "VRAX",
       "title": "Commander Vrax",
-      "seen": "2026-10-22T00:31:36.868071+00:00",
+      "seen": "2026-10-22T00:34:54.297720+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 20108.2656,
       "market_cap_usd": 6292.829975
@@ -5230,7 +5230,7 @@
       0
     ],
     "2026-10-22 00:00": [
-      3,
+      4,
       0,
       0
     ]
