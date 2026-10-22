@@ -12,7 +12,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 3.378e-05,
+      "last_price": 3.414e-05,
       "issue_details": {
         "extra": [
           [
@@ -128,7 +128,7 @@
       },
       "issue": 496,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-22 10:42:06"
+      "last_price_time": "2026-10-22 10:51:20"
     },
     {
       "address": "0x4a67ea0d194058558f4926b6bf6b758ef8976675",
@@ -142,7 +142,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 0.5,
       "took_profit": true,
-      "last_price": 8.85e-05,
+      "last_price": 8.937e-05,
       "issue_details": {
         "extra": [
           [
@@ -258,7 +258,7 @@
       },
       "issue": 497,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-22 10:42:06",
+      "last_price_time": "2026-10-22 10:51:20",
       "sells": [
         {
           "time": "2026-10-22T06:23:55.054783+00:00",
@@ -282,7 +282,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 4.476e-05,
+      "last_price": 4.472e-05,
       "issue_details": {
         "extra": [
           [
@@ -398,7 +398,7 @@
       },
       "issue": 498,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-22 10:42:06"
+      "last_price_time": "2026-10-22 10:51:20"
     },
     {
       "address": "0x9ee9ce21fd151745e5480aa4d32df13ce0a6ae1b",
@@ -406,13 +406,13 @@
       "pair_address": "0x28b3d2c0b5431827ea335f1f070fead1ed6d5b1cd9cfd471b733ada1622c9c24",
       "entry_time": "2026-10-22T10:31:27.914322+00:00",
       "entry_price": 4.967e-05,
-      "peak_price": 5.207e-05,
+      "peak_price": 6.579e-05,
       "tokens": 196808.93899738276,
       "cost_usd": 10.05,
       "pool_fee_pct": 0.25,
       "remaining_fraction": 1.0,
       "took_profit": false,
-      "last_price": 5.207e-05,
+      "last_price": 6.579e-05,
       "issue_details": {
         "extra": [
           [
@@ -474,7 +474,7 @@
       },
       "issue": 501,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-22 10:42:06"
+      "last_price_time": "2026-10-22 10:51:20"
     }
   ],
   "ever_bought": [
@@ -800,6 +800,16 @@
       "created": "2026-10-22T10:31:57Z",
       "liquidity_usd": 3.1319,
       "market_cap_usd": 284516.2654
+    },
+    "0x43640b872f6746e572cd1947862786312108eaaa3b6e5994917f182f5da940ce": {
+      "pool": "0x43640b872f6746e572cd1947862786312108eaaa3b6e5994917f182f5da940ce",
+      "dex": "uniswap-pools-trade",
+      "token": "0x620b6a526e964a71f47f17c0b52985aa4e4e6569",
+      "name": "GLITCH",
+      "title": "GLITCH",
+      "created": "2026-10-22T10:49:05Z",
+      "liquidity_usd": 22998.6269,
+      "market_cap_usd": 39446.75858
     }
   },
   "checked": {
@@ -825,14 +835,14 @@
       ]
     },
     "0x1ee17ca3ed2e06dae9bbca78397d8ab6a4ef12e6b02d8c883c3db1d6cbec38c4": {
-      "at": "2026-10-22T09:51:19.951998+00:00",
+      "at": "2026-10-22T10:51:20.936896+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
     "0x72b9b5b96c0ddd2326a50488f0b7d6275437249cb3af012ab9774d6f950b3d10": {
-      "at": "2026-10-22T09:51:19.951998+00:00",
+      "at": "2026-10-22T10:51:20.936896+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -846,7 +856,7 @@
       "failed": []
     },
     "0x8fdafc4c8b6b6e78fe63f506f15c5c422cffa273ea549cc3391addb0ce2586bf": {
-      "at": "2026-10-22T09:51:19.951998+00:00",
+      "at": "2026-10-22T10:51:20.936896+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
@@ -951,18 +961,19 @@
   "sources": {
     "geckoterminal": {
       "calls": 2,
-      "errors": 0,
+      "errors": 1,
       "rate_limited": 0,
+      "error": "could not reach api.geckoterminal.com: HTTPSConnectionPool(host='api.geckoterminal.com', port=443): Read timed out. (read timeout=20)",
       "ok": true,
-      "at": "2026-10-22T10:42:06.133961+00:00",
+      "at": "2026-10-22T10:51:20.936896+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 1,
+      "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-22T10:42:06.133961+00:00",
+      "at": "2026-10-22T10:51:20.936896+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -978,8 +989,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-22T10:41:11.018931+00:00",
-      "used_this_run": false
+      "at": "2026-10-22T10:51:20.936896+00:00",
+      "used_this_run": true
     }
   },
   "logged": {
@@ -5489,10 +5500,20 @@
       "source": "geckoterminal",
       "liquidity_usd": 3.1319,
       "market_cap_usd": 284516.2654
+    },
+    "0x620b6a526e964a71f47f17c0b52985aa4e4e6569": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-22T10:49:05Z",
+      "symbol": "GLITCH",
+      "title": "GLITCH",
+      "seen": "2026-10-22T10:51:20.936896+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 22998.6269,
+      "market_cap_usd": 39446.75858
     }
   },
   "graduations": {
-    "at": "2026-10-22T10:41:11.018931+00:00",
+    "at": "2026-10-22T10:51:20.936896+00:00",
     "hours": 24,
     "seen": {
       "0x8db8018fc00485c4a0e2e19c10bd9703fc505c8f": "2026-10-21T11:08:51.006400+00:00",
@@ -5546,7 +5567,7 @@
       "0xfa00410e981dbe10c85b29fa3057dbb5f3be0321",
       "0xfcd865e50ac30efc9f4aa8569b2cc5ac11dc6d6f"
     ],
-    "scanned_to": 95050367,
+    "scanned_to": 95056425,
     "complete": true
   },
   "issues_to_close": [],
@@ -5685,7 +5706,7 @@
       0
     ],
     "2026-10-22 10:00": [
-      6,
+      7,
       0,
       0
     ]
