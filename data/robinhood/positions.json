@@ -12,7 +12,7 @@
       "pool_fee_pct": 1.0,
       "remaining_fraction": 0.5,
       "took_profit": true,
-      "last_price": 0.0001417,
+      "last_price": 0.0001396,
       "issue_details": {
         "extra": [
           [
@@ -128,7 +128,7 @@
       },
       "issue": 497,
       "last_price_source": "DexScreener",
-      "last_price_time": "2026-10-22 22:42:31",
+      "last_price_time": "2026-10-22 22:51:02",
       "sells": [
         {
           "time": "2026-10-22T06:23:55.054783+00:00",
@@ -489,6 +489,26 @@
       "created": "2026-10-22T22:31:39Z",
       "liquidity_usd": 24149.7545,
       "market_cap_usd": 65513.94139
+    },
+    "0xc390df2ce5f78c119d83fc507133a42f7cbdaafeaaa7af5c813148982e8692c2": {
+      "pool": "0xc390df2ce5f78c119d83fc507133a42f7cbdaafeaaa7af5c813148982e8692c2",
+      "dex": "uniswap-pools-trade",
+      "token": "0xa4f110756c0acae17d41ba147d3308d950e4090e",
+      "name": "GATO",
+      "title": "GATO",
+      "created": "2026-10-22T22:49:00Z",
+      "liquidity_usd": 22597.1743,
+      "market_cap_usd": 36142.98468
+    },
+    "0x27d94c0ecc11307397296540078a0bdca24a8a27a152938bc04404a752021bd7": {
+      "pool": "0x27d94c0ecc11307397296540078a0bdca24a8a27a152938bc04404a752021bd7",
+      "dex": "uniswap-pools-trade",
+      "token": "0x72ffc3574a101049dd36a0237e25443728e30000",
+      "name": "CITY",
+      "title": "Dacity Coin 46724",
+      "created": "2026-10-22T22:43:56Z",
+      "liquidity_usd": 0.0,
+      "market_cap_usd": 63590.49234
     }
   },
   "checked": {
@@ -658,6 +678,14 @@
       "failed": [
         "Liquidity"
       ]
+    },
+    "0xc29c0560b2525e9c8210e84b423b5c21e7a06b5c9ed9f968ee84054ccb5ccb13": {
+      "at": "2026-10-22T22:51:02.964734+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h"
+      ]
     }
   },
   "sources": {
@@ -666,15 +694,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-22T22:42:31.408358+00:00",
+      "at": "2026-10-22T22:51:02.964734+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 1,
+      "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-22T22:42:31.408358+00:00",
+      "at": "2026-10-22T22:51:02.964734+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -690,8 +718,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-22T22:41:04.960979+00:00",
-      "used_this_run": false
+      "at": "2026-10-22T22:51:02.964734+00:00",
+      "used_this_run": true
     }
   },
   "logged": {
@@ -717,19 +745,10 @@
     "0x16580632c16cf2a253e82232e228c884cf41aa35e9d36a500354e15927dee6d7": "FAIL|Liquidity: $6 (need $5,000+ on Pools.trade)",
     "0xd8f5c636ed56f863be2a3f9c9c140f52a7807b7c3240fb7843c5f98e4e82f10e": "FAIL|Liquidity: $5 (need $5,000+ on Pools.trade)",
     "0x16d9a37178e85b4c7fd43593565cf5796ad6ad295f928f21e6b9542f29749c09": "FAIL|Market cap: $13,489 (need $25,000+); Not down >50% in 24h: -73% in 24h",
-    "0xb0d4513749c61f7bb9b057f99eba0021c2e17109c1c667af2d649f8e62c569fa": "FAIL|Liquidity: $6 (need $5,000+ on Pools.trade)"
+    "0xb0d4513749c61f7bb9b057f99eba0021c2e17109c1c667af2d649f8e62c569fa": "FAIL|Liquidity: $6 (need $5,000+ on Pools.trade)",
+    "0xc29c0560b2525e9c8210e84b423b5c21e7a06b5c9ed9f968ee84054ccb5ccb13": "FAIL|Market cap: $6,017 (need $25,000+); Not down >50% in 24h: -82% in 24h"
   },
   "launchpad_tokens": {
-    "0x50d26490f7915983bedba927361fb0142efa1214": {
-      "dex": "pons-v2-dex",
-      "graduated": "2026-10-15T16:49:25Z",
-      "symbol": "KEPT",
-      "title": "Kept",
-      "seen": "2026-10-15T16:52:26.810887+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 21594.0407,
-      "market_cap_usd": 39803.81163
-    },
     "0xb75ca9c1a77de0cab68d2e3a37fd75427c131111": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-15T16:56:56Z",
@@ -4485,7 +4504,7 @@
       "graduated": "2026-10-21T22:17:46Z",
       "symbol": "MACCA",
       "title": "Macca the Gator",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 15799.3768,
       "market_cap_usd": 6266.356374
@@ -4635,7 +4654,7 @@
       "graduated": "2026-10-22T00:38:43Z",
       "symbol": "KIMCHIBULL",
       "title": "KIMCHIBULL",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 14331.0359,
       "market_cap_usd": 6188.952693
@@ -4645,7 +4664,7 @@
       "graduated": "2026-10-22T00:47:18Z",
       "symbol": "KIMCHIBULL",
       "title": "KIMCHIBULL",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 34268.1178,
       "market_cap_usd": 5989.441808
@@ -4655,7 +4674,7 @@
       "graduated": "2026-10-22T00:53:41Z",
       "symbol": "KIMCHIBULL",
       "title": "KIMCHIBULL",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 35182.7634,
       "market_cap_usd": 6218.350707
@@ -4665,7 +4684,7 @@
       "graduated": "2026-10-22T01:05:42Z",
       "symbol": "GLITCH",
       "title": "GLITCH",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 34128.0262,
       "market_cap_usd": 6109.916241
@@ -4675,7 +4694,7 @@
       "graduated": "2026-10-22T01:16:43Z",
       "symbol": "GLITCH",
       "title": "GLITCH",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 34122.7847,
       "market_cap_usd": 6249.216638
@@ -4763,7 +4782,7 @@
       "graduated": "2026-10-22T06:58:20Z",
       "symbol": "TT",
       "title": "Trump'S Trial",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 15995.9339,
       "market_cap_usd": 6177.746149
@@ -4843,7 +4862,7 @@
       "graduated": "2026-10-22T07:59:13Z",
       "symbol": "LASTZV2",
       "title": "Lastzv2",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6115.092804
     },
@@ -4871,7 +4890,7 @@
       "graduated": "2026-10-22T08:24:35Z",
       "symbol": "GHOS",
       "title": "GHOSTS",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 46905.4274,
       "market_cap_usd": 6028.949101
@@ -4881,7 +4900,7 @@
       "graduated": "2026-10-22T08:48:20Z",
       "symbol": "GLITCH",
       "title": "Infinite Money Glitch",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 21986.2788,
       "market_cap_usd": 6097.841332
@@ -4921,7 +4940,7 @@
       "graduated": "2026-10-22T09:58:02Z",
       "symbol": "Plague",
       "title": "The Victorian Plague",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 19497.0323,
       "market_cap_usd": 6171.124674
@@ -4971,7 +4990,7 @@
       "graduated": "2026-10-22T10:49:05Z",
       "symbol": "GLITCH",
       "title": "GLITCH",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 34396.5351,
       "market_cap_usd": 6093.872235
@@ -4981,7 +5000,7 @@
       "graduated": "2026-10-22T10:42:33Z",
       "symbol": "KIMCHIBULL",
       "title": "KIMCHIBULL",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6098.180146
     },
@@ -4990,7 +5009,7 @@
       "graduated": "2026-10-22T11:07:40Z",
       "symbol": "SQUINTCAT",
       "title": "SQUINTcat",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 52643.941,
       "market_cap_usd": 6092.617549
@@ -5422,9 +5441,9 @@
       "graduated": "2026-10-22T19:54:15Z",
       "symbol": "TETSU",
       "title": "Tetsu Corp",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
-      "market_cap_usd": 6396.372624
+      "market_cap_usd": 6391.660875
     },
     "0x83f93992d921f0aba9af70b7bd8cdde1cc2d0000": {
       "dex": "uniswap-pools-trade",
@@ -5491,24 +5510,44 @@
       "graduated": "2026-10-22T22:19:57Z",
       "symbol": "SHAVCOIN",
       "title": "SHAVCOIN",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 34258.9823,
-      "market_cap_usd": 5999.111111
+      "liquidity_usd": 34268.8342,
+      "market_cap_usd": 5997.71864
     },
     "0xd43e2956b7e2675e73292ceb983bc50da61b5b61": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-22T22:31:39Z",
       "symbol": "TRENCHERS",
       "title": "TRENCHERS",
-      "seen": "2026-10-22T22:42:31.408358+00:00",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 24686.8044,
-      "market_cap_usd": 60472.61074
+      "liquidity_usd": 34308.4081,
+      "market_cap_usd": 6021.77712
+    },
+    "0xa4f110756c0acae17d41ba147d3308d950e4090e": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-22T22:49:00Z",
+      "symbol": "GATO",
+      "title": "GATO",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 22597.1743,
+      "market_cap_usd": 36142.98468
+    },
+    "0x72ffc3574a101049dd36a0237e25443728e30000": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-22T22:43:56Z",
+      "symbol": "CITY",
+      "title": "Dacity Coin 46724",
+      "seen": "2026-10-22T22:51:02.964734+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 0.0,
+      "market_cap_usd": 63590.49234
     }
   },
   "graduations": {
-    "at": "2026-10-22T22:41:04.960979+00:00",
+    "at": "2026-10-22T22:51:02.964734+00:00",
     "hours": 24,
     "seen": {
       "0xa5692ddc7e386b52feac73e2232eca7601c839e9": "2026-10-21T23:05:20.311000+00:00",
@@ -5562,7 +5601,7 @@
       "0xed3c833cbf55ce7fadc90eca3f5f7e0c3e95de70",
       "0xfed6b187f6da04e2eae5d3ea89b57129da62b28a"
     ],
-    "scanned_to": 95465128,
+    "scanned_to": 95470840,
     "complete": true
   },
   "issues_to_close": [],
@@ -5698,7 +5737,7 @@
       0
     ],
     "2026-10-22 22:00": [
-      6,
+      7,
       0,
       0
     ]
