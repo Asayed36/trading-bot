@@ -25,6 +25,10 @@ from datetime import datetime
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_ROOT = os.path.join(HERE, "output")
 BLOCK_SECONDS = 30          # the timeline groups the transcript and frames in blocks of this size
+DEFAULT_MAX_HEIGHT = 720        # highest video height downloaded (pixels)
+DEFAULT_FRAME_WIDTH = 1280      # widest saved frame picture (pixels)
+MAX_HEIGHT_RANGE = (240, 1080)
+FRAME_WIDTH_RANGE = (320, 1920)
 SCENE_GAP_SECONDS = 2.0     # two screen-change frames are at least this far apart (no flood when a chart flickers)
 SAME_MOMENT_SECONDS = 0.5   # a screen-change frame is skipped if any frame is this close already
 
@@ -183,10 +187,31 @@ def fetch_info(url):
                     "downloader:  pip install -U yt-dlp")
 
 
-def download(url, folder, client=None):
-    """Download the video (at most 720p, to keep files small) into `folder` as video.<ext>."""
+def check_sizes(max_height, frame_width):
+    """Refuse values outside the sensible ranges, with a one-line message."""
+    for name, value, (low, high), what in (
+            ("--max-height", max_height, MAX_HEIGHT_RANGE, "video height"),
+            ("--frame-width", frame_width, FRAME_WIDTH_RANGE, "frame picture width")):
+        if isinstance(value, bool) or not isinstance(value, int) or not low <= value <= high:
+            raise ToolError(f"{name} must be a whole number from {low} to {high} "
+                            f"({what} in pixels), not {value!r}.")
+
+
+def download_format(max_height=DEFAULT_MAX_HEIGHT):
+    """yt-dlp's format choice: the best video up to `max_height` pixels high, plus the best sound."""
+    return f"bv*[height<={max_height}]+ba/b[height<={max_height}]/b"
+
+
+def frame_scale(frame_width=DEFAULT_FRAME_WIDTH):
+    """FFmpeg's scale filter: at most `frame_width` pixels wide, never enlarged."""
+    return f"scale='min({frame_width},iw)':-2"
+
+
+def download(url, folder, client=None, max_height=DEFAULT_MAX_HEIGHT):
+    """Download the video (at most `max_height` pixels high, to keep files small) into
+    `folder` as video.<ext>."""
     import yt_dlp
-    opts = _options(client, format="bv*[height<=720]+ba/b[height<=720]/b",
+    opts = _options(client, format=download_format(max_height),
                     merge_output_format="mp4", outtmpl=os.path.join(folder, "video.%(ext)s"))
     try:
         with yt_dlp.YoutubeDL(opts) as ydl:
@@ -254,7 +279,7 @@ def frame_name(number, seconds):
     return f"frame_{number:04d}_t{s // 3600:02d}-{(s % 3600) // 60:02d}-{s % 60:02d}.jpg"
 
 
-def extract_frames(video, folder, plan, say=print):
+def extract_frames(video, folder, plan, say=print, frame_width=DEFAULT_FRAME_WIDTH):
     """Save one picture per planned second; returns [{file, seconds, time, reason}]."""
     os.makedirs(folder, exist_ok=True)
     frames = []
@@ -262,7 +287,7 @@ def extract_frames(video, folder, plan, say=print):
         name = frame_name(i, t)
         path = os.path.join(folder, name)
         run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-ss", f"{t:.3f}", "-i", video,
-             "-frames:v", "1", "-vf", "scale='min(1280,iw)':-2", "-q:v", "3", path])
+             "-frames:v", "1", "-vf", frame_scale(frame_width), "-q:v", "3", path])
         if os.path.exists(path):
             frames.append({"file": name, "seconds": t, "time": clock(t), "reason": reason})
         if i % 50 == 0:
@@ -360,8 +385,9 @@ def build_timeline(meta, segments, frames, block=BLOCK_SECONDS):
 
 def analyze(source, output_root=OUTPUT_ROOT, interval=5.0, scene_threshold=0.3, max_frames=600,
             model="base", language=None, do_frames=True, do_transcribe=True, say=print,
-            transcriber=transcribe):
+            transcriber=transcribe, max_height=DEFAULT_MAX_HEIGHT, frame_width=DEFAULT_FRAME_WIDTH):
     """Run every step for a link or a video file. Returns the output folder."""
+    check_sizes(max_height, frame_width)
     problems = check_tools(need_download=is_link(source), need_transcribe=do_transcribe)
     if problems:
         raise ToolError("\n\n".join(problems))
@@ -383,7 +409,7 @@ def analyze(source, output_root=OUTPUT_ROOT, interval=5.0, scene_threshold=0.3, 
     say(f"  Folder: {folder}")
 
     say("Step 2/5: downloading" if is_link(source) else "Step 2/5: using the file you gave (no download)")
-    video = download(source, folder, client) if is_link(source) else os.path.abspath(source)
+    video = download(source, folder, client, max_height) if is_link(source) else os.path.abspath(source)
     duration = duration_seconds(video)
     meta["duration"] = clock(duration)
     say(f"  Length: {meta['duration']}")
@@ -397,7 +423,7 @@ def analyze(source, output_root=OUTPUT_ROOT, interval=5.0, scene_threshold=0.3, 
             say(f"  Note: more than {max_frames} frames were planned, so an evenly spread "
                 f"{max_frames} are kept (use --interval with a bigger number for fewer).")
         say(f"  {len(plan)} frames planned ({len(scenes)} screen changes found)")
-        frames = extract_frames(video, os.path.join(folder, "frames"), plan, say)
+        frames = extract_frames(video, os.path.join(folder, "frames"), plan, say, frame_width)
     else:
         say("Step 3/5: skipped (frames)")
 
@@ -420,7 +446,8 @@ def analyze(source, output_root=OUTPUT_ROOT, interval=5.0, scene_threshold=0.3, 
         fh.write(build_timeline(meta, segments, frames))
     with open(os.path.join(folder, "metadata.json"), "w") as fh:
         json.dump(dict(meta, interval_seconds=interval, scene_threshold=scene_threshold,
-                       model=model, frames=len(frames), segments=len(segments)), fh, indent=1)
+                       model=model, max_height=max_height, frame_width=frame_width,
+                       frames=len(frames), segments=len(segments)), fh, indent=1)
     return folder
 
 
@@ -434,6 +461,12 @@ def main(argv=None):
     p.add_argument("--max-frames", type=int, default=600, help="most frames to save (default 600)")
     p.add_argument("--model", default="base", help="Whisper model: tiny, base, small ... (default base)")
     p.add_argument("--language", default=None, help="spoken language code, e.g. en (default: detect)")
+    p.add_argument("--max-height", type=int, default=DEFAULT_MAX_HEIGHT,
+                   help="highest video height to download, %d-%d (default %d)"
+                   % (*MAX_HEIGHT_RANGE, DEFAULT_MAX_HEIGHT))
+    p.add_argument("--frame-width", type=int, default=DEFAULT_FRAME_WIDTH,
+                   help="widest saved frame picture, %d-%d (default %d)"
+                   % (*FRAME_WIDTH_RANGE, DEFAULT_FRAME_WIDTH))
     p.add_argument("--no-frames", action="store_true", help="skip the frames")
     p.add_argument("--no-transcript", action="store_true", help="skip the transcript")
     p.add_argument("--output", default=OUTPUT_ROOT, help="where to put the video folder")
@@ -450,7 +483,8 @@ def main(argv=None):
             raise ToolError("--interval and --max-frames must be bigger than 0.")
         folder = analyze(args.source, args.output, args.interval, args.scene_threshold,
                          args.max_frames, args.model, args.language,
-                         not args.no_frames, not args.no_transcript)
+                         not args.no_frames, not args.no_transcript,
+                         max_height=args.max_height, frame_width=args.frame_width)
     except ToolError as exc:
         print(f"\nStopped: {exc}", file=sys.stderr)
         return 1

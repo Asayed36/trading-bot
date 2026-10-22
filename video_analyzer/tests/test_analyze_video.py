@@ -4,6 +4,7 @@ Not part of the bot's test suite. The real frame cutting and scene detection use
 tiny made-up video; the transcript step uses a stand-in (the real Whisper model needs a download)."""
 
 import csv
+import io
 import json
 import os
 import shutil
@@ -21,11 +22,11 @@ import analyze_video as av  # noqa: E402
 HAVE_FFMPEG = bool(shutil.which("ffmpeg") and shutil.which("ffprobe"))
 
 
-def make_video(path, silent=False):
+def make_video(path, silent=False, size="320x240"):
     """12 s: black for 6 s, then white; with a tone unless silent."""
     cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
-           "-f", "lavfi", "-i", "color=c=black:s=320x240:r=10:d=6",
-           "-f", "lavfi", "-i", "color=c=white:s=320x240:r=10:d=6"]
+           "-f", "lavfi", "-i", f"color=c=black:s={size}:r=10:d=6",
+           "-f", "lavfi", "-i", f"color=c=white:s={size}:r=10:d=6"]
     if not silent:
         cmd += ["-f", "lavfi", "-i", "sine=frequency=440:duration=12"]
     cmd += ["-filter_complex", "[0:v][1:v]concat=n=2:v=1:a=0[v]", "-map", "[v]"]
@@ -296,6 +297,136 @@ class FetchInfoTests(unittest.TestCase):
         self.assertEqual(str(ctx.exception), av.BOT_CHECK_HELP)
         self.assertIn("your own computer", str(ctx.exception))
         self.assertEqual(len(tried), 1 + len(av.FALLBACK_CLIENTS))
+
+
+def jpeg_width(path):
+    done = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
+                           "stream=width", "-of", "csv=p=0", path], capture_output=True, text=True)
+    return int(done.stdout.strip())
+
+
+class SizeOptionTests(unittest.TestCase):
+    def test_the_defaults_are_todays_behavior_exactly(self):
+        self.assertEqual((av.DEFAULT_MAX_HEIGHT, av.DEFAULT_FRAME_WIDTH), (720, 1280))
+        self.assertEqual(av.download_format(), "bv*[height<=720]+ba/b[height<=720]/b")
+        self.assertEqual(av.frame_scale(), "scale='min(1280,iw)':-2")
+        seen = {}
+
+        def fake_analyze(source, output, interval, threshold, max_frames, model, language,
+                         do_frames, do_transcribe, **kw):
+            seen.update(kw)
+            return "folder"
+        with mock.patch.object(av, "analyze", fake_analyze):
+            self.assertEqual(av.main(["x.mp4"]), 0)
+        self.assertEqual(seen, {"max_height": 720, "frame_width": 1280})
+
+    def test_the_options_reach_the_job(self):
+        seen = {}
+
+        def fake_analyze(*a, **kw):
+            seen.update(kw)
+            return "folder"
+        with mock.patch.object(av, "analyze", fake_analyze):
+            self.assertEqual(av.main(["x.mp4", "--max-height", "480", "--frame-width", "960"]), 0)
+        self.assertEqual(seen, {"max_height": 480, "frame_width": 960})
+
+    def test_the_format_string_uses_the_height(self):
+        self.assertEqual(av.download_format(480), "bv*[height<=480]+ba/b[height<=480]/b")
+        captured = {}
+
+        class YDL:
+            def __init__(self, opts):
+                captured.update(opts)
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+            def download(self, urls):
+                with open(os.path.join(captured["outtmpl"] % {"ext": "mp4"}), "w") as fh:
+                    fh.write("x")
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.dict(sys.modules, {"yt_dlp": SimpleNamespace(YoutubeDL=YDL)}):
+            av.download("https://youtu.be/abc", d, None, 360)
+            self.assertEqual(captured["format"], "bv*[height<=360]+ba/b[height<=360]/b")
+            av.download("https://youtu.be/abc", d)               # no height given: 720
+            self.assertEqual(captured["format"], "bv*[height<=720]+ba/b[height<=720]/b")
+
+    def test_the_scale_filter_uses_the_width(self):
+        self.assertEqual(av.frame_scale(960), "scale='min(960,iw)':-2")
+        commands = []
+
+        def fake_run(cmd):
+            commands.append(cmd)
+            open(cmd[-1], "w").close()
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(av, "run", fake_run):
+            av.extract_frames("v.mp4", d, [(0.0, "every 5s")], say=lambda *a: None, frame_width=640)
+            av.extract_frames("v.mp4", d, [(0.0, "every 5s")], say=lambda *a: None)
+        self.assertEqual(commands[0][commands[0].index("-vf") + 1], "scale='min(640,iw)':-2")
+        self.assertEqual(commands[1][commands[1].index("-vf") + 1], "scale='min(1280,iw)':-2")
+
+    def test_the_edges_are_accepted(self):
+        for h, w in ((240, 320), (1080, 1920), (720, 1280)):
+            av.check_sizes(h, w)
+
+    def test_bad_values_are_refused_with_one_line_before_any_work(self):
+        for h, w, flag in ((239, 1280, "--max-height"), (1081, 1280, "--max-height"),
+                           (0, 1280, "--max-height"), (-5, 1280, "--max-height"),
+                           (720, 319, "--frame-width"), (720, 1921, "--frame-width"),
+                           (720, 0, "--frame-width"), (720.5, 1280, "--max-height"),
+                           (True, 1280, "--max-height")):
+            with self.assertRaises(av.ToolError) as ctx:
+                av.check_sizes(h, w)
+            message = str(ctx.exception)
+            self.assertIn(flag, message)
+            self.assertNotIn("\n", message)
+            self.assertIn("whole number from", message)
+        with mock.patch.object(av, "fetch_info", side_effect=AssertionError("must not start")), \
+                mock.patch.object(av, "check_tools", side_effect=AssertionError("must not start")):
+            for flags in (["--max-height", "100"], ["--frame-width", "5000"]):
+                err = io.StringIO()
+                with mock.patch("sys.stderr", err):
+                    self.assertEqual(av.main(["https://youtu.be/abc"] + flags), 1)
+                self.assertEqual(len(err.getvalue().strip().splitlines()), 1)
+                self.assertIn("must be a whole number from", err.getvalue())
+
+    def test_text_is_refused_by_the_command_line(self):
+        with mock.patch("sys.stderr", io.StringIO()):
+            with self.assertRaises(SystemExit) as ctx:
+                av.main(["x.mp4", "--max-height", "tall"])
+        self.assertEqual(ctx.exception.code, 2)
+
+
+@unittest.skipUnless(HAVE_FFMPEG, "needs FFmpeg")
+class SizeEndToEndTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.video = os.path.join(self.tmp.name, "wide.mp4")
+        make_video(self.video, size="1280x720")
+
+    def run_with(self, name, **kw):
+        folder = av.analyze(self.video, os.path.join(self.tmp.name, name), do_transcribe=False,
+                            say=lambda *a: None, **kw)
+        frames = os.path.join(folder, "frames")
+        widths = {jpeg_width(os.path.join(frames, f)) for f in os.listdir(frames) if f.endswith(".jpg")}
+        return json.load(open(os.path.join(folder, "metadata.json"))), widths
+
+    def test_default_keeps_the_picture_size_up_to_1280(self):
+        meta, widths = self.run_with("default")
+        self.assertEqual(widths, {1280})
+        self.assertEqual((meta["max_height"], meta["frame_width"]), (720, 1280))
+
+    def test_a_smaller_frame_width_shrinks_the_pictures_and_is_saved(self):
+        meta, widths = self.run_with("small", frame_width=640, max_height=480)
+        self.assertEqual(widths, {640})
+        self.assertEqual((meta["max_height"], meta["frame_width"]), (480, 640))
+
+    def test_pictures_are_never_enlarged(self):
+        _, widths = self.run_with("big", frame_width=1920)
+        self.assertEqual(widths, {1280})
 
 
 class TranscribeTests(unittest.TestCase):
