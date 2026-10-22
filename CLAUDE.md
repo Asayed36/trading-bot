@@ -7,7 +7,7 @@ of one video) or **only** a path to a video file, with no other instructions, do
 asking first:
 
 1. **Run the analyzer** (`video_analyzer/README.md` explains the tool):
-   `python video_analyzer/analyze_video.py "<link or file path>"`.
+   `python video_analyzer/analyze_video.py "<link or file path>" --max-height 480 --frame-width 960` (these two options every time, once per link when several are sent; if the user wrote their own options in the message, e.g. `--max-height 720`, use theirs instead for that option).
    If it reports a missing tool, run `.claude/hooks/session-start.sh` (it installs FFmpeg,
    yt-dlp and faster-whisper) and try again.
 2. **Read what it produced** in `video_analyzer/output/<video folder>/`: start with
