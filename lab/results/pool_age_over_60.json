@@ -1,0 +1,77 @@
+{
+ "rule": "pool_age_over_60",
+ "rule_hash": "776765ff45",
+ "description": "Only tokens whose pool was already over 60 minutes old at the first check; sell at 1h.",
+ "source": "main-1min",
+ "idea_number": 4,
+ "ideas_added": 1,
+ "chosen": {},
+ "learn_days": [
+  "2026-10-11",
+  "2026-10-12",
+  "2026-10-13",
+  "2026-10-14",
+  "2026-10-15",
+  "2026-10-16",
+  "2026-10-17",
+  "2026-10-18"
+ ],
+ "check_days": [
+  "2026-10-19",
+  "2026-10-20",
+  "2026-10-21",
+  "2026-10-22",
+  "2026-10-23"
+ ],
+ "learn": {
+  "trades": 533,
+  "win_rate": 28.893058161350844,
+  "avg_return_pct": -3.2828259850498975,
+  "median_return_pct": -7.1242452997818475,
+  "profit": -174.97462500315848,
+  "profit_without_best": -338.72521647661745,
+  "profit_without_best3": -470.1725848809283,
+  "days": 8
+ },
+ "check": {
+  "trades": 234,
+  "win_rate": 35.042735042735046,
+  "avg_return_pct": -4.41984815609853,
+  "median_return_pct": -6.8849863779636005,
+  "profit": -103.42444685270519,
+  "profit_without_best": -176.60135723635926,
+  "profit_without_best3": -269.89326916241373,
+  "days": 5
+ },
+ "learn_baseline": {
+  "beaten": 1.0,
+  "beat_it": 0.0,
+  "mean": -1250.7377577857524,
+  "p95": -653.0612014594213,
+  "draws": 1000
+ },
+ "check_baseline": {
+  "beaten": 0.999,
+  "beat_it": 0.001,
+  "mean": -713.7500291558921,
+  "p95": -458.68899570420183,
+  "draws": 1000
+ },
+ "left_out_check": {
+  "tokens": 1966,
+  "no_entry_price": 181,
+  "exit_not_answered": 16,
+  "lost": 0,
+  "unknown_filter": {
+   "pool_age_minutes": 9
+  }
+ },
+ "needed_beat": 0.95,
+ "verdict": "FAIL",
+ "failed": [
+  "profit after costs is not positive in CHECK ($-103.42)",
+  "profit without the best trade is not positive in CHECK ($-176.60)",
+  "trades on fewer than 7 different days in CHECK (5)"
+ ],
+ "seed": 20261023
+}

@@ -1,0 +1,76 @@
+{
+ "rule": "baseline_1h",
+ "rule_hash": "0c54ff7934",
+ "description": "Buy every token at the first check, sell at the 1 hour price (the baseline to beat).",
+ "source": "main-1min",
+ "idea_number": 1,
+ "ideas_added": 1,
+ "chosen": {},
+ "learn_days": [
+  "2026-10-11",
+  "2026-10-12",
+  "2026-10-13",
+  "2026-10-14",
+  "2026-10-15",
+  "2026-10-16",
+  "2026-10-17",
+  "2026-10-18"
+ ],
+ "check_days": [
+  "2026-10-19",
+  "2026-10-20",
+  "2026-10-21",
+  "2026-10-22",
+  "2026-10-23"
+ ],
+ "learn": {
+  "trades": 3480,
+  "win_rate": 19.195402298850574,
+  "avg_return_pct": -24.19877727957785,
+  "median_return_pct": -61.14963761605088,
+  "profit": -8421.174493293083,
+  "profit_without_best": -8847.712724423824,
+  "profit_without_best3": -9308.197219635396,
+  "days": 8
+ },
+ "check": {
+  "trades": 1769,
+  "win_rate": 19.389485585076315,
+  "avg_return_pct": -30.48303612745922,
+  "median_return_pct": -61.867968613096046,
+  "profit": -5392.449090947527,
+  "profit_without_best": -5515.857746823671,
+  "profit_without_best3": -5714.5535184015935,
+  "days": 5
+ },
+ "learn_baseline": {
+  "beaten": 0.0,
+  "beat_it": 1.0,
+  "mean": -8421.174493293092,
+  "p95": -8421.174493293089,
+  "draws": 1000
+ },
+ "check_baseline": {
+  "beaten": 0.0,
+  "beat_it": 1.0,
+  "mean": -5392.449090947536,
+  "p95": -5392.4490909475335,
+  "draws": 1000
+ },
+ "left_out_check": {
+  "tokens": 1966,
+  "no_entry_price": 181,
+  "exit_not_answered": 16,
+  "lost": 0,
+  "unknown_filter": {}
+ },
+ "needed_beat": 0.95,
+ "verdict": "FAIL",
+ "failed": [
+  "profit after costs is not positive in CHECK ($-5392.45)",
+  "profit without the best trade is not positive in CHECK ($-5515.86)",
+  "trades on fewer than 7 different days in CHECK (5)",
+  "does not beat 95% of random draws in CHECK (0.0%)"
+ ],
+ "seed": 20261023
+}

@@ -1,0 +1,78 @@
+{
+ "rule": "skip_up_100_in_1h",
+ "rule_hash": "c36a50efcf",
+ "description": "Skip tokens already up over 100 percent in the last hour at the first check; sell at 1h.",
+ "source": "main-1min",
+ "idea_number": 5,
+ "ideas_added": 1,
+ "chosen": {},
+ "learn_days": [
+  "2026-10-11",
+  "2026-10-12",
+  "2026-10-13",
+  "2026-10-14",
+  "2026-10-15",
+  "2026-10-16",
+  "2026-10-17",
+  "2026-10-18"
+ ],
+ "check_days": [
+  "2026-10-19",
+  "2026-10-20",
+  "2026-10-21",
+  "2026-10-22",
+  "2026-10-23"
+ ],
+ "learn": {
+  "trades": 1327,
+  "win_rate": 22.230595327807084,
+  "avg_return_pct": -21.82031283202669,
+  "median_return_pct": -39.851982172179206,
+  "profit": -2895.5555128099522,
+  "profit_without_best": -3154.73606844062,
+  "profit_without_best3": -3486.0988913152114,
+  "days": 8
+ },
+ "check": {
+  "trades": 581,
+  "win_rate": 21.686746987951807,
+  "avg_return_pct": -24.814016942317878,
+  "median_return_pct": -40.90918583292896,
+  "profit": -1441.6943843486697,
+  "profit_without_best": -1520.615508052552,
+  "profit_without_best3": -1647.9057960042646,
+  "days": 5
+ },
+ "learn_baseline": {
+  "beaten": 0.69,
+  "beat_it": 0.31,
+  "mean": -3130.7671911623556,
+  "p95": -2400.620198122695,
+  "draws": 1000
+ },
+ "check_baseline": {
+  "beaten": 0.939,
+  "beat_it": 0.061,
+  "mean": -1768.6920881819788,
+  "p95": -1423.7495838136624,
+  "draws": 1000
+ },
+ "left_out_check": {
+  "tokens": 1966,
+  "no_entry_price": 181,
+  "exit_not_answered": 16,
+  "lost": 0,
+  "unknown_filter": {
+   "price_change_1h_pct": 10
+  }
+ },
+ "needed_beat": 0.95,
+ "verdict": "FAIL",
+ "failed": [
+  "profit after costs is not positive in CHECK ($-1441.69)",
+  "profit without the best trade is not positive in CHECK ($-1520.62)",
+  "trades on fewer than 7 different days in CHECK (5)",
+  "does not beat 95% of random draws in CHECK (93.9%)"
+ ],
+ "seed": 20261023
+}

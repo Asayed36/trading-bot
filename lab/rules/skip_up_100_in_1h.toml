@@ -1,0 +1,10 @@
+name = "skip_up_100_in_1h"
+description = "Skip tokens already up over 100 percent in the last hour at the first check; sell at 1h."
+source = "main-1min"
+
+[filter.price_change_1h_pct]
+max = 100
+
+[exit]
+mode = "fixed"
+at = "1h"

@@ -1,0 +1,78 @@
+{
+ "rule": "creator_never_launched",
+ "rule_hash": "5203254197",
+ "description": "Only tokens whose creator has no earlier launch in our ledger; sell at 1h.",
+ "source": "main-1min",
+ "idea_number": 3,
+ "ideas_added": 1,
+ "chosen": {},
+ "learn_days": [
+  "2026-10-11",
+  "2026-10-12",
+  "2026-10-13",
+  "2026-10-14",
+  "2026-10-15",
+  "2026-10-16",
+  "2026-10-17",
+  "2026-10-18"
+ ],
+ "check_days": [
+  "2026-10-19",
+  "2026-10-20",
+  "2026-10-21",
+  "2026-10-22",
+  "2026-10-23"
+ ],
+ "learn": {
+  "trades": 128,
+  "win_rate": 29.6875,
+  "avg_return_pct": -19.15077472853072,
+  "median_return_pct": -100.65523621937015,
+  "profit": -245.12991652519318,
+  "profit_without_best": -293.04034696672664,
+  "profit_without_best3": -381.55113447813073,
+  "days": 8
+ },
+ "check": {
+  "trades": 79,
+  "win_rate": 20.253164556962027,
+  "avg_return_pct": -52.26305463101258,
+  "median_return_pct": -100.506157635468,
+  "profit": -412.87813158499955,
+  "profit_without_best": -432.61197130171195,
+  "profit_without_best3": -460.1368232918143,
+  "days": 5
+ },
+ "learn_baseline": {
+  "beaten": 0.661,
+  "beat_it": 0.339,
+  "mean": -295.0613536259803,
+  "p95": 43.61816552762407,
+  "draws": 1000
+ },
+ "check_baseline": {
+  "beaten": 0.016,
+  "beat_it": 0.984,
+  "mean": -236.9629591979247,
+  "p95": -66.71677475499638,
+  "draws": 1000
+ },
+ "left_out_check": {
+  "tokens": 1966,
+  "no_entry_price": 181,
+  "exit_not_answered": 16,
+  "lost": 0,
+  "unknown_filter": {
+   "creator_ledger_launches": 1688
+  }
+ },
+ "needed_beat": 0.95,
+ "verdict": "FAIL",
+ "failed": [
+  "profit after costs is not positive in CHECK ($-412.88)",
+  "profit without the best trade is not positive in CHECK ($-432.61)",
+  "trades on fewer than 7 different days in CHECK (5)",
+  "does not beat 95% of random draws in CHECK (1.6%)"
+ ],
+ "seed": 20261023
+}
