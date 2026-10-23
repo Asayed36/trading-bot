@@ -512,23 +512,60 @@ class VersionCTests(VersionTests):
 
 
 class StoppedTests(Base):
-    """The real config: main (1 min)'s own buying and version A stopped."""
+    """The real config: main (1 min)'s own buying and versions A, B and C stopped (B and C on
+    2026-10-23): nothing is bought, no Jupiter lookup is made for a buy, and the checks that
+    feed candidates.csv and the creator ledger keep running."""
 
-    def test_main_and_a_buy_nothing_while_b_and_c_carry_on(self):
+    def run_real(self, organic, minutes=4, api=None):
+        real = load_config()
+        bot = m1.MainOneMinute(real, self.d, api or ChangingApi(h1=40.0), organic)
+        for m in range(minutes):
+            bot.run_once(NOW + timedelta(minutes=m), lambda *a: None)
+        return bot
+
+    def buys(self, sub):
+        return [r for r in rows(os.path.join(self.d, "main-1min", sub, "journal.csv"))
+                if r["action"] == "BUY"]
+
+    def test_every_version_is_stopped_and_buys_nothing(self):
         real = load_config()
         self.assertTrue(real["main_1min"]["stopped"])
-        bot = m1.MainOneMinute(real, self.d, ChangingApi(h1=40.0), Organic(72))
-        lines = []
-        for m in range(4):
-            bot.run_once(NOW + timedelta(minutes=m), lines.append)
-        buys = lambda sub: [r for r in rows(os.path.join(self.d, "main-1min", sub,  # noqa
-                                                         "journal.csv")) if r["action"] == "BUY"]
-        self.assertEqual(buys(""), [])                            # main (1 min): stopped
-        self.assertEqual(buys("a"), [])                           # A: stopped
-        self.assertTrue(buys("b") and buys("c"))                  # B and C still buy
+        organic = Organic(72)
+        bot = self.run_real(organic)
+        for sub in ("", "a", "b", "c"):
+            self.assertEqual(self.buys(sub), [], sub)
         self.assertEqual(bot.streaks, {})                         # A watches nothing
         with open(self.path("health.json")) as fh:
-            self.assertTrue(json.load(fh)["versions"]["A"]["stopped"])
+            versions = json.load(fh)["versions"]
+        self.assertTrue(all(versions[n]["stopped"] for n in "ABC"))
+
+    def test_no_jupiter_lookup_is_made_while_every_version_is_stopped(self):
+        organic = Organic(72)
+        bot = self.run_real(organic)
+        self.assertEqual(organic.asked, [])                       # the lookups only existed to buy
+        self.assertEqual(bot.api.calls["jupiter"], 0)
+        # the same minutes with B and C running DO ask Jupiter (so the test can tell)
+        other = tempfile.mkdtemp()
+        self.addCleanup(lambda: __import__("shutil").rmtree(other, ignore_errors=True))
+        asked = Organic(72)
+        running_bot = m1.MainOneMinute(CFG, other, ChangingApi(h1=40.0), asked)
+        running_bot.run_once(NOW, lambda *a: None)
+        self.assertTrue(asked.asked)
+
+    def test_candidates_the_creator_ledger_and_the_checks_keep_running(self):
+        bot = self.run_real(Organic(72))
+        recorded = rows(self.path("candidates.csv"))
+        self.assertTrue(recorded)                                 # every token's first check
+        passed = [r for r in recorded if r["verdict"] == "PASS"]
+        self.assertTrue(passed)
+        for r in passed:                                          # decided as before, but no buy
+            self.assertIn("passed, not bought (stopped)", r["decisions"])
+            self.assertIn("B=not bought", r["decisions"])
+            self.assertIn("C=not bought", r["decisions"])
+        self.assertTrue(all(r["symbol"] and r["token_address"] for r in recorded))
+        self.assertTrue(os.path.exists(self.path("creator_ledger.json")))
+        self.assertTrue(bot.api.calls["rugcheck"] > 0)            # the safety checks still run
+        self.assertTrue(bot.api.calls["dexscreener"] > 0)
 
     def test_stopped_positions_still_close(self):
         bot = self.bot(CFG, ChangingApi(h1=40.0))
@@ -540,6 +577,21 @@ class StoppedTests(Base):
                                                               lambda *a: None)
         sells = [r for r in rows(self.path("journal.csv")) if r["action"] == "SELL"]
         self.assertTrue(sells and sells[0]["reason"].startswith("stop loss"))
+
+    def test_b_and_c_positions_bought_while_running_still_close_when_stopped(self):
+        bot = m1.MainOneMinute(CFG, self.d, ChangingApi(h1=40.0), Organic(72))
+        bot.run_once(NOW, lambda *a: None)                        # B and C bought while running
+        self.assertTrue(self.buys("b") and self.buys("c"))
+        api = ChangingApi(h1=40.0)
+        Api.__init__(api, {GOOD: 0.5})                            # -50%: the -30% stop
+        m1.MainOneMinute(load_config(), self.d, api, Organic(72)).run_once(
+            NOW + timedelta(minutes=1), lambda *a: None)
+        for sub in ("b", "c"):
+            sells = [r for r in rows(os.path.join(self.d, "main-1min", sub, "journal.csv"))
+                     if r["action"] == "SELL"]
+            self.assertTrue(sells and sells[0]["reason"].startswith("stop loss"), sub)
+            self.assertEqual(len(self.buys(sub)), len(rows(os.path.join(
+                self.d, "main-1min", sub, "journal.csv"))) - len(sells))   # no new buys after
 
 
 class SafetyTests(unittest.TestCase):

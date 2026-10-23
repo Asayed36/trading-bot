@@ -297,16 +297,16 @@ class MainOneMinuteHealthTests(Base):
     def row(self, gh):
         return self.lines(gh)[1]["main (1 min): server"]
 
-    def test_stopped_main_versions_and_c(self):
-        """The real config (2026-10-07): main (1 min)'s own buying and A
-        stopped, B and C running; robinhood and momentum stopped."""
+    def test_stopped_main_versions_convergence_and_robinhood(self):
+        """The real config (2026-10-23): main (1 min)'s own buying and versions A, B and C
+        stopped, convergence and robinhood stopped, momentum stopped: shown as information,
+        never as a problem; robinhood's data sources are still watched."""
         gh = self.healthy()
         self.write("main-1min/positions.json", {"open_positions": [{"address": "X"}]})
         self.write("main-1min/a/positions.json", {"open_positions": [{"address": "Y"}]})
+        self.write("main-1min/b/positions.json", {"open_positions": [{"address": "Z"}]})
         h = json.load(open(os.path.join(self.d, "main-1min", "health.json")))
         h["versions"] = {"B": {"open": 1}, "C": {"open": 0, "decided": 37}}
-        hour = list(h["calls_per_hour"])[0]
-        h["calls_per_hour"][hour].update({"C buys": 2, "C skipped": 5})
         self.write("main-1min/health.json", h)
         real = load_config()
         text = "\n".join(health_lines(self.d, real, NOW, gh))
@@ -316,16 +316,36 @@ class MainOneMinuteHealthTests(Base):
                       "still run for the versions", rows["main (1 min): server"])
         self.assertIn(f"{INFO} stopped (no new buys); 1 open position(s) finishing",
                       rows["main (1 min) A: server"])
-        c = rows["main (1 min) C: server"]
-        self.assertIn(OK, c)
-        self.assertIn("0 open; last 24 h: 2 buy(s), 5 passed main but skipped by its rules", c)
-        self.assertIn("37 token(s) decided (kept 14 days)", c)
-        self.assertIn("decided once, at a token's first passing minute", c)
-        # robinhood runs again (2026-10-11): one row per source, no "stopped" row
-        self.assertNotIn("robinhood: data sources", rows)
-        self.assertIn("robinhood: geckoterminal", rows)
+        self.assertIn(f"{INFO} stopped (no new buys); 1 open position(s) finishing under the "
+                      "normal exits", rows["main (1 min) B: server"])
+        self.assertIn(f"{INFO} stopped (no new buys); 0 open position(s): finished",
+                      rows["main (1 min) C: server"])
+        self.assertIn(f"{INFO} stopped (no new buys): no wallet checks", rows["convergence: wallets"])
+        self.assertIn(f"{INFO} stopped (no new buys); 0 open position(s): finished; its checks "
+                      "still run, for candidates.csv", rows["robinhood: last successful run"])
+        self.assertNotIn("robinhood: data sources", rows)       # no "stopped" source row:
+        self.assertIn("robinhood: geckoterminal", rows)         # the sources are still watched
+        self.assertIn("robinhood: rpc", rows)
         self.assertIn(f"{INFO} stopped (no new buys); 0 open position(s): finished, the "
                       "momentum-bot service can be turned off", rows["momentum: server"])
+        for name in ("main (1 min) A: server", "main (1 min) B: server", "main (1 min) C: server",
+                     "convergence: wallets", "robinhood: last successful run"):
+            self.assertNotIn(WARN, rows[name], name)
+        self.assertIn("**All checks OK.**", text)               # a stopped strategy is no problem
+
+    def test_a_stopped_strategy_is_not_reported_late_or_failing(self):
+        gh = self.healthy()
+        # nothing has run for days: stopped strategies must not turn into warnings
+        for name in ("convergence", "robinhood"):
+            self.write(f"{name}/positions.json", {"open_positions": [], "sources": {}})
+        os.remove(os.path.join(self.d, "health.json"))
+        text = "\n".join(health_lines(self.d, load_config(), NOW, gh))
+        rows = {line.split(" | ")[0][2:]: line for line in text.splitlines()
+                if line.startswith("| ") and not line.startswith("| Check")}
+        for name in ("convergence: last successful run", "robinhood: last successful run",
+                     "convergence: wallets", "main: last successful run",
+                     "early: last successful run"):
+            self.assertIn(INFO, rows[name], name)
 
     def test_ok_with_runs_requests_and_push(self):
         row = self.row(self.healthy())

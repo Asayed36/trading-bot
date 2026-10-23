@@ -68,7 +68,7 @@ def post_issue(gh, day, body, passed=()):
 def stopped(cfg, name):
     """True for a strategy with stopped = true in config.toml: no new buys,
     its last positions finishing under their exits."""
-    if name in ("main", "early", "robinhood"):
+    if name in ("main", "early", "robinhood", "convergence"):
         return bool(cfg.get(name, {}).get("stopped"))
     if name == "main (1 min)":
         return bool(cfg.get("main_1min", {}).get("stopped"))
@@ -173,7 +173,8 @@ def main():
             strategies.append((f"momentum {v['name']}",
                                os.path.join(folder, m["folder"], v["name"]), sell_cost))
     if cfg.get("convergence", {}).get("enabled"):
-        extra += helius_lines(os.path.join(folder, "convergence"), day)
+        extra += helius_lines(os.path.join(folder, "convergence"), day,
+                              bool(cfg["convergence"].get("stopped")))
     strategies = [(name + (" (stopped)" if stopped(cfg, name) else ""), path, cost)
                   for name, path, cost in strategies]
     health = health_lines(folder, cfg, now_utc(), gh)

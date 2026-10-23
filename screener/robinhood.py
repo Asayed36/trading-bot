@@ -381,6 +381,10 @@ class RobinhoodStrategy:
         self.launchpads = {d["dex"]: d for d in self.c["launchpads"]}
         self.exclude = {a.lower() for a in self.c["excluded_holders"]} | BURN
         self.sleep = sleep
+        # [robinhood] stopped = true: no new buys. Everything else keeps running
+        # (discovery, the checks, candidates.csv): a candidate that passes is recorded
+        # and not bought. Open positions finish under their exits.
+        self.trader.buying = not self.c.get("stopped")
 
     # ---- talking to the sources (every call recorded for the health check) ----
 
@@ -449,12 +453,9 @@ class RobinhoodStrategy:
                 if price:
                     plan["prices"][pos["address"]] = price
 
-        # Stopped ([robinhood] stopped = true): no new buys, so only the open
-        # positions' prices are read (their exits still apply).
         if not trader.buying:
-            plan["notes"].append("stopped: no new buys; only the open positions' prices "
-                                 "are read")
-            return plan
+            plan["notes"].append("stopped: no new buys; the checks still run and are recorded "
+                                 "in candidates.csv")
 
         # 2. New launchpad pools from GeckoTerminal, and the Pons graduations
         # read from the chain that GeckoTerminal hasn't listed, into the
@@ -478,6 +479,8 @@ class RobinhoodStrategy:
             last = plan["checked"].get(pool, {}).get("at")
             if last and now - _utc(last) < recheck:
                 continue
+            if not trader.buying and plan["checked"].get(pool, {}).get("passed"):
+                continue          # stopped: a pool that passed was recorded; it is not rechecked
             due.append((pool, w))
         due.sort(key=lambda x: (x[0] in plan["checked"], x[1]["created"]))  # new ones first
         due = due[:c["max_candidates_per_run"]]
@@ -1056,7 +1059,8 @@ class RobinhoodStrategy:
         if not plan["candidates"]:
             out("  No pool due a check this run.")
         elif not bought:
-            out("  No candidate passed every check, so nothing was bought.")
+            out("  Stopped: nothing is bought." if not trader.buying
+                else "  No candidate passed every check, so nothing was bought.")
         trader.save()
         return bought
 

@@ -545,7 +545,8 @@ def health_lines(folder, cfg, now, github=None, found=None):
             held = _open_count(os.path.join(folder, "" if name == "main" else name))
             add(f"{name}: last successful run", INFO,
                 f"stopped (no new buys); {held} open position(s)"
-                + (" finishing under the normal exits" if held else ": finished"))
+                + (" finishing under the normal exits" if held else ": finished")
+                + ("; its checks still run, for candidates.csv" if name == "robinhood" else ""))
             continue
         s = record.get(name) or {}
         ok, err_at = _utc(s.get("last_ok")), _utc(s.get("error_at"))
@@ -563,7 +564,10 @@ def health_lines(folder, cfg, now, github=None, found=None):
         add(f"{name}: last successful run", WARN if (broken or too_old) else OK, detail)
 
     # 3. Convergence: wallets to follow, and the Helius budget.
-    if cfg.get("convergence", {}).get("enabled"):
+    if cfg.get("convergence", {}).get("enabled") and cfg["convergence"].get("stopped"):
+        add("convergence: wallets", INFO, "stopped (no new buys): no wallet checks, no list "
+            "building, no Helius use except for the open positions' trigger wallets")
+    elif cfg.get("convergence", {}).get("enabled"):
         conv = _load(os.path.join(folder, "convergence", "positions.json")) or {}
         c = cfg["convergence"]
         tracked = len(conv.get("tracked") or [])
@@ -600,11 +604,8 @@ def health_lines(folder, cfg, now, github=None, found=None):
             add("news: AI check", *_news_ai(ai_cfg, news.get("ai"), now))
 
     # 5. The robinhood strategy's data sources (the last run that used each).
-    if cfg.get("robinhood", {}).get("enabled") and cfg["robinhood"].get("stopped"):
-        held = _open_count(os.path.join(folder, "robinhood"))
-        add("robinhood: data sources", INFO, f"stopped (no new buys): only the {held} open "
-            "position(s)' prices are read" if held else "stopped: finished, no sources read")
-    elif cfg.get("robinhood", {}).get("enabled"):
+    if cfg.get("robinhood", {}).get("enabled"):
+        # (also while stopped: its discovery and checks keep running for candidates.csv)
         rh = _load(os.path.join(folder, "robinhood", "positions.json")) or {}
         sources = rh.get("sources") or {}
         for name in ("geckoterminal", "dexscreener", "goplus", "rpc"):

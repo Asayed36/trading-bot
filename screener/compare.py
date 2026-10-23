@@ -180,8 +180,9 @@ def schedule_lines(strategies, schedule_path, actual=None):
     ]
 
 
-def helius_lines(folder, day):
-    """Helius credit use of the convergence strategy, from its positions.json."""
+def helius_lines(folder, day, stopped=False):
+    """Helius credit use of the convergence strategy, from its positions.json.
+    stopped: it makes no new buys and uses Helius only to watch open positions."""
     path = os.path.join(folder, "positions.json")
     if not os.path.exists(path):
         return ["**Helius credits (convergence):** no data yet."]
@@ -195,6 +196,9 @@ def helius_lines(folder, day):
     paused = state.get("paused_until")
     status = (f"**paused** until {paused[:10]} (would pass {m['pause_at_pct']:g}%)"
               if paused else "active")
+    if stopped:
+        status = ("**stopped** (no new buys: Helius is used only to watch the trigger wallets "
+                  "of positions still open)")
     return [
         "**Helius credits (convergence)**",
         "",
