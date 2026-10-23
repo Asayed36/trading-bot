@@ -250,6 +250,7 @@ class LaunchRecorder:
         self.dropped_at_start = 0
         self.lags = []                  # receive time minus on-chain creation time (a sample)
         self.chain_creates = self.received_creates = 0
+        self.messages = 0               # feed notifications received (for the test report)
         self._load()
 
     # ---- persistence ---------------------------------------------------
@@ -367,6 +368,7 @@ class LaunchRecorder:
     def on_logs(self, logs, failed, t=None, slot=None):
         """One notification from the feed."""
         t = t or self.clock()
+        self.messages += 1
         if self.last_message is not None and self.feed_up and t - self.last_message > self.silent_gap:
             # a silent stretch on a live connection counts as a gap
             self.gaps.append((self.last_message, t))

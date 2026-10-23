@@ -218,6 +218,7 @@ def test_report(recorder, seconds, out=print):
     graduated = [r for r in rows if r["graduated"] == "yes"]
     out("")
     out(f"=== Launch recorder test run: {seconds / 60:.1f} minutes ===")
+    out(f"Feed messages received: {recorder.messages} ({recorder.messages / max(seconds, 1):.1f} a second)")
     out(f"Launches seen: {seen}  ({seen / max(seconds, 1) * 60:.0f} a minute)")
     out(f"Launches watched for at least 60 s: {watched}; with >= {recorder.min_buyers} buyers "
         f"in 60 s: {by_buyers}")
