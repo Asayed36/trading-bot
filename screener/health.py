@@ -209,6 +209,56 @@ def add_momentum(add, folder, cfg, now, github):
     add(name, WARN if late or too_down else OK, detail)
 
 
+def add_launch_record(add, folder, cfg, now, github):
+    """One row: the early-launch recorder (screener/launch_record.py), from its pushed
+    health.json: when the feed was last heard, launches seen in the last hour, rows written
+    today (and any skipped by the daily cap), disconnects and gap time. A warning when, at the
+    last save, the feed had been silent for more than [launch_record] warn_feed_silent_minutes
+    or no row had been written for warn_no_rows_minutes, or when the file itself is older than
+    [health] launch_stale_hours (nothing has been pushed)."""
+    name = "launch record: server"
+    c = cfg["launch_record"]
+    data = _load(os.path.join(folder, c.get("folder", "launch-record"), "health.json"))
+    if not data:
+        add(name, INFO, "no results pushed yet (it starts after the next hourly push, when the "
+            "launch-bot service restarts by itself on the new code)")
+        return
+    saved = _utc(data.get("updated"))
+    late_after = timedelta(hours=cfg.get("health", {}).get("launch_stale_hours", 3))
+    silent_min = c.get("warn_feed_silent_minutes", 10)
+    no_rows_min = c.get("warn_no_rows_minutes", 60)
+    silent = data.get("feed_silent_seconds")
+    since_row = data.get("since_last_row_seconds")
+    problems = []
+    if saved is None or now - saved > late_after:
+        problems.append(f"nothing saved since {_at(saved, now) if saved else 'ever'} "
+                        f"(older than {late_after.total_seconds() / 3600:.0f} h)")
+    if silent is None or silent > silent_min * 60:
+        problems.append("the feed was silent for more than "
+                        f"{silent_min} min at the last save" if silent is not None
+                        else "the feed has not been heard yet")
+    if since_row is None or since_row > no_rows_min * 60:
+        problems.append(f"no row written in the last {no_rows_min} min"
+                        if since_row is not None else "no row written yet")
+    detail = (f"feed last heard {silent / 60:.0f} min before the last save"
+              if silent is not None else "feed not heard yet")
+    detail += (f"; {data.get('launches_seen_last_hour', 0)} launch(es) seen in the last hour, "
+               f"{data.get('in_flight', 0)} followed; {data.get('rows_written_today', 0)} row(s) "
+               f"written today")
+    skipped = data.get("rows_skipped_by_cap_today", 0)
+    if skipped:
+        detail += (f", {skipped} qualified row(s) SKIPPED by the daily cap of "
+                   f"{data.get('max_rows_per_day', '?')} (the 2% sample is still written)")
+    detail += (f"; {data.get('feed_disconnects_today', 0)} disconnect(s) today, "
+               f"{data.get('gap_seconds_today', 0) / 60:.1f} min of gaps")
+    if saved:
+        detail += f"; saved {_at(saved, now)}"
+    if problems:
+        detail += " (" + "; ".join(problems) + ")"
+    add(name, WARN if problems else OK, detail,
+        "launch record: " + "; ".join(problems) if problems else None)
+
+
 def add_main_1min(add, folder, cfg, now, github):
     """One row: the main (1 min) strategy's last good run (from its pushed
     health.json), runs and requests per hour over the last 24 h, and its
@@ -617,6 +667,10 @@ def health_lines(folder, cfg, now, github=None, found=None):
     # 8. The momentum strategy on your server.
     if cfg.get("momentum", {}).get("enabled"):
         add_momentum(add, folder, cfg, now, github)
+
+    # 8b. The early-launch recorder on your server (it runs while the launch strategy is stopped).
+    if cfg.get("launch_record", {}).get("enabled") and cfg.get("launch", {}).get("stopped"):
+        add_launch_record(add, folder, cfg, now, github)
 
     # 9. The news listings bot on your server.
     if cfg.get("news_listings", {}).get("enabled") and cfg.get("news"):

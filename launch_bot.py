@@ -14,6 +14,10 @@ the bot uses, it saves everything and exits by itself, and systemd starts it
 again with the new code (screener/autorestart.py; "automatic restart" in
 journalctl -u launch-bot).
 
+While [launch] stopped = true and [launch_record] enabled = true it also runs the early-launch
+recorder (launch_record_bot.py, screener/launch_record.py): recording only, it never buys or
+sells; rows go to data/launch-record/ and are pushed like the other results.
+
 PAPER TRADING ONLY. This program only READS public data. It never connects
 to a wallet, never uses a private key, never signs anything and never calls
 PumpPortal's trading API. The only messages it ever sends to PumpPortal are
@@ -34,12 +38,14 @@ import websockets
 
 from screener.api import ApiError, PublicApi
 from screener.autorestart import CodeWatcher, restart_message
+from screener.backdrop import MarketBackdrop
 from screener.jupiter import JupiterOrganic
 from screener.launch import LaunchEngine, sol_price, token_prices
 from screener.settings import HERE, load_config
+from launch_record_bot import RecordRunner
 
 # The config.toml sections the bot reads: only changes there restart it.
-CONFIG_SECTIONS = ("launch", "files")
+CONFIG_SECTIONS = ("launch", "files", "launch_record", "momentum")
 CODE_CHECK_SECONDS = 30
 # The only things this program ever asks PumpPortal for (read-only data).
 ALLOWED_METHODS = {"subscribeNewToken", "subscribeMigration"}
@@ -70,6 +76,14 @@ class Runner:
         self.ws = None
         self.kinds = {}          # feed messages received, by type (for --test)
         self.jupiter = JupiterOrganic(timeout=5)   # organic score for entries.csv (logging)
+        # The early-launch recorder (launch_record_bot.py, recording only) runs here while the
+        # paper strategy is stopped: this service is already installed and restarts itself on
+        # new code, so no server step is needed.
+        self.record = None
+        if cfg.get("launch_record", {}).get("enabled") and cfg["launch"].get("stopped"):
+            self.record = RecordRunner(
+                cfg, data_folder, stop=self.stop,
+                backdrop=MarketBackdrop(os.path.join(data_folder, "backdrop_cache.json")))
 
     async def send(self, method, keys=None):
         if self.ws is not None:
@@ -198,7 +212,7 @@ class Runner:
                 pass
         tasks = [asyncio.create_task(x)
                  for x in (self.feed(), self.clock(), self.prices(), self.organic(),
-                           self.watch_code())]
+                           self.watch_code(), *(self.record.tasks() if self.record else ()))]
         await self.stop.wait()
         if self.ws is not None:
             await self.ws.close()
@@ -206,6 +220,8 @@ class Runner:
             task.cancel()
         await asyncio.gather(*tasks, return_exceptions=True)
         self.engine.save()
+        if self.record:
+            self.record.shutdown()
         log.info("stopped; everything saved"
                  + ("; systemd starts the new code in about 10 s" if self.restarting else ""))
 
@@ -264,7 +280,9 @@ def main(argv=None):
         # A test must never write real results: a short run leaves the slower
         # speeds without their buys and uses up the hourly cap.
         with tempfile.TemporaryDirectory() as folder:
-            runner = Runner(cfg, folder)
+            # a test never starts the recorder (it would only test the launch strategy's feed)
+            quiet = dict(cfg, launch_record=dict(cfg.get("launch_record", {}), enabled=False))
+            runner = Runner(quiet, folder)
             asyncio.run(runner.main(stop_after=args.test))
             print(test_summary(runner.engine, runner.kinds))
         return 0

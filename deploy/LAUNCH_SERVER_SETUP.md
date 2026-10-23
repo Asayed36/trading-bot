@@ -715,3 +715,35 @@ cd ~/trading-bot && .venv/bin/python launch_bot.py --close-stuck
 Run the second line only when the first says `inactive`. It prints one
 `SELL` line per position and `0 still open`; the next hourly push takes the
 journals to GitHub (or `sudo systemctl start launch-push` to send them now).
+
+## Part L. The early-launch recorder (nothing to install)
+
+The recorder (`launch_record_bot.py`, `screener/launch_record.py`) records data only: for
+every new pump.fun launch it saves what was known at creation and the real price path for
+the first hour, to `data/launch-record/launches-YYYY-MM-DD.csv`. It never buys or sells.
+
+**It needs no server step.** It runs inside the `launch-bot` service that is already
+installed and enabled, while `[launch] stopped = true` and `[launch_record] enabled = true`
+in `config.toml`. The hourly push (`deploy/push_results.sh`) brings the new code; the
+service notices ("automatic restart" in `journalctl -u launch-bot`), saves and restarts
+itself within a minute or so; the same push script then sends `data/launch-record/` to
+GitHub.
+
+- **Do not turn the `launch-bot` service off** (Part K): it is what runs the recorder now.
+  To stop the recorder, set `[launch_record] enabled = false`; the service restarts by itself.
+- It uses the same free Solana public RPC endpoints as the momentum bot ([momentum] ws_urls),
+  as one more read-only connection from this server. **That feed is heavy**: 261 messages a
+  second on 2026-10-23 (74 a second on 2026-10-04, Part H), about 2.5 GB an hour. If your
+  server has a monthly transfer limit, check it first; `enabled = false` switches it off.
+- Size: a 15-minute live run measured about 8 MB of rows a day with the default settings, but
+  the daily cap (`max_rows_per_day = 4000`, spread evenly through the UTC day) holds the
+  qualified rows to about 4,000 a day plus the 2% sample (about 850 a day): roughly 2 MB a day. It makes no other request, apart from
+  the shared market-backdrop lookup (at most 2 requests per 15 minutes, cached in
+  `data/backdrop_cache.json` together with the other bots).
+- The daily comparison has one line, "launch record: server": it warns when the feed has been
+  silent for more than 10 minutes or no row was written for an hour, and it says when rows
+  were skipped by the daily cap.
+- A restart (new code) drops the launches being followed at that moment (a partial hour would
+  bias the data); their number is in `health.json` (`dropped_at_last_restart`).
+- `data/launch-record/state.json` (the copycat and creator ledger, about 30 MB after a week)
+  stays on the server and is not pushed.

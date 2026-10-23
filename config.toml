@@ -396,6 +396,48 @@ skip_flagged = false
 # held token is priced from DexScreener.
 stale_price_seconds = 60
 
+[launch_record]
+# The early-launch RECORDER (screener/launch_record.py, launch_record_bot.py): for every new
+# pump.fun launch it saves what was known at creation and the real price path for the first
+# hour, so features can be tested later. RECORDING ONLY: it never buys or sells and uses no
+# wallet, key or paid service. It reads pump.fun's on-chain events from the same free Solana
+# public RPC as the momentum bot ([momentum] ws_urls and reconnect settings). It runs inside the
+# launch-bot service while [launch] stopped = true; changing this section restarts that service
+# by itself. Rows go to data/launch-record/launches-YYYY-MM-DD.csv, one file a day.
+enabled = true
+folder = "launch-record"
+# A launch is written if it had at least this many different (non-creator) buyers in its first
+# 60 seconds, or graduates...
+min_buyers_60s = 3
+# ...plus this percent of ALL other launches, picked by a hash of the token address (the same
+# launches every time), marked sample = 1: a fair baseline to compare the written ones against.
+sample_pct = 2.0
+# Safety cap on the rows written per UTC day for qualified launches. Past it the rest are only
+# counted (health.json and the daily comparison's "launch record" line say so). The 2% sample
+# is never cut by the cap, so the baseline stays fair.
+# Measured live (2026-10-23, 15 minutes): about half of all launches have 3 or more buyers in
+# their first minute, about 21,000 rows a day. With the cap used up in the first hours of the
+# day, qualified rows would exist only for those hours and the hour-of-day analysis would be
+# wrong, so by default the cap is paced through the day: by the end of UTC hour h at most
+# (h+1)/24 of it has been used. Set pace_cap_through_day = false for a plain cap. Raising
+# min_buyers_60s (30 gives about 4,400 rows a day) is the other way to stay under the cap.
+max_rows_per_day = 4000
+pace_cap_through_day = true
+# What is followed per launch, and the memory limits (the service has MemoryMax=600M).
+checkpoints_seconds = [5, 10, 20, 30, 60, 120, 300, 900, 3600]
+bundle_window_trades = 4
+max_tracked_launches = 5000
+max_wallets_per_launch = 3000
+max_ledger_entries = 600000
+# A silent stretch on a live connection longer than this counts as a gap in the feed.
+silent_gap_seconds = 10
+# The copycat-name and creator rules use [launch] copycat_window_days, creator_memory_days and
+# dead_after_minutes (the launch strategy's own rules); add those names here to change them.
+# The daily comparison warns when the feed has been silent for more than this many minutes, or
+# no row was written for this many minutes (it reads the pushed health.json).
+warn_feed_silent_minutes = 10
+warn_no_rows_minutes = 60
+
 [launch.paper_trading]
 # Pretend dollars per buy.
 buy_amount_usd = 5

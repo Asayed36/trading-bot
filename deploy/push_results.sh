@@ -2,8 +2,8 @@
 # Pushes the server's paper results to GitHub: the launch strategy
 # (data/launch), the main (1 min) strategy and its versions
 # (data/main-1min), the trade feed probe's summary (data/trade-feed-probe),
-# the momentum strategy (data/momentum) and the news listings bot
-# (data/news-listings).
+# the momentum strategy (data/momentum), the news listings bot
+# (data/news-listings) and the early-launch recorder (data/launch-record).
 # It uses the fine-grained GitHub token saved in ~/.git-credentials, which
 # can only read and write this repository's contents. Nothing else.
 #
@@ -26,7 +26,7 @@ export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME" GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EM
 # Every server results folder. Each one is added on its own: a folder that
 # can't be added (say .gitignore doesn't allow it yet) is skipped with a
 # warning, and the others are still pushed.
-FOLDERS=(data/launch data/main-1min data/trade-feed-probe data/momentum data/news-listings)
+FOLDERS=(data/launch data/main-1min data/trade-feed-probe data/momentum data/news-listings data/launch-record)
 RESULTS=()
 for dir in "${FOLDERS[@]}"; do
   if [ -d "$dir" ]; then RESULTS+=("$dir"); fi
