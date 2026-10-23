@@ -415,7 +415,14 @@ sample_pct = 2.0
 # Safety cap on the rows written per UTC day for qualified launches. Past it the rest are only
 # counted (health.json and the daily comparison's "launch record" line say so). The 2% sample
 # is never cut by the cap, so the baseline stays fair.
+# Measured live (2026-10-23, 15 minutes): about half of all launches have 3 or more buyers in
+# their first minute, about 21,000 rows a day. With the cap used up in the first hours of the
+# day, qualified rows would exist only for those hours and the hour-of-day analysis would be
+# wrong, so by default the cap is paced through the day: by the end of UTC hour h at most
+# (h+1)/24 of it has been used. Set pace_cap_through_day = false for a plain cap. Raising
+# min_buyers_60s (30 gives about 4,400 rows a day) is the other way to stay under the cap.
 max_rows_per_day = 4000
+pace_cap_through_day = true
 # What is followed per launch, and the memory limits (the service has MemoryMax=600M).
 checkpoints_seconds = [5, 10, 20, 30, 60, 120, 300, 900, 3600]
 bundle_window_trades = 4

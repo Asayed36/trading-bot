@@ -45,8 +45,10 @@ token; blank = not known, never 0):
 Which launches are written: every qualified launch, plus the sample (a hash of the token
 address, so the same launches are chosen every time). The sample is a fair baseline of ALL
 launches; qualified launches are not. The daily cap max_rows_per_day applies to the
-qualified-only rows; sample rows are always written so the baseline cannot be cut off by
-the cap.
+qualified-only rows, paced through the day (by the end of UTC hour h at most (h+1)/24 of the
+cap is used, so a busy morning cannot use it all up and leave the later hours empty; quiet
+hours leave room for busy ones; pace_cap_through_day = false turns the pacing off). Sample
+rows are always written so the baseline cannot be cut off by the cap.
 """
 
 import csv
@@ -224,6 +226,7 @@ class LaunchRecorder:
         self.min_buyers = int(c.get("min_buyers_60s", 3))
         self.sample_pct = float(c.get("sample_pct", 2.0))
         self.max_rows = int(c.get("max_rows_per_day", 4000))
+        self.pace = bool(c.get("pace_cap_through_day", True))
         self.max_launches = int(c.get("max_tracked_launches", 5000))
         self.max_wallets = int(c.get("max_wallets_per_launch", 3000))
         self.max_ledger = int(c.get("max_ledger_entries", 600_000))
@@ -548,7 +551,10 @@ class LaunchRecorder:
         if not (qualified or sample):
             return
         if not sample:                                    # the cap is for the qualified-only rows
-            if day.get("nonsample_rows", 0) >= self.max_rows:
+            limit = self.max_rows
+            if self.pace:       # by the end of UTC hour h at most (h+1)/24 of the cap is used
+                limit = min(limit, -(-self.max_rows * (utc(w.t0).hour + 1) // 24))
+            if day.get("nonsample_rows", 0) >= limit:
                 day["skipped_by_cap"] = day.get("skipped_by_cap", 0) + 1
                 return
             day["nonsample_rows"] = day.get("nonsample_rows", 0) + 1

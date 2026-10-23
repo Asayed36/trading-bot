@@ -732,7 +732,12 @@ GitHub.
 - **Do not turn the `launch-bot` service off** (Part K): it is what runs the recorder now.
   To stop the recorder, set `[launch_record] enabled = false`; the service restarts by itself.
 - It uses the same free Solana public RPC endpoints as the momentum bot ([momentum] ws_urls),
-  as one more read-only connection from this server. It makes no other request, apart from
+  as one more read-only connection from this server. **That feed is heavy**: 261 messages a
+  second on 2026-10-23 (74 a second on 2026-10-04, Part H), about 2.5 GB an hour. If your
+  server has a monthly transfer limit, check it first; `enabled = false` switches it off.
+- Size: a 15-minute live run measured about 8 MB of rows a day with the default settings, but
+  the daily cap (`max_rows_per_day = 4000`, spread evenly through the UTC day) holds the
+  qualified rows to about 4,000 a day plus the 2% sample (about 850 a day): roughly 2 MB a day. It makes no other request, apart from
   the shared market-backdrop lookup (at most 2 requests per 15 minutes, cached in
   `data/backdrop_cache.json` together with the other bots).
 - The daily comparison has one line, "launch record: server": it warns when the feed has been

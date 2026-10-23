@@ -414,6 +414,52 @@ class SelectionTests(Base):
         self.assertEqual((row["sample"], row["qualified"]), ("1", "1"))
 
 
+class PacedCapTests(Base):
+    def qualified(self, d, n, at):
+        d.create(n, at=at)
+        for w in (11, 12, 13):
+            d.trade(n, w, 10)
+
+    def test_the_cap_is_paced_through_the_day_so_early_hours_cannot_use_it_all(self):
+        rec, d = self.run_one(sample_pct=0.0, max_rows_per_day=24)       # 1 row per hour of pace
+        for n in range(1, 11):                                             # ten launches at 00:30
+            rec.connected(T0 - 7.5 * 3600 + n - 1, "test")
+            self.qualified(d, n, at=T0 - 7.5 * 3600 + n)                   # 00:30 UTC on the 15th
+        rec.connected(T0 + 6 * 3600 - 1, "test")
+        self.qualified(d, 20, at=T0 + 6 * 3600)                            # 14:00 UTC: budget for 15 rows
+        rec.tick(T0 + 86400)
+        rec.flush()
+        got = rows(day_file(self.d))
+        # hour 0 may use ceil(24 * 1 / 24) = 1 row: the first of the ten, the other nine are skipped
+        self.assertEqual(len(got), 2)
+        self.assertEqual(got[0]["token_address"], pf.b58encode(key(1)))
+        self.assertEqual(got[1]["token_address"], pf.b58encode(key(20)))   # later hours still have room
+        self.assertEqual(rec.days["2027-01-15"]["skipped_by_cap"], 9)
+
+    def test_quiet_hours_leave_room_for_busy_ones_but_the_day_total_never_passes_the_cap(self):
+        rec, d = self.run_one(sample_pct=0.0, max_rows_per_day=24)
+        rec.connected(T0 + 8.5 * 3600 - 1, "test")                         # 16:30 UTC, nothing before
+        for n in range(1, 31):
+            rec.connected(T0 + 8.5 * 3600 + n - 1, "test")
+            self.qualified(d, n, at=T0 + 8.5 * 3600 + n)
+        rec.tick(T0 + 86400)
+        rec.flush()
+        # by the end of hour 16 the pace allows ceil(24 * 17 / 24) = 17 rows
+        self.assertEqual(len(rows(day_file(self.d))), 17)
+
+    def test_pacing_can_be_turned_off(self):
+        rec, d = self.run_one(sample_pct=0.0, max_rows_per_day=24, pace_cap_through_day=False)
+        for n in range(1, 11):
+            rec.connected(T0 - 7.5 * 3600 + n - 1, "test")
+            self.qualified(d, n, at=T0 - 7.5 * 3600 + n)
+        rec.tick(T0 + 86400)
+        rec.flush()
+        self.assertEqual(len(rows(day_file(self.d))), 10)
+
+    def test_the_default_is_paced_and_the_real_config_says_so(self):
+        self.assertTrue(CFG["launch_record"]["pace_cap_through_day"])
+
+
 class CapTests(Base):
     def qualified(self, d, n):
         d.create(n)
@@ -421,7 +467,7 @@ class CapTests(Base):
             d.trade(n, w, 10)
 
     def test_past_the_daily_cap_qualified_rows_are_counted_not_written(self):
-        rec, d = self.run_one(sample_pct=0.0, max_rows_per_day=3)
+        rec, d = self.run_one(sample_pct=0.0, max_rows_per_day=3, pace_cap_through_day=False)
         for n in range(1, 6):
             self.qualified(d, n)
         d.finish()
@@ -438,12 +484,12 @@ class CapTests(Base):
         self.assertEqual(rec.health(T0 + 4000)["rows_skipped_by_cap_today"], 0)
 
     def test_the_cap_starts_again_the_next_day_and_survives_a_restart(self):
-        rec, d = self.run_one(sample_pct=0.0, max_rows_per_day=2)
+        rec, d = self.run_one(sample_pct=0.0, max_rows_per_day=2, pace_cap_through_day=False)
         for n in range(1, 4):
             self.qualified(d, n)
         d.finish()
         rec.write_health(T0 + 4000)
-        again = make(self.d, sample_pct=0.0, max_rows_per_day=2)      # a restart, same day
+        again = make(self.d, sample_pct=0.0, max_rows_per_day=2, pace_cap_through_day=False)   # a restart
         again.connected(T0 + 4000, "test")
         d2 = Driver(again)
         self.qualified(d2, 10)                                         # created T0 (same day)
