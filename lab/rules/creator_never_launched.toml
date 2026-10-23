@@ -1,0 +1,10 @@
+name = "creator_never_launched"
+description = "Only tokens whose creator has no earlier launch in our ledger; sell at 1h."
+source = "main-1min"
+
+[filter.creator_ledger_launches]
+eq = 0
+
+[exit]
+mode = "fixed"
+at = "1h"

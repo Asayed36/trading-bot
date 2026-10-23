@@ -1,0 +1,10 @@
+name = "pool_age_over_60"
+description = "Only tokens whose pool was already over 60 minutes old at the first check; sell at 1h."
+source = "main-1min"
+
+[filter.pool_age_minutes]
+gt = 60
+
+[exit]
+mode = "fixed"
+at = "1h"

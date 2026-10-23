@@ -1,0 +1,78 @@
+{
+ "rule": "top10_under_20",
+ "rule_hash": "116a0d492a",
+ "description": "Only tokens where the 10 biggest holders own under 20 percent (RugCheck data, few tokens have it); sell at 1h.",
+ "source": "main-1min",
+ "idea_number": 6,
+ "ideas_added": 1,
+ "chosen": {},
+ "learn_days": [
+  "2026-10-11",
+  "2026-10-12",
+  "2026-10-13",
+  "2026-10-14",
+  "2026-10-15",
+  "2026-10-16",
+  "2026-10-17",
+  "2026-10-18"
+ ],
+ "check_days": [
+  "2026-10-19",
+  "2026-10-20",
+  "2026-10-21",
+  "2026-10-22",
+  "2026-10-23"
+ ],
+ "learn": {
+  "trades": 97,
+  "win_rate": 27.835051546391753,
+  "avg_return_pct": -21.819167006069925,
+  "median_return_pct": -101.4584867404973,
+  "profit": -211.64591995887818,
+  "profit_without_best": -259.55635040041165,
+  "profit_without_best3": -348.06713791181573,
+  "days": 8
+ },
+ "check": {
+  "trades": 60,
+  "win_rate": 18.333333333333332,
+  "avg_return_pct": -58.68608390329185,
+  "median_return_pct": -101.20820309299762,
+  "profit": -352.1165034197511,
+  "profit_without_best": -371.8503431364635,
+  "profit_without_best3": -399.37519512656587,
+  "days": 5
+ },
+ "learn_baseline": {
+  "beaten": 0.602,
+  "beat_it": 0.398,
+  "mean": -221.28539730150374,
+  "p95": 65.82800548898066,
+  "draws": 1000
+ },
+ "check_baseline": {
+  "beaten": 0.003,
+  "beat_it": 0.997,
+  "mean": -177.03186391147355,
+  "p95": -35.39526675814364,
+  "draws": 1000
+ },
+ "left_out_check": {
+  "tokens": 1966,
+  "no_entry_price": 181,
+  "exit_not_answered": 16,
+  "lost": 0,
+  "unknown_filter": {
+   "rc_top10_pct": 1688
+  }
+ },
+ "needed_beat": 0.95,
+ "verdict": "FAIL",
+ "failed": [
+  "profit after costs is not positive in CHECK ($-352.12)",
+  "profit without the best trade is not positive in CHECK ($-371.85)",
+  "trades on fewer than 7 different days in CHECK (5)",
+  "does not beat 95% of random draws in CHECK (0.3%)"
+ ],
+ "seed": 20261023
+}

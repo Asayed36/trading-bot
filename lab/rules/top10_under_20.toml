@@ -1,0 +1,10 @@
+name = "top10_under_20"
+description = "Only tokens where the 10 biggest holders own under 20 percent (RugCheck data, few tokens have it); sell at 1h."
+source = "main-1min"
+
+[filter.rc_top10_pct]
+lt = 20
+
+[exit]
+mode = "fixed"
+at = "1h"
