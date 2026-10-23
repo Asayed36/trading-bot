@@ -11,7 +11,10 @@ lines (Anchor events, recognised by their first 8 bytes). Three are used:
   CompleteEvent the curve is complete: the token graduates (it then
                 trades elsewhere, not on this program)
 
-The layouts were checked against the real chain with trade_feed_probe.py.
+The layouts were checked against the real chain with trade_feed_probe.py. The
+optional "ts" of a create or complete event and the trade's "tokens" were added
+for the launch recorder (screener/launch_record.py); the recorder checks the
+"ts" against the receive time and ignores it when it is not plausible.
 """
 
 import base64
@@ -68,6 +71,7 @@ def decode(logs):
             events.append({
                 "kind": "trade", "mint": b58encode(data[8:40]),
                 "sol": _u64(data, 40) / 1e9, "is_buy": data[56] == 1,
+                "tokens": _u64(data, 48) / 1e6,       # tokens bought or sold (6 decimals)
                 "user": b58encode(data[57:89]),
                 "ts": int.from_bytes(data[89:97], "little", signed=True),
                 # SOL per token after the trade (9 and 6 decimals).
@@ -84,9 +88,15 @@ def decode(logs):
             except (IndexError, ValueError):
                 continue
             if len(data) >= pos + 96:        # mint, bonding curve, creator
-                events.append({"kind": "create", "name": texts[0].strip(),
-                               "symbol": texts[1].strip(), "mint": b58encode(data[pos:pos + 32]),
-                               "creator": b58encode(data[pos + 64:pos + 96])})
+                event = {"kind": "create", "name": texts[0].strip(),
+                         "symbol": texts[1].strip(), "mint": b58encode(data[pos:pos + 32]),
+                         "creator": b58encode(data[pos + 64:pos + 96])}
+                if len(data) >= pos + 136:   # user, creator, then the on-chain time (i64)
+                    event["ts"] = int.from_bytes(data[pos + 128:pos + 136], "little", signed=True)
+                events.append(event)
         elif head == COMPLETE_EVENT and len(data) >= 72:   # user, mint, ...
-            events.append({"kind": "complete", "mint": b58encode(data[40:72])})
+            event = {"kind": "complete", "mint": b58encode(data[40:72])}
+            if len(data) >= 112:             # user, mint, bonding curve, then the on-chain time
+                event["ts"] = int.from_bytes(data[104:112], "little", signed=True)
+            events.append(event)
     return events

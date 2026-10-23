@@ -100,6 +100,13 @@ data/trade-feed-probe/*
 # The market backdrop's cache (screener/backdrop.py): a machine's last answer, never committed.
 data/backdrop_cache.json
 
+# The early-launch recorder (run on your own server, inside the launch-bot service) pushes the
+# daily files and its health; its state.json (the creator and name ledger) stays on the server.
+!data/launch-record/
+data/launch-record/*
+!data/launch-record/launches-*.csv
+!data/launch-record/health.json
+
 # The momentum strategy (run on your own server) pushes these; its state.json
 # (memory of recent launches) stays on the server.
 !data/momentum/
