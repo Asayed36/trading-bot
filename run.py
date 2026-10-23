@@ -159,11 +159,9 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
     if cfg.get("robinhood", {}).get("enabled") and robinhood_http is not None:
         rh = RobinhoodStrategy(cfg, data_folder, robinhood_http)
         if cfg["robinhood"].get("stopped"):
-            # No new buys; it only runs (prices and exits) while it still
-            # holds a position.
+            # No new buys. Unlike the other stopped strategies it keeps running its
+            # discovery and checks: they write candidates.csv (the records).
             rh.trader.buying = False
-            if not rh.trader.open_positions:
-                rh = None
     if rh:
         try:
             rh_plan = rh.fetch()
@@ -317,7 +315,8 @@ def run(api, cfg, data_folder, out=print, issues=None, helius_key=None, rpc_fact
     if conv:
         ct = conv.trader
         out("")
-        out("SUMMARY (convergence strategy)" + ("  - skipped this run" if conv_skipped else ""))
+        out("SUMMARY (convergence strategy)" + ("  - skipped this run" if conv_skipped else "")
+            + ("  - stopped: no new buys" if cfg["convergence"].get("stopped") else ""))
         out(f"  Open paper positions: {len(ct.open_positions)}")
         for pos in ct.open_positions:
             change = (pos["last_price"] / pos["entry_price"] - 1) * 100

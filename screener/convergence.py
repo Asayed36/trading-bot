@@ -379,6 +379,11 @@ class ConvergenceStrategy:
         self.c = cfg["convergence"]
         self.pt = self.c["paper_trading"]
         self.trader = ConvergenceTrader(self.pt, os.path.join(data_folder, "convergence"))
+        # [convergence] stopped = true: no new buys, so nothing that only exists
+        # to find buys runs (winners, the wallet checks, the list); positions
+        # still open finish under their exits.
+        self.stopped = bool(self.c.get("stopped"))
+        self.trader.buying = not self.stopped
         # Recording only (screener/token_record.py): candidates.csv (a row for
         # every converged token the first time it's checked, and its price 1, 6
         # and 24 hours later) and the creator ledger.
@@ -414,22 +419,27 @@ class ConvergenceStrategy:
         plan = {"now": now, "notes": [], "results": [], "paused": None, "prices": {},
                 "signals": []}
 
-        # Winners: free DexScreener data, every run.
-        pairs = api.pairs_for_tokens(
-            list(dict.fromkeys([p["address"] for p in trader.open_positions]
-                               + find_candidates(api.latest_profiles(), api.latest_boosts()))))
-        winners = {w["address"]: w for w in state.get("winners", [])
-                   if (now - datetime.fromisoformat(w["seen"])).days < 7}
-        for p in pairs:
-            base = (p.get("baseToken") or {}).get("address")
-            change = to_float((p.get("priceChange") or {}).get("h24"))
-            liq = to_float((p.get("liquidity") or {}).get("usd"))
-            if (base and change is not None and change >= c["winner_min_change_24h_pct"]
-                    and liq is not None and liq >= c["winner_min_liquidity_usd"]):
-                winners[base] = {"address": base, "symbol": p["baseToken"].get("symbol", "?"),
-                                 "change": change, "seen": now.isoformat(),
-                                 "pair": p.get("pairAddress")}
-        state["winners"] = sorted(winners.values(), key=lambda w: -w["change"])[:50]
+        held = [p["address"] for p in trader.open_positions]
+        if self.stopped:
+            # Stopped: no winners list (it only feeds the wallet list), so only the
+            # open positions are priced.
+            pairs = api.pairs_for_tokens(held) if held else []
+        else:
+            # Winners: free DexScreener data, every run.
+            pairs = api.pairs_for_tokens(list(dict.fromkeys(
+                held + find_candidates(api.latest_profiles(), api.latest_boosts()))))
+            winners = {w["address"]: w for w in state.get("winners", [])
+                       if (now - datetime.fromisoformat(w["seen"])).days < 7}
+            for p in pairs:
+                base = (p.get("baseToken") or {}).get("address")
+                change = to_float((p.get("priceChange") or {}).get("h24"))
+                liq = to_float((p.get("liquidity") or {}).get("usd"))
+                if (base and change is not None and change >= c["winner_min_change_24h_pct"]
+                        and liq is not None and liq >= c["winner_min_liquidity_usd"]):
+                    winners[base] = {"address": base, "symbol": p["baseToken"].get("symbol", "?"),
+                                     "change": change, "seen": now.isoformat(),
+                                     "pair": p.get("pairAddress")}
+            state["winners"] = sorted(winners.values(), key=lambda w: -w["change"])[:50]
 
         # Prices for open positions: free DexScreener data (works while paused).
         for pos in trader.open_positions:
@@ -449,6 +459,17 @@ class ConvergenceStrategy:
             plan["reprice"], plan["reprice_pairs"] = {}, []
             plan["notes"].append(f"candidate prices skipped this run: {exc}")
 
+        # Stopped: Helius is only used (for the trigger wallets of positions still open,
+        # to see them sell) while there is such a position.
+        watch = None
+        if self.stopped:
+            plan["notes"].append("stopped: no new buys, no wallet checks for new signals, no list "
+                                 "building; only the open positions are managed")
+            watch = {w for p in trader.open_positions for w in (p.get("wallets") or [])}
+            if not watch:
+                plan["state"] = state
+                return plan
+
         if not (self.api_key or self.rpc_factory):
             plan["notes"].append("not active: add the HELIUS_API_KEY secret (see README)")
             plan["state"] = state
@@ -463,7 +484,7 @@ class ConvergenceStrategy:
             plan["notes"].append(f"Helius checked at {last[11:16]} UTC; next check from "
                                  f"{nxt:%H:%M} UTC (every {self.c['helius_every_minutes']} min)")
             plan["state"] = state
-            if not state.get("paused_until"):
+            if not state.get("paused_until") and not self.stopped:
                 try:
                     self._signals(state, api, pairs, now, plan)
                 except ApiError as exc:
@@ -474,8 +495,9 @@ class ConvergenceStrategy:
 
         helius, live = self._rpcs(meter)
         try:
-            self._live(state, live, meter, now, plan)
-            self._refresh(state, api, helius, meter, now, plan)
+            self._live(state, live, meter, now, plan, only=watch)
+            if not self.stopped:
+                self._refresh(state, api, helius, meter, now, plan)
         except BudgetPaused as exc:
             plan["paused"] = f"{exc}; paused until {meter.end:%Y-%m-%d} (next Helius cycle)"
             state["paused_until"] = meter.end.isoformat()
@@ -495,8 +517,8 @@ class ConvergenceStrategy:
             if now >= datetime.fromisoformat(state["paused_until"]):
                 state.pop("paused_until")
         plan["state"] = state
-        if plan["paused"]:
-            return plan  # no new entries while paused
+        if plan["paused"] or self.stopped:
+            return plan  # no new entries while paused (or stopped)
         try:
             self._signals(state, api, pairs, now, plan)
         except ApiError as exc:  # includes RateLimited; credits spent above are still saved
@@ -504,9 +526,13 @@ class ConvergenceStrategy:
             plan["notes"].append(f"entry checks failed this run: {exc}")
         return plan
 
-    def _live(self, state, rpc, meter, now, plan):
+    def _live(self, state, rpc, meter, now, plan, only=None):
+        """Read the tracked wallets' new transactions (only those in `only`, when given:
+        a stopped strategy watches just the trigger wallets of its open positions)."""
         c = self.c
         tracked = state.get("tracked") or []
+        if only is not None:
+            tracked = [w for w in tracked if w["wallet"] in only]
         if state.get("paused_until") and now < datetime.fromisoformat(state["paused_until"]):
             raise BudgetPaused("Helius budget for this cycle already used")
         if not tracked:
@@ -910,6 +936,7 @@ class ConvergenceStrategy:
                 bought[r.address] = True
                 out(f"  BUY  {r.symbol:<10} ${self.pt['buy_amount_usd']} at ${r.price:.10g}")
         if not plan["results"]:
-            out("  No convergence this run, so nothing was bought.")
+            out("  No convergence this run, so nothing was bought."
+                if not self.stopped else "  Stopped: no new buys.")
         trader.save()
         self._record(plan, bought, now)

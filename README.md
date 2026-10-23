@@ -87,13 +87,20 @@ market check aren't sent to RugCheck (they show `skip Safety checks`). Set
 
 ## Which strategies are running
 
-Since 2026-10-07, after a review of every strategy's results:
-- **Running:** main (1 min)'s versions B and C (on your server; main
-  (1 min)'s own checks run every minute for them), news (GitHub), news
-  (listings) (server) and convergence (GitHub).
+Since 2026-10-23 no strategy that follows a trading rule makes new buys:
+- **Still running:** the news strategy (GitHub), news (listings) and its fast
+  version (server), the trend forward test and the scanner alerts, plus the
+  recording that the stopped strategies feed: main (1 min)'s checks every
+  minute on your server (its `candidates.csv` and creator ledger),
+  robinhood's discovery and checks (its `candidates.csv`), and the launch
+  recorder (`data/launch-record/`).
 - **Stopped** (`stopped = true` in `config.toml`): main on GitHub, early,
-  the three launch speeds, all three momentum variants, robinhood, main
-  (1 min)'s own buying and its version A. A stopped
+  the three launch speeds, all three momentum variants, main (1 min)'s own
+  buying and its versions A, B and C (since 2026-10-23: no Jupiter lookups
+  either), convergence (since 2026-10-23: no Helius wallet checks, no list
+  building; no new `candidates.csv` rows, since those came from the wallet
+  checks) and robinhood (since 2026-10-23: its checks still run and are
+  recorded; a pool that passes is recorded, not bought). A stopped
   strategy makes no new buys; positions it still holds finish under its
   normal exits, then it does nothing. Its journal and files are kept, and
   the daily comparison still shows it, marked "(stopped)". To restart one,
