@@ -64,6 +64,7 @@ BUYERS_WINDOW_SECONDS = 60
 SUPPLY_TOKENS = 1_000_000_000          # every pump.fun token has a fixed supply of 1 billion
 PLAUSIBLE_SECONDS = 900                # an on-chain time further from "now" than this is ignored
 DEFAULT_CHECKPOINTS = (5, 10, 20, 30, 60, 120, 300, 900, 3600)
+BUYER_STEPS = (1, 2, 3, 4, 5, 8, 10, 15, 20, 30, 50)      # for choosing min_buyers_60s
 BACKDROP_COLUMNS = ["btc_change_1h_pct", "btc_change_24h_pct", "eth_change_1h_pct",
                     "sol_change_1h_pct"]
 
@@ -537,6 +538,9 @@ class LaunchRecorder:
             day["watched_60"] = day.get("watched_60", 0) + 1
             if len(w.buyers60) >= self.min_buyers:
                 day["buyers_qualified"] = day.get("buyers_qualified", 0) + 1
+            for k in BUYER_STEPS:                     # how many launches reach each threshold
+                if len(w.buyers60) >= k:
+                    day[f"watched_60_ge_{k}"] = day.get(f"watched_60_ge_{k}", 0) + 1
         if qualified:
             day["qualified"] = day.get("qualified", 0) + 1
         if sample:
@@ -579,7 +583,10 @@ class LaunchRecorder:
             "tracked_seconds": tracked, "wallets_capped": int(w.capped),
         }
         for i, cp in enumerate(self.checkpoints):
-            values[f"price_sol_{cp}s"] = w.cp_price[i]
+            # (a test run finishes launches early: a checkpoint it did not reach stays blank)
+            values[f"price_sol_{cp}s"] = w.cp_price[i] if cp <= tracked + 5 else None
+        if tracked + 5 < TRACK_SECONDS:
+            values["curve_progress_pct_1h"] = None
         for k, v in zip(BACKDROP_COLUMNS, w.backdrop or (None,) * 4):
             values[k] = v
         return [cell(values.get(col)) for col in self.cols]

@@ -29,6 +29,7 @@ from urllib.parse import urlparse
 import websockets
 
 from screener.backdrop import MarketBackdrop
+from screener import launch_record as lr
 from screener.launch_record import LaunchRecorder
 from screener.pumpfeed import subscribe_request
 from screener.settings import HERE, load_config
@@ -57,20 +58,25 @@ class RecordRunner:
         self.connect, self.clock = connect, clock
         self.stop = stop or asyncio.Event()
         self.backdrop = backdrop
+        self.delivered = 0                 # messages the current connection has delivered
         self.last_ledger_save = clock()
 
     # ---- the feed (the momentum bot's connection and reconnect rules) ----
 
     async def feed(self):
         """The live feed, from the first of the endpoints that works. After a drop it
-        reconnects to the same endpoint within reconnect_seconds; a connection that lasted
-        under stable_seconds (or never got going) moves on to the next endpoint. The wait only
-        grows once every endpoint has failed in a row."""
+        reconnects within reconnect_seconds to the SAME endpoint if it had been delivering
+        messages; an endpoint that never delivered one (it did not connect, or stayed silent) is
+        left for the next. (The momentum bot moves on after any connection shorter than
+        stable_seconds; measured on GitHub that sent this recorder to an endpoint that never
+        delivered, costing about 16 s of silence at every drop.) The wait only grows once every
+        endpoint has failed in a row."""
         m, urls = self.m, feed_urls(self.m)
         at, failures = 0, 0
         while not self.stop.is_set():
             url = urls[at % len(urls)]
             started = None
+            self.delivered = 0
             pause = m["reconnect_seconds"]
             try:
                 async with self.connect(url, ping_interval=20, ping_timeout=20,
@@ -85,16 +91,17 @@ class RecordRunner:
                         except asyncio.TimeoutError:
                             raise ConnectionError(
                                 f"no message for {m['watchdog_seconds']} s") from None
+                        self.delivered += 1
                         self.on_raw(raw)
             except (OSError, ConnectionError, asyncio.TimeoutError,
                     websockets.WebSocketException) as exc:
                 if self.stop.is_set():
                     break
                 lasted = self.clock() - started if started else 0
-                if lasted >= m["stable_seconds"]:
-                    failures = 0
+                if self.delivered:
+                    failures = 0                  # it was working: try it again first
                 else:
-                    failures += 1
+                    failures += 1                 # it was not: the next endpoint
                     at += 1
                 if failures >= len(urls):
                     pause = min(pause * 2 ** (failures - len(urls) + 1), m["max_reconnect_seconds"])
@@ -251,6 +258,13 @@ def test_report(recorder, seconds, out=print):
         sizes = [len(",".join(r.values())) + 1 for r in rows]
         mean = statistics.mean(sizes) * 1.1 if sizes else 0
         out(f"  share with >= {recorder.min_buyers} buyers in 60 s: {100 * f:.1f}%")
+        out("  rows a day for other values of min_buyers_60s (qualified rows only, before the "
+            "2% sample):")
+        for k in lr.BUYER_STEPS:
+            share = total(f"watched_60_ge_{k}") / watched
+            out(f"    min_buyers_60s = {k:>2}: {100 * share:5.1f}% of launches = about "
+                f"{per_day * share:,.0f} rows a day"
+                + ("   <- now" if k == recorder.min_buyers else ""))
         out(f"  rows a day: about {rows_day:,.0f} (qualified {non_sample:,.0f}, the 2% sample "
             f"{sample_day:,.0f}); graduations add a few more")
         out(f"  cap max_rows_per_day = {recorder.max_rows} applies to the qualified-only rows: "

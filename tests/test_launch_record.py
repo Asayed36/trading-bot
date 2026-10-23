@@ -278,6 +278,19 @@ class CheckpointTests(Base):
         (row,) = rows(day_file(self.d))
         self.assertEqual(row["price_sol_10s"], "3e-08")
 
+    def test_a_launch_finished_early_leaves_the_checkpoints_it_did_not_reach_blank(self):
+        rec, d = self.run_one()
+        d.create(1)
+        d.trade(1, 7, 30, price=2e-8)
+        d.trade(1, 8, 100, price=5e-8, progress=33.0)
+        rec.finish_all(T0 + 120)                       # followed for 120 s only
+        rec.flush()
+        (row,) = rows(day_file(self.d))
+        self.assertEqual((row["price_sol_60s"], row["price_sol_120s"]), ("2e-08", "5e-08"))
+        for c in (300, 900, 3600):
+            self.assertEqual(row[f"price_sol_{c}s"], "", c)
+        self.assertEqual((row["curve_progress_pct_1h"], row["tracked_seconds"]), ("", "120"))
+
     def test_curve_progress_and_graduation(self):
         rec, d = self.run_one()
         d.create(1)
@@ -822,6 +835,30 @@ class RunnerTests(Base):
         self.assertGreaterEqual(runner.recorder.days[next(iter(runner.recorder.days))]
                                 .get("feed_disconnects", 0), 1)
 
+    def test_an_endpoint_that_was_delivering_is_tried_again_first_one_that_was_silent_is_not(self):
+        calls = []
+
+        def connect(url, **kw):
+            calls.append(url)
+            n = len(calls)
+            if n == 1:                                    # delivers a message, then drops
+                return FakeWs([notification([])], then=OSError("dropped"))
+            if n == 2:                                    # the same endpoint again: silent
+                return FakeWs([], then=OSError("silent"))
+            return FakeWs([notification([])], then=OSError("dropped"))
+
+        async def go():
+            runner = lrb.RecordRunner(self.cfg(), self.d, connect=connect)
+            task = asyncio.create_task(runner.feed())
+            await asyncio.sleep(0.25)
+            runner.stop.set()
+            await asyncio.wait_for(task, 2)
+        asyncio.run(go())
+        urls = lrb.feed_urls(self.cfg()["momentum"])
+        self.assertEqual(calls[0], urls[0])
+        self.assertEqual(calls[1], urls[0])                # it had delivered: the same one again
+        self.assertEqual(calls[2], urls[1])                # then it delivered nothing: move on
+
     def test_a_refused_subscription_is_a_failed_connection(self):
         runner = lrb.RecordRunner(self.cfg(), self.d)
         with self.assertRaises(ConnectionError):
@@ -881,6 +918,8 @@ class RunnerTests(Base):
         self.assertIn("Launches seen: 10", text)
         self.assertIn("Rows written", text)
         self.assertIn("rows a day: about", text)
+        self.assertIn("min_buyers_60s =  3:", text)
+        self.assertIn("<- now", text)
         self.assertIn("MB a day", text)
         self.assertIn("used the on-chain time", text)
         self.assertIn("A handful of real rows", text)
