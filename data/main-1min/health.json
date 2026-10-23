@@ -1,14 +1,6 @@
 {
-  "last_ok": "2026-10-23T14:00:00.003867+00:00",
+  "last_ok": "2026-10-23T15:00:00.001798+00:00",
   "calls_per_hour": {
-    "2026-10-21T15:00": {
-      "runs": 60,
-      "dexscreener": 312,
-      "rugcheck": 22,
-      "jupiter": 8,
-      "B skipped": 113,
-      "C skipped": 1
-    },
     "2026-10-21T16:00": {
       "runs": 60,
       "dexscreener": 313,
@@ -387,11 +379,17 @@
       "C skipped": 4
     },
     "2026-10-23T14:00": {
+      "runs": 61,
+      "dexscreener": 257,
+      "rugcheck": 31,
+      "jupiter": 0,
+      "B skipped": 11
+    },
+    "2026-10-23T15:00": {
       "runs": 1,
       "dexscreener": 4,
-      "rugcheck": 1,
-      "jupiter": 0,
-      "B skipped": 3
+      "rugcheck": 0,
+      "jupiter": 0
     }
   },
   "versions": {
@@ -404,13 +402,15 @@
     "B": {
       "label": "main (1 min) B",
       "open": 0,
-      "watching": 0
+      "watching": 0,
+      "stopped": true
     },
     "C": {
       "label": "main (1 min) C",
       "open": 0,
       "watching": 0,
-      "decided": 870
+      "decided": 870,
+      "stopped": true
     }
   },
   "last_error": "https://api.dexscreener.com/token-boosts/latest/v1 answered with error 502",
