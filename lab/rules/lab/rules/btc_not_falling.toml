@@ -1,0 +1,10 @@
+name = "btc_not_falling"
+description = "Skip tokens first seen while BTC fell over the last hour; sell at 1h."
+source = "main-1min"
+
+[filter.btc_change_1h_pct]
+gte = 0
+
+[exit]
+mode = "fixed"
+at = "1h"
