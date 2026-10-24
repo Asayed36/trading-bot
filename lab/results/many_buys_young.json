@@ -1,0 +1,79 @@
+{
+ "rule": "many_buys_young",
+ "rule_hash": "a6135ef422",
+ "description": "Young pools (30 min or less) with many buys in the last hour; sell at 1h.",
+ "source": "main-1min",
+ "idea_number": 9,
+ "ideas_added": 1,
+ "chosen": {},
+ "learn_days": [
+  "2026-10-11",
+  "2026-10-12",
+  "2026-10-13",
+  "2026-10-14",
+  "2026-10-15",
+  "2026-10-16",
+  "2026-10-17",
+  "2026-10-18"
+ ],
+ "check_days": [
+  "2026-10-19",
+  "2026-10-20",
+  "2026-10-21",
+  "2026-10-22",
+  "2026-10-23",
+  "2026-10-24"
+ ],
+ "learn": {
+  "trades": 2323,
+  "win_rate": 16.31510977184675,
+  "avg_return_pct": -29.464531068156074,
+  "median_return_pct": -72.17988536640718,
+  "profit": -6844.610567132636,
+  "profit_without_best": -7271.148798263376,
+  "profit_without_best3": -7731.633293474949,
+  "days": 8
+ },
+ "check": {
+  "trades": 1437,
+  "win_rate": 16.005567153792622,
+  "avg_return_pct": -36.985403056961715,
+  "median_return_pct": -71.55693032604577,
+  "profit": -5314.802419285396,
+  "profit_without_best": -5438.21107516154,
+  "profit_without_best3": -5637.249773988257,
+  "days": 6
+ },
+ "learn_baseline": {
+  "beaten": 0.006,
+  "beat_it": 0.994,
+  "mean": -5713.270822160127,
+  "p95": -5027.438451318397,
+  "draws": 1000
+ },
+ "check_baseline": {
+  "beaten": 0.0,
+  "beat_it": 1.0,
+  "mean": -4329.346627442303,
+  "p95": -3966.7561496627523,
+  "draws": 1000
+ },
+ "left_out_check": {
+  "tokens": 2266,
+  "no_entry_price": 203,
+  "exit_not_answered": 13,
+  "lost": 0,
+  "unknown_filter": {
+   "pool_age_minutes": 10
+  }
+ },
+ "needed_beat": 0.95,
+ "verdict": "FAIL",
+ "failed": [
+  "profit after costs is not positive in CHECK ($-5314.80)",
+  "profit without the best trade is not positive in CHECK ($-5438.21)",
+  "trades on fewer than 7 different days in CHECK (6)",
+  "does not beat 95% of random draws in CHECK (0.0%)"
+ ],
+ "seed": 20261023
+}
