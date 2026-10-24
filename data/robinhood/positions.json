@@ -121,16 +121,6 @@
       "liquidity_usd": 22.2596,
       "market_cap_usd": 2269551.197
     },
-    "0x0fe485a42033f223fd60fe1cf4ef3c362a25249cf3c74527768241de68a669fa": {
-      "pool": "0x0fe485a42033f223fd60fe1cf4ef3c362a25249cf3c74527768241de68a669fa",
-      "dex": "uniswap-pools-trade",
-      "token": "0xb7291dec7c3fb2a199407c25b0a1a7b78b6d7eeb",
-      "name": "JUGGERNAUT",
-      "title": "The Juggernaut ad790",
-      "created": "2026-10-23T23:00:45Z",
-      "liquidity_usd": 306.1242,
-      "market_cap_usd": 23475957.01
-    },
     "0x1d6ff040b246a898eff827ff78dc78e663a38bfb4b33087b06d71aca3d28d282": {
       "pool": "0x1d6ff040b246a898eff827ff78dc78e663a38bfb4b33087b06d71aca3d28d282",
       "dex": "uniswap-pools-trade",
@@ -220,16 +210,19 @@
       "created": "2026-10-24T03:27:56Z",
       "liquidity_usd": 6088.9571,
       "market_cap_usd": 6059.054413
+    },
+    "0x9dbbe6ec5dab96247d56e19ce6273f7392f46ec84cd092eb8b6f7d027ae12e76": {
+      "pool": "0x9dbbe6ec5dab96247d56e19ce6273f7392f46ec84cd092eb8b6f7d027ae12e76",
+      "dex": "uniswap-pools-trade",
+      "token": "0x06fe9ac47dbf6ac1ba63617b6c39119a47dd9573",
+      "name": "ELON",
+      "title": "ELON",
+      "created": "2026-10-24T04:50:47Z",
+      "liquidity_usd": 28413.8003,
+      "market_cap_usd": 49511.01732
     }
   },
   "checked": {
-    "0x0fe485a42033f223fd60fe1cf4ef3c362a25249cf3c74527768241de68a669fa": {
-      "at": "2026-10-24T04:01:20.130303+00:00",
-      "passed": false,
-      "failed": [
-        "Liquidity"
-      ]
-    },
     "0x79a03a4d2226564dd23cd9f4841b2234451ef1a0baf32c22ece691fb3a16a11c": {
       "at": "2026-10-24T04:01:20.130303+00:00",
       "passed": false,
@@ -284,7 +277,7 @@
       ]
     },
     "0x79fd0a6c7574a441d001e5eb0a6bd531b09452a0d2dd278c96a5eda886f82eaf": {
-      "at": "2026-10-24T03:51:21.795590+00:00",
+      "at": "2026-10-24T05:01:08.842632+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -314,16 +307,16 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-24T04:50:45.430645+00:00",
+      "at": "2026-10-24T05:01:08.842632+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 3,
+      "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-24T04:41:15.009857+00:00",
-      "used_this_run": false
+      "at": "2026-10-24T05:01:08.842632+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -338,12 +331,11 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-24T04:50:45.430645+00:00",
+      "at": "2026-10-24T05:01:08.842632+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x0fe485a42033f223fd60fe1cf4ef3c362a25249cf3c74527768241de68a669fa": "FAIL|Liquidity: $305 (need $5,000+ on Pools.trade)",
     "0x79a03a4d2226564dd23cd9f4841b2234451ef1a0baf32c22ece691fb3a16a11c": "FAIL|Liquidity: $23 (need $5,000+ on Pools.trade)",
     "0x1d6ff040b246a898eff827ff78dc78e663a38bfb4b33087b06d71aca3d28d282": "FAIL|Liquidity: $117 (need $5,000+ on Pools.trade)",
     "0xa2ea57736f42ab196dde7f9ba3c91f9e29839c76c20e130fa3e4d2e0de787ab5": "PASS|",
@@ -351,7 +343,7 @@
     "0x78180e0e35c5ea1cda5fb7e73bf35254959f8be4bbbcdced40f9506ea5e5665f": "FAIL|Market cap: $6,007 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x18bb669789c38ab3b1724dbbf6a2afaf1917ad2bd5fdc08d310cf2e14224d979": "FAIL|Not a copycat: 1 earlier Pons/Pools.trade token(s) called YMB in the last 7 days; the first, 0x207e5667b841eced563c73d83c059f768be97e35, graduated 5.9 h before this one (ignored: 2 with liquidity 90%+ of market cap)",
     "0x6a771772a4c5ee81aa731f78e08265efba19a7a3abe8837d1a2c1f9997890a15": "FAIL|Market cap: $6,060 (need $25,000+); Not down >50% in 24h: -82% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "0x79fd0a6c7574a441d001e5eb0a6bd531b09452a0d2dd278c96a5eda886f82eaf": "FAIL|Market cap: $6,002 (need $25,000+); Not down >50% in 24h: -82% in 24h; More buys than sells (1h): 130 buys vs 139 sells",
+    "0x79fd0a6c7574a441d001e5eb0a6bd531b09452a0d2dd278c96a5eda886f82eaf": "FAIL|Market cap: $6,002 (need $25,000+); Not down >50% in 24h: -82% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0xb2d093931783f55951712b19337d9774435ac365c6f977763848c54dfd6e6fbd": "FAIL|Market cap: $6,057 (need $25,000+); Not down >50% in 24h: -82% in 24h",
     "0x6345e5fa1f5e759f15429f83efbe5f46698304a9c89b4c93e094bc9bc0cd81dc": "FAIL|Market cap: $5,976 (need $25,000+)"
   },
@@ -4671,7 +4663,7 @@
       "graduated": "2026-10-23T08:20:02Z",
       "symbol": "CBUCKS",
       "title": "CBUCKS",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6030.2711,
       "market_cap_usd": 6047.80992
@@ -4681,7 +4673,7 @@
       "graduated": "2026-10-23T09:05:35Z",
       "symbol": "SHADOW",
       "title": "SHADOW",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6003.857,
       "market_cap_usd": 6065.765664
@@ -4691,7 +4683,7 @@
       "graduated": "2026-10-23T09:02:10Z",
       "symbol": "SHADOW",
       "title": "SHADOW",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5986.7235,
       "market_cap_usd": 6038.554051
@@ -4701,7 +4693,7 @@
       "graduated": "2026-10-23T09:12:23Z",
       "symbol": "zonki",
       "title": "zonki",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5999.3356,
       "market_cap_usd": 6023.746855
@@ -4711,7 +4703,7 @@
       "graduated": "2026-10-23T09:43:53Z",
       "symbol": "GATO",
       "title": "GATO",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6063.5862,
       "market_cap_usd": 6036.402092
@@ -4721,7 +4713,7 @@
       "graduated": "2026-10-23T10:41:40Z",
       "symbol": "VIRTUAL",
       "title": "VIRTUAL",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6004.5708,
       "market_cap_usd": 6038.412717
@@ -4731,7 +4723,7 @@
       "graduated": "2026-10-23T10:51:25Z",
       "symbol": "BORBINO",
       "title": "BORBINO",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5991.7207,
       "market_cap_usd": 6020.303883
@@ -4751,7 +4743,7 @@
       "graduated": "2026-10-23T11:02:36Z",
       "symbol": "GUST",
       "title": "GUST",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6066.9177,
       "market_cap_usd": 6100.471528
@@ -4781,7 +4773,7 @@
       "graduated": "2026-10-23T11:12:00Z",
       "symbol": "microduck",
       "title": "microduck",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6022.1803,
       "market_cap_usd": 6027.766469
@@ -4811,7 +4803,7 @@
       "graduated": "2026-10-23T11:34:02Z",
       "symbol": "TETSU",
       "title": "Tetsu Corp",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6064.3001,
       "market_cap_usd": 6099.884015
@@ -4821,7 +4813,7 @@
       "graduated": "2026-10-23T12:01:11Z",
       "symbol": "YUMI",
       "title": "Yumi",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 10195.6104,
       "market_cap_usd": 10522.74443
@@ -4940,7 +4932,7 @@
       "graduated": "2026-10-23T15:50:27Z",
       "symbol": "MOSTLYUNSUPERVI",
       "title": "Mostly Unsupervised AI",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6251.1026,
       "market_cap_usd": 6185.631793
@@ -5204,10 +5196,10 @@
       "graduated": "2026-10-24T00:58:20Z",
       "symbol": "YMB",
       "title": "You Missed Bitches",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 45743.3757,
-      "market_cap_usd": 105221.8343
+      "liquidity_usd": 44369.5901,
+      "market_cap_usd": 102808.0062
     },
     "0x8f071164c37104ce876e527c7b9c813c47e40771": {
       "dex": "uniswap-pools-trade",
@@ -5234,7 +5226,7 @@
       "graduated": "2026-10-24T01:39:49Z",
       "symbol": "ODIE",
       "title": "ODIE",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6113.7968,
       "market_cap_usd": 6075.337634
@@ -5244,7 +5236,7 @@
       "graduated": "2026-10-24T03:18:26Z",
       "symbol": "ELON",
       "title": "ELON",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5998.6045,
       "market_cap_usd": 6000.156354
@@ -5254,7 +5246,7 @@
       "graduated": "2026-10-24T03:23:27Z",
       "symbol": "ELON",
       "title": "ELON",
-      "seen": "2026-10-24T04:50:45.430645+00:00",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6044.408584
     },
@@ -5267,10 +5259,20 @@
       "source": "geckoterminal",
       "liquidity_usd": 6088.9571,
       "market_cap_usd": 6059.054413
+    },
+    "0x06fe9ac47dbf6ac1ba63617b6c39119a47dd9573": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-24T04:50:47Z",
+      "symbol": "ELON",
+      "title": "ELON",
+      "seen": "2026-10-24T05:01:08.842632+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 32175.658,
+      "market_cap_usd": 60987.44622
     }
   },
   "graduations": {
-    "at": "2026-10-24T04:50:45.430645+00:00",
+    "at": "2026-10-24T05:01:08.842632+00:00",
     "hours": 24,
     "seen": {
       "0x60633794df09856b339eea8bd741d749596b5230": "2026-10-23T05:24:41.312000+00:00",
@@ -5306,7 +5308,7 @@
       "0xb324672f2ad6ea67f29481bfb71bf40bd50fc762",
       "0xdd215018a9c558fcdfb2db56ab4d8c60ddf25491"
     ],
-    "scanned_to": 96503809,
+    "scanned_to": 96509637,
     "complete": true
   },
   "issues_to_close": [],
@@ -5320,11 +5322,6 @@
     "0x6939c0cb6d8ceaefd5a2824fc2e0bed52d3c8076": "2026-10-23T19:50:59.422021+00:00"
   },
   "gecko_hours": {
-    "2026-10-23 05:00": [
-      7,
-      0,
-      0
-    ],
     "2026-10-23 06:00": [
       5,
       0,
@@ -5437,6 +5434,11 @@
     ],
     "2026-10-24 04:00": [
       6,
+      0,
+      0
+    ],
+    "2026-10-24 05:00": [
+      1,
       0,
       0
     ]
