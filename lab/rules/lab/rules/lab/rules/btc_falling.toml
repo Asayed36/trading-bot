@@ -1,0 +1,10 @@
+name = "btc_falling"
+description = "Only tokens first seen while BTC fell more than 0.5% in the last hour; sell at 1h."
+source = "main-1min"
+
+[filter.btc_change_1h_pct]
+lt = -0.5
+
+[exit]
+mode = "fixed"
+at = "1h"
