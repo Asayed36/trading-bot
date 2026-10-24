@@ -504,7 +504,10 @@ class ReportTests(unittest.TestCase):
                       rows_["early: last successful run"])
         self.assertIn(f"{INFO} stopped (no new buys); 0 open position(s): finished",
                       rows_["main: last successful run"])
-        self.assertIn("Part K", rows_["launch: server push"])
+        # the real config runs the launch recorder inside the launch-bot service
+        self.assertIn("service must stay on because it runs the launch recorder",
+                      rows_["launch: server push"])
+        self.assertNotIn("can be turned off", rows_["launch: server push"])
 
 
 if __name__ == "__main__":
