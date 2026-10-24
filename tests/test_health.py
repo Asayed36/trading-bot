@@ -293,6 +293,26 @@ class HealthTests(Base):
         self.assertLess(lines.index("### Real-money checklist"), lines.index("### Health (x)"))
 
 
+class LaunchStoppedTextTests(Base):
+    def row(self, recorder_on):
+        import copy
+        cfg = copy.deepcopy(load_config())
+        cfg["launch"]["enabled"], cfg["launch"]["stopped"] = True, True
+        cfg["launch_record"]["enabled"] = recorder_on
+        text = "\n".join(health_lines(self.d, cfg, NOW, self.healthy()))
+        return [l for l in text.splitlines() if l.startswith("| launch: server push")][0]
+
+    def test_service_must_stay_on_while_the_recorder_runs(self):
+        row = self.row(True)
+        self.assertIn("finished, but the launch-bot service must stay on because it runs the "
+                      "launch recorder", row)
+        self.assertNotIn("can be turned off", row)
+
+    def test_service_can_be_turned_off_only_when_the_recorder_is_off(self):
+        self.assertIn("the launch-bot service can be turned off (deploy/LAUNCH_SERVER_SETUP.md, "
+                      "Part K)", self.row(False))
+
+
 class MainOneMinuteHealthTests(Base):
     def row(self, gh):
         return self.lines(gh)[1]["main (1 min): server"]

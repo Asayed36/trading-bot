@@ -634,8 +634,11 @@ def health_lines(folder, cfg, now, github=None, found=None):
         held = sum(_open_count(os.path.join(folder, "launch", s["name"]))
                    for s in cfg["launch"].get("speeds", []))
         add("launch: server push", INFO, f"stopped (no new buys); {held} open position(s)"
-            + (" finishing under the normal exits" if held else ": finished, the launch-bot "
-               "service can be turned off (deploy/LAUNCH_SERVER_SETUP.md, Part K)"))
+            + (" finishing under the normal exits" if held else
+               ": finished, but the launch-bot service must stay on because it runs the "
+               "launch recorder" if cfg.get("launch_record", {}).get("enabled") else
+               ": finished, the launch-bot service can be turned off "
+               "(deploy/LAUNCH_SERVER_SETUP.md, Part K)"))
     elif cfg.get("launch", {}).get("enabled"):
         launch_stale = timedelta(hours=h.get("launch_stale_hours", 3))
         pushed, source = None, ""
