@@ -111,16 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0x663b143613cc06d819cee528824a396f3f8cd61d36dcfddf8090aaab1f3a8572": {
-      "pool": "0x663b143613cc06d819cee528824a396f3f8cd61d36dcfddf8090aaab1f3a8572",
-      "dex": "uniswap-pools-trade",
-      "token": "0x680ab5b8996c26de3809de76ba360e1051572105",
-      "name": "YUMI",
-      "title": "Yumi",
-      "created": "2026-10-23T21:01:39Z",
-      "liquidity_usd": 8.3996,
-      "market_cap_usd": 32580.91032
-    },
     "0xea58f2512d370f94b6bbfc9adc3121598f28f53caca4467edf8ac87a52e1a3ce": {
       "pool": "0xea58f2512d370f94b6bbfc9adc3121598f28f53caca4467edf8ac87a52e1a3ce",
       "dex": "uniswap-pools-trade",
@@ -263,15 +253,8 @@
     }
   },
   "checked": {
-    "0x663b143613cc06d819cee528824a396f3f8cd61d36dcfddf8090aaab1f3a8572": {
-      "at": "2026-10-24T02:11:05.116836+00:00",
-      "passed": false,
-      "failed": [
-        "Liquidity"
-      ]
-    },
     "0xea58f2512d370f94b6bbfc9adc3121598f28f53caca4467edf8ac87a52e1a3ce": {
-      "at": "2026-10-24T02:11:05.116836+00:00",
+      "at": "2026-10-24T03:11:17.387874+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
@@ -306,7 +289,7 @@
       ]
     },
     "0x930cb2eda434d0cb30c0f30f5c2e886d593201f780aeeb9a533fc68cfb91e5a8": {
-      "at": "2026-10-24T02:11:05.116836+00:00",
+      "at": "2026-10-24T03:11:17.387874+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
@@ -327,7 +310,7 @@
       ]
     },
     "0x1d6ff040b246a898eff827ff78dc78e663a38bfb4b33087b06d71aca3d28d282": {
-      "at": "2026-10-24T02:11:05.116836+00:00",
+      "at": "2026-10-24T03:11:17.387874+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
@@ -364,11 +347,12 @@
       ]
     },
     "0x6a771772a4c5ee81aa731f78e08265efba19a7a3abe8837d1a2c1f9997890a15": {
-      "at": "2026-10-24T02:11:05.116836+00:00",
+      "at": "2026-10-24T03:11:17.387874+00:00",
       "passed": false,
       "failed": [
         "Market cap",
-        "Not down >50% in 24h"
+        "Not down >50% in 24h",
+        "More buys than sells (1h)"
       ]
     }
   },
@@ -378,7 +362,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-24T03:01:04.290793+00:00",
+      "at": "2026-10-24T03:11:17.387874+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -386,7 +370,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-24T03:01:04.290793+00:00",
+      "at": "2026-10-24T03:11:17.387874+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -402,21 +386,17 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-24T03:01:04.290793+00:00",
+      "at": "2026-10-24T03:11:17.387874+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0xe53a198aeb281ba393f1d733b458c950f0bc5b2fdffd38c0dc610e5ebfc61b07": "FAIL|Liquidity: $10 (need $5,000+ on Pools.trade)",
-    "0x0fbde37214757482d5e3ce73d5526365ec894d74d774bb280928b796fb8b7d89": "FAIL|Liquidity: $11 (need $5,000+ on Pools.trade)",
-    "0x95b7f325a3c0656d8d7b1213100a6b3fb7480523d81d3d6269346b1b473b012b": "FAIL|Liquidity: $9 (need $5,000+ on Pools.trade)",
-    "0x663b143613cc06d819cee528824a396f3f8cd61d36dcfddf8090aaab1f3a8572": "FAIL|Liquidity: $10 (need $5,000+ on Pools.trade)",
     "0xea58f2512d370f94b6bbfc9adc3121598f28f53caca4467edf8ac87a52e1a3ce": "FAIL|Liquidity: $10 (need $5,000+ on Pools.trade)",
     "0x71c06874976f6cf55f1a2af1e03b16d08b7e9c2586fa3ef3cec52a9a3ffc203f": "FAIL|Liquidity: $9 (need $5,000+ on Pools.trade)",
     "0x5bf306c4e5d7217a38a4aa3d0937ae4188cfa5e36f1e836205cab49a889ae5a3": "FAIL|Liquidity: $6 (need $5,000+ on Pools.trade)",
     "0x55127e0e390ab9c11705958e380ec13b4f5e1f9fdb911c3f388086bc2eeba391": "FAIL|Liquidity: $8 (need $5,000+ on Pools.trade)",
     "0x34751a2669642cf8f153afc0ec0234355f41c0347de34beb6675f22025a8daf5": "FAIL|Liquidity: $7 (need $5,000+ on Pools.trade)",
-    "0x930cb2eda434d0cb30c0f30f5c2e886d593201f780aeeb9a533fc68cfb91e5a8": "FAIL|Liquidity: $7,079 (need $10,000+ on Pons)",
+    "0x930cb2eda434d0cb30c0f30f5c2e886d593201f780aeeb9a533fc68cfb91e5a8": "FAIL|Liquidity: $7,087 (need $10,000+ on Pons)",
     "0x0fe485a42033f223fd60fe1cf4ef3c362a25249cf3c74527768241de68a669fa": "FAIL|Liquidity: $305 (need $5,000+ on Pools.trade)",
     "0x79a03a4d2226564dd23cd9f4841b2234451ef1a0baf32c22ece691fb3a16a11c": "FAIL|Liquidity: $23 (need $5,000+ on Pools.trade)",
     "0x1d6ff040b246a898eff827ff78dc78e663a38bfb4b33087b06d71aca3d28d282": "FAIL|Liquidity: $117 (need $5,000+ on Pools.trade)",
@@ -424,7 +404,7 @@
     "0xdf4cf3366ea86c97e60d03145e817c7dc5965165762d9ca38d1d06c006b758ff": "FAIL|Market cap: $5,962 (need $25,000+); Not down >50% in 24h: -70% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x78180e0e35c5ea1cda5fb7e73bf35254959f8be4bbbcdced40f9506ea5e5665f": "FAIL|Market cap: $6,007 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x18bb669789c38ab3b1724dbbf6a2afaf1917ad2bd5fdc08d310cf2e14224d979": "FAIL|Not a copycat: 1 earlier Pons/Pools.trade token(s) called YMB in the last 7 days; the first, 0x207e5667b841eced563c73d83c059f768be97e35, graduated 5.9 h before this one (ignored: 2 with liquidity 90%+ of market cap)",
-    "0x6a771772a4c5ee81aa731f78e08265efba19a7a3abe8837d1a2c1f9997890a15": "FAIL|Market cap: $6,551 (need $25,000+); Not down >50% in 24h: -81% in 24h"
+    "0x6a771772a4c5ee81aa731f78e08265efba19a7a3abe8837d1a2c1f9997890a15": "FAIL|Market cap: $6,060 (need $25,000+); Not down >50% in 24h: -82% in 24h; More buys than sells (1h): 2 buys vs 23 sells"
   },
   "launchpad_tokens": {
     "0x397a7cd558fb16a23a31862edcb72cbfa44a1111": {
@@ -4762,9 +4742,9 @@
       "graduated": "2026-10-23T03:43:11Z",
       "symbol": "DARK",
       "title": "Drakhen",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6270.304,
+      "liquidity_usd": 6270.62,
       "market_cap_usd": 6227.228809
     },
     "0x2b033838880838793862c046fcd4097a90ca0000": {
@@ -4832,9 +4812,9 @@
       "graduated": "2026-10-23T08:20:02Z",
       "symbol": "CBUCKS",
       "title": "CBUCKS",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6035.0098,
+      "liquidity_usd": 6035.7447,
       "market_cap_usd": 6047.80992
     },
     "0xbffb81d2f22e2915330c4ff57efff2d34f5a3501": {
@@ -4842,9 +4822,9 @@
       "graduated": "2026-10-23T09:05:35Z",
       "symbol": "SHADOW",
       "title": "SHADOW",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6008.575,
+      "liquidity_usd": 6009.3066,
       "market_cap_usd": 6065.765664
     },
     "0x1bd2cfc0f7d29a3950001a6764100124a92609f3": {
@@ -4852,9 +4832,9 @@
       "graduated": "2026-10-23T09:02:10Z",
       "symbol": "SHADOW",
       "title": "SHADOW",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5991.428,
+      "liquidity_usd": 5992.1576,
       "market_cap_usd": 6038.554051
     },
     "0x0b41df7bbe824bc181a8ab8f7b721c7ae2b897bc": {
@@ -4862,9 +4842,9 @@
       "graduated": "2026-10-23T09:12:23Z",
       "symbol": "zonki",
       "title": "zonki",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6004.0501,
+      "liquidity_usd": 6004.7812,
       "market_cap_usd": 6023.746855
     },
     "0x2f4c35c82f7214db4666cf37c14b4f81b6ca6ce9": {
@@ -4872,9 +4852,9 @@
       "graduated": "2026-10-23T09:43:53Z",
       "symbol": "GATO",
       "title": "GATO",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6068.3511,
+      "liquidity_usd": 6069.0901,
       "market_cap_usd": 6036.402092
     },
     "0x2e0c7b162222d776fe2e1fcc6a15aedc18306ca6": {
@@ -4882,9 +4862,9 @@
       "graduated": "2026-10-23T10:41:40Z",
       "symbol": "VIRTUAL",
       "title": "VIRTUAL",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6009.2894,
+      "liquidity_usd": 6010.0212,
       "market_cap_usd": 6038.412717
     },
     "0x6d3047c8c2896d1a11ca9a945543553aabd4e13f": {
@@ -4892,9 +4872,9 @@
       "graduated": "2026-10-23T10:51:25Z",
       "symbol": "BORBINO",
       "title": "BORBINO",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5996.4292,
+      "liquidity_usd": 5997.1594,
       "market_cap_usd": 6020.303883
     },
     "0x95ac52f20329c962d3f44d73569b22767aae7226": {
@@ -4912,9 +4892,9 @@
       "graduated": "2026-10-23T11:02:36Z",
       "symbol": "GUST",
       "title": "GUST",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6071.6852,
+      "liquidity_usd": 6072.4246,
       "market_cap_usd": 6100.471528
     },
     "0x79c397292906decdf506c4ab19fe7466eccec1db": {
@@ -4922,9 +4902,9 @@
       "graduated": "2026-10-23T11:06:04Z",
       "symbol": "microduck",
       "title": "microduck",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6002.8593,
+      "liquidity_usd": 6003.5903,
       "market_cap_usd": 6011.937211
     },
     "0x1aaf97e54e0bfa85b4fb0cbd9a0940e1bef38b4a": {
@@ -4942,9 +4922,9 @@
       "graduated": "2026-10-23T11:12:00Z",
       "symbol": "microduck",
       "title": "microduck",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6026.9127,
+      "liquidity_usd": 6027.6466,
       "market_cap_usd": 6027.766469
     },
     "0x6104df5db9ee0bd9165ff480db2fa054113796f7": {
@@ -4972,9 +4952,9 @@
       "graduated": "2026-10-23T11:34:02Z",
       "symbol": "TETSU",
       "title": "Tetsu Corp",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6069.0656,
+      "liquidity_usd": 6069.8046,
       "market_cap_usd": 6099.884015
     },
     "0x1773e7ce32a89ada9d81aca4f5098012a95b80cf": {
@@ -4982,9 +4962,9 @@
       "graduated": "2026-10-23T12:01:11Z",
       "symbol": "YUMI",
       "title": "Yumi",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 10203.6224,
+      "liquidity_usd": 10204.8649,
       "market_cap_usd": 10522.74443
     },
     "0x44c80b9453f787c86a9d46cd8c91dd9e28cc5826": {
@@ -5101,9 +5081,9 @@
       "graduated": "2026-10-23T15:50:27Z",
       "symbol": "MOSTLYUNSUPERVI",
       "title": "Mostly Unsupervised AI",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6256.0149,
+      "liquidity_usd": 6256.7767,
       "market_cap_usd": 6185.631793
     },
     "0x8ba9dc6b01f4aa13c7d6282f6b4b16d030c80000": {
@@ -5365,10 +5345,10 @@
       "graduated": "2026-10-24T00:58:20Z",
       "symbol": "YMB",
       "title": "You Missed Bitches",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 41032.1047,
-      "market_cap_usd": 90282.19112
+      "liquidity_usd": 46016.1249,
+      "market_cap_usd": 116521.5889
     },
     "0x8f071164c37104ce876e527c7b9c813c47e40771": {
       "dex": "uniswap-pools-trade",
@@ -5385,9 +5365,9 @@
       "graduated": "2026-10-24T00:51:37Z",
       "symbol": "YMB",
       "title": "You Missed Bitches",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5984.5415,
+      "liquidity_usd": 5993.3485,
       "market_cap_usd": 5955.79866
     },
     "0x71c92e5dbdde5d308503b31ed4724534f4958ca8": {
@@ -5395,14 +5375,14 @@
       "graduated": "2026-10-24T01:39:49Z",
       "symbol": "ODIE",
       "title": "ODIE",
-      "seen": "2026-10-24T03:01:04.290793+00:00",
+      "seen": "2026-10-24T03:11:17.387874+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6118.4984,
+      "liquidity_usd": 6122.9688,
       "market_cap_usd": 6075.337634
     }
   },
   "graduations": {
-    "at": "2026-10-24T03:01:04.290793+00:00",
+    "at": "2026-10-24T03:11:17.387874+00:00",
     "hours": 24,
     "seen": {
       "0xa3b6b325f7937f97b3df9f7ee654d7463c2382da": "2026-10-23T03:20:11.905100+00:00",
@@ -5442,7 +5422,7 @@
       "0xc030386c4579b07831613fc38f4addd613470f83",
       "0xdd215018a9c558fcdfb2db56ab4d8c60ddf25491"
     ],
-    "scanned_to": 96441478,
+    "scanned_to": 96447316,
     "complete": true
   },
   "issues_to_close": [],
@@ -5572,7 +5552,7 @@
       0
     ],
     "2026-10-24 03:00": [
-      1,
+      2,
       0,
       0
     ]
