@@ -4,7 +4,7 @@
  "description": "Skip tokens already up over 100 percent in the last hour at the first check; sell at 1h.",
  "source": "main-1min",
  "idea_number": 5,
- "ideas_added": 1,
+ "ideas_added": 0,
  "chosen": {},
  "learn_days": [
   "2026-10-11",
@@ -21,7 +21,8 @@
   "2026-10-20",
   "2026-10-21",
   "2026-10-22",
-  "2026-10-23"
+  "2026-10-23",
+  "2026-10-24"
  ],
  "learn": {
   "trades": 1327,
@@ -34,14 +35,14 @@
   "days": 8
  },
  "check": {
-  "trades": 581,
-  "win_rate": 21.686746987951807,
-  "avg_return_pct": -24.814016942317878,
-  "median_return_pct": -40.90918583292896,
-  "profit": -1441.6943843486697,
-  "profit_without_best": -1520.615508052552,
-  "profit_without_best3": -1647.9057960042646,
-  "days": 5
+  "trades": 672,
+  "win_rate": 22.172619047619047,
+  "avg_return_pct": -24.176902784218935,
+  "median_return_pct": -40.879674856270306,
+  "profit": -1624.6878670995125,
+  "profit_without_best": -1722.0395018447432,
+  "profit_without_best3": -1868.7444367446642,
+  "days": 6
  },
  "learn_baseline": {
   "beaten": 0.69,
@@ -51,28 +52,27 @@
   "draws": 1000
  },
  "check_baseline": {
-  "beaten": 0.939,
-  "beat_it": 0.061,
-  "mean": -1768.6920881819788,
-  "p95": -1423.7495838136624,
+  "beaten": 0.96,
+  "beat_it": 0.04,
+  "mean": -2028.1482482390386,
+  "p95": -1648.7262398223825,
   "draws": 1000
  },
  "left_out_check": {
-  "tokens": 1966,
-  "no_entry_price": 181,
-  "exit_not_answered": 16,
+  "tokens": 2266,
+  "no_entry_price": 203,
+  "exit_not_answered": 13,
   "lost": 0,
   "unknown_filter": {
-   "price_change_1h_pct": 10
+   "price_change_1h_pct": 11
   }
  },
  "needed_beat": 0.95,
  "verdict": "FAIL",
  "failed": [
-  "profit after costs is not positive in CHECK ($-1441.69)",
-  "profit without the best trade is not positive in CHECK ($-1520.62)",
-  "trades on fewer than 7 different days in CHECK (5)",
-  "does not beat 95% of random draws in CHECK (93.9%)"
+  "profit after costs is not positive in CHECK ($-1624.69)",
+  "profit without the best trade is not positive in CHECK ($-1722.04)",
+  "trades on fewer than 7 different days in CHECK (6)"
  ],
  "seed": 20261023
 }

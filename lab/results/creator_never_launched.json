@@ -4,7 +4,7 @@
  "description": "Only tokens whose creator has no earlier launch in our ledger; sell at 1h.",
  "source": "main-1min",
  "idea_number": 3,
- "ideas_added": 1,
+ "ideas_added": 0,
  "chosen": {},
  "learn_days": [
   "2026-10-11",
@@ -21,7 +21,8 @@
   "2026-10-20",
   "2026-10-21",
   "2026-10-22",
-  "2026-10-23"
+  "2026-10-23",
+  "2026-10-24"
  ],
  "learn": {
   "trades": 128,
@@ -34,14 +35,14 @@
   "days": 8
  },
  "check": {
-  "trades": 79,
-  "win_rate": 20.253164556962027,
-  "avg_return_pct": -52.26305463101258,
-  "median_return_pct": -100.506157635468,
-  "profit": -412.87813158499955,
-  "profit_without_best": -432.61197130171195,
-  "profit_without_best3": -460.1368232918143,
-  "days": 5
+  "trades": 94,
+  "win_rate": 20.21276595744681,
+  "avg_return_pct": -54.42838659393235,
+  "median_return_pct": -100.38283576029883,
+  "profit": -511.6268339829643,
+  "profit_without_best": -531.3606736996767,
+  "profit_without_best3": -558.8855256897791,
+  "days": 6
  },
  "learn_baseline": {
   "beaten": 0.661,
@@ -51,28 +52,28 @@
   "draws": 1000
  },
  "check_baseline": {
-  "beaten": 0.016,
-  "beat_it": 0.984,
-  "mean": -236.9629591979247,
-  "p95": -66.71677475499638,
+  "beaten": 0.0,
+  "beat_it": 1.0,
+  "mean": -280.1953009980296,
+  "p95": -92.78762842392425,
   "draws": 1000
  },
  "left_out_check": {
-  "tokens": 1966,
-  "no_entry_price": 181,
-  "exit_not_answered": 16,
+  "tokens": 2266,
+  "no_entry_price": 203,
+  "exit_not_answered": 13,
   "lost": 0,
   "unknown_filter": {
-   "creator_ledger_launches": 1688
+   "creator_ledger_launches": 1954
   }
  },
  "needed_beat": 0.95,
  "verdict": "FAIL",
  "failed": [
-  "profit after costs is not positive in CHECK ($-412.88)",
-  "profit without the best trade is not positive in CHECK ($-432.61)",
-  "trades on fewer than 7 different days in CHECK (5)",
-  "does not beat 95% of random draws in CHECK (1.6%)"
+  "profit after costs is not positive in CHECK ($-511.63)",
+  "profit without the best trade is not positive in CHECK ($-531.36)",
+  "trades on fewer than 7 different days in CHECK (6)",
+  "does not beat 95% of random draws in CHECK (0.0%)"
  ],
  "seed": 20261023
 }

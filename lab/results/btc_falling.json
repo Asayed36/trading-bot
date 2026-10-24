@@ -1,0 +1,79 @@
+{
+ "rule": "btc_falling",
+ "rule_hash": "91189c4526",
+ "description": "Only tokens first seen while BTC fell more than 0.5% in the last hour; sell at 1h.",
+ "source": "main-1min",
+ "idea_number": 7,
+ "ideas_added": 1,
+ "chosen": {},
+ "learn_days": [
+  "2026-10-11",
+  "2026-10-12",
+  "2026-10-13",
+  "2026-10-14",
+  "2026-10-15",
+  "2026-10-16",
+  "2026-10-17",
+  "2026-10-18"
+ ],
+ "check_days": [
+  "2026-10-19",
+  "2026-10-20",
+  "2026-10-21",
+  "2026-10-22",
+  "2026-10-23",
+  "2026-10-24"
+ ],
+ "learn": {
+  "trades": 180,
+  "win_rate": 20.0,
+  "avg_return_pct": -40.68147432463566,
+  "median_return_pct": -66.67927564900418,
+  "profit": -732.2665378434416,
+  "profit_without_best": -759.8735976940751,
+  "profit_without_best3": -804.6374478126345,
+  "days": 6
+ },
+ "check": {
+  "trades": 89,
+  "win_rate": 16.853932584269664,
+  "avg_return_pct": -32.622879759397975,
+  "median_return_pct": -63.82497364253157,
+  "profit": -290.34362985864215,
+  "profit_without_best": -383.0963894043884,
+  "profit_without_best3": -446.96773341985784,
+  "days": 5
+ },
+ "learn_baseline": {
+  "beaten": 0.065,
+  "beat_it": 0.935,
+  "mean": -531.48059376712,
+  "p95": -286.3688004452737,
+  "draws": 1000
+ },
+ "check_baseline": {
+  "beaten": 0.495,
+  "beat_it": 0.505,
+  "mean": -278.88251734337354,
+  "p95": -121.30910739747198,
+  "draws": 1000
+ },
+ "left_out_check": {
+  "tokens": 2266,
+  "no_entry_price": 203,
+  "exit_not_answered": 13,
+  "lost": 0,
+  "unknown_filter": {
+   "btc_change_1h_pct": 18
+  }
+ },
+ "needed_beat": 0.95,
+ "verdict": "FAIL",
+ "failed": [
+  "profit after costs is not positive in CHECK ($-290.34)",
+  "profit without the best trade is not positive in CHECK ($-383.10)",
+  "trades on fewer than 7 different days in CHECK (5)",
+  "does not beat 95% of random draws in CHECK (49.5%)"
+ ],
+ "seed": 20261023
+}

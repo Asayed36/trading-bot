@@ -4,7 +4,7 @@
  "description": "Only tokens whose pool was already over 60 minutes old at the first check; sell at 1h.",
  "source": "main-1min",
  "idea_number": 4,
- "ideas_added": 1,
+ "ideas_added": 0,
  "chosen": {},
  "learn_days": [
   "2026-10-11",
@@ -21,7 +21,8 @@
   "2026-10-20",
   "2026-10-21",
   "2026-10-22",
-  "2026-10-23"
+  "2026-10-23",
+  "2026-10-24"
  ],
  "learn": {
   "trades": 533,
@@ -34,14 +35,14 @@
   "days": 8
  },
  "check": {
-  "trades": 234,
-  "win_rate": 35.042735042735046,
-  "avg_return_pct": -4.41984815609853,
-  "median_return_pct": -6.8849863779636005,
-  "profit": -103.42444685270519,
-  "profit_without_best": -176.60135723635926,
-  "profit_without_best3": -269.89326916241373,
-  "days": 5
+  "trades": 278,
+  "win_rate": 35.611510791366904,
+  "avg_return_pct": -5.044089055777955,
+  "median_return_pct": -6.672626297345937,
+  "profit": -140.22567575062672,
+  "profit_without_best": -213.4025861342808,
+  "profit_without_best3": -306.69449806033526,
+  "days": 6
  },
  "learn_baseline": {
   "beaten": 1.0,
@@ -51,27 +52,27 @@
   "draws": 1000
  },
  "check_baseline": {
-  "beaten": 0.999,
-  "beat_it": 0.001,
-  "mean": -713.7500291558921,
-  "p95": -458.68899570420183,
+  "beaten": 1.0,
+  "beat_it": 0.0,
+  "mean": -831.7696197281813,
+  "p95": -559.9195947049362,
   "draws": 1000
  },
  "left_out_check": {
-  "tokens": 1966,
-  "no_entry_price": 181,
-  "exit_not_answered": 16,
+  "tokens": 2266,
+  "no_entry_price": 203,
+  "exit_not_answered": 13,
   "lost": 0,
   "unknown_filter": {
-   "pool_age_minutes": 9
+   "pool_age_minutes": 10
   }
  },
  "needed_beat": 0.95,
  "verdict": "FAIL",
  "failed": [
-  "profit after costs is not positive in CHECK ($-103.42)",
-  "profit without the best trade is not positive in CHECK ($-176.60)",
-  "trades on fewer than 7 different days in CHECK (5)"
+  "profit after costs is not positive in CHECK ($-140.23)",
+  "profit without the best trade is not positive in CHECK ($-213.40)",
+  "trades on fewer than 7 different days in CHECK (6)"
  ],
  "seed": 20261023
 }
