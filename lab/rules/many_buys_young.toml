@@ -1,0 +1,13 @@
+name = "many_buys_young"
+description = "Young pools (30 min or less) with many buys in the last hour; sell at 1h."
+source = "main-1min"
+
+[filter.pool_age_minutes]
+lte = 30
+
+[filter.buys_1h]
+gte = 100
+
+[exit]
+mode = "fixed"
+at = "1h"
