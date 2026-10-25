@@ -193,6 +193,20 @@
       "at": "2026-10-25T19:31:01.316236+00:00",
       "passed": true,
       "failed": []
+    },
+    "onchain:0xb6e08c7d4f7f6f0509dbfdcd752b1afae09fd7f8": {
+      "at": "2026-10-25T19:41:14.962551+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
+    },
+    "onchain:0x40d1bd9cdcbfb9e4116603a50948f7b579a1e5a9": {
+      "at": "2026-10-25T19:41:14.962551+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
     }
   },
   "sources": {
@@ -201,7 +215,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-25T19:31:01.316236+00:00",
+      "at": "2026-10-25T19:41:14.962551+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -209,7 +223,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-25T19:31:01.316236+00:00",
+      "at": "2026-10-25T19:41:14.962551+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -218,15 +232,14 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-10-25T19:31:01.316236+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "rpc": {
-      "calls": 22,
-      "errors": 9,
-      "rate_limited": 3,
-      "error": "Robinhood Chain RPC said 'too many requests' (HTTP 429)",
+      "calls": 4,
+      "errors": 0,
+      "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-25T19:31:01.316236+00:00",
+      "at": "2026-10-25T19:41:14.962551+00:00",
       "used_this_run": true
     }
   },
@@ -234,7 +247,9 @@
     "0xf3d0381951cf95d3a743aae139560b25d517a1ad8f182d2bb52254d6aa132666": "FAIL|Liquidity: $3 (need $5,000+ on Pools.trade)",
     "0x137291ca349fd3aa7e5d930fb9114d9d05a68e8586360309ca1def3f803beb6c": "FAIL|Market cap: $5,946 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
     "0xbd1eacad96af8d105184883045b113b42f197a562b6c1d3a11305bf412a2b25b": "FAIL|Liquidity: $3 (need $5,000+ on Pools.trade)",
-    "onchain:0xfcca112411268fc28c2c5acbf633c745803040a4": "PASS|"
+    "onchain:0xfcca112411268fc28c2c5acbf633c745803040a4": "PASS|",
+    "onchain:0xb6e08c7d4f7f6f0509dbfdcd752b1afae09fd7f8": "FAIL|Liquidity: $7,063 (need $10,000+ on Pons)",
+    "onchain:0x40d1bd9cdcbfb9e4116603a50948f7b579a1e5a9": "FAIL|Liquidity: $7,725 (need $10,000+ on Pons)"
   },
   "launchpad_tokens": {
     "0xfacc94e4e74e6c3f448e24566598cd16c660b4a4": {
@@ -4698,7 +4713,7 @@
       "graduated": "2026-10-24T22:36:22Z",
       "symbol": "CREORA",
       "title": "Creora",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 22558380.12
     },
@@ -4707,7 +4722,7 @@
       "graduated": "2026-10-24T22:39:02Z",
       "symbol": "MIMO",
       "title": "Mimo Exchange",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 3.2943,
       "market_cap_usd": 1206439.399
@@ -4717,7 +4732,7 @@
       "graduated": "2026-10-24T22:40:18Z",
       "symbol": "LFT",
       "title": "Larp Farming Template",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 2231729.227
@@ -4737,7 +4752,7 @@
       "graduated": "2026-10-24T22:58:52Z",
       "symbol": "GH0ST",
       "title": "GH0ST",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 10.5888,
       "market_cap_usd": 713009.9046
@@ -4747,7 +4762,7 @@
       "graduated": "2026-10-24T22:53:48Z",
       "symbol": "LFT",
       "title": "Larp Farming Template",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 3.059,
       "market_cap_usd": 1096847.131
@@ -4767,7 +4782,7 @@
       "graduated": "2026-10-24T23:01:29Z",
       "symbol": "NIHAO",
       "title": "nihao",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 96961.1523
     },
@@ -4786,7 +4801,7 @@
       "graduated": "2026-10-24T23:20:08Z",
       "symbol": "BLACKOCT",
       "title": "BLACKOCTOBER",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 2.8237,
       "market_cap_usd": 26536892.36
@@ -4796,7 +4811,7 @@
       "graduated": "2026-10-25T06:22:40Z",
       "symbol": "Chunkee",
       "title": "Chunkee",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5972.0917,
       "market_cap_usd": 5879.204637
@@ -4806,7 +4821,7 @@
       "graduated": "2026-10-25T06:51:40Z",
       "symbol": "REACHY",
       "title": "REACHY",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6038.2129,
       "market_cap_usd": 5971.794781
@@ -4836,7 +4851,7 @@
       "graduated": "2026-10-25T11:44:30Z",
       "symbol": "PANORA",
       "title": "Panora",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5957.7379,
       "market_cap_usd": 5940.700844
@@ -4846,7 +4861,7 @@
       "graduated": "2026-10-25T11:51:49Z",
       "symbol": "RBH",
       "title": "Really Big Honkers",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5920.5594,
       "market_cap_usd": 5915.746133
@@ -4866,7 +4881,7 @@
       "graduated": "2026-10-25T13:10:02Z",
       "symbol": "PV4",
       "title": "Protocol v4",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 137224.9918
@@ -4886,7 +4901,7 @@
       "graduated": "2026-10-25T15:45:48Z",
       "symbol": "DUDU",
       "title": "DuckDUDU",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5932.52689
     },
@@ -4895,7 +4910,7 @@
       "graduated": "2026-10-25T16:19:25Z",
       "symbol": "DC",
       "title": "Dcperps",
-      "seen": "2026-10-25T19:31:01.316236+00:00",
+      "seen": "2026-10-25T19:41:14.962551+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 3.059,
       "market_cap_usd": 499054.2635
@@ -4932,7 +4947,7 @@
     }
   },
   "graduations": {
-    "at": "2026-10-25T19:31:01.316236+00:00",
+    "at": "2026-10-25T19:41:14.962551+00:00",
     "hours": 24,
     "seen": {
       "0x5a8e6bb390b51978b0cea029a070cfcdd495138e": "2026-10-25T01:00:14.856400+00:00",
@@ -4946,7 +4961,7 @@
       "0xb6e08c7d4f7f6f0509dbfdcd752b1afae09fd7f8",
       "0xfcca112411268fc28c2c5acbf633c745803040a4"
     ],
-    "scanned_to": 97830170,
+    "scanned_to": 97836203,
     "complete": true
   },
   "issues_to_close": [],
@@ -5073,7 +5088,7 @@
       0
     ],
     "2026-10-25 19:00": [
-      4,
+      5,
       0,
       0
     ]
