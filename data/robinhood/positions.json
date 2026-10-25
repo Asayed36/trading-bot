@@ -111,16 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0xc5a0feca38a60bc3fe674aff572766ba2e78989d1997103800b061e016ad76e3": {
-      "pool": "0xc5a0feca38a60bc3fe674aff572766ba2e78989d1997103800b061e016ad76e3",
-      "dex": "uniswap-pools-trade",
-      "token": "0x5daf7475beab68f225fad745e66c1df704a4b885",
-      "name": "GH0ST",
-      "title": "GH0ST",
-      "created": "2026-10-24T22:41:32Z",
-      "liquidity_usd": 0.0,
-      "market_cap_usd": 164237.1748
-    },
     "0x34abd65d35985f9c6a0474dc5ccd37a9f9803edf222b52b2360f93578e8f0b75": {
       "pool": "0x34abd65d35985f9c6a0474dc5ccd37a9f9803edf222b52b2360f93578e8f0b75",
       "dex": "uniswap-pools-trade",
@@ -183,22 +173,15 @@
     }
   },
   "checked": {
-    "0xc5a0feca38a60bc3fe674aff572766ba2e78989d1997103800b061e016ad76e3": {
-      "at": "2026-10-25T03:41:17.016949+00:00",
-      "passed": false,
-      "failed": [
-        "Liquidity"
-      ]
-    },
     "0xeebe8d3a6b3ea4af1a3ba51dd0643c228317adcefa3bcfda3eff3358119fb9fa": {
-      "at": "2026-10-25T03:51:04.827891+00:00",
+      "at": "2026-10-25T04:51:14.708561+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
     "0x34abd65d35985f9c6a0474dc5ccd37a9f9803edf222b52b2360f93578e8f0b75": {
-      "at": "2026-10-25T03:51:04.827891+00:00",
+      "at": "2026-10-25T04:51:14.708561+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
@@ -219,10 +202,11 @@
       ]
     },
     "0x139372c57465ea94595a9c8c65926fddc16989f2b9a6b81240a31b8cb5c6ef4b": {
-      "at": "2026-10-25T03:41:17.016949+00:00",
+      "at": "2026-10-25T04:51:14.708561+00:00",
       "passed": false,
       "failed": [
-        "More buys than sells (1h)"
+        "Creator share",
+        "Top 10 holders"
       ]
     },
     "0xb7cd6872af887057febe38f6d1ecf46a878068a1bf2c1b65d6744da84f4c0160": {
@@ -239,7 +223,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-25T04:41:15.799233+00:00",
+      "at": "2026-10-25T04:51:14.708561+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -247,37 +231,32 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-25T04:11:03.173294+00:00",
-      "used_this_run": false
+      "at": "2026-10-25T04:51:14.708561+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-25T02:31:04.361548+00:00",
-      "used_this_run": false
+      "at": "2026-10-25T04:51:14.708561+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 19,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-25T04:41:15.799233+00:00",
+      "at": "2026-10-25T04:51:14.708561+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0xe7e4dc6060802713df8d0787a8f1422263eb29ebe567c14c75fcab34a6d4b72a": "FAIL|Liquidity: $2 (need $5,000+ on Pools.trade)",
-    "0x5332c687fde7cc382129b773b63e91f8dda265f6e3ae40e6480afea5a68e83d7": "FAIL|Liquidity: $3 (need $5,000+ on Pools.trade)",
-    "0x4f3ee18e28b4cb05cfe3cfda0f9e69784efb911e228f58ea2aefc9c6a6108a9a": "FAIL|Liquidity: $3 (need $5,000+ on Pools.trade)",
-    "0xcc66ecd8e05ce2a279c8927c96713d882d770689a6a91182bd2fc4ef83cd8aba": "FAIL|Liquidity: $8 (need $5,000+ on Pools.trade)",
-    "0xc5a0feca38a60bc3fe674aff572766ba2e78989d1997103800b061e016ad76e3": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
     "0xeebe8d3a6b3ea4af1a3ba51dd0643c228317adcefa3bcfda3eff3358119fb9fa": "FAIL|Liquidity: $3 (need $5,000+ on Pools.trade)",
     "0x34abd65d35985f9c6a0474dc5ccd37a9f9803edf222b52b2360f93578e8f0b75": "FAIL|Liquidity: $10 (need $5,000+ on Pools.trade)",
     "0xae9c621c4d1bb68a5a0095ad290264022c41b95ecc3715e4be14d959634dc7ba": "FAIL|Liquidity: $10 (need $5,000+ on Pools.trade)",
     "0x8378c3c3f488cf888e42390dff4df49118dea70b0f4cfc57e2b61c7942b2d1c0": "FAIL|Liquidity: $16 (need $5,000+ on Pools.trade)",
-    "0x139372c57465ea94595a9c8c65926fddc16989f2b9a6b81240a31b8cb5c6ef4b": "FAIL|More buys than sells (1h): 4 buys vs 6 sells",
+    "0x139372c57465ea94595a9c8c65926fddc16989f2b9a6b81240a31b8cb5c6ef4b": "FAIL|Creator share: 7.73% (need under 5%); Top 10 holders: 57.1% (need under 30%; pools, launchpad and burn addresses left out)",
     "0xb7cd6872af887057febe38f6d1ecf46a878068a1bf2c1b65d6744da84f4c0160": "FAIL|Liquidity: $3 (need $5,000+ on Pools.trade)"
   },
   "launchpad_tokens": {
@@ -4249,9 +4228,9 @@
       "graduated": "2026-10-23T12:01:11Z",
       "symbol": "YUMI",
       "title": "Yumi",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 9900.8899,
+      "liquidity_usd": 9909.7691,
       "market_cap_usd": 10149.65366
     },
     "0x44c80b9453f787c86a9d46cd8c91dd9e28cc5826": {
@@ -4632,7 +4611,7 @@
       "graduated": "2026-10-24T00:58:20Z",
       "symbol": "YMB",
       "title": "You Missed Bitches",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6485.4944,
       "market_cap_usd": 6313.282412
@@ -4701,7 +4680,7 @@
       "graduated": "2026-10-24T04:50:47Z",
       "symbol": "ELON",
       "title": "ELON",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6034.5844,
       "market_cap_usd": 6016.781127
@@ -4741,7 +4720,7 @@
       "graduated": "2026-10-24T05:40:34Z",
       "symbol": "DIFC",
       "title": "Establish Middle East",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6027.9673,
       "market_cap_usd": 5998.127567
@@ -4751,7 +4730,7 @@
       "graduated": "2026-10-24T06:11:53Z",
       "symbol": "DIFC",
       "title": "Establish Middle East",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6074.2872,
       "market_cap_usd": 5995.111394
@@ -4761,7 +4740,7 @@
       "graduated": "2026-10-24T06:54:56Z",
       "symbol": "FRANCE",
       "title": "France",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5968.00435
     },
@@ -4770,7 +4749,7 @@
       "graduated": "2026-10-24T06:52:06Z",
       "symbol": "FRANCE",
       "title": "France",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5948.7981,
       "market_cap_usd": 5965.139583
@@ -4950,7 +4929,7 @@
       "graduated": "2026-10-24T22:36:22Z",
       "symbol": "CREORA",
       "title": "Creora",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 22558380.12
     },
@@ -4959,7 +4938,7 @@
       "graduated": "2026-10-24T22:39:02Z",
       "symbol": "MIMO",
       "title": "Mimo Exchange",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 3.3086,
       "market_cap_usd": 1206439.399
@@ -4969,7 +4948,7 @@
       "graduated": "2026-10-24T22:40:18Z",
       "symbol": "LFT",
       "title": "Larp Farming Template",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 2231729.227
@@ -4989,7 +4968,7 @@
       "graduated": "2026-10-24T22:58:52Z",
       "symbol": "GH0ST",
       "title": "GH0ST",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 10.6347,
       "market_cap_usd": 713009.9046
@@ -4999,7 +4978,7 @@
       "graduated": "2026-10-24T22:53:48Z",
       "symbol": "LFT",
       "title": "Larp Farming Template",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 3.0722,
       "market_cap_usd": 1096847.131
@@ -5019,7 +4998,7 @@
       "graduated": "2026-10-24T23:01:29Z",
       "symbol": "NIHAO",
       "title": "nihao",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 96961.1523
     },
@@ -5038,14 +5017,14 @@
       "graduated": "2026-10-24T23:20:08Z",
       "symbol": "BLACKOCT",
       "title": "BLACKOCTOBER",
-      "seen": "2026-10-25T04:41:15.799233+00:00",
+      "seen": "2026-10-25T04:51:14.708561+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 2.8359,
       "market_cap_usd": 26536892.36
     }
   },
   "graduations": {
-    "at": "2026-10-25T04:41:15.799233+00:00",
+    "at": "2026-10-25T04:51:14.708561+00:00",
     "hours": 24,
     "seen": {
       "0x58ee94d32a0c1da11b2de28548fa3960acbc404e": "2026-10-24T12:42:50.911700+00:00",
@@ -5059,7 +5038,7 @@
       "0x5a8e6bb390b51978b0cea029a070cfcdd495138e",
       "0xbd095fb55f55d59f1e16115dabe3b81d5ce035dc"
     ],
-    "scanned_to": 97321891,
+    "scanned_to": 97327486,
     "complete": true
   },
   "issues_to_close": [],
@@ -5184,7 +5163,7 @@
       0
     ],
     "2026-10-25 04:00": [
-      5,
+      6,
       0,
       0
     ]
