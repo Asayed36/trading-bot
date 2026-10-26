@@ -385,7 +385,7 @@
       "failed": []
     },
     "onchain:0x9c871e6e297d8e1e70c5389f9e028b450b50b00f": {
-      "at": "2026-10-26T15:21:00.777041+00:00",
+      "at": "2026-10-26T16:21:03.000307+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
@@ -431,7 +431,7 @@
       ]
     },
     "0x6aab2f2a246da21a5e2c80914c6d186cd57157ecb8cf98e9f24a826c314cb75a": {
-      "at": "2026-10-26T15:21:00.777041+00:00",
+      "at": "2026-10-26T16:21:03.000307+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -572,6 +572,13 @@
       "failed": [
         "Liquidity"
       ]
+    },
+    "0xeba5c93b5adb45487d6daf9661632ba7e663011654dd9ccf561a1efbe490d656": {
+      "at": "2026-10-26T16:21:03.000307+00:00",
+      "passed": false,
+      "failed": [
+        "Top 10 holders"
+      ]
     }
   },
   "sources": {
@@ -580,15 +587,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-26T16:11:15.249873+00:00",
+      "at": "2026-10-26T16:21:03.000307+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 1,
+      "calls": 3,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-26T16:11:15.249873+00:00",
+      "at": "2026-10-26T16:21:03.000307+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -596,21 +603,21 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-26T14:40:57.462688+00:00",
-      "used_this_run": false
+      "at": "2026-10-26T16:21:03.000307+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 8,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-26T16:11:15.249873+00:00",
+      "at": "2026-10-26T16:21:03.000307+00:00",
       "used_this_run": true
     }
   },
   "logged": {
     "0x4c38de79e86a5ac8a87607369ccedab969c9e76e1a97f74c5b9389ab60bbc717": "PASS|",
-    "onchain:0x9c871e6e297d8e1e70c5389f9e028b450b50b00f": "FAIL|Liquidity: $4,190 (need $10,000+ on Pons)",
+    "onchain:0x9c871e6e297d8e1e70c5389f9e028b450b50b00f": "FAIL|Liquidity: $4,980 (need $10,000+ on Pons)",
     "0x1be90dd4a5aa41b4f2ebd1a4e9e149434ee67ea19c2fa184794d998d51b8953b": "PASS|",
     "0xc30b5d5181d71378fed68081b87061227b14ed93ea8ce00acb7deca700627935": "FAIL|Market cap: $6,011 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 0 buys vs 1 sells",
     "0xfac6e3e0c0bf329d1f253c5b596012447f67915adae6d4743bc2461302272feb": "FAIL|Liquidity: $7 (need $5,000+ on Pools.trade)",
@@ -633,29 +640,10 @@
     "0x534558fed42b430d0584ffe5f8bd2a8aacd5066dd8203c10dbc37dfddde65028": "FAIL|Market cap: $5,830 (need $25,000+)",
     "0xc619b41eca6d600e6613c581396490fcd2f0d2987492eaea3cfbe956f34f7997": "FAIL|Market cap: $5,876 (need $25,000+); Not down >50% in 24h: -62% in 24h",
     "0xceb5794295e304bb91fa84196bbf408655f6eaa8cf08c76d3db2822ea1ef47e8": "FAIL|Liquidity: $3 (need $5,000+ on Pools.trade)",
-    "onchain:0x112e19d51d844cc11dcda5c23ad96a527abd5cbf": "FAIL|Liquidity: $4,611 (need $10,000+ on Pons)"
+    "onchain:0x112e19d51d844cc11dcda5c23ad96a527abd5cbf": "FAIL|Liquidity: $4,611 (need $10,000+ on Pons)",
+    "0xeba5c93b5adb45487d6daf9661632ba7e663011654dd9ccf561a1efbe490d656": "FAIL|Top 10 holders: 74.6% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
-    "0xc3357b4e80cad840921481bb9db1017904528888": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-19T10:14:11Z",
-      "symbol": "MRCY",
-      "title": "Mercury 53cc3",
-      "seen": "2026-10-19T10:18:26.612882+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 26.9875,
-      "market_cap_usd": 555671.7788
-    },
-    "0x12cbc0804b503c410733859e0b4bb5adc2a28888": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-19T10:12:22Z",
-      "symbol": "MRCY",
-      "title": "Mercury df636",
-      "seen": "2026-10-19T10:18:26.612882+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 0.0,
-      "market_cap_usd": 179562.4908
-    },
     "0x99e0bdb1387179ec856619d9f22b16fc7c7f8888": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-19T10:29:21Z",
@@ -4766,7 +4754,7 @@
       "graduated": "2026-10-25T15:45:48Z",
       "symbol": "DUDU",
       "title": "DuckDUDU",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5913.852645
     },
@@ -4895,7 +4883,7 @@
       "graduated": "2026-10-25T21:14:40Z",
       "symbol": "VEKTO",
       "title": "Vekto Copilot",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 5172655.422
@@ -4984,7 +4972,7 @@
       "graduated": "2026-10-26T00:15:57Z",
       "symbol": "Gloob",
       "title": "The Rangers",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5886.9897,
       "market_cap_usd": 5856.765452
@@ -4994,7 +4982,7 @@
       "graduated": "2026-10-26T00:29:43Z",
       "symbol": "PEPECOIN",
       "title": "Make Memes Great Again",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6004.3004,
       "market_cap_usd": 5946.794127
@@ -5004,7 +4992,7 @@
       "graduated": "2026-10-26T01:13:42Z",
       "symbol": "ROBIN",
       "title": "Robin the Frog",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5886.0568,
       "market_cap_usd": 5824.66613
@@ -5014,7 +5002,7 @@
       "graduated": "2026-10-26T01:32:29Z",
       "symbol": "CROSSRATE",
       "title": "Crossrate Markets",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5913.1106,
       "market_cap_usd": 5853.995805
@@ -5024,7 +5012,7 @@
       "graduated": "2026-10-26T01:57:29Z",
       "symbol": "FOMOEGG",
       "title": "fomoegg",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5974.2148,
       "market_cap_usd": 5928.048094
@@ -5034,7 +5022,7 @@
       "graduated": "2026-10-26T01:55:07Z",
       "symbol": "FOMOEGG",
       "title": "fomoegg",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5960.9211,
       "market_cap_usd": 5913.761319
@@ -5044,7 +5032,7 @@
       "graduated": "2026-10-26T04:17:02Z",
       "symbol": "SHELLBAY",
       "title": "shellBay",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6017.594,
       "market_cap_usd": 5920.819373
@@ -5133,7 +5121,7 @@
       "graduated": "2026-10-26T12:41:17Z",
       "symbol": "PRELST",
       "title": "Prelist",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5874.1625,
       "market_cap_usd": 5842.433325
@@ -5163,7 +5151,7 @@
       "graduated": "2026-10-26T12:47:24Z",
       "symbol": "QUANTORA",
       "title": "Quantora Labs",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5875.7951,
       "market_cap_usd": 5826.188439
@@ -5173,7 +5161,7 @@
       "graduated": "2026-10-26T12:44:10Z",
       "symbol": "PRELST",
       "title": "Prelist",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5872.0635,
       "market_cap_usd": 5834.876287
@@ -5183,7 +5171,7 @@
       "graduated": "2026-10-26T12:50:20Z",
       "symbol": "PYRE",
       "title": "PYRE",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5876.4947,
       "market_cap_usd": 5843.709358
@@ -5193,7 +5181,7 @@
       "graduated": "2026-10-26T12:56:55Z",
       "symbol": "CANDLES",
       "title": "PixelCandles",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5881.6256,
       "market_cap_usd": 5841.984139
@@ -5212,7 +5200,7 @@
       "graduated": "2026-10-26T13:02:52Z",
       "symbol": "PRIA",
       "title": "Prism Assets",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5943.4294,
       "market_cap_usd": 5845.17981
@@ -5222,7 +5210,7 @@
       "graduated": "2026-10-26T13:47:52Z",
       "symbol": "ANTS",
       "title": "The Ants",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6005.6997,
       "market_cap_usd": 5907.674074
@@ -5272,9 +5260,9 @@
       "graduated": "2026-10-26T14:21:42Z",
       "symbol": "Ant",
       "title": "\u8682\u8681",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
-      "market_cap_usd": 10525.05108
+      "market_cap_usd": 5861.289393
     },
     "0xb54bc2cec4b3fc10afb4f1221af2ef3c11ea82ce": {
       "dex": "uniswap-pools-trade",
@@ -5290,10 +5278,10 @@
       "graduated": "2026-10-26T14:59:14Z",
       "symbol": "PIXELSTONK",
       "title": "PIXEL STONK",
-      "seen": "2026-10-26T16:11:15.249873+00:00",
+      "seen": "2026-10-26T16:21:03.000307+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5856.8158,
-      "market_cap_usd": 5849.8521
+      "liquidity_usd": 5845.8185,
+      "market_cap_usd": 5848.430621
     },
     "0x339cbef74891c262b180957686e2062860bfecf0": {
       "dex": "uniswap-pools-trade",
@@ -5337,7 +5325,7 @@
     }
   },
   "graduations": {
-    "at": "2026-10-26T16:11:15.249873+00:00",
+    "at": "2026-10-26T16:21:03.000307+00:00",
     "hours": 24,
     "seen": {
       "0xfcca112411268fc28c2c5acbf633c745803040a4": "2026-10-25T18:53:44.761200+00:00",
@@ -5363,7 +5351,7 @@
       "0xd56a6c45941ee8aae31ce6a30bd049e0f7489cbd",
       "0xfcca112411268fc28c2c5acbf633c745803040a4"
     ],
-    "scanned_to": 98543085,
+    "scanned_to": 98548829,
     "complete": true
   },
   "issues_to_close": [],
@@ -5493,7 +5481,7 @@
       0
     ],
     "2026-10-26 16:00": [
-      2,
+      3,
       0,
       0
     ]
