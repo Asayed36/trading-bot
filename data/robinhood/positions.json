@@ -168,6 +168,36 @@
       "created": "2026-10-26T12:26:01Z",
       "liquidity_usd": 1.8639,
       "market_cap_usd": 727036.1683
+    },
+    "0x82372c9bac110b49714eb20385a79d80d48b289e01880448007c068e7c3743a9": {
+      "pool": "0x82372c9bac110b49714eb20385a79d80d48b289e01880448007c068e7c3743a9",
+      "dex": "uniswap-pools-trade",
+      "token": "0x2f96fd33fbf44a37574a18b8b8aceb8158012a37",
+      "name": "PRELST",
+      "title": "Prelist",
+      "created": "2026-10-26T12:41:17Z",
+      "liquidity_usd": 5854.0381,
+      "market_cap_usd": 5842.433325
+    },
+    "0x6aab2f2a246da21a5e2c80914c6d186cd57157ecb8cf98e9f24a826c314cb75a": {
+      "pool": "0x6aab2f2a246da21a5e2c80914c6d186cd57157ecb8cf98e9f24a826c314cb75a",
+      "dex": "uniswap-pools-trade",
+      "token": "0xc7c878df504144b0041e58b0a667d1d929479ca9",
+      "name": "HEUMPA",
+      "title": "UseHeumpa",
+      "created": "2026-10-26T12:37:20Z",
+      "liquidity_usd": 5846.0592,
+      "market_cap_usd": 5845.472886
+    },
+    "0x2b2c9912c327ab526f45d44089802e0825e1825ad1e254adf5b23f86e8729f15": {
+      "pool": "0x2b2c9912c327ab526f45d44089802e0825e1825ad1e254adf5b23f86e8729f15",
+      "dex": "uniswap-pools-trade",
+      "token": "0xa82b4c6ca6de808a574da2ab6859695d6e3022e8",
+      "name": "PRIA",
+      "title": "Prism Assets",
+      "created": "2026-10-26T12:31:46Z",
+      "liquidity_usd": 5840.721,
+      "market_cap_usd": 5840.026565
     }
   },
   "checked": {
@@ -187,6 +217,14 @@
       "at": "2026-10-26T12:21:30.695087+00:00",
       "passed": true,
       "failed": []
+    },
+    "0xc30b5d5181d71378fed68081b87061227b14ed93ea8ce00acb7deca700627935": {
+      "at": "2026-10-26T12:45:52.978955+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h"
+      ]
     }
   },
   "sources": {
@@ -195,7 +233,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-26T12:31:04.384182+00:00",
+      "at": "2026-10-26T12:45:52.978955+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -203,8 +241,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-26T12:21:30.695087+00:00",
-      "used_this_run": false
+      "at": "2026-10-26T12:45:52.978955+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -219,15 +257,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-26T12:31:04.384182+00:00",
+      "at": "2026-10-26T12:45:52.978955+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "onchain:0x4e74eaa2d6006d0d5195a870037d0fbf0e33b928": "FAIL|More buys than sells (1h): 94 buys vs 121 sells",
     "0x4c38de79e86a5ac8a87607369ccedab969c9e76e1a97f74c5b9389ab60bbc717": "PASS|",
     "onchain:0x9c871e6e297d8e1e70c5389f9e028b450b50b00f": "FAIL|Liquidity: $9,116 (need $10,000+ on Pons)",
-    "0x1be90dd4a5aa41b4f2ebd1a4e9e149434ee67ea19c2fa184794d998d51b8953b": "PASS|"
+    "0x1be90dd4a5aa41b4f2ebd1a4e9e149434ee67ea19c2fa184794d998d51b8953b": "PASS|",
+    "0xc30b5d5181d71378fed68081b87061227b14ed93ea8ce00acb7deca700627935": "FAIL|Market cap: $6,041 (need $25,000+); Not down >50% in 24h: -61% in 24h"
   },
   "launchpad_tokens": {
     "0x5f895fd2238ea36a7f0b3592eef108e797817777": {
@@ -249,16 +287,6 @@
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 483848.578
-    },
-    "0x73888fa1eeaaafd94190ced85997ec2a8b0e7777": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-19T06:45:43Z",
-      "symbol": "ISO",
-      "title": "Isotope 956b3",
-      "seen": "2026-10-19T06:52:54.749681+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 0.0,
-      "market_cap_usd": 104256.5211
     },
     "0x7e2353e760ca4ecde5997498a65464f2ed030000": {
       "dex": "uniswap-pools-trade",
@@ -4549,7 +4577,7 @@
       "graduated": "2026-10-25T15:45:48Z",
       "symbol": "DUDU",
       "title": "DuckDUDU",
-      "seen": "2026-10-26T12:31:04.384182+00:00",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5913.852645
     },
@@ -4678,7 +4706,7 @@
       "graduated": "2026-10-25T21:14:40Z",
       "symbol": "VEKTO",
       "title": "Vekto Copilot",
-      "seen": "2026-10-26T12:31:04.384182+00:00",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 5172655.422
@@ -4717,7 +4745,7 @@
       "graduated": "2026-10-25T21:15:50Z",
       "symbol": "GAGE",
       "title": "GAGE",
-      "seen": "2026-10-26T12:31:04.384182+00:00",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 113484072.9
@@ -4767,7 +4795,7 @@
       "graduated": "2026-10-26T00:15:57Z",
       "symbol": "Gloob",
       "title": "The Rangers",
-      "seen": "2026-10-26T12:31:04.384182+00:00",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5872.0969,
       "market_cap_usd": 5856.765452
@@ -4777,7 +4805,7 @@
       "graduated": "2026-10-26T00:29:43Z",
       "symbol": "PEPECOIN",
       "title": "Make Memes Great Again",
-      "seen": "2026-10-26T12:31:04.384182+00:00",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5991.2219,
       "market_cap_usd": 5946.794127
@@ -4787,7 +4815,7 @@
       "graduated": "2026-10-26T01:13:42Z",
       "symbol": "ROBIN",
       "title": "Robin the Frog",
-      "seen": "2026-10-26T12:31:04.384182+00:00",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5871.1664,
       "market_cap_usd": 5824.66613
@@ -4797,7 +4825,7 @@
       "graduated": "2026-10-26T01:32:29Z",
       "symbol": "CROSSRATE",
       "title": "Crossrate Markets",
-      "seen": "2026-10-26T12:31:04.384182+00:00",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5920.4844,
       "market_cap_usd": 5861.21958
@@ -4807,7 +4835,7 @@
       "graduated": "2026-10-26T01:57:29Z",
       "symbol": "FOMOEGG",
       "title": "fomoegg",
-      "seen": "2026-10-26T12:31:04.384182+00:00",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5959.1013,
       "market_cap_usd": 5928.048094
@@ -4817,7 +4845,7 @@
       "graduated": "2026-10-26T01:55:07Z",
       "symbol": "FOMOEGG",
       "title": "fomoegg",
-      "seen": "2026-10-26T12:31:04.384182+00:00",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5945.8413,
       "market_cap_usd": 5913.761319
@@ -4827,9 +4855,9 @@
       "graduated": "2026-10-26T04:17:02Z",
       "symbol": "SHELLBAY",
       "title": "shellBay",
-      "seen": "2026-10-26T12:31:04.384182+00:00",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6016.5847,
+      "liquidity_usd": 6005.1131,
       "market_cap_usd": 5957.7261
     },
     "0xb02d2fc276fe6bf2940f9bfb1b4886bd945b85c9": {
@@ -4837,7 +4865,7 @@
       "graduated": "2026-10-26T04:10:07Z",
       "symbol": "SHELLBAY",
       "title": "shellbay",
-      "seen": "2026-10-26T12:31:04.384182+00:00",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5869.7706,
       "market_cap_usd": 5830.092924
@@ -4910,10 +4938,40 @@
       "source": "geckoterminal",
       "liquidity_usd": 1.8639,
       "market_cap_usd": 727036.1683
+    },
+    "0x2f96fd33fbf44a37574a18b8b8aceb8158012a37": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-26T12:41:17Z",
+      "symbol": "PRELST",
+      "title": "Prelist",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 5854.0381,
+      "market_cap_usd": 5842.433325
+    },
+    "0xc7c878df504144b0041e58b0a667d1d929479ca9": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-26T12:37:20Z",
+      "symbol": "HEUMPA",
+      "title": "UseHeumpa",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 5846.0592,
+      "market_cap_usd": 5845.472886
+    },
+    "0xa82b4c6ca6de808a574da2ab6859695d6e3022e8": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-26T12:31:46Z",
+      "symbol": "PRIA",
+      "title": "Prism Assets",
+      "seen": "2026-10-26T12:45:52.978955+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 5840.721,
+      "market_cap_usd": 5840.026565
     }
   },
   "graduations": {
-    "at": "2026-10-26T12:31:04.384182+00:00",
+    "at": "2026-10-26T12:45:52.978955+00:00",
     "hours": 24,
     "seen": {
       "0xfcca112411268fc28c2c5acbf633c745803040a4": "2026-10-25T18:53:44.761200+00:00",
@@ -4933,7 +4991,7 @@
       "0xd0ff6d6fa0228f03d09f74ebce557726d2d4ee77",
       "0xfcca112411268fc28c2c5acbf633c745803040a4"
     ],
-    "scanned_to": 98413907,
+    "scanned_to": 98422542,
     "complete": true
   },
   "issues_to_close": [],
@@ -5061,7 +5119,7 @@
       0
     ],
     "2026-10-26 12:00": [
-      4,
+      5,
       0,
       0
     ]
