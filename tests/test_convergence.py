@@ -174,10 +174,10 @@ class FlowTests(unittest.TestCase):
         when = now_utc() - timedelta(minutes=minutes_ago)
         self.live.setdefault(wallet, []).append(_swap(mint, side, 0.5, 100.0, when))
 
-    def build_list(self):
-        self.go()                                  # weekly list: whale, h0, h1
+    def build_list(self, now=None):
+        self.go(now=now)                           # weekly list: whale, h0, h1
         self.assertEqual(sorted(w["wallet"] for w in self.state()["tracked"]), sorted(TRACKED))
-        self.go()                                  # first look at each wallet
+        self.go(now=now)                           # first look at each wallet
 
     def test_three_wallets_converge_then_smart_money_exit(self):
         self.build_list()
@@ -276,13 +276,17 @@ class FlowTests(unittest.TestCase):
         self.assertNotIn("helius", self.state())
 
     def test_refresh_waits_to_keep_credits_for_live_checks(self):
-        self.build_list()
+        # A fixed moment in the middle of a Helius cycle (it starts on the 28th), not the real
+        # clock: in the last day of a cycle the credits kept for live checks shrink to almost
+        # nothing, so this much used no longer leaves too little for a refresh.
+        t0 = datetime(2026, 10, 10, 12, 0, tzinfo=timezone.utc)
+        self.build_list(now=t0)
         state = self.state()
-        state["list_updated"] = (now_utc() - timedelta(days=8)).isoformat()   # refresh due
+        state["list_updated"] = (t0 - timedelta(days=8)).isoformat()   # refresh due
         state["helius"]["used"] = state["helius"]["cap"] - 1_000  # less than one refresh slice
         with open(os.path.join(self.folder, "positions.json"), "w") as fh:
             json.dump(state, fh)
-        _, plan, _ = self.go()
+        _, plan, _ = self.go(now=t0)
         self.assertTrue(any("refresh waiting" in n for n in plan["notes"]))
 
 

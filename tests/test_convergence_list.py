@@ -10,7 +10,7 @@ import os
 import sys
 import tempfile
 import unittest
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -201,7 +201,11 @@ class GrowingListTests(Base):
         self.assertNotIn("refresh", self.state())             # the round finished
 
     def test_scoring_waits_once_todays_share_is_used(self):
-        t0 = now_utc()
+        # A fixed moment in the middle of a Helius cycle (the cycle starts on the 28th: here
+        # 2026-09-28 00:00 UTC, 12.5 days in), not the real clock: near a cycle's end the
+        # credits left per day are too few to leave any share for the day.
+        t0 = datetime(2026, 10, 10, 12, 0, tzinfo=timezone.utc)
+        self.assertEqual(FAST["convergence"]["helius_cycle_day"], 28)
         self.go(now=t0)
         state = self.state()
         state["list_updated"] = (t0 - timedelta(days=2)).isoformat()     # a round is due
