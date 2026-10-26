@@ -73,7 +73,10 @@ class HeliusPaceTests(unittest.TestCase):
 
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.t0 = now_utc()
+        # Fixed, in the middle of a Helius cycle (it starts on the 28th): the tests run up to an
+        # hour of "time", which crosses the cycle end (and resets the credits) if started in
+        # the last hour of a cycle.
+        self.t0 = datetime(2026, 10, 10, 12, 0, tzinfo=timezone.utc)
         self.live = {}
 
     def tearDown(self):
