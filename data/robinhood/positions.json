@@ -320,6 +320,26 @@
       "created": "2026-10-26T01:32:29Z",
       "liquidity_usd": 23549.1125,
       "market_cap_usd": 32215.88182
+    },
+    "0xed7ae945e7e2daa4b19db8a0ac0c664ea47485e653e930058025535c5674040d": {
+      "pool": "0xed7ae945e7e2daa4b19db8a0ac0c664ea47485e653e930058025535c5674040d",
+      "dex": "uniswap-pools-trade",
+      "token": "0x94deb390efa09db90fb4bf75c01731feba157273",
+      "name": "FOMOEGG",
+      "title": "fomoegg",
+      "created": "2026-10-26T01:57:29Z",
+      "liquidity_usd": 19234.5183,
+      "market_cap_usd": 28185.24523
+    },
+    "0x9e39346044e1fc3d28d304f4c3b0bd9db1cb2ce0391de19adebaca30d0b45adc": {
+      "pool": "0x9e39346044e1fc3d28d304f4c3b0bd9db1cb2ce0391de19adebaca30d0b45adc",
+      "dex": "uniswap-pools-trade",
+      "token": "0xe4c3020e6d84c54908c5f383d3831100101d1802",
+      "name": "FOMOEGG",
+      "title": "fomoegg",
+      "created": "2026-10-26T01:55:07Z",
+      "liquidity_usd": 5826.8284,
+      "market_cap_usd": 5815.296606
     }
   },
   "checked": {
@@ -359,21 +379,21 @@
       ]
     },
     "0xd153ba7c0902f431d4d8882d6951d503e75c834c4d9b03111ac2ef77a88c47a4": {
-      "at": "2026-10-26T00:51:06.081164+00:00",
+      "at": "2026-10-26T02:01:56.820814+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
     "0x894adbcfb3ae4497d98c75857b073b1b3d5c94f3b13780e4997e286d8cd89ec0": {
-      "at": "2026-10-26T00:51:06.081164+00:00",
+      "at": "2026-10-26T02:01:56.820814+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
     "0x6d6f2161f1b0956fbee8b435290d1c5a5c17fa84c469225b1cad72656d874beb": {
-      "at": "2026-10-26T00:51:06.081164+00:00",
+      "at": "2026-10-26T02:01:56.820814+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
@@ -443,11 +463,12 @@
       ]
     },
     "0xcc04029ad1c43f7684e8fee910725e1bc26b8b6091ccb62e46a481210a3c36e6": {
-      "at": "2026-10-26T00:51:06.081164+00:00",
+      "at": "2026-10-26T02:01:56.820814+00:00",
       "passed": false,
       "failed": [
         "Market cap",
-        "Not down >50% in 24h"
+        "Not down >50% in 24h",
+        "More buys than sells (1h)"
       ]
     },
     "0x6c7cd8e378bbb46b2416cbb36b893a46f78d88e66fa87e632b215ee831d614d9": {
@@ -470,7 +491,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-26T01:50:03.553362+00:00",
+      "at": "2026-10-26T02:01:56.820814+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -478,7 +499,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-26T01:50:03.553362+00:00",
+      "at": "2026-10-26T02:01:56.820814+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -494,7 +515,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-26T01:50:03.553362+00:00",
+      "at": "2026-10-26T02:01:56.820814+00:00",
       "used_this_run": true
     }
   },
@@ -516,7 +537,7 @@
     "0x94ff95c493e0b079a2ddb651cb96dc09c434621c7113d6a16512c8cb4efa6f43": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
     "0xbd825fc76343456a427020f2444f736ec74719b5ae72d04583f36fc3a622cafe": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
     "0x3ea2829751e68cc8af87fcc78db2eaa6fc3c8d542373931aea08fffd358d067d": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
-    "0xcc04029ad1c43f7684e8fee910725e1bc26b8b6091ccb62e46a481210a3c36e6": "FAIL|Market cap: $5,879 (need $25,000+); Not down >50% in 24h: -69% in 24h",
+    "0xcc04029ad1c43f7684e8fee910725e1bc26b8b6091ccb62e46a481210a3c36e6": "FAIL|Market cap: $5,860 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x6c7cd8e378bbb46b2416cbb36b893a46f78d88e66fa87e632b215ee831d614d9": "PASS|",
     "0x88f9adf36b52fd42bdf3d685b4896935df0fb2cf1517c8abec4e02cd75762ccf": "FAIL|Market cap: $5,855 (need $25,000+); Not down >50% in 24h: -69% in 24h"
   },
@@ -700,16 +721,6 @@
       "source": "chain",
       "liquidity_usd": 22363.97,
       "market_cap_usd": 60142.0
-    },
-    "0xdefb18384267d57749cec38ac1ebf73042090000": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-18T19:58:06Z",
-      "symbol": "PEUPLE",
-      "title": "Le Peuple Gagne b4855",
-      "seen": "2026-10-19T06:21:01.288418+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 42.5103,
-      "market_cap_usd": 68240.76739
     },
     "0x14310763fd050894d1e4f75362503796d56a7016": {
       "dex": "pons-v2-dex",
@@ -4990,7 +5001,7 @@
       "graduated": "2026-10-25T06:22:40Z",
       "symbol": "Chunkee",
       "title": "Chunkee",
-      "seen": "2026-10-26T01:50:03.553362+00:00",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5887.2717,
       "market_cap_usd": 5879.204637
@@ -5000,7 +5011,7 @@
       "graduated": "2026-10-25T06:51:40Z",
       "symbol": "REACHY",
       "title": "REACHY",
-      "seen": "2026-10-26T01:50:03.553362+00:00",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5952.4539,
       "market_cap_usd": 5971.794781
@@ -5030,7 +5041,7 @@
       "graduated": "2026-10-25T11:44:30Z",
       "symbol": "PANORA",
       "title": "Panora",
-      "seen": "2026-10-26T01:50:03.553362+00:00",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5873.1218,
       "market_cap_usd": 5940.700844
@@ -5080,7 +5091,7 @@
       "graduated": "2026-10-25T15:45:48Z",
       "symbol": "DUDU",
       "title": "DuckDUDU",
-      "seen": "2026-10-26T01:50:03.553362+00:00",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5932.52689
     },
@@ -5209,7 +5220,7 @@
       "graduated": "2026-10-25T21:14:40Z",
       "symbol": "VEKTO",
       "title": "Vekto Copilot",
-      "seen": "2026-10-26T01:50:03.553362+00:00",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 13.454,
       "market_cap_usd": 5172655.422
@@ -5228,7 +5239,7 @@
       "graduated": "2026-10-25T21:19:11Z",
       "symbol": "WORM",
       "title": "Agent Wormhole",
-      "seen": "2026-10-26T01:50:03.553362+00:00",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 35454104.56
@@ -5238,7 +5249,7 @@
       "graduated": "2026-10-25T21:16:33Z",
       "symbol": "VRAX",
       "title": "Commander Vrax",
-      "seen": "2026-10-26T01:50:03.553362+00:00",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 123659493.1
@@ -5248,7 +5259,7 @@
       "graduated": "2026-10-25T21:15:50Z",
       "symbol": "GAGE",
       "title": "GAGE",
-      "seen": "2026-10-26T01:50:03.553362+00:00",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 113484072.9
@@ -5298,7 +5309,7 @@
       "graduated": "2026-10-26T00:15:57Z",
       "symbol": "Gloob",
       "title": "The Rangers",
-      "seen": "2026-10-26T01:50:03.553362+00:00",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5817.0946,
       "market_cap_usd": 5856.765452
@@ -5308,7 +5319,7 @@
       "graduated": "2026-10-26T00:29:43Z",
       "symbol": "PEPECOIN",
       "title": "Make Memes Great Again",
-      "seen": "2026-10-26T01:50:03.553362+00:00",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5932.5516,
       "market_cap_usd": 5931.593309
@@ -5318,7 +5329,7 @@
       "graduated": "2026-10-26T01:13:42Z",
       "symbol": "ROBIN",
       "title": "Robin the Frog",
-      "seen": "2026-10-26T01:50:03.553362+00:00",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5816.1728,
       "market_cap_usd": 5824.66613
@@ -5328,14 +5339,34 @@
       "graduated": "2026-10-26T01:32:29Z",
       "symbol": "CROSSRATE",
       "title": "Crossrate Markets",
-      "seen": "2026-10-26T01:50:03.553362+00:00",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5881.452,
-      "market_cap_usd": 5862.042071
+      "liquidity_usd": 5843.5014,
+      "market_cap_usd": 5820.355156
+    },
+    "0x94deb390efa09db90fb4bf75c01731feba157273": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-26T01:57:29Z",
+      "symbol": "FOMOEGG",
+      "title": "fomoegg",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 15771.6491,
+      "market_cap_usd": 22643.09532
+    },
+    "0xe4c3020e6d84c54908c5f383d3831100101d1802": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-26T01:55:07Z",
+      "symbol": "FOMOEGG",
+      "title": "fomoegg",
+      "seen": "2026-10-26T02:01:56.820814+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 5826.8284,
+      "market_cap_usd": 5815.296606
     }
   },
   "graduations": {
-    "at": "2026-10-26T01:50:03.553362+00:00",
+    "at": "2026-10-26T02:01:56.820814+00:00",
     "hours": 24,
     "seen": {
       "0xfcca112411268fc28c2c5acbf633c745803040a4": "2026-10-25T18:53:44.761200+00:00",
@@ -5347,7 +5378,7 @@
       "0xb6e08c7d4f7f6f0509dbfdcd752b1afae09fd7f8",
       "0xfcca112411268fc28c2c5acbf633c745803040a4"
     ],
-    "scanned_to": 98048624,
+    "scanned_to": 98055391,
     "complete": true
   },
   "issues_to_close": [],
@@ -5358,11 +5389,6 @@
     "0xb6e08c7d4f7f6f0509dbfdcd752b1afae09fd7f8": "2026-10-25T19:11:07.185670+00:00"
   },
   "gecko_hours": {
-    "2026-10-25 02:00": [
-      6,
-      0,
-      0
-    ],
     "2026-10-25 03:00": [
       6,
       0,
@@ -5475,6 +5501,11 @@
     ],
     "2026-10-26 01:00": [
       6,
+      0,
+      0
+    ],
+    "2026-10-26 02:00": [
+      1,
       0,
       0
     ]
