@@ -228,36 +228,35 @@
   },
   "checked": {
     "onchain:0x064b2ecb710de3617007b5b25572d43c23fb8f41": {
-      "at": "2026-10-27T04:01:08.587095+00:00",
+      "at": "2026-10-27T05:11:22.608087+00:00",
       "passed": false,
       "failed": [
-        "Creator share",
-        "Top 10 holders"
+        "More buys than sells (1h)"
       ]
     },
     "0xd3a6a0f3c91ae00e510f1d7137d4a0d216d63baa5c911521a4b4bd123eb4dacf": {
-      "at": "2026-10-27T04:01:08.587095+00:00",
+      "at": "2026-10-27T05:11:22.608087+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
     "onchain:0x2fadd42a9e5193aa7d535806e4d4d8b879013dd2": {
-      "at": "2026-10-27T04:11:19.823889+00:00",
+      "at": "2026-10-27T05:11:22.608087+00:00",
       "passed": false,
       "failed": [
         "Not a copycat"
       ]
     },
     "0xe65f9a31fbae8110f5088e89e222863b47630c29a0e4875ac15d5d0bb638c16e": {
-      "at": "2026-10-27T04:11:19.823889+00:00",
+      "at": "2026-10-27T05:11:22.608087+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
     "0x548cfcf69ab4656122f83ec6cf48f99e6e49dcbd961a90cbe56043462725687e": {
-      "at": "2026-10-27T04:01:08.587095+00:00",
+      "at": "2026-10-27T05:11:22.608087+00:00",
       "passed": false,
       "failed": [
         "Creator share"
@@ -283,14 +282,14 @@
       "failed": []
     },
     "0xfd48a137eee9e2fe85326328d60f8df651e8aa6decec99547f1576dc2cd1b810": {
-      "at": "2026-10-27T04:01:08.587095+00:00",
+      "at": "2026-10-27T05:11:22.608087+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
     "0x1186c51580c42965953f8086952ca783087579fa4f3f789eab738123edc7f54b": {
-      "at": "2026-10-27T04:11:19.823889+00:00",
+      "at": "2026-10-27T05:11:22.608087+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -299,17 +298,19 @@
       ]
     },
     "0x75309867a8f2505844aec6c68f42a1b479f58c617609606c16cd4c0a41bdcb41": {
-      "at": "2026-10-27T04:11:19.823889+00:00",
+      "at": "2026-10-27T05:11:22.608087+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
     "0xf9ba6f0b75f2d19b81b15033022597617ee79c39d4a16c419303ac323f119416": {
-      "at": "2026-10-27T04:11:19.823889+00:00",
+      "at": "2026-10-27T05:11:22.608087+00:00",
       "passed": false,
       "failed": [
-        "Not a copycat"
+        "Market cap",
+        "Not down >50% in 24h",
+        "More buys than sells (1h)"
       ]
     }
   },
@@ -319,37 +320,36 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-27T05:01:01.356264+00:00",
+      "at": "2026-10-27T05:11:22.608087+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 1,
-      "errors": 0,
-      "rate_limited": 0,
-      "ok": true,
-      "at": "2026-10-27T04:41:23.651886+00:00",
-      "used_this_run": false
-    },
-    "goplus": {
       "calls": 3,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-27T04:01:08.587095+00:00",
-      "used_this_run": false
+      "at": "2026-10-27T05:11:22.608087+00:00",
+      "used_this_run": true
     },
-    "rpc": {
-      "calls": 4,
+    "goplus": {
+      "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-27T05:01:01.356264+00:00",
+      "at": "2026-10-27T05:11:22.608087+00:00",
+      "used_this_run": true
+    },
+    "rpc": {
+      "calls": 14,
+      "errors": 0,
+      "rate_limited": 0,
+      "ok": true,
+      "at": "2026-10-27T05:11:22.608087+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "onchain:0x9d40eb4023ceff04b4ff7bad7d8d77480f412198": "FAIL|Liquidity: $4,412 (need $10,000+ on Pons)",
-    "onchain:0x064b2ecb710de3617007b5b25572d43c23fb8f41": "FAIL|Creator share: 5.00% (need under 5%); Top 10 holders: 35.8% (need under 30%; pools, launchpad and burn addresses left out)",
+    "onchain:0x064b2ecb710de3617007b5b25572d43c23fb8f41": "FAIL|More buys than sells (1h): 2 buys vs 9 sells",
     "0xd3a6a0f3c91ae00e510f1d7137d4a0d216d63baa5c911521a4b4bd123eb4dacf": "FAIL|Liquidity: $38 (need $5,000+ on Pools.trade)",
     "onchain:0x2fadd42a9e5193aa7d535806e4d4d8b879013dd2": "FAIL|Not a copycat: 1 earlier Pons/Pools.trade token(s) called mm in the last 7 days; the first, 0x21f69f4cf398fe996d287e468621a6c008a51039, graduated 2.2 h before this one (ignored: 1 graduated later)",
     "0xe65f9a31fbae8110f5088e89e222863b47630c29a0e4875ac15d5d0bb638c16e": "FAIL|Liquidity: $40 (need $5,000+ on Pools.trade)",
@@ -360,7 +360,7 @@
     "0xfd48a137eee9e2fe85326328d60f8df651e8aa6decec99547f1576dc2cd1b810": "FAIL|Liquidity: $75 (need $5,000+ on Pools.trade)",
     "0x1186c51580c42965953f8086952ca783087579fa4f3f789eab738123edc7f54b": "FAIL|Market cap: $5,864 (need $25,000+); Not down >50% in 24h: -71% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x75309867a8f2505844aec6c68f42a1b479f58c617609606c16cd4c0a41bdcb41": "FAIL|Liquidity: $53 (need $5,000+ on Pools.trade)",
-    "0xf9ba6f0b75f2d19b81b15033022597617ee79c39d4a16c419303ac323f119416": "FAIL|Not a copycat: 1 earlier Pons/Pools.trade token(s) called KANTEI in the last 7 days; the first, 0xf4a7948ccabb21f7cbf6455f741545feed1f0000, graduated 0.1 h before this one"
+    "0xf9ba6f0b75f2d19b81b15033022597617ee79c39d4a16c419303ac323f119416": "FAIL|Market cap: $20,120 (need $25,000+); Not down >50% in 24h: -58% in 24h; More buys than sells (1h): 17 buys vs 19 sells"
   },
   "launchpad_tokens": {
     "0xea5abf9ca65c6134969befc6f11937dae1c7ac14": {
@@ -4432,7 +4432,7 @@
       "graduated": "2026-10-26T12:41:17Z",
       "symbol": "PRELST",
       "title": "Prelist",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5814.9731,
       "market_cap_usd": 5842.433325
@@ -4442,7 +4442,7 @@
       "graduated": "2026-10-26T12:37:20Z",
       "symbol": "HEUMPA",
       "title": "UseHeumpa",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5815.2039,
       "market_cap_usd": 5845.472886
@@ -4452,7 +4452,7 @@
       "graduated": "2026-10-26T12:31:46Z",
       "symbol": "PRIA",
       "title": "Prism Assets",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5809.8939,
       "market_cap_usd": 5840.026565
@@ -4462,7 +4462,7 @@
       "graduated": "2026-10-26T12:47:24Z",
       "symbol": "QUANTORA",
       "title": "Quantora Labs",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5816.5892,
       "market_cap_usd": 5826.188439
@@ -4472,7 +4472,7 @@
       "graduated": "2026-10-26T12:44:10Z",
       "symbol": "PRELST",
       "title": "Prelist",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5812.8952,
       "market_cap_usd": 5834.876287
@@ -4482,7 +4482,7 @@
       "graduated": "2026-10-26T12:50:20Z",
       "symbol": "PYRE",
       "title": "PYRE",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5817.2818,
       "market_cap_usd": 5843.709358
@@ -4492,7 +4492,7 @@
       "graduated": "2026-10-26T12:56:55Z",
       "symbol": "CANDLES",
       "title": "PixelCandles",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5822.361,
       "market_cap_usd": 5841.984139
@@ -4502,7 +4502,7 @@
       "graduated": "2026-10-26T12:54:45Z",
       "symbol": "BRANCHPOIN",
       "title": "Branchpoint",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5810.885231
     },
@@ -4511,7 +4511,7 @@
       "graduated": "2026-10-26T13:02:52Z",
       "symbol": "PRIA",
       "title": "Prism Assets",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5911.2467,
       "market_cap_usd": 5947.841435
@@ -4521,7 +4521,7 @@
       "graduated": "2026-10-26T13:47:52Z",
       "symbol": "ANTS",
       "title": "The Ants",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5937.797,
       "market_cap_usd": 5885.961115
@@ -4571,7 +4571,7 @@
       "graduated": "2026-10-26T14:21:42Z",
       "symbol": "Ant",
       "title": "\u8682\u8681",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5861.289393
     },
@@ -4589,7 +4589,7 @@
       "graduated": "2026-10-26T14:59:14Z",
       "symbol": "PIXELSTONK",
       "title": "PIXEL STONK",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5826.0512,
       "market_cap_usd": 5839.890128
@@ -4708,7 +4708,7 @@
       "graduated": "2026-10-26T19:22:51Z",
       "symbol": "PPT",
       "title": "PPT",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5774.5705,
       "market_cap_usd": 5790.83652
@@ -4728,7 +4728,7 @@
       "graduated": "2026-10-26T20:48:06Z",
       "symbol": "CIS",
       "title": "CatInSea",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6023.2235,
       "market_cap_usd": 6073.374974
@@ -4925,7 +4925,7 @@
       "graduated": "2026-10-27T02:28:18Z",
       "symbol": "LAST9",
       "title": "Last9",
-      "seen": "2026-10-27T05:01:01.356264+00:00",
+      "seen": "2026-10-27T05:11:22.608087+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5862.0686,
       "market_cap_usd": 5855.181078
@@ -4951,7 +4951,7 @@
     }
   },
   "graduations": {
-    "at": "2026-10-27T05:01:01.356264+00:00",
+    "at": "2026-10-27T05:11:22.608087+00:00",
     "hours": 24,
     "seen": {
       "0x4e74eaa2d6006d0d5195a870037d0fbf0e33b928": "2026-10-26T06:25:44.423700+00:00",
@@ -4995,7 +4995,7 @@
       "0xd0ff6d6fa0228f03d09f74ebce557726d2d4ee77",
       "0xd56a6c45941ee8aae31ce6a30bd049e0f7489cbd"
     ],
-    "scanned_to": 98986379,
+    "scanned_to": 98992416,
     "complete": true
   },
   "issues_to_close": [],
@@ -5129,7 +5129,7 @@
       0
     ],
     "2026-10-27 05:00": [
-      1,
+      2,
       0,
       0
     ]
