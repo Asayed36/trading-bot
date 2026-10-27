@@ -420,6 +420,18 @@ paper buy** (since 2026-10-09: a person's reaction time; the exits are
 measured from what they paid, and the daily comparison says from when).
 Settings: `[[main_1min.versions]]` in `config.toml`.
 
+**The "liquid" strategy (four paper versions inside the same bot).** When a token gets its
+first check (the minute its row is written to `candidates.csv`) and its pool holds at least
+$50,000 of liquidity, every version opens one $10 paper buy at the first-check price plus
+1.5%. Nothing else is checked (not main's filters, not RugCheck); a token with no price or no
+liquidity value is skipped. The versions differ only in their exits, checked every minute on
+the same prices as main (1 min)'s open positions: **l1** sells half at +50%, the rest 15%
+below its peak, everything after 30 minutes; **l2** half at +100%, trailing 20%, everything
+after 60 minutes; **l3** is l1 plus a stop loss at -25%; **l4** has no rules, it sells
+everything after 60 minutes. Costs: 3% round trip plus the 1.5% buy slippage. Files:
+`data/main-1min/liquid/l1` .. `l4` (pushed with the rest of `data/main-1min/`); one column per
+version in the daily comparison. Settings: `[liquid]` and `[[liquid.versions]]`.
+
 ## The "news (listings)" strategy (exchange listings every minute, on your own server)
 
 The news strategy for the exchange listings only, checked **every minute**

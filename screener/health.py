@@ -451,6 +451,34 @@ def add_main_1min_versions(add, folder, cfg, now):
         add(f"{name}: server", OK, detail + f" ({', '.join(rules)})")
 
 
+def add_liquid(add, folder, cfg, now):
+    """One row per version of the liquid strategy (it runs inside the main (1 min) bot):
+    open positions, and buys over the last 24 h. Information only: the main (1 min) row
+    says whether the bot is running."""
+    c, lc = cfg["main_1min"], cfg["liquid"]
+    data = _load(os.path.join(folder, c["folder"], "health.json")) or {}
+    hours = [v for k, v in (data.get("calls_per_hour") or {}).items()
+             if _utc(k) and now - _utc(k) <= timedelta(hours=24)]
+    rule = (f"buys a token's first check when liquidity is at least "
+            f"${lc['min_liquidity_usd']:,.0f}")
+    for v in lc.get("versions", []):
+        if not v.get("enabled", True):
+            continue
+        name = v.get("label") or f"main (1 min) liquid {v['name']}"
+        if v.get("stopped"):
+            held = _open_count(os.path.join(folder, v["folder"]))
+            add(f"{name}: server", INFO, f"stopped (no new buys); {held} open position(s)"
+                + (" finishing under the normal exits" if held else ": finished"))
+            continue
+        state = (data.get("versions") or {}).get(v["name"])
+        if state is None:
+            add(f"{name}: server", INFO, f"no results yet ({rule})")
+            continue
+        buys = sum(h.get(f"{v['name']} buys", 0) for h in hours)
+        add(f"{name}: server", OK, f"{state.get('open', 0)} open; last 24 h: {buys} buy(s) "
+            f"({rule})")
+
+
 def run_reasons(github, failed, most=20):
     """Why each failed run failed ("no machine", a step name, or
     "unknown"), asking GitHub about the newest `most` of them."""
@@ -667,6 +695,8 @@ def health_lines(folder, cfg, now, github=None, found=None):
     if cfg.get("main_1min", {}).get("enabled"):
         add_main_1min(add, folder, cfg, now, github)
         add_main_1min_versions(add, folder, cfg, now)
+        if cfg.get("liquid", {}).get("enabled"):
+            add_liquid(add, folder, cfg, now)
 
     # 8. The momentum strategy on your server.
     if cfg.get("momentum", {}).get("enabled"):

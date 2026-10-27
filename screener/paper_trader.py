@@ -120,6 +120,8 @@ class PaperTrader:
     price_source = "DexScreener"
     # Optional: a token_record.CreatorLedger (set by a bot; logging only).
     ledger = None
+    # The journal's reason for a buy.
+    buy_reason = "passed all filters"
 
     def __init__(self, cfg, data_folder):
         self.cfg = cfg
@@ -216,7 +218,7 @@ class PaperTrader:
             pos["buy_slippage_pct"] = slip
         self.open_positions.append(pos)
         self.state["ever_bought"].append(result.address)
-        reason = "passed all filters" + (f" (paid +{slip:g}% over the market price "
+        reason = self.buy_reason + (f" (paid +{slip:g}% over the market price "
                                          f"${market:.10g})" if slip else "")
         self._journal(when, "BUY", pos, reason, price, cost)
         self._entry(when, pos, result)

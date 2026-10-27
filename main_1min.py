@@ -66,6 +66,7 @@ from screener.filters import (PASS, best_pair, current_prices, evaluate, find_ca
                               market_checks, to_float)
 from screener.jupiter import ERROR as JUPITER_ERROR
 from screener.jupiter import JupiterOrganic
+from screener.liquid import LiquidTrader, LiquidVersion, entry_problem
 from screener.paper_trader import PaperTrader, now_utc
 from screener.settings import HERE, load_config
 from screener.token_record import CandidateLog, CreatorLedger, reprice
@@ -73,7 +74,7 @@ from screener.token_record import CandidateLog, CreatorLedger, reprice
 log = logging.getLogger("main_1min")
 HOURS_KEPT = 48            # call counts per hour kept in health.json
 # The config.toml sections the bot reads: only changes there restart it.
-CONFIG_SECTIONS = ("filters", "paper_trading", "main_1min", "api", "files")
+CONFIG_SECTIONS = ("filters", "paper_trading", "main_1min", "liquid", "api", "files")
 
 
 class SafeTrader(PaperTrader):
@@ -85,6 +86,11 @@ class SafeTrader(PaperTrader):
         with open(tmp, "w") as fh:
             json.dump(self.state, fh, indent=2)
         os.replace(tmp, self.state_path)
+
+
+class LiquidSafeTrader(LiquidTrader, SafeTrader):
+    """A "liquid" version's trader (screener/liquid.py): SafeTrader's saving and buying
+    with the liquid exits."""
 
 
 class CountingApi:
@@ -175,6 +181,12 @@ class MainOneMinute:
         self.rugcheck_paused_until = None
         self.versions = [Version(v, data_folder) for v in self.c.get("versions", [])
                          if v.get("enabled", True)]
+        # The "liquid" paper strategy ([liquid]): bought at a token's first check when
+        # its pool is liquid enough, four sets of exits (screener/liquid.py).
+        lc = cfg.get("liquid") or {}
+        self.liquid_cfg = lc
+        self.liquid = [LiquidVersion(lc, v, data_folder, self.pt["buy_amount_usd"])
+                       for v in lc.get("versions", []) if lc.get("enabled") and v.get("enabled", True)]
         # Consecutive minutes each token has passed main's checks (memory
         # only: a restart starts the counts again).
         self.streaks = {}
@@ -252,8 +264,13 @@ class MainOneMinute:
                 vtraders[v.name].organic = trader.organic
                 vtraders[v.name].ledger = self.ledger
                 vtraders[v.name].buying = not v.stopped
+            ltraders = {}
+            for lv in self.liquid:
+                ltraders[lv.name] = LiquidSafeTrader(lv.cfg, lv.folder)
+                ltraders[lv.name].ledger = self.ledger
+                ltraders[lv.name].buying = not lv.stopped
             held, seen = [], set()
-            for t in [trader, *vtraders.values()]:
+            for t in [trader, *vtraders.values(), *ltraders.values()]:
                 for pos in t.open_positions:
                     if pos["address"] not in seen:
                         seen.add(pos["address"])
@@ -334,6 +351,18 @@ class MainOneMinute:
                     lines.append(f"[{v.name}] BUY  {r.symbol} ${self.pt['buy_amount_usd']} at "
                                  f"${r.price:.10g}")
             vt.save()
+        try:
+            self._liquid(ltraders, main_results, prices, now, prices_at, pairs_at, counts, lines)
+        except Exception:
+            # An error in the liquid strategy must never stop the rest of the minute
+            # (candidates.csv, the other versions, the health file).
+            log.exception("liquid step failed this minute; the rest of the run continues")
+            counts["liquid errors"] = counts.get("liquid errors", 0) + 1
+            for lt in ltraders.values():       # keep whatever was recorded so far
+                try:
+                    lt.save()
+                except Exception:
+                    log.exception("liquid state could not be saved")
         self._record(main_results, decisions, now)
         # Only tokens a run-of-passes version could still buy are watched.
         self.streaks = {a: n for a, n in self.streaks.items()
@@ -341,15 +370,48 @@ class MainOneMinute:
                                if v.passes > 1)}
         passed = sum(r.passed for r in main_results)
         note = f", {waiting} waiting for RugCheck" if waiting else ""
-        self._health(now, before, None, counts, vtraders)
+        self._health(now, before, None, counts, vtraders, ltraders)
         extra = "".join(f"; {v.name}: {len(vtraders[v.name].open_positions)} open, "
                         f"P&L ${vtraders[v.name].state['running_total_pnl_usd']:+.2f}"
                         for v in self.versions)
+        extra += "".join(f"; {v.name}: {len(ltraders[v.name].open_positions)} open, "
+                         f"P&L ${ltraders[v.name].state['running_total_pnl_usd']:+.2f}"
+                         for v in self.liquid)
         out(f"{now:%H:%M} {len(addresses)} candidate(s), {len(main_results)} checked, {passed} "
             f"passed{note}; {len(trader.open_positions)} open; "
             f"P&L ${trader.state['running_total_pnl_usd']:+.2f}{extra}"
             + "".join(f"\n  {line}" for line in lines))
         return main_results
+
+    def _liquid(self, ltraders, main_results, prices, now, prices_at, pairs_at, counts, lines):
+        """The liquid strategy: every version's exits on the open positions, then a paper
+        buy in every version for each token whose first check is this minute (no row for it
+        in candidates.csv yet; _record writes it after this) when its liquidity is at least
+        min_liquidity_usd. Runs before _record, so "first check" is the same moment."""
+        if not self.liquid:
+            return
+        minimum = self.liquid_cfg["min_liquidity_usd"]
+        for lv in self.liquid:
+            for s in ltraders[lv.name].update(prices, when=now, fetched_at=prices_at):
+                lines.append(f"[{lv.name}] SELL {s['symbol']} {s['reason']} "
+                             f"P&L ${s['pnl_usd']:+.2f}")
+        try:
+            first = [r for r in main_results if r.address not in self.candidates.seen()]
+        except Exception as exc:           # the candidate log can't be read: buy nothing
+            log.info("liquid buys skipped this minute: %s", exc)
+            return
+        for r in first:
+            why = entry_problem(r, now, minimum)
+            if why:
+                counts["liquid skipped"] = counts.get("liquid skipped", 0) + 1
+                continue
+            for lv in self.liquid:
+                if ltraders[lv.name].buy(r, when=now, fetched_at=pairs_at):
+                    counts[f"{lv.name} buys"] = counts.get(f"{lv.name} buys", 0) + 1
+                    lines.append(f"[{lv.name}] BUY  {r.symbol} ${self.pt['buy_amount_usd']} at "
+                                 f"${r.price:.10g}")
+        for lv in self.liquid:
+            ltraders[lv.name].save()
 
     def _record(self, main_results, decisions, now):
         """candidates.csv: a row for every token checked for the first time
@@ -421,7 +483,7 @@ class MainOneMinute:
                                if not t[:1].isdigit() or t >= cutoff}
         vt.state["skipped"] = {a: x for a, x in skipped.items() if x["time"] >= cutoff}
 
-    def _health(self, now, before, error, counts=None, vtraders=None):
+    def _health(self, now, before, error, counts=None, vtraders=None, ltraders=None):
         """data/main-1min/health.json: the last good run, the last error,
         and requests per site per hour (pushed with the results)."""
         path = os.path.join(self.folder, "health.json")
@@ -453,6 +515,11 @@ class MainOneMinute:
                             if v.first_pass_only else {}),
                          **({"stopped": True} if v.stopped else {})}
                 for v in self.versions}
+        if ltraders:
+            data.setdefault("versions", {}).update({
+                v.name: {"label": v.label, "open": len(ltraders[v.name].open_positions),
+                         **({"stopped": True} if v.stopped else {})}
+                for v in self.liquid})
         for old in sorted(calls)[:-HOURS_KEPT]:
             calls.pop(old)
         if self.rugcheck_paused_until and now < self.rugcheck_paused_until:
