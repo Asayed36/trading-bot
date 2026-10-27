@@ -221,6 +221,20 @@
       "failed": [
         "More buys than sells (1h)"
       ]
+    },
+    "0x12b340ac622ad1383a8b7d439c4a13363085271b1947d5a35e54b868912b16e7": {
+      "at": "2026-10-27T22:11:06.759122+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
+    },
+    "0xc6f718fd8fe77cb7aefb0e0fb76260e9ed65e93c6cd138545ac1c6bf1075fba1": {
+      "at": "2026-10-27T22:11:06.759122+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
     }
   },
   "sources": {
@@ -229,7 +243,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-27T22:01:23.589409+00:00",
+      "at": "2026-10-27T22:11:06.759122+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -237,7 +251,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-27T22:01:23.589409+00:00",
+      "at": "2026-10-27T22:11:06.759122+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -246,44 +260,25 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-10-27T22:01:23.589409+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "rpc": {
-      "calls": 11,
-      "errors": 2,
-      "rate_limited": 1,
-      "error": "Robinhood Chain RPC said 'too many requests' (HTTP 429)",
+      "calls": 4,
+      "errors": 0,
+      "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-27T22:01:23.589409+00:00",
+      "at": "2026-10-27T22:11:06.759122+00:00",
       "used_this_run": true
     }
   },
   "logged": {
     "0x5de452f6204f17652a9eb1def0793b28d392bce04d38841a62716e7c97453923": "FAIL|Top 10 holders: 35.2% (need under 30%; pools, launchpad and burn addresses left out)",
     "onchain:0x5a2c5911c7addaefe1bf22797012348bc733b15e": "FAIL|Liquidity: $4,537 (need $10,000+ on Pons)",
-    "0x61d429b8483727213f142da1a981fd71aec636577985ad41f1bb1ca669c7bace": "FAIL|More buys than sells (1h): 202 buys vs 334 sells"
+    "0x61d429b8483727213f142da1a981fd71aec636577985ad41f1bb1ca669c7bace": "FAIL|More buys than sells (1h): 202 buys vs 334 sells",
+    "0x12b340ac622ad1383a8b7d439c4a13363085271b1947d5a35e54b868912b16e7": "FAIL|Liquidity: $8 (need $5,000+ on Pools.trade)",
+    "0xc6f718fd8fe77cb7aefb0e0fb76260e9ed65e93c6cd138545ac1c6bf1075fba1": "FAIL|Liquidity: $8 (need $5,000+ on Pools.trade)"
   },
   "launchpad_tokens": {
-    "0xa7c41a7ec64219a64a96aa7c064f54d11f077777": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-20T16:07:44Z",
-      "symbol": "EMBER",
-      "title": "Embervale 5943f",
-      "seen": "2026-10-20T16:10:42.081600+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 0.0,
-      "market_cap_usd": 411216.2303
-    },
-    "0x93787aa2113dbc4ad32a0543f7f138bbf7b30000": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-20T16:06:01Z",
-      "symbol": "EMBER",
-      "title": "Embervale 6a297",
-      "seen": "2026-10-20T16:10:42.081600+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 0.0,
-      "market_cap_usd": 11269925.69
-    },
     "0xe67f6eadb7762dbeca3699143e7ec46612661613": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-20T16:17:41Z",
@@ -4389,7 +4384,7 @@
       "graduated": "2026-10-27T02:28:18Z",
       "symbol": "LAST9",
       "title": "Last9",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5977.1869,
       "market_cap_usd": 5855.181078
@@ -4418,7 +4413,7 @@
       "graduated": "2026-10-27T05:44:05Z",
       "symbol": "YOINK",
       "title": "YOINk",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5843.983665
     },
@@ -4427,7 +4422,7 @@
       "graduated": "2026-10-27T05:54:22Z",
       "symbol": "YOINK",
       "title": "YOInk",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6094.8944,
       "market_cap_usd": 5912.528596
@@ -4437,7 +4432,7 @@
       "graduated": "2026-10-27T07:39:23Z",
       "symbol": "STAMPEDE",
       "title": "Stampede",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6081.7111,
       "market_cap_usd": 5929.934813
@@ -4467,7 +4462,7 @@
       "graduated": "2026-10-27T08:50:03Z",
       "symbol": "Chapter 1",
       "title": "Stampede",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6200.5957,
       "market_cap_usd": 6120.333009
@@ -4477,7 +4472,7 @@
       "graduated": "2026-10-27T11:06:07Z",
       "symbol": "STAMPEDE",
       "title": "Stampede",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6198.9478,
       "market_cap_usd": 6061.50883
@@ -4487,7 +4482,7 @@
       "graduated": "2026-10-27T11:21:06Z",
       "symbol": "PAD",
       "title": "Pad",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5957.8828,
       "market_cap_usd": 5812.988108
@@ -4507,7 +4502,7 @@
       "graduated": "2026-10-27T13:02:08Z",
       "symbol": "STAMPEDE",
       "title": "Stampede",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5961.414,
       "market_cap_usd": 5874.744417
@@ -4517,7 +4512,7 @@
       "graduated": "2026-10-27T13:13:26Z",
       "symbol": "fair",
       "title": "fair",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5923.5122,
       "market_cap_usd": 5844.159265
@@ -4527,7 +4522,7 @@
       "graduated": "2026-10-27T13:19:21Z",
       "symbol": "fair",
       "title": "fair",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5937.6371,
       "market_cap_usd": 5838.245999
@@ -4597,7 +4592,7 @@
       "graduated": "2026-10-27T13:46:24Z",
       "symbol": "JENMUSE",
       "title": "Jenmuse",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5971.5369,
       "market_cap_usd": 5855.208021
@@ -4607,7 +4602,7 @@
       "graduated": "2026-10-27T13:46:53Z",
       "symbol": "fair",
       "title": "fair",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6349.378,
       "market_cap_usd": 6239.17369
@@ -4637,7 +4632,7 @@
       "graduated": "2026-10-27T14:26:02Z",
       "symbol": "FARMFI",
       "title": "FARMFI",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5998.1388,
       "market_cap_usd": 5955.943031
@@ -4665,7 +4660,7 @@
       "graduated": "2026-10-27T14:20:02Z",
       "symbol": "Darla",
       "title": "The Handstand Kitten",
-      "seen": "2026-10-27T22:01:23.589409+00:00",
+      "seen": "2026-10-27T22:11:06.759122+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5901.8541,
       "market_cap_usd": 5810.275001
@@ -4791,7 +4786,7 @@
     }
   },
   "graduations": {
-    "at": "2026-10-27T22:01:23.589409+00:00",
+    "at": "2026-10-27T22:11:06.759122+00:00",
     "hours": 24,
     "seen": {
       "0x9d40eb4023ceff04b4ff7bad7d8d77480f412198": "2026-10-26T22:31:53.907200+00:00",
@@ -4827,7 +4822,7 @@
       "0xbd4da58b2460e84cb8cda44c8c1202a4f56c11c9",
       "0xec383a25b6434216eaa695c11c26b765ba061521"
     ],
-    "scanned_to": 99574053,
+    "scanned_to": 99579705,
     "complete": true
   },
   "issues_to_close": [],
@@ -4961,7 +4956,7 @@
       0
     ],
     "2026-10-27 22:00": [
-      1,
+      2,
       0,
       0
     ]
