@@ -303,7 +303,7 @@
       "pool": null,
       "dex": "pons-v2-dex",
       "token": "0x222c8e18a51a94200eec8c7819c653b7b1e077e3",
-      "name": "?",
+      "name": "ASIMOV",
       "created": "2026-10-27T15:11:05.092600+00:00",
       "source": "chain"
     },
@@ -311,7 +311,7 @@
       "pool": null,
       "dex": "pons-v2-dex",
       "token": "0x53d073f9ebff0e2d02dff361b8c27889ed7327c3",
-      "name": "?",
+      "name": "OPENGIT",
       "created": "2026-10-27T15:22:03.376000+00:00",
       "source": "chain"
     },
@@ -319,7 +319,7 @@
       "pool": null,
       "dex": "pons-v2-dex",
       "token": "0x8fc98b871678f9749d17d968a476386f2da6f831",
-      "name": "?",
+      "name": "ASIMOV",
       "created": "2026-10-27T15:22:09.338400+00:00",
       "source": "chain"
     },
@@ -336,7 +336,7 @@
   },
   "checked": {
     "0xb74afc47a3770d7f0a903570511a57d97f505af8921abdb103a2ffea74324d42": {
-      "at": "2026-10-27T15:51:14.982567+00:00",
+      "at": "2026-10-27T16:51:28.119596+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -359,7 +359,7 @@
       "failed": []
     },
     "0xeb937c80b84924f35e5f645ebd9c72d91ccdca399ab6fd6d75f64ed2ede1e20a": {
-      "at": "2026-10-27T15:51:14.982567+00:00",
+      "at": "2026-10-27T16:51:28.119596+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -368,7 +368,7 @@
       ]
     },
     "0x6eb53525d3a318350bbf44b1f22b7f4f4d75c04ea5b050a9c782d143622a85d1": {
-      "at": "2026-10-27T15:51:14.982567+00:00",
+      "at": "2026-10-27T16:51:28.119596+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -376,7 +376,7 @@
       ]
     },
     "0xe2dbbc3411b505c7d67b329954c9b955cfc555c651464192a2cab358b33a6366": {
-      "at": "2026-10-27T15:51:14.982567+00:00",
+      "at": "2026-10-27T16:51:28.119596+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -484,17 +484,18 @@
       ]
     },
     "0xa72e3779c061b71bd081f6ab2689683dbcba616a90c22404a93543210de2d5ed": {
-      "at": "2026-10-27T15:41:15.713605+00:00",
+      "at": "2026-10-27T16:51:28.119596+00:00",
       "passed": false,
       "failed": [
-        "Listed on DexScreener"
+        "Market cap",
+        "More buys than sells (1h)"
       ]
     },
     "onchain:0x222c8e18a51a94200eec8c7819c653b7b1e077e3": {
-      "at": "2026-10-27T15:41:15.713605+00:00",
+      "at": "2026-10-27T16:51:28.119596+00:00",
       "passed": false,
       "failed": [
-        "Listed on DexScreener"
+        "Liquidity"
       ]
     },
     "onchain:0x53d073f9ebff0e2d02dff361b8c27889ed7327c3": {
@@ -518,15 +519,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-27T16:40:52.528965+00:00",
+      "at": "2026-10-27T16:51:28.119596+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 1,
+      "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-27T16:40:52.528965+00:00",
+      "at": "2026-10-27T16:51:28.119596+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -542,7 +543,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-27T16:40:52.528965+00:00",
+      "at": "2026-10-27T16:51:28.119596+00:00",
       "used_this_run": true
     }
   },
@@ -566,8 +567,8 @@
     "0xcdd8071d1e9a9860b238ffbade36d0627ef60dd4dde794503f8ba73543b38d21": "FAIL|Listed on DexScreener: no DexScreener pair yet",
     "0x44bcfdc55005b77d30556fe6fa5469ccb7e1424351642e1c917bceb08537e4ea": "FAIL|Listed on DexScreener: no DexScreener pair yet",
     "0xfce2b86a25016234136f91d374446fc6d0c4cb9372ee90aaf4b5c10698fa89ba": "FAIL|Market cap: $5,853 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
-    "0xa72e3779c061b71bd081f6ab2689683dbcba616a90c22404a93543210de2d5ed": "FAIL|Listed on DexScreener: no DexScreener pair yet",
-    "onchain:0x222c8e18a51a94200eec8c7819c653b7b1e077e3": "FAIL|Listed on DexScreener: no DexScreener pair yet",
+    "0xa72e3779c061b71bd081f6ab2689683dbcba616a90c22404a93543210de2d5ed": "FAIL|Market cap: $5,825 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
+    "onchain:0x222c8e18a51a94200eec8c7819c653b7b1e077e3": "FAIL|Liquidity: $6,502 (need $10,000+ on Pons)",
     "onchain:0x53d073f9ebff0e2d02dff361b8c27889ed7327c3": "FAIL|Listed on DexScreener: no DexScreener pair yet",
     "onchain:0x8fc98b871678f9749d17d968a476386f2da6f831": "FAIL|Listed on DexScreener: no DexScreener pair yet"
   },
@@ -4708,9 +4709,9 @@
       "graduated": "2026-10-26T19:22:51Z",
       "symbol": "PPT",
       "title": "PPT",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5871.642,
+      "liquidity_usd": 5870.9667,
       "market_cap_usd": 5790.83652
     },
     "0x0ad3ff142ac49af736b980b27ab1794bda3278cd": {
@@ -4728,9 +4729,9 @@
       "graduated": "2026-10-26T20:48:06Z",
       "symbol": "CIS",
       "title": "CatInSea",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6124.2363,
+      "liquidity_usd": 6123.5319,
       "market_cap_usd": 6073.374974
     },
     "0xf7c35ca798ffb82b19d66ddaaa8d1f78f915c7a2": {
@@ -4925,9 +4926,9 @@
       "graduated": "2026-10-27T02:28:18Z",
       "symbol": "LAST9",
       "title": "Last9",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5960.3787,
+      "liquidity_usd": 5959.6931,
       "market_cap_usd": 5855.181078
     },
     "0x7c53ddafa37250675e8123aea8450adbcbc37c94": {
@@ -4954,7 +4955,7 @@
       "graduated": "2026-10-27T05:44:05Z",
       "symbol": "YOINK",
       "title": "YOINk",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5843.983665
     },
@@ -4963,9 +4964,9 @@
       "graduated": "2026-10-27T05:54:22Z",
       "symbol": "YOINK",
       "title": "YOInk",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6077.7552,
+      "liquidity_usd": 6077.0561,
       "market_cap_usd": 5912.528596
     },
     "0x15aa3c0d5e69552c9498f48f01cc7f9c076ba717": {
@@ -4973,9 +4974,9 @@
       "graduated": "2026-10-27T07:39:23Z",
       "symbol": "STAMPEDE",
       "title": "Stampede",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6064.609,
+      "liquidity_usd": 6063.9115,
       "market_cap_usd": 5929.934813
     },
     "0xe6e81eb65a0798ab32b9d069b251acaf53c20000": {
@@ -5003,9 +5004,9 @@
       "graduated": "2026-10-27T08:50:03Z",
       "symbol": "Chapter 1",
       "title": "Stampede",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6183.0276,
+      "liquidity_usd": 6177.47,
       "market_cap_usd": 6120.333009
     },
     "0x20ea1a8199f18833d84aa14078fd98a9eadd35a3": {
@@ -5013,9 +5014,9 @@
       "graduated": "2026-10-27T11:06:07Z",
       "symbol": "STAMPEDE",
       "title": "Stampede",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6181.3843,
+      "liquidity_usd": 6180.805,
       "market_cap_usd": 6061.50883
     },
     "0xff6de4cd36e12da34947978fc9e8d2ca0461bffb": {
@@ -5023,9 +5024,9 @@
       "graduated": "2026-10-27T11:21:06Z",
       "symbol": "PAD",
       "title": "Pad",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5941.0024,
+      "liquidity_usd": 5940.4456,
       "market_cap_usd": 5812.988108
     },
     "0x889f38d8cd610a3a38532c9c7a1a5ef6ecff0d86": {
@@ -5043,9 +5044,9 @@
       "graduated": "2026-10-27T13:02:08Z",
       "symbol": "STAMPEDE",
       "title": "Stampede",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5944.5236,
+      "liquidity_usd": 5940.396,
       "market_cap_usd": 5874.744417
     },
     "0x332952686ad8d01b79e7cfae830c879db6fd43b9": {
@@ -5053,9 +5054,9 @@
       "graduated": "2026-10-27T13:13:26Z",
       "symbol": "fair",
       "title": "fair",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5906.7292,
+      "liquidity_usd": 5902.6278,
       "market_cap_usd": 5844.159265
     },
     "0xb6a5672bee3c81d5d8db6daf809d7cbbc83be01e": {
@@ -5063,9 +5064,9 @@
       "graduated": "2026-10-27T13:19:21Z",
       "symbol": "fair",
       "title": "fair",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5920.8141,
+      "liquidity_usd": 5916.7029,
       "market_cap_usd": 5838.245999
     },
     "0x717f921be0d8a301c69d167681e394a0082ba4f6": {
@@ -5133,9 +5134,9 @@
       "graduated": "2026-10-27T13:46:24Z",
       "symbol": "JENMUSE",
       "title": "Jenmuse",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5954.6178,
+      "liquidity_usd": 5950.4831,
       "market_cap_usd": 5855.208021
     },
     "0x954a55aa4bb5d8afbd3d03c79eddb1902a37d9d8": {
@@ -5143,9 +5144,9 @@
       "graduated": "2026-10-27T13:46:53Z",
       "symbol": "fair",
       "title": "fair",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6331.3883,
+      "liquidity_usd": 6326.992,
       "market_cap_usd": 6239.17369
     },
     "0x0bd8190edff57bb502eb2facd61fe7e991da08d6": {
@@ -5173,10 +5174,10 @@
       "graduated": "2026-10-27T14:26:02Z",
       "symbol": "FARMFI",
       "title": "FARMFI",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5959.5475,
-      "market_cap_usd": 5887.99749
+      "liquidity_usd": 5975.7682,
+      "market_cap_usd": 5955.943031
     },
     "0x3c8cd6eac14fdddf63ed477f98492d8d81efe023": {
       "dex": "uniswap-pools-trade",
@@ -5201,14 +5202,44 @@
       "graduated": "2026-10-27T14:20:02Z",
       "symbol": "Darla",
       "title": "The Handstand Kitten",
-      "seen": "2026-10-27T16:40:52.528965+00:00",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5885.1324,
+      "liquidity_usd": 5881.046,
       "market_cap_usd": 5810.275001
+    },
+    "0x8fc98b871678f9749d17d968a476386f2da6f831": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-10-27T15:22:09.338400+00:00",
+      "symbol": "ASIMOV",
+      "title": "Asimov",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
+      "source": "chain",
+      "liquidity_usd": 16280.52,
+      "market_cap_usd": 35868.0
+    },
+    "0x53d073f9ebff0e2d02dff361b8c27889ed7327c3": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-10-27T15:22:03.376000+00:00",
+      "symbol": "OPENGIT",
+      "title": "OpenGit",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
+      "source": "chain",
+      "liquidity_usd": 12555.99,
+      "market_cap_usd": 18539.0
+    },
+    "0x222c8e18a51a94200eec8c7819c653b7b1e077e3": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-10-27T15:11:05.092600+00:00",
+      "symbol": "ASIMOV",
+      "title": "Asimov",
+      "seen": "2026-10-27T16:51:28.119596+00:00",
+      "source": "chain",
+      "liquidity_usd": 6501.64,
+      "market_cap_usd": 5720.0
     }
   },
   "graduations": {
-    "at": "2026-10-27T16:40:52.528965+00:00",
+    "at": "2026-10-27T16:51:28.119596+00:00",
     "hours": 24,
     "seen": {
       "0xb70bb2be56cea004f43010415f8cc36b341ae053": "2026-10-26T17:01:11.804800+00:00",
@@ -5248,7 +5279,7 @@
       "0xb70bb2be56cea004f43010415f8cc36b341ae053",
       "0xec383a25b6434216eaa695c11c26b765ba061521"
     ],
-    "scanned_to": 99389891,
+    "scanned_to": 99395982,
     "complete": true
   },
   "issues_to_close": [],
@@ -5261,9 +5292,9 @@
     "0x2fadd42a9e5193aa7d535806e4d4d8b879013dd2": "2026-10-27T00:21:06.963992+00:00",
     "0x50c46d4f055f2a441ccbd3ad2953640759b7ed44": "2026-10-27T02:21:06.579813+00:00",
     "0x0bd8190edff57bb502eb2facd61fe7e991da08d6": "2026-10-27T13:51:07.647237+00:00",
-    "0x222c8e18a51a94200eec8c7819c653b7b1e077e3": "2026-10-27T16:21:08.255798+00:00",
-    "0x8fc98b871678f9749d17d968a476386f2da6f831": "2026-10-27T16:11:11.511175+00:00",
-    "0x53d073f9ebff0e2d02dff361b8c27889ed7327c3": "2026-10-27T16:11:11.511175+00:00"
+    "0x222c8e18a51a94200eec8c7819c653b7b1e077e3": "2026-10-27T16:51:28.119596+00:00",
+    "0x8fc98b871678f9749d17d968a476386f2da6f831": "2026-10-27T16:51:28.119596+00:00",
+    "0x53d073f9ebff0e2d02dff361b8c27889ed7327c3": "2026-10-27T16:51:28.119596+00:00"
   },
   "gecko_hours": {
     "2026-10-26 17:00": [
@@ -5382,7 +5413,7 @@
       0
     ],
     "2026-10-27 16:00": [
-      5,
+      6,
       0,
       0
     ]
