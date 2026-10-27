@@ -317,6 +317,58 @@ class BotTests(unittest.TestCase):
         self.assertGreater(hour["l1 buys"], 0)
 
 
+class LiquidErrorTests(unittest.TestCase):
+    """A broken liquid step never stops the rest of the minute."""
+
+    def test_candidates_and_the_other_versions_still_run(self):
+        import copy
+        from unittest import mock
+        cfg = copy.deepcopy(CFG)
+        for v in cfg["main_1min"]["versions"]:
+            v.pop("stopped", None)
+        with tempfile.TemporaryDirectory() as d:
+            from tests.test_main_1min import ChangingApi, Organic
+            bot = m1.MainOneMinute(cfg, d, ChangingApi(h1=40.0), Organic(80))
+            lines = []
+            with mock.patch.object(m1.MainOneMinute, "_liquid",
+                                   side_effect=RuntimeError("boom")), \
+                    self.assertLogs("main_1min", level="ERROR") as logged:
+                bot.run_once(NOW, lines.append)
+                bot.run_once(NOW + timedelta(minutes=1), lines.append)
+            self.assertIn("boom", "\n".join(logged.output))
+            main = os.path.join(d, "main-1min")
+            self.assertTrue(rows(os.path.join(main, "candidates.csv")))
+            for name in ("b", "c"):                      # main (1 min) B and C still buy
+                self.assertTrue(rows(os.path.join(main, name, "journal.csv")), name)
+            with open(os.path.join(main, "health.json")) as fh:
+                data = json.load(fh)
+            errors = sum(h.get("liquid errors", 0) for h in data["calls_per_hour"].values())
+            self.assertEqual(errors, 2)
+            self.assertIn("passed", lines[0])            # the run's summary line still printed
+            self.assertFalse(os.path.exists(os.path.join(main, "liquid", "l1", "journal.csv")))
+
+    def test_a_failure_halfway_keeps_what_was_bought(self):
+        import copy
+        from unittest import mock
+        cfg = copy.deepcopy(CFG)
+        with tempfile.TemporaryDirectory() as d:
+            bot = m1.MainOneMinute(cfg, d, DemoApi())
+            real = m1.LiquidSafeTrader.buy
+            calls = []
+
+            def flaky(self, *a, **kw):
+                calls.append(1)
+                if len(calls) > 4:
+                    raise RuntimeError("boom")
+                return real(self, *a, **kw)
+            with mock.patch.object(m1.LiquidSafeTrader, "buy", flaky), \
+                    self.assertLogs("main_1min", level="ERROR"):
+                bot.run_once(NOW, lambda *a: None)
+            self.assertTrue(rows(os.path.join(d, "main-1min", "candidates.csv")))
+            saved = rows(os.path.join(d, "main-1min", "liquid", "l1", "journal.csv"))
+            self.assertEqual(len(saved), 1)              # the buy made before the error
+
+
 class HealthRowTests(unittest.TestCase):
     def test_a_row_per_version(self):
         from screener.health import health_lines

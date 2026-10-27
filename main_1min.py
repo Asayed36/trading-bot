@@ -351,7 +351,18 @@ class MainOneMinute:
                     lines.append(f"[{v.name}] BUY  {r.symbol} ${self.pt['buy_amount_usd']} at "
                                  f"${r.price:.10g}")
             vt.save()
-        self._liquid(ltraders, main_results, prices, now, prices_at, pairs_at, counts, lines)
+        try:
+            self._liquid(ltraders, main_results, prices, now, prices_at, pairs_at, counts, lines)
+        except Exception:
+            # An error in the liquid strategy must never stop the rest of the minute
+            # (candidates.csv, the other versions, the health file).
+            log.exception("liquid step failed this minute; the rest of the run continues")
+            counts["liquid errors"] = counts.get("liquid errors", 0) + 1
+            for lt in ltraders.values():       # keep whatever was recorded so far
+                try:
+                    lt.save()
+                except Exception:
+                    log.exception("liquid state could not be saved")
         self._record(main_results, decisions, now)
         # Only tokens a run-of-passes version could still buy are watched.
         self.streaks = {a: n for a, n in self.streaks.items()
