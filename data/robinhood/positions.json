@@ -318,7 +318,7 @@
       ]
     },
     "0x2a4806be2a85b2d281b230c6062c924e2d858b868387cc32a8e92fa18a064238": {
-      "at": "2026-10-27T13:10:58.112973+00:00",
+      "at": "2026-10-27T14:11:06.172754+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -373,15 +373,38 @@
       "failed": [
         "Market cap"
       ]
+    },
+    "0xd7e16b7ccba6ef36483f892849f9f1d82d1102c4b6fa308d9adcdae7980c7124": {
+      "at": "2026-10-27T14:11:06.172754+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h"
+      ]
+    },
+    "0xa393ea27cf6ebb4b344f56fe3321f155d538edf2acd7170e1825eeeb02a19805": {
+      "at": "2026-10-27T14:11:06.172754+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap"
+      ]
+    },
+    "0xf4518a10ca9b3f16e543d44c8b4c04c7c05fd90b44ffd271580d2e6c77328afe": {
+      "at": "2026-10-27T14:11:06.172754+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap"
+      ]
     }
   },
   "sources": {
     "geckoterminal": {
       "calls": 2,
-      "errors": 0,
+      "errors": 2,
       "rate_limited": 0,
-      "ok": true,
-      "at": "2026-10-27T14:00:51.069499+00:00",
+      "error": "could not reach api.geckoterminal.com: HTTPSConnectionPool(host='api.geckoterminal.com', port=443): Read timed out. (read timeout=20)",
+      "ok": false,
+      "at": "2026-10-27T14:11:06.172754+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -389,7 +412,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-27T14:00:51.069499+00:00",
+      "at": "2026-10-27T14:11:06.172754+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -405,7 +428,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-27T14:00:51.069499+00:00",
+      "at": "2026-10-27T14:11:06.172754+00:00",
       "used_this_run": true
     }
   },
@@ -421,7 +444,10 @@
     "0xe2dbbc3411b505c7d67b329954c9b955cfc555c651464192a2cab358b33a6366": "FAIL|Market cap: $13,841 (need $25,000+)",
     "0xb17ac67567d0bad60329730013f7c26ba5609d28eb2637e8c3a0bc27debc3a41": "FAIL|Market cap: $5,843 (need $25,000+)",
     "0xa4796c229429ab34e713b237421d99c6651b8cd28b250dc35ce59b2c90819ae8": "FAIL|Market cap: $5,853 (need $25,000+)",
-    "0x5ccd1654ac506faf89b1bda9a463cb589f33ab32048c47238cd2f9c404d2706e": "FAIL|Market cap: $5,843 (need $25,000+)"
+    "0x5ccd1654ac506faf89b1bda9a463cb589f33ab32048c47238cd2f9c404d2706e": "FAIL|Market cap: $5,843 (need $25,000+)",
+    "0xd7e16b7ccba6ef36483f892849f9f1d82d1102c4b6fa308d9adcdae7980c7124": "FAIL|Market cap: $7,294 (need $25,000+); Not down >50% in 24h: unknown",
+    "0xa393ea27cf6ebb4b344f56fe3321f155d538edf2acd7170e1825eeeb02a19805": "FAIL|Market cap: $5,830 (need $25,000+)",
+    "0xf4518a10ca9b3f16e543d44c8b4c04c7c05fd90b44ffd271580d2e6c77328afe": "FAIL|Market cap: $19,563 (need $25,000+)"
   },
   "launchpad_tokens": {
     "0x5be755642768038c9f8cbd14b2bf4a703eb61613": {
@@ -5032,10 +5058,9 @@
     }
   },
   "graduations": {
-    "at": "2026-10-27T14:00:51.069499+00:00",
+    "at": "2026-10-27T14:11:06.172754+00:00",
     "hours": 24,
     "seen": {
-      "0x834806540688adf6fbcc674e694738757dc49803": "2026-10-26T14:05:06.375000+00:00",
       "0x112e19d51d844cc11dcda5c23ad96a527abd5cbf": "2026-10-26T15:21:34.494800+00:00",
       "0xd56a6c45941ee8aae31ce6a30bd049e0f7489cbd": "2026-10-26T15:48:02.428700+00:00",
       "0x8c0ea31e51dd7da5e3b69472b0a6862cb250993a": "2026-10-26T16:36:42.870400+00:00",
@@ -5065,7 +5090,6 @@
       "0x50c46d4f055f2a441ccbd3ad2953640759b7ed44",
       "0x5fea0f4e7239907602bb779c52a559279f542f45",
       "0x7c53ddafa37250675e8123aea8450adbcbc37c94",
-      "0x834806540688adf6fbcc674e694738757dc49803",
       "0x889f38d8cd610a3a38532c9c7a1a5ef6ecff0d86",
       "0x8c0ea31e51dd7da5e3b69472b0a6862cb250993a",
       "0x9d40eb4023ceff04b4ff7bad7d8d77480f412198",
@@ -5074,7 +5098,7 @@
       "0xd56a6c45941ee8aae31ce6a30bd049e0f7489cbd",
       "0xec383a25b6434216eaa695c11c26b765ba061521"
     ],
-    "scanned_to": 99296858,
+    "scanned_to": 99303159,
     "complete": true
   },
   "issues_to_close": [],
@@ -5207,7 +5231,7 @@
       0
     ],
     "2026-10-27 14:00": [
-      1,
+      2,
       0,
       0
     ]
