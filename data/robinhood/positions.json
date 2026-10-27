@@ -111,16 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0xb796312a1c36211517beb273d9bd710bac0d71233716f0caf9d34a3b664b6604": {
-      "pool": "0xb796312a1c36211517beb273d9bd710bac0d71233716f0caf9d34a3b664b6604",
-      "dex": "uniswap-pools-trade",
-      "token": "0xfd67ea19f178b8d41eca257e30d9bcaa2c662217",
-      "name": "YOINK",
-      "title": "YOInk",
-      "created": "2026-10-27T05:54:22Z",
-      "liquidity_usd": 26887.3364,
-      "market_cap_usd": 45411.72573
-    },
     "0x06b2cea78af09471ff89a428b4af66fba5ec788651f702b29ab5918ddd8a65bb": {
       "pool": "0x06b2cea78af09471ff89a428b4af66fba5ec788651f702b29ab5918ddd8a65bb",
       "dex": "uniswap-pools-trade",
@@ -183,14 +173,6 @@
     }
   },
   "checked": {
-    "0xb796312a1c36211517beb273d9bd710bac0d71233716f0caf9d34a3b664b6604": {
-      "at": "2026-10-27T11:01:28.258149+00:00",
-      "passed": false,
-      "failed": [
-        "Market cap",
-        "More buys than sells (1h)"
-      ]
-    },
     "0x06b2cea78af09471ff89a428b4af66fba5ec788651f702b29ab5918ddd8a65bb": {
       "at": "2026-10-27T11:21:13.401085+00:00",
       "passed": false,
@@ -224,15 +206,24 @@
         "Market cap",
         "Not down >50% in 24h"
       ]
+    },
+    "0x2a4806be2a85b2d281b230c6062c924e2d858b868387cc32a8e92fa18a064238": {
+      "at": "2026-10-27T12:01:10.198298+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h"
+      ]
     }
   },
   "sources": {
     "geckoterminal": {
       "calls": 2,
-      "errors": 0,
+      "errors": 1,
       "rate_limited": 0,
+      "error": "could not reach api.geckoterminal.com: HTTPSConnectionPool(host='api.geckoterminal.com', port=443): Read timed out. (read timeout=20)",
       "ok": true,
-      "at": "2026-10-27T11:50:59.501725+00:00",
+      "at": "2026-10-27T12:01:10.198298+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -240,8 +231,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-27T11:41:01.548712+00:00",
-      "used_this_run": false
+      "at": "2026-10-27T12:01:10.198298+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -256,18 +247,17 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-27T11:50:59.501725+00:00",
+      "at": "2026-10-27T12:01:10.198298+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x044dc2d4b5381e16c897e59a118891d7e3de807519c837b5e9ba9dd0685f1904": "FAIL|Market cap: $5,859 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
-    "0xb796312a1c36211517beb273d9bd710bac0d71233716f0caf9d34a3b664b6604": "FAIL|Market cap: $5,922 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
     "0x06b2cea78af09471ff89a428b4af66fba5ec788651f702b29ab5918ddd8a65bb": "FAIL|Market cap: $5,941 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x945f3bc08e6ae234416c5ad76afbcc0ceec77c630d227fad429bca69675dd798": "PASS|",
     "0x1cfe93fff6bf7b24baf2227a2307fc41e83d08209c695de1d4a03a9198880e53": "FAIL|Liquidity: $54 (need $5,000+ on Pools.trade)",
     "0x4a9dd5631adba2a8e2cc88a88ebf2ed890889eaa1f6cb199e68efe2e9f27e1de": "PASS|",
-    "0xb74afc47a3770d7f0a903570511a57d97f505af8921abdb103a2ffea74324d42": "FAIL|Market cap: $6,036 (need $25,000+); Not down >50% in 24h: -61% in 24h"
+    "0xb74afc47a3770d7f0a903570511a57d97f505af8921abdb103a2ffea74324d42": "FAIL|Market cap: $6,036 (need $25,000+); Not down >50% in 24h: -61% in 24h",
+    "0x2a4806be2a85b2d281b230c6062c924e2d858b868387cc32a8e92fa18a064238": "FAIL|Market cap: $5,821 (need $25,000+); Not down >50% in 24h: -69% in 24h"
   },
   "launchpad_tokens": {
     "0x5187f91d24191792497996fd1e2f26f53e670000": {
@@ -4828,7 +4818,7 @@
     }
   },
   "graduations": {
-    "at": "2026-10-27T11:50:59.501725+00:00",
+    "at": "2026-10-27T12:01:10.198298+00:00",
     "hours": 24,
     "seen": {
       "0x834806540688adf6fbcc674e694738757dc49803": "2026-10-26T14:05:06.375000+00:00",
@@ -4866,7 +4856,7 @@
       "0xd56a6c45941ee8aae31ce6a30bd049e0f7489cbd",
       "0xec383a25b6434216eaa695c11c26b765ba061521"
     ],
-    "scanned_to": 99221471,
+    "scanned_to": 99227426,
     "complete": true
   },
   "issues_to_close": [],
@@ -4884,11 +4874,6 @@
     "0x50c46d4f055f2a441ccbd3ad2953640759b7ed44": "2026-10-27T02:21:06.579813+00:00"
   },
   "gecko_hours": {
-    "2026-10-26 12:00": [
-      6,
-      0,
-      0
-    ],
     "2026-10-26 13:00": [
       6,
       0,
@@ -5001,6 +4986,11 @@
     ],
     "2026-10-27 11:00": [
       6,
+      0,
+      0
+    ],
+    "2026-10-27 12:00": [
+      1,
       0,
       0
     ]
