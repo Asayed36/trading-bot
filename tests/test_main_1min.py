@@ -83,10 +83,11 @@ class SameAsMainTests(Base):
         self.assertEqual(mine[0]["usd_amount"], "10.00")
         # Only its own folder: none of the GitHub main strategy's files.
         self.assertEqual(sorted(os.listdir(self.d)), ["main-1min"])
-        # (a, b and c: the versions' own folders, see VersionTests)
+        # (a, b and c: the versions' own folders, see VersionTests; liquid: the liquid
+        # strategy's four versions, see tests/test_liquid.py)
         self.assertEqual(sorted(os.listdir(os.path.join(self.d, "main-1min"))),
                          ["a", "b", "c", "candidates.csv", "creator_ledger.json", "entries.csv",
-                          "health.json", "journal.csv", "positions.json"])
+                          "health.json", "journal.csv", "liquid", "positions.json"])
         self.assertIn("passed", lines[0])
 
     def test_mains_exits_and_costs(self):
@@ -620,12 +621,14 @@ class CompareTests(unittest.TestCase):
         text = out.getvalue()
         header = next(line for line in text.splitlines() if line.startswith("| | main"))
         self.assertTrue(header.startswith(
-            "| | main | main (1 min) | main (1 min) A | main (1 min) B | main (1 min) C | early"),
-            header)
+            "| | main | main (1 min) | main (1 min) A | main (1 min) B | main (1 min) C | "
+            "main (1 min) liquid l1 | main (1 min) liquid l2 | main (1 min) liquid l3 | "
+            "main (1 min) liquid l4 | early"), header)
         self.assertIn("| main (1 min): server |", text)
         self.assertIn("| main (1 min) A: server |", text)
         self.assertIn("| main (1 min) B: server |", text)
         self.assertIn("| main (1 min) C: server |", text)
+        self.assertIn("| main (1 min) liquid l1: server |", text)
 
 
 if __name__ == "__main__":

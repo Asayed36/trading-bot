@@ -75,6 +75,9 @@ def stopped(cfg, name):
     for v in cfg.get("main_1min", {}).get("versions", []):
         if name == (v.get("label") or f"main (1 min) {v['name']}"):
             return bool(v.get("stopped"))
+    for v in cfg.get("liquid", {}).get("versions", []):
+        if name == (v.get("label") or f"main (1 min) liquid {v['name']}"):
+            return bool(v.get("stopped"))
     if name.startswith("launch "):
         return bool(cfg.get("launch", {}).get("stopped"))
     if name.startswith("momentum "):
@@ -134,6 +137,15 @@ def main():
             strategies.insert(2 + i, (v.get("label") or f"main (1 min) {v['name']}",
                                       os.path.join(folder, v["folder"]),
                                       cfg["paper_trading"]["round_trip_cost_pct"]))
+        # The liquid strategy (it runs inside the same bot): one column per version.
+        if cfg.get("liquid", {}).get("enabled"):
+            first = 2 + sum(1 for v in cfg["main_1min"].get("versions", [])
+                            if v.get("enabled", True))
+            for j, v in enumerate(v for v in cfg["liquid"].get("versions", [])
+                                  if v.get("enabled", True)):
+                strategies.insert(first + j, (
+                    v.get("label") or f"main (1 min) liquid {v['name']}",
+                    os.path.join(folder, v["folder"]), cfg["liquid"]["round_trip_cost_pct"]))
     if cfg.get("news", {}).get("enabled"):
         strategies.append(("news", os.path.join(folder, "news"),
                            cfg["news"]["paper_trading"]["round_trip_cost_pct"]))

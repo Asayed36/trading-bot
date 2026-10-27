@@ -168,6 +168,65 @@ buy_slippage_pct = 1.5
 stopped = true
 
 # ---------------------------------------------------------------------
+# LIQUID: a paper strategy that runs inside main (1 min) (main_1min.py, every minute, same
+# prices as its open positions). When a token gets its FIRST check (the minute its row is
+# written to data/main-1min/candidates.csv) and the pool holds at least min_liquidity_usd of
+# liquidity (the candidates.csv column liquidity_usd), each of the four versions below opens
+# one paper buy of the [paper_trading] buy_amount_usd at the first-check price plus
+# buy_slippage_pct. Nothing else is checked (not main's filters, not RugCheck). A token with
+# no price or no liquidity value is skipped; a version never buys the same token twice.
+# The versions differ only in their exits. Costs: round_trip_cost_pct over the whole trade
+# plus the buy slippage, like main (1 min) B and C. Files: data/main-1min/liquid/l1 .. l4,
+# pushed with the rest of data/main-1min/. Changing this section restarts the main-1min
+# service by itself. PAPER TRADING ONLY: no wallet, key or real order.
+# ---------------------------------------------------------------------
+[liquid]
+enabled = true
+min_liquidity_usd = 50_000
+buy_slippage_pct = 1.5
+round_trip_cost_pct = 3
+
+# L1 fast: sell half at +50%; sell the rest when it falls 15% below its peak since that sale;
+# sell everything 30 minutes after the buy.
+[[liquid.versions]]
+name = "l1"
+label = "main (1 min) liquid l1"
+folder = "main-1min/liquid/l1"
+take_profit_pct = 50
+take_profit_sell_fraction = 0.5
+trailing_stop_pct = 15
+max_hold_minutes = 30
+
+# L2 standard: sell half at +100%; trailing 20% (below the peak since that sale); sell
+# everything after 60 minutes.
+[[liquid.versions]]
+name = "l2"
+label = "main (1 min) liquid l2"
+folder = "main-1min/liquid/l2"
+take_profit_pct = 100
+take_profit_sell_fraction = 0.5
+trailing_stop_pct = 20
+max_hold_minutes = 60
+
+# L3 fast with a stop: L1 plus a stop loss at -25% from the buy price.
+[[liquid.versions]]
+name = "l3"
+label = "main (1 min) liquid l3"
+folder = "main-1min/liquid/l3"
+take_profit_pct = 50
+take_profit_sell_fraction = 0.5
+trailing_stop_pct = 15
+stop_loss_pct = 25
+max_hold_minutes = 30
+
+# L4 baseline: no rules, sell everything 60 minutes after the buy.
+[[liquid.versions]]
+name = "l4"
+label = "main (1 min) liquid l4"
+folder = "main-1min/liquid/l4"
+max_hold_minutes = 60
+
+# ---------------------------------------------------------------------
 # EARLY STRATEGY: a second paper strategy that runs alongside the one above
 # (its own positions and journal in data/early/). It looks for tokens under
 # 6 hours old and buys them on a pullback after their first spike.
