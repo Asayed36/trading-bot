@@ -1574,5 +1574,188 @@ class FeedFormatLineTests(HealthBase):
         self.assertIn("no feed counts pushed yet", row)
 
 
+# ---------------------------------------------------------------------
+# how each feed endpoint behaves over the last 24 hours (fake connections, fake time)
+# ---------------------------------------------------------------------
+
+A_HOST, B_HOST = "api.mainnet-beta.solana.com", "solana-rpc.publicnode.com"
+
+
+class TimedWs(FakeWs):
+    """Delivers its messages, then lets `seconds` pass on the fake clock and fails."""
+
+    def __init__(self, now, seconds, then, messages=(notification([]),)):
+        super().__init__(messages, then=then)
+        self.now, self.seconds = now, seconds
+
+    async def recv(self):
+        if not self.messages:
+            self.now[0] += self.seconds
+        return await super().recv()
+
+
+class EndpointStatsTests(Base):
+    cfg = RunnerTests.cfg
+
+    def run_feed(self, script, now=None, stop_when_done=True):
+        """script: one item per connection attempt: an exception to raise from the connection
+        attempt, or (seconds, error) for a connection that works for a while and then fails.
+        Returns the runner (its recorder holds the statistics)."""
+        now = now if now is not None else [T0]
+        calls, holder = [], []
+
+        def connect(url, **kw):
+            calls.append(url)
+            if len(calls) > len(script):         # the script is over: stop the feed
+                holder[0].stop.set()
+                raise OSError("script over")
+            item = script[len(calls) - 1]
+            if isinstance(item, BaseException):
+                raise item
+            seconds, error = item
+            return TimedWs(now, seconds, error)
+
+        async def go():
+            runner = lrb.RecordRunner(self.cfg(), self.d, connect=connect, clock=lambda: now[0])
+            holder.append(runner)
+            await asyncio.wait_for(runner.feed(), 5)
+            return runner
+        with self.assertLogs("launch_record", level="WARNING"):
+            runner = asyncio.run(go())
+        return runner
+
+    def endpoints(self, runner, t=T0 + 1000):
+        return runner.recorder.health(t)["endpoints"]
+
+    def test_attempts_successes_top_failure_and_average_time_up(self):
+        script = [http_error(502, "Bad Gateway"),                    # A: refused
+                  (120, closed_error((1006, ""))),                   # B: up 120 s, then dropped
+                  (60, closed_error((1006, ""))),                    # B again: up 60 s
+                  (30, closed_error((1013, "try again later")))]      # B again: up 30 s
+        stats = self.endpoints(self.run_feed(script))
+        a, b = stats[A_HOST], stats[B_HOST]
+        self.assertEqual((a["attempts"], a["successes"], a["failures"]), (1, 0, 1))
+        self.assertEqual(a["top_failure"], "HTTP 502 Bad Gateway")
+        self.assertIsNone(a["avg_connected_seconds"])
+        self.assertEqual((b["attempts"], b["successes"]), (3, 3))
+        self.assertEqual(b["top_failure"], "closed by the server with code 1006")
+        self.assertEqual((b["top_failure_count"], b["failures"]), (2, 3))
+        self.assertEqual(b["ended_connections"], 3)
+        self.assertEqual(b["avg_connected_seconds"], 70.0)
+
+    def test_the_most_common_failure_wins(self):
+        script = [http_error(502, "Bad Gateway"), http_error(429, "Too Many Requests"),
+                  http_error(502, "Bad Gateway"), http_error(502, "Bad Gateway"),
+                  http_error(429, "Too Many Requests")]
+        stats = self.endpoints(self.run_feed(script))
+        total = {k: sum(e["failures"] for e in stats.values()) for k in ("failures",)}
+        self.assertEqual(total["failures"], len(script))
+        tops = {e["top_failure"] for e in stats.values()}
+        self.assertTrue(tops <= {"HTTP 502 Bad Gateway", "HTTP 429 Too Many Requests"})
+        self.assertIn("HTTP 502 Bad Gateway", tops)
+
+    def test_a_connection_ended_by_a_stop_counts_its_time_but_no_failure(self):
+        now = [T0]
+
+        async def go():
+            ws = TimedWs(now, 0, OSError("never"), messages=())
+
+            async def quiet():
+                await asyncio.sleep(10)
+            ws.recv = quiet
+            runner = lrb.RecordRunner(self.cfg(), self.d, connect=lambda *a, **k: ws,
+                                      clock=lambda: now[0])
+            task = asyncio.create_task(runner.feed())
+            await asyncio.sleep(0.05)
+            now[0] += 45
+            runner.stop.set()
+            await asyncio.wait_for(task, 2)
+            return runner
+        runner = asyncio.run(go())
+        a = self.endpoints(runner)[A_HOST]
+        self.assertEqual((a["attempts"], a["successes"], a["failures"]), (1, 1, 0))
+        self.assertIsNone(a["top_failure"])
+        self.assertEqual(a["avg_connected_seconds"], 45.0)
+
+    def test_only_the_last_24_hours_count_and_hours_roll_over(self):
+        rec = lr.LaunchRecorder(copy.deepcopy(CFG), self.d, clock=lambda: T0)
+        rec.endpoint_attempt(T0, A_HOST, False, "HTTP 502 Bad Gateway")
+        rec.endpoint_attempt(T0 + 25 * 3600, A_HOST, True)
+        rec.endpoint_ended(T0 + 25 * 3600 + 100, A_HOST, 100, "closed by the server with code 1006")
+        stats = rec._endpoints_24h(T0 + 26 * 3600)
+        self.assertEqual(stats[A_HOST]["attempts"], 1)               # the first is 26 h old
+        self.assertEqual(stats[A_HOST]["top_failure"], "closed by the server with code 1006")
+        self.assertEqual(rec._endpoints_24h(T0 + 3600)[A_HOST]["attempts"], 2)
+        for h in range(40):
+            rec.endpoint_attempt(T0 + (30 + h) * 3600, B_HOST, True)
+        rec.prune(T0 + 80 * 3600)
+        self.assertEqual(len(rec.endpoint_hours), lr.FEED_HOURS_KEPT)
+
+    def test_the_statistics_survive_a_restart(self):
+        rec = lr.LaunchRecorder(copy.deepcopy(CFG), self.d, clock=lambda: T0)
+        rec.endpoint_attempt(T0, B_HOST, True)
+        rec.endpoint_ended(T0 + 50, B_HOST, 50, None)
+        rec.write_health(T0 + 60)
+        again = lr.LaunchRecorder(copy.deepcopy(CFG), self.d, clock=lambda: T0 + 70)
+        self.assertEqual(again.health(T0 + 70)["endpoints"][B_HOST]["avg_connected_seconds"], 50.0)
+
+    def test_counting_errors_never_stop_the_feed(self):
+        with unittest.mock.patch.object(lr, "utc", side_effect=RuntimeError("boom")):
+            rec = lr.LaunchRecorder.__new__(lr.LaunchRecorder)
+            rec.endpoint_hours = {}
+            rec.endpoint_attempt(T0, A_HOST, True)                     # never raises
+            rec.endpoint_ended(T0, A_HOST, 5, "x")
+
+    def test_endpoints_and_timeouts_are_unchanged(self):
+        m = load_config()["momentum"]
+        self.assertEqual(lrb.feed_urls(m), list(m["ws_urls"]))
+        self.assertEqual([lrb.host(u) for u in lrb.feed_urls(m)][:2], [A_HOST, B_HOST])
+
+
+class EndpointLineTests(HealthBase):
+    NAME = "launch record: endpoints"
+    lines = HealthLineTests.lines
+
+    def write_endpoints(self, endpoints):
+        self.write("launch-record/health.json",
+                   {"updated": (HEALTH_NOW - timedelta(minutes=20)).strftime(lr.ISO),
+                    "endpoints": endpoints})
+
+    def test_one_line_with_every_endpoint(self):
+        gh = self.healthy()
+        self.write_endpoints({
+            A_HOST: {"attempts": 340, "successes": 120, "failures": 330,
+                     "top_failure": "HTTP 502 Bad Gateway", "top_failure_count": 200,
+                     "avg_connected_seconds": 148.5, "ended_connections": 119},
+            B_HOST: {"attempts": 4, "successes": 4, "failures": 0, "top_failure": None,
+                     "top_failure_count": 0, "avg_connected_seconds": None,
+                     "ended_connections": 0}})
+        text, rows_ = self.lines(gh)
+        row = rows_[self.NAME]
+        self.assertIn(OK, row)
+        self.assertIn(f"{A_HOST}: 120 of 340 attempt(s) connected, most common failure "
+                      "HTTP 502 Bad Gateway (200 of 330), connections lasted 148.5 s on average", row)
+        self.assertIn(f"{B_HOST}: 4 of 4 attempt(s) connected, no failures, no connection has "
+                      "ended yet", row)
+        self.assertNotIn(WARN, row)                                   # information, never a warning
+        self.assertNotIn("launch record: launch record", text)
+
+    def test_no_statistics_yet_is_information(self):
+        gh = self.healthy()
+        self.write("launch-record/health.json",
+                   {"updated": (HEALTH_NOW - timedelta(minutes=20)).strftime(lr.ISO)})
+        row = self.lines(gh)[1][self.NAME]
+        self.assertIn(INFO, row)
+        self.assertIn("no endpoint statistics pushed yet", row)
+
+    def test_a_pipe_in_a_failure_cannot_break_the_table(self):
+        gh = self.healthy()
+        self.write_endpoints({A_HOST: {"attempts": 1, "successes": 0, "failures": 1,
+                                       "top_failure": "weird | text", "top_failure_count": 1,
+                                       "avg_connected_seconds": None, "ended_connections": 0}})
+        row = self.lines(gh)[1][self.NAME]
+        self.assertIn("weird / text", row)
+
+
 if __name__ == "__main__":
     unittest.main()

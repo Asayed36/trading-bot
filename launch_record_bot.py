@@ -116,6 +116,7 @@ class RecordRunner:
         while not self.stop.is_set():
             url = urls[at % len(urls)]
             started = None
+            reported = False                      # the end of this connection is in the stats
             self.delivered = 0
             pause = m["reconnect_seconds"]
             try:
@@ -125,6 +126,7 @@ class RecordRunner:
                     await ws.send(subscribe_request())
                     started = self.clock()
                     self.recorder.connected(started, host(url))
+                    self.recorder.endpoint_attempt(started, host(url), True)
                     log.info("connected to %s; subscribed to pump.fun's events", host(url))
                     while not self.stop.is_set():
                         try:
@@ -136,7 +138,17 @@ class RecordRunner:
                         self.on_raw(raw)
             except (OSError, ConnectionError, asyncio.TimeoutError,
                     websockets.WebSocketException) as exc:
-                if self.stop.is_set():
+                reason = describe_failure(exc)
+                now = self.clock()
+                stopping = self.stop.is_set()          # a stop is not the endpoint's failure
+                if started is None:
+                    if not stopping:
+                        self.recorder.endpoint_attempt(now, host(url), False, reason)
+                else:
+                    self.recorder.endpoint_ended(now, host(url), now - started,
+                                                 None if stopping else reason)
+                    reported = True
+                if stopping:
                     break
                 lasted = self.clock() - started if started else 0
                 if self.delivered:
@@ -147,9 +159,11 @@ class RecordRunner:
                 if failures >= len(urls):
                     pause = min(pause * 2 ** (failures - len(urls) + 1), m["max_reconnect_seconds"])
                 log.warning("feed disconnected from %s after %.0f s (%s); trying %s in %ss",
-                            host(url), lasted, describe_failure(exc), host(urls[at % len(urls)]),
-                            pause)
+                            host(url), lasted, reason, host(urls[at % len(urls)]), pause)
             finally:
+                if started is not None and not reported:       # it ended because of a stop
+                    self.recorder.endpoint_ended(self.clock(), host(url),
+                                                 self.clock() - started, None)
                 self.ws = None
                 self.recorder.disconnected(self.clock(), stopping=self.stop.is_set())
             if self.stop.is_set():

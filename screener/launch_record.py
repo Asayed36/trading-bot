@@ -259,6 +259,7 @@ class LaunchRecorder:
         self.chain_creates = self.received_creates = 0
         self.messages = 0               # feed notifications received (for the test report)
         self.feed_counts = {}           # "YYYY-MM-DDTHH" (UTC) -> what the feed sent that hour
+        self.endpoint_hours = {}        # "YYYY-MM-DDTHH" (UTC) -> endpoint host -> its attempts
         self._load()
 
     # ---- persistence ---------------------------------------------------
@@ -286,6 +287,9 @@ class LaunchRecorder:
             counts = old.get("feed_counts")
             if isinstance(counts, dict):
                 self.feed_counts = {k: dict(v) for k, v in counts.items() if isinstance(v, dict)}
+            hours = old.get("endpoint_hours")
+            if isinstance(hours, dict):
+                self.endpoint_hours = {k: dict(v) for k, v in hours.items() if isinstance(v, dict)}
             self.last_row = old.get("last_row_ts")
             self.dropped_at_start = int(old.get("in_flight", 0) or 0)
             if self.dropped_at_start:
@@ -332,6 +336,8 @@ class LaunchRecorder:
             del self.days[day]
         for hour in sorted(self.feed_counts)[:-FEED_HOURS_KEPT]:
             del self.feed_counts[hour]
+        for hour in sorted(self.endpoint_hours)[:-FEED_HOURS_KEPT]:
+            del self.endpoint_hours[hour]
 
     @staticmethod
     def _newest(table, keep, when):
@@ -433,6 +439,66 @@ class LaunchRecorder:
                 self._feed_count(t, "undecoded")
         except Exception:
             pass
+
+    # ---- the endpoints: how each one behaves (counting only) ----
+
+    def _endpoint_stats(self, t, host):
+        hour = self.endpoint_hours.setdefault(utc(t).strftime("%Y-%m-%dT%H"), {})
+        return hour.setdefault(host, {"attempts": 0, "successes": 0, "failures": {},
+                                      "ended": 0, "connected_seconds": 0.0})
+
+    def endpoint_attempt(self, t, host, success, failure=None):
+        """One connection attempt to an endpoint: it connected and subscribed (success), or
+        it failed with `failure` (describe_failure's text: an HTTP status, a close code...)."""
+        try:
+            e = self._endpoint_stats(t, host)
+            e["attempts"] += 1
+            if success:
+                e["successes"] += 1
+            elif failure:
+                e["failures"][failure] = e["failures"].get(failure, 0) + 1
+        except Exception:                           # counting must never stop the recording
+            pass
+
+    def endpoint_ended(self, t, host, seconds, failure=None):
+        """A connection that had been working ended after `seconds`; `failure` is how it
+        ended (None when the service itself was stopping)."""
+        try:
+            e = self._endpoint_stats(t, host)
+            e["ended"] += 1
+            e["connected_seconds"] += max(0.0, float(seconds))
+            if failure:
+                e["failures"][failure] = e["failures"].get(failure, 0) + 1
+        except Exception:
+            pass
+
+    def _endpoints_24h(self, t):
+        """Per endpoint, over the last 24 hours (and the hour in progress): attempts, how many
+        connected, the most common failure, and the average seconds a connection stayed up
+        (over the connections that have ended; one still open is not in it)."""
+        first = utc(t - 24 * 3600).strftime("%Y-%m-%dT%H")
+        total = {}
+        for hour, hosts in self.endpoint_hours.items():
+            if hour < first:
+                continue
+            for host, e in hosts.items():
+                s = total.setdefault(host, {"attempts": 0, "successes": 0, "failures": {},
+                                            "ended": 0, "connected_seconds": 0.0})
+                for key in ("attempts", "successes", "ended", "connected_seconds"):
+                    s[key] += e.get(key, 0)
+                for text, n in (e.get("failures") or {}).items():
+                    s["failures"][text] = s["failures"].get(text, 0) + n
+        out = {}
+        for host, s in sorted(total.items()):
+            top = max(s["failures"].items(), key=lambda kv: (kv[1], kv[0]), default=(None, 0))
+            out[host] = {
+                "attempts": s["attempts"], "successes": s["successes"],
+                "failures": sum(s["failures"].values()),
+                "top_failure": top[0], "top_failure_count": top[1],
+                "avg_connected_seconds": round(s["connected_seconds"] / s["ended"], 1)
+                if s["ended"] else None,
+                "ended_connections": s["ended"]}
+        return out
 
     def set_backdrop(self, values):
         values = values or {}
@@ -692,6 +758,8 @@ class LaunchRecorder:
             "dropped_at_last_restart": self.dropped_at_start,
             "days": self.days,
             "feed_counts": self._feed_counts_24h(t),
+            "endpoints": self._endpoints_24h(t),
+            "endpoint_hours": self.endpoint_hours,
         }
 
     def _feed_counts_24h(self, t):
