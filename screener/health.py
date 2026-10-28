@@ -307,6 +307,34 @@ def add_launch_feed_format(add, folder, cfg, now):
         "launch record feed format: " + "; ".join(problems) if problems else None)
 
 
+def add_launch_endpoints(add, folder, cfg, now):
+    """One row: "launch record: endpoints", from the recorder's pushed health.json
+    ("endpoints"): for each feed endpoint over the last 24 hours, its connection attempts, how
+    many connected, its most common failure (an HTTP status or close code) and the average
+    seconds a connection stayed up. Information only: no limit here."""
+    name = "launch record: endpoints"
+    c = cfg["launch_record"]
+    data = _load(os.path.join(folder, c.get("folder", "launch-record"), "health.json"))
+    endpoints = (data or {}).get("endpoints")
+    if not endpoints:
+        add(name, INFO, "no endpoint statistics pushed yet (they start with the next recorder save)")
+        return
+    parts = []
+    for host, e in sorted(endpoints.items()):
+        attempts, ok = e.get("attempts", 0), e.get("successes", 0)
+        text = f"{host}: {ok} of {attempts} attempt(s) connected"
+        if e.get("top_failure"):
+            text += (f", most common failure {e['top_failure']} "
+                     f"({e.get('top_failure_count', 0)} of {e.get('failures', 0)})")
+        else:
+            text += ", no failures"
+        avg = e.get("avg_connected_seconds")
+        text += (f", connections lasted {avg:g} s on average" if avg is not None
+                 else ", no connection has ended yet")
+        parts.append(text)
+    add(name, OK, "last 24 h: " + "; ".join(parts).replace("|", "/"))
+
+
 def add_main_1min(add, folder, cfg, now, github):
     """One row: the main (1 min) strategy's last good run (from its pushed
     health.json), runs and requests per hour over the last 24 h, and its
@@ -754,6 +782,7 @@ def health_lines(folder, cfg, now, github=None, found=None):
     if cfg.get("launch_record", {}).get("enabled") and cfg.get("launch", {}).get("stopped"):
         add_launch_record(add, folder, cfg, now, github)
         add_launch_feed_format(add, folder, cfg, now)
+        add_launch_endpoints(add, folder, cfg, now)
 
     # 9. The news listings bot on your server.
     if cfg.get("news_listings", {}).get("enabled") and cfg.get("news"):
