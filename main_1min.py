@@ -55,9 +55,10 @@ import os
 import signal
 import sys
 import tempfile
+import time
 from datetime import timedelta
 
-from screener.api import ApiError, PublicApi, RateLimited
+from screener.api import ApiError, PublicApi, RateLimited, Unavailable
 from screener.autorestart import CodeWatcher
 from screener.autorestart import forever as run_forever
 from screener.backdrop import MarketBackdrop
@@ -73,6 +74,7 @@ from screener.token_record import CandidateLog, CreatorLedger, reprice
 
 log = logging.getLogger("main_1min")
 HOURS_KEPT = 48            # call counts per hour kept in health.json
+DEXSCREENER_RETRY_SECONDS = 2   # wait before the one retry of a DexScreener 5xx / timeout
 # The config.toml sections the bot reads: only changes there restart it.
 CONFIG_SECTIONS = ("filters", "paper_trading", "main_1min", "liquid", "api", "files")
 
@@ -95,27 +97,50 @@ class LiquidSafeTrader(LiquidTrader, SafeTrader):
 
 class CountingApi:
     """The read-only PublicApi, counting requests per site (for the health
-    row: shows it stays within the free limits)."""
+    row: shows it stays within the free limits). A DexScreener call that gets
+    a 5xx answer or no answer is tried once more after DEXSCREENER_RETRY_SECONDS
+    ("dexscreener retries" in health.json); if that fails too, it is logged once,
+    counted ("dexscreener skipped") and raised as Unavailable, which the caller
+    skips for this minute."""
 
-    def __init__(self, api):
+    def __init__(self, api, sleep=time.sleep):
         self.api = api
+        self.sleep = sleep
         self.calls = {"dexscreener": 0, "rugcheck": 0, "jupiter": 0}
 
+    def _count(self, key, n=1):
+        self.calls[key] = self.calls.get(key, 0) + n
+
+    def _dexscreener(self, name, requests, call, *args):
+        """`call(*args)`, which makes `requests` requests, with one retry."""
+        self._count("dexscreener", requests)
+        try:
+            return call(*args)
+        except Unavailable as first:
+            self._count("dexscreener retries")
+            self.sleep(DEXSCREENER_RETRY_SECONDS)
+            self._count("dexscreener", requests)
+            try:
+                return call(*args)
+            except Unavailable as exc:
+                self._count("dexscreener skipped")
+                log.warning("DexScreener %s skipped this minute (%s; again after %ss: %s)",
+                            name, str(first)[:100], DEXSCREENER_RETRY_SECONDS, str(exc)[:100])
+                raise
+
     def latest_profiles(self):
-        self.calls["dexscreener"] += 1
-        return self.api.latest_profiles()
+        return self._dexscreener("profiles", 1, self.api.latest_profiles)
 
     def latest_boosts(self):
-        self.calls["dexscreener"] += 1
-        return self.api.latest_boosts()
+        return self._dexscreener("boosts", 1, self.api.latest_boosts)
 
     def pairs_for_tokens(self, addresses):
         addresses = list(addresses)
-        self.calls["dexscreener"] += (len(addresses) + 29) // 30
-        return self.api.pairs_for_tokens(addresses)
+        return self._dexscreener("pairs", (len(addresses) + 29) // 30,
+                                 self.api.pairs_for_tokens, addresses)
 
     def rugcheck_report(self, address):
-        self.calls["rugcheck"] += 1
+        self._count("rugcheck")
         return self.api.rugcheck_report(address)
 
 
@@ -200,6 +225,15 @@ class MainOneMinute:
                                     os.path.join(data_folder, "early", "positions.json"))
         self.last_reprice = None
 
+    @staticmethod
+    def _optional(call, *args):
+        """(answer, None), or (None, the error) when DexScreener was unavailable (5xx or
+        timeout) even after CountingApi's retry. Any other error is raised, as before."""
+        try:
+            return call(*args), None
+        except Unavailable as exc:
+            return None, exc
+
     def organic(self, address):
         """Jupiter's organic score values, read at most every
         organic_cache_minutes per token (version B's check and every buy's
@@ -275,16 +309,27 @@ class MainOneMinute:
                     if pos["address"] not in seen:
                         seen.add(pos["address"])
                         held.append(pos)
-            prices = current_prices(self.api, held, self.f["allowed_dexes"])
+            # A DexScreener call that still fails after its one retry (a 5xx or a timeout)
+            # is skipped for this minute alone: positions keep their last price, a missing
+            # list adds no candidates. Nothing is recorded from an answer that did not come.
+            prices, _ = self._optional(current_prices, self.api, held, self.f["allowed_dexes"])
+            prices = prices or {}
             prices_at = now_utc()          # when they were fetched (the journal says)
-            addresses = find_candidates(self.api.latest_profiles(), self.api.latest_boosts())
+            profiles, failed_profiles = self._optional(self.api.latest_profiles)
+            boosts, failed_boosts = self._optional(self.api.latest_boosts)
+            if failed_profiles and failed_boosts:
+                raise failed_profiles      # no list at all: the run is skipped, as before
+            addresses = find_candidates(profiles or [], boosts or [])
             # Version A also re-checks the tokens on a run of passes that
             # have dropped off DexScreener's lists, after the listed ones (so
             # main (1 min) keeps its RugCheck budget). Only A uses them.
             listed = set(addresses)
             watched = [a for a in self.streaks if a not in listed]
             to_check = addresses + watched
-            pairs = self.api.pairs_for_tokens(to_check) if to_check else []
+            pairs, failed_pairs = self._optional(self.api.pairs_for_tokens, to_check) \
+                if to_check else ([], None)
+            if failed_pairs:
+                to_check = []              # without their pairs nothing can be checked or recorded
             pairs_at = now_utc()           # the buys' prices
             budget = {"rugcheck": self.c["rugcheck_max_per_run"]}
             results, waiting = [], 0
@@ -551,7 +596,8 @@ def main(argv=None):
     if not cfg.get("main_1min", {}).get("enabled"):
         print("main_1min is turned off in config.toml ([main_1min] enabled = false).")
         return 0
-    api = PublicApi(cfg["api"]["timeout_seconds"], cfg["api"]["rugcheck_delay_seconds"])
+    api = PublicApi(cfg["api"]["timeout_seconds"], cfg["api"]["rugcheck_delay_seconds"],
+                    dexscreener_attempts=1)    # CountingApi retries a DexScreener failure once
     # Bitcoin's trend in every paper buy's entries.csv row (logging only).
     PaperTrader.market = BtcTrend()
     # BTC/ETH/SOL moves from Binance's public data, no key (logging only).

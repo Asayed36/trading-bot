@@ -22,14 +22,30 @@ class ApiError(Exception):
     """Raised when a website can't be reached or gives a bad answer."""
 
 
+class Unavailable(ApiError):
+    """A website that answered with a server error (5xx), or did not answer in time. Another
+    try a moment later often works; main_1min.py retries once and skips only that call."""
+
+
+class ServerError(Unavailable):
+    """The website answered with a 5xx error (for example 502 Bad Gateway)."""
+
+
+class Unreachable(Unavailable):
+    """The website could not be reached (a timeout or a connection error)."""
+
+
 class RateLimited(ApiError):
     """Raised when a website keeps saying 'too many requests' (HTTP 429).
     The whole run should be skipped and tried again later."""
 
 
 class PublicApi:
-    def __init__(self, timeout=20, rugcheck_delay=1.5):
+    def __init__(self, timeout=20, rugcheck_delay=1.5, dexscreener_attempts=3):
         self.timeout = timeout
+        # How many times a DexScreener request that got no answer (a timeout) is tried before
+        # giving up. main_1min.py uses 1: it retries once itself and skips only that call.
+        self.dexscreener_attempts = dexscreener_attempts
         self.rugcheck_delay = rugcheck_delay
         self._rugcheck_cache = {}  # both strategies can ask about the same token
         self._last_gecko = 0.0
@@ -37,12 +53,13 @@ class PublicApi:
 
     def _get(self, url):
         """Ask a website for data. Retries a couple of times if it's busy."""
+        tries = self.dexscreener_attempts if url.startswith(DEXSCREENER) else 3
         for attempt in range(3):
             try:
                 resp = requests.get(url, headers=HEADERS, timeout=self.timeout)
             except requests.RequestException as exc:
-                if attempt == 2:
-                    raise ApiError(f"could not reach {url}: {exc}") from exc
+                if attempt >= tries - 1:
+                    raise Unreachable(f"could not reach {url}: {exc}") from exc
                 time.sleep(2 * (attempt + 1))
                 continue
             if resp.status_code == 429:  # "slow down, too many requests"
@@ -52,6 +69,8 @@ class PublicApi:
                 continue
             if resp.status_code == 404:
                 return None
+            if resp.status_code >= 500:
+                raise ServerError(f"{url} answered with error {resp.status_code}")
             if resp.status_code != 200:
                 raise ApiError(f"{url} answered with error {resp.status_code}")
             return resp.json()
