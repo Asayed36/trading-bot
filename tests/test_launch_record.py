@@ -1121,5 +1121,290 @@ class HealthLineTests(HealthBase):
         self.assertNotIn(self.NAME, "\n".join(health_lines(self.d, running, HEALTH_NOW, gh)))
 
 
+# ---------------------------------------------------------------------
+# the feed failure log and the health watchdog (fake time, fake connections)
+# ---------------------------------------------------------------------
+
+class ClosableWs(FakeWs):
+    """FakeWs that the watchdog can close (a closed connection fails its next recv)."""
+
+    def __init__(self, *a, **kw):
+        super().__init__(*a, **kw)
+        self.closed = 0
+
+    async def close(self):
+        self.closed += 1
+        self.then = OSError("closed by the watchdog")
+
+
+def http_error(status, phrase, headers=None):
+    from websockets.datastructures import Headers
+    from websockets.exceptions import InvalidStatus
+    from websockets.http11 import Response
+    return InvalidStatus(Response(status, phrase, Headers(headers or {}), b""))
+
+
+def closed_error(received=None, sent=None):
+    from websockets.exceptions import ConnectionClosed
+    from websockets.frames import Close
+    return ConnectionClosed(Close(*received) if received else None,
+                            Close(*sent) if sent else None)
+
+
+class FeedFailureLogTests(Base):
+    cfg = RunnerTests.cfg
+
+    def failures(self, errors):
+        """Run the feed through these connection failures; the warnings it logged."""
+        calls = []
+
+        def connect(url, **kw):
+            calls.append(url)
+            if len(calls) <= len(errors):
+                raise errors[len(calls) - 1]
+            return FakeWs([], then=OSError("end"))
+
+        async def go():
+            runner = lrb.RecordRunner(self.cfg(), self.d, connect=connect)
+            task = asyncio.create_task(runner.feed())
+            while len(calls) <= len(errors):
+                await asyncio.sleep(0.01)
+            runner.stop.set()
+            await asyncio.wait_for(task, 2)
+        with self.assertLogs("launch_record", level="WARNING") as logged:
+            asyncio.run(go())
+        return [r.getMessage() for r in logged.records if "feed disconnected" in r.getMessage()]
+
+    def test_the_http_status_of_a_refused_handshake_is_logged(self):
+        (line,) = self.failures([http_error(502, "Bad Gateway")])[:1]
+        self.assertIn("HTTP 502 Bad Gateway", line)
+        self.assertIn("api.mainnet-beta.solana.com", line)
+
+    def test_rate_limiting_is_visible(self):
+        (line,) = self.failures([http_error(429, "Too Many Requests", {"Retry-After": "30"})])[:1]
+        self.assertIn("HTTP 429 Too Many Requests, Retry-After 30", line)
+
+    def test_close_codes_are_logged(self):
+        lines = self.failures([closed_error((1011, "keepalive ping timeout")),
+                               closed_error(None, (1011, "")), closed_error((1013, ""))])
+        self.assertIn("closed by the server with code 1011 (keepalive ping timeout)", lines[0])
+        self.assertIn("closed without a close frame (code 1006); we sent code 1011", lines[1])
+        self.assertIn("closed by the server with code 1013", lines[2])
+
+    def test_os_errors_and_timeouts_are_logged(self):
+        lines = self.failures([ConnectionRefusedError(111, "Connection refused"),
+                               asyncio.TimeoutError()])
+        self.assertIn("ConnectionRefusedError errno 111", lines[0])
+        self.assertIn("timeout", lines[1])
+
+    def test_one_line_per_failure(self):
+        errors = [http_error(502, "Bad Gateway"), http_error(503, "Service Unavailable"),
+                  http_error(502, "Bad Gateway")]
+        lines = self.failures(errors)
+        # one line for each of the three failures (then one for the fake feed ending)
+        self.assertEqual(len(lines), 4)
+        self.assertEqual(["502" in x for x in lines[:3]], [True, False, True])
+        self.assertIn("HTTP 503 Service Unavailable", lines[1])
+
+    def test_a_dropped_working_connection_is_logged_with_its_close_code(self):
+        calls = []
+
+        def connect(url, **kw):
+            calls.append(url)
+            return FakeWs([notification([])], then=closed_error((1006, "")))
+
+        async def go():
+            runner = lrb.RecordRunner(self.cfg(), self.d, connect=connect)
+            task = asyncio.create_task(runner.feed())
+            await asyncio.sleep(0.1)
+            runner.stop.set()
+            await asyncio.wait_for(task, 2)
+        with self.assertLogs("launch_record", level="WARNING") as logged:
+            asyncio.run(go())
+        self.assertIn("closed by the server with code 1006",
+                      "\n".join(r.getMessage() for r in logged.records))
+
+
+class WatchdogTests(Base):
+    cfg = RunnerTests.cfg
+
+    def runner(self, now):
+        """A runner whose clock is now[0]; its health was saved at now[0] when it was made."""
+        runner = lrb.RecordRunner(self.cfg(), self.d, clock=lambda: now[0])
+        runner.exit_fn = unittest.mock.Mock()
+        return runner
+
+    def test_nothing_happens_while_health_is_fresh(self):
+        now = [T0]
+
+        async def go():
+            runner = self.runner(now)
+            now[0] = T0 + 599
+            return await runner.check_watchdog()
+        self.assertIsNone(asyncio.run(go()))
+
+    def test_after_10_minutes_the_connection_is_restarted_once(self):
+        now = [T0]
+
+        async def go():
+            runner = self.runner(now)
+            runner.ws = ClosableWs([])
+            now[0] = T0 + 600
+            with self.assertLogs("launch_record", level="ERROR") as logged:
+                first = await runner.check_watchdog()
+            now[0] = T0 + 700
+            second = await runner.check_watchdog()                # no second restart
+            return runner, first, second, logged
+        runner, first, second, logged = asyncio.run(go())
+        self.assertEqual((first, second), ("restart", "restart"))
+        self.assertEqual(runner.ws.closed, 1)
+        self.assertEqual(runner.feed_restarts, 1)
+        self.assertFalse(runner.stop.is_set())
+        self.assertEqual(len(logged.records), 1)
+        self.assertIn("restarting the feed connection", logged.output[0])
+
+    def test_a_save_resets_the_watchdog(self):
+        now = [T0]
+
+        async def go():
+            runner = self.runner(now)
+            runner.ws = ClosableWs([])
+            now[0] = T0 + 650
+            with self.assertLogs("launch_record", level="ERROR"):
+                await runner.check_watchdog()
+            runner.health_saved = now[0]                          # a save went through
+            self.assertIsNone(await runner.check_watchdog())
+            self.assertEqual(runner.watchdog_stage, 0)
+            now[0] += 601                                         # stalled again
+            with self.assertLogs("launch_record", level="ERROR"):
+                await runner.check_watchdog()
+            return runner
+        runner = asyncio.run(go())
+        self.assertEqual(runner.ws.closed, 2)
+
+    def test_after_20_minutes_the_service_is_stopped_for_systemd(self):
+        now = [T0]
+        with unittest.mock.patch.object(lrb, "HARD_EXIT_SECONDS", 0.05):
+            async def go():
+                runner = self.runner(now)
+                runner.ws = ClosableWs([])
+                now[0] = T0 + 650
+                with self.assertLogs("launch_record", level="ERROR"):
+                    await runner.check_watchdog()
+                now[0] = T0 + 1200
+                with self.assertLogs("launch_record", level="ERROR") as logged:
+                    result = await runner.check_watchdog()
+                    again = await runner.check_watchdog()         # logged once only
+                self.assertEqual(len(logged.records), 1)
+                self.assertIn("stopping the service so systemd starts it again", logged.output[0])
+                before = runner.exit_fn.call_count
+                await asyncio.sleep(0.2)                          # the service is still running
+                return runner, result, again, before
+            runner, result, again, before = asyncio.run(go())
+        self.assertEqual((result, again), ("exit", "exit"))
+        self.assertTrue(runner.stop.is_set())
+        self.assertTrue(runner.exit_requested)
+        self.assertEqual(before, 0)
+        runner.exit_fn.assert_called_once_with(1)                 # the hard exit, as a last resort
+
+    def test_not_connected_is_logged_not_a_crash(self):
+        now = [T0]
+
+        async def go():
+            runner = self.runner(now)
+            now[0] = T0 + 600
+            with self.assertLogs("launch_record", level="ERROR") as logged:
+                result = await runner.check_watchdog()
+            return result, logged
+        result, logged = asyncio.run(go())
+        self.assertEqual(result, "restart")
+        self.assertIn("not connected", "\n".join(logged.output))
+
+    def test_the_restart_makes_the_feed_reconnect(self):
+        now = [T0]
+        wss = []
+
+        class StuckWs(ClosableWs):
+            """A connection that delivers nothing until it is closed."""
+
+            def __init__(self):
+                super().__init__([])
+                self.gate = asyncio.Event()
+
+            async def recv(self):
+                await self.gate.wait()
+                raise closed_error((1006, ""))
+
+            async def close(self):
+                self.closed += 1
+                self.gate.set()
+
+        def connect(url, **kw):
+            wss.append(StuckWs())
+            return wss[-1]
+
+        async def go():
+            runner = lrb.RecordRunner(self.cfg(), self.d, connect=connect, clock=lambda: now[0])
+            runner.exit_fn = unittest.mock.Mock()
+            task = asyncio.create_task(runner.feed())
+            await asyncio.sleep(0.05)
+            self.assertEqual(len(wss), 1)
+            now[0] = T0 + 600
+            with self.assertLogs("launch_record", level="ERROR"):
+                await runner.check_watchdog()
+            await asyncio.sleep(0.1)
+            runner.stop.set()
+            wss[-1].gate.set()
+            await asyncio.wait_for(task, 2)
+        asyncio.run(go())
+        self.assertEqual(wss[0].closed, 1)
+        self.assertGreaterEqual(len(wss), 2)                      # it reconnected
+
+    def test_the_clock_task_marks_each_save(self):
+        ticks = [T0]
+
+        def clock():
+            ticks[0] += 31                                         # every look is 31 s later
+            return ticks[0]
+
+        async def go():
+            runner = lrb.RecordRunner(self.cfg(), self.d, clock=clock)
+            first = runner.health_saved
+            task = asyncio.create_task(runner.clock_task())
+            await asyncio.sleep(1.2)
+            runner.stop.set()
+            await asyncio.wait_for(task, 2)
+            return runner, first
+        runner, first = asyncio.run(go())
+        self.assertGreater(runner.health_saved, first)
+        self.assertTrue(os.path.exists(os.path.join(self.d, "launch-record", "health.json")))
+
+    def test_the_watchdog_task_runs_beside_the_others(self):
+        runner = lrb.RecordRunner(self.cfg(), self.d)
+        coros = runner.tasks()
+        self.assertEqual(len(coros), 4)
+        self.assertIn("watchdog_task", [c.cr_code.co_name for c in coros])
+        for c in coros:
+            c.close()
+
+    def test_the_watchdog_task_polls_and_acts(self):
+        now = [T0]
+
+        async def go():
+            runner = lrb.RecordRunner(self.cfg(), self.d, clock=lambda: now[0])
+            runner.exit_fn = unittest.mock.Mock()
+            runner.ws = ClosableWs([])
+            now[0] = T0 + 601
+            with unittest.mock.patch.object(lrb, "WATCHDOG_POLL_SECONDS", 0.01), \
+                    self.assertLogs("launch_record", level="ERROR"):
+                task = asyncio.create_task(runner.watchdog_task())
+                await asyncio.sleep(0.1)
+                runner.stop.set()
+                await asyncio.wait_for(task, 2)
+            return runner
+        runner = asyncio.run(go())
+        self.assertEqual(runner.ws.closed, 1)
+
+
 if __name__ == "__main__":
     unittest.main()
