@@ -39,6 +39,13 @@ log = logging.getLogger("launch_record")
 SAVE_SECONDS = 30                  # rows and health are written this often
 LEDGER_SAVE_SECONDS = 600
 BACKDROP_SECONDS = 60              # asking is free: the backdrop has its own 15-minute cache
+# Watchdog: health.json is saved every SAVE_SECONDS. Not saved for WATCHDOG_RESTART_SECONDS:
+# log an error and restart the feed connection. Still not saved after WATCHDOG_EXIT_SECONDS:
+# stop the whole service, so systemd (Restart=always) starts it again.
+WATCHDOG_RESTART_SECONDS = 600
+WATCHDOG_EXIT_SECONDS = 1200
+WATCHDOG_POLL_SECONDS = 10
+HARD_EXIT_SECONDS = 60             # if the service is still running this long after a stop
 
 
 def feed_urls(c):
@@ -48,6 +55,33 @@ def feed_urls(c):
 
 def host(url):
     return urlparse(url).netloc or url
+
+
+def describe_failure(exc):
+    """The exact reason a feed connection failed, for the log: the HTTP status the server
+    answered the WebSocket handshake with (and a Retry-After header if it sent one), the close
+    code of a closed connection, or the operating system's error. A 429 or a Retry-After
+    would mean the public RPC is rate limiting us; a 502 or 503 means it is overloaded."""
+    if isinstance(exc, websockets.exceptions.InvalidStatus):
+        response = exc.response
+        text = f"HTTP {response.status_code} {response.reason_phrase}".strip()
+        wait = response.headers.get("Retry-After")
+        return text + (f", Retry-After {wait}" if wait else "")
+    if isinstance(exc, websockets.exceptions.ConnectionClosed):
+        got, sent = exc.rcvd, exc.sent
+        if got is not None:
+            text = f"closed by the server with code {got.code}" + (
+                f" ({got.reason})" if got.reason else "")
+        else:
+            text = "closed without a close frame (code 1006)"
+        if sent is not None:
+            text += f"; we sent code {sent.code}" + (f" ({sent.reason})" if sent.reason else "")
+        return text
+    if isinstance(exc, (asyncio.TimeoutError, TimeoutError)):
+        return f"timeout: {str(exc) or 'no answer in time'}"[:120]
+    if isinstance(exc, OSError) and exc.errno is not None:
+        return f"{type(exc).__name__} errno {exc.errno}: {str(exc)[:100]}"
+    return f"{type(exc).__name__}: {str(exc)[:120]}"
 
 
 class RecordRunner:
@@ -60,6 +94,12 @@ class RecordRunner:
         self.backdrop = backdrop
         self.delivered = 0                 # messages the current connection has delivered
         self.last_ledger_save = clock()
+        self.ws = None                     # the open feed connection (the watchdog can close it)
+        self.health_saved = clock()        # the last time health.json was saved
+        self.watchdog_stage = 0            # 0 fine, 1 connection restarted, 2 exit requested
+        self.feed_restarts = 0
+        self.exit_requested = False
+        self.exit_fn = os._exit            # replaced in tests
 
     # ---- the feed (the momentum bot's connection and reconnect rules) ----
 
@@ -81,6 +121,7 @@ class RecordRunner:
             try:
                 async with self.connect(url, ping_interval=20, ping_timeout=20,
                                         max_size=2**22, open_timeout=15) as ws:
+                    self.ws = ws
                     await ws.send(subscribe_request())
                     started = self.clock()
                     self.recorder.connected(started, host(url))
@@ -106,8 +147,10 @@ class RecordRunner:
                 if failures >= len(urls):
                     pause = min(pause * 2 ** (failures - len(urls) + 1), m["max_reconnect_seconds"])
                 log.warning("feed disconnected from %s after %.0f s (%s); trying %s in %ss",
-                            host(url), lasted, str(exc)[:120], host(urls[at % len(urls)]), pause)
+                            host(url), lasted, describe_failure(exc), host(urls[at % len(urls)]),
+                            pause)
             finally:
+                self.ws = None
                 self.recorder.disconnected(self.clock(), stopping=self.stop.is_set())
             if self.stop.is_set():
                 break
@@ -147,6 +190,7 @@ class RecordRunner:
             if now - last_save >= SAVE_SECONDS:
                 self.recorder.flush(now)
                 self.recorder.write_health(now)
+                self.health_saved = now
                 last_save = now
             if now - self.last_ledger_save >= LEDGER_SAVE_SECONDS:
                 self.last_ledger_save = now
@@ -177,9 +221,59 @@ class RecordRunner:
             except asyncio.TimeoutError:
                 pass
 
+    async def check_watchdog(self, now=None):
+        """One look at how long ago health.json was last saved. Returns None (fine), "restart"
+        (the feed connection was closed, so feed() reconnects) or "exit" (the service is
+        stopped so systemd starts it again). Each step is taken once per stall; it starts again
+        when a save goes through."""
+        now = self.clock() if now is None else now
+        stale = now - self.health_saved
+        if stale < WATCHDOG_RESTART_SECONDS:
+            self.watchdog_stage = 0
+            return None
+        if stale >= WATCHDOG_EXIT_SECONDS:
+            if self.watchdog_stage < 2:
+                self.watchdog_stage = 2
+                log.error("health.json has not been saved for %.0f s (limit %d s) even after "
+                          "restarting the feed connection; stopping the service so systemd "
+                          "starts it again", stale, WATCHDOG_EXIT_SECONDS)
+                self.exit_requested = True
+                self.stop.set()
+                try:
+                    asyncio.get_running_loop().call_later(HARD_EXIT_SECONDS, self.exit_fn, 1)
+                except RuntimeError:
+                    pass
+            return "exit"
+        if self.watchdog_stage < 1:
+            self.watchdog_stage = 1
+            self.feed_restarts += 1
+            log.error("health.json has not been saved for %.0f s (limit %d s); restarting the "
+                      "feed connection", stale, WATCHDOG_RESTART_SECONDS)
+            ws = self.ws
+            if ws is not None:
+                try:
+                    await ws.close()
+                except Exception as exc:
+                    log.warning("closing the feed connection failed: %s", describe_failure(exc))
+            else:
+                log.error("the feed is not connected right now; it is already reconnecting")
+        return "restart"
+
+    async def watchdog_task(self):
+        while not self.stop.is_set():
+            try:
+                await asyncio.wait_for(self.stop.wait(), WATCHDOG_POLL_SECONDS)
+                return
+            except asyncio.TimeoutError:
+                pass
+            try:
+                await self.check_watchdog()
+            except Exception:
+                log.exception("watchdog check failed")
+
     def tasks(self):
         """The coroutines to run beside other work (launch_bot.py adds them to its own loop)."""
-        return [self.feed(), self.clock_task(), self.backdrop_task()]
+        return [self.feed(), self.clock_task(), self.backdrop_task(), self.watchdog_task()]
 
     def shutdown(self):
         """Save what is saved: finished rows, the ledger and the health file. Launches still
