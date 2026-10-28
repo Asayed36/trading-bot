@@ -1406,5 +1406,173 @@ class WatchdogTests(Base):
         self.assertEqual(runner.ws.closed, 1)
 
 
+# ---------------------------------------------------------------------
+# the data-change monitor: what the feed sent per UTC hour
+# ---------------------------------------------------------------------
+
+MIDNIGHT = T0 + 16 * 3600              # 2027-01-16 00:00:00 UTC (T0 is 2027-01-15 08:00)
+UNKNOWN_EVENT = line(bytes.fromhex("0102030405060708") + bytes(120))
+
+
+def hour_key(t):
+    return datetime.fromtimestamp(t, timezone.utc).strftime("%Y-%m-%dT%H")
+
+
+class FeedCountTests(Base):
+    def recorder(self, clock=None, folder=None):
+        return lr.LaunchRecorder(copy.deepcopy(CFG), folder or self.d,
+                                 clock=clock or (lambda: T0))
+
+    def counts(self, rec, t=T0):
+        return rec.feed_counts.get(hour_key(t), {})
+
+    def test_normal_messages_are_counted_by_kind(self):
+        rec = self.recorder()
+        mint, who = key(1), key(1000)
+        rec.on_logs([create_line(mint, who, T0)], False, T0, 5)
+        rec.on_logs([create_line(key(2), who, T0), trade_line(key(2), who, True, 1.0, 1000, PRICE, T0)],
+                    False, T0 + 1, 5)
+        rec.on_logs([trade_line(mint, key(3), True, 1.0, 1000, PRICE, T0)], False, T0 + 2, 6)
+        rec.on_logs([trade_line(mint, key(4), False, 1.0, 1000, PRICE, T0)], False, T0 + 3, 6)
+        rec.on_logs(["Program 6EF8 invoke [1]"], False, T0 + 4, 7)        # no event at all
+        self.assertEqual(self.counts(rec), {"messages": 5, "creations": 2, "trades": 3})
+        self.assertEqual(rec.health(T0 + 5)["feed_counts"][hour_key(T0)],
+                         {"messages": 5, "creations": 2, "trades": 3})
+
+    def test_an_undecodable_message_is_counted_not_recorded(self):
+        rec = self.recorder()
+        rec.on_logs([UNKNOWN_EVENT], False, T0, 5)                        # unknown event type
+        rec.on_logs(["Program data: !!!"], False, T0 + 1, 5)               # not base64 at all
+        rec.on_logs(["Program data: " + base64.b64encode(
+            pf.TRADE_EVENT + bytes(20)).decode()], False, T0 + 2, 5)       # known type, cut short
+        rec.on_logs([create_line(key(1), key(2), T0), UNKNOWN_EVENT], False, T0 + 3, 5)  # fine
+        rec.on_logs([UNKNOWN_EVENT], True, T0 + 4, 5)                      # a failed transaction
+        self.assertEqual(self.counts(rec),
+                         {"messages": 5, "undecoded": 3, "creations": 1})
+        self.assertEqual(len(rec.launches), 1)
+
+    def test_a_counting_error_never_stops_the_recording(self):
+        rec = self.recorder()
+        with unittest.mock.patch.object(lr, "utc", side_effect=RuntimeError("boom")):
+            rec._feed_count(T0, "messages")                                # never raises
+            rec._count_feed_events(T0, [UNKNOWN_EVENT], [])
+        rec.on_logs([create_line(key(1), key(2), T0)], False, T0, 1)       # recording as normal
+        self.assertEqual(len(rec.launches), 1)
+
+    def test_a_drop_in_creations_shows_in_the_counts(self):
+        rec = self.recorder()
+        for hour in range(5):
+            for n in range(30 if hour < 4 else 6):
+                rec.on_logs([create_line(key(100 * hour + n), key(7), T0 + hour * 3600)],
+                            False, T0 + hour * 3600 + n, 1)
+        data = rec.health(T0 + 5 * 3600)["feed_counts"]
+        self.assertEqual([data[hour_key(T0 + h * 3600)]["creations"] for h in range(5)],
+                         [30, 30, 30, 30, 6])
+
+    def test_a_clean_reset_at_midnight_utc(self):
+        now = [MIDNIGHT - 1]
+        rec = self.recorder(clock=lambda: now[0])
+        rec.on_logs([create_line(key(1), key(9), MIDNIGHT - 1)], False, MIDNIGHT - 1, 1)
+        now[0] = MIDNIGHT
+        rec.on_logs([create_line(key(2), key(9), MIDNIGHT)], False, MIDNIGHT, 1)
+        rec.on_logs([trade_line(key(2), key(8), True, 1.0, 1000, PRICE, MIDNIGHT)], False,
+                    MIDNIGHT + 1, 1)
+        late, early = hour_key(MIDNIGHT - 1), hour_key(MIDNIGHT)
+        self.assertEqual((late[:10], early[:10]), ("2027-01-15", "2027-01-16"))
+        self.assertEqual(rec.feed_counts[late], {"messages": 1, "creations": 1})
+        self.assertEqual(rec.feed_counts[early], {"messages": 2, "creations": 1, "trades": 1})
+        # an hour with no message has no entry (so it starts from zero, not from the old hour)
+        self.assertNotIn(hour_key(MIDNIGHT + 3600), rec.feed_counts)
+        # only the last 24 hours are in health.json; older hours are forgotten
+        shown = rec.health(MIDNIGHT + 24 * 3600 + 1800)["feed_counts"]
+        self.assertNotIn(late, shown)
+        self.assertIn(early, shown)
+        for h in range(60):                          # a long run: the old hours are forgotten
+            rec.feed_counts[hour_key(MIDNIGHT + 3600 * (2 + h))] = {"messages": 1}
+        rec.prune(MIDNIGHT + 62 * 3600)
+        self.assertEqual(len(rec.feed_counts), lr.FEED_HOURS_KEPT)
+        self.assertNotIn(early, rec.feed_counts)
+
+    def test_the_counts_survive_a_restart(self):
+        rec = self.recorder()
+        rec.on_logs([create_line(key(1), key(9), T0)], False, T0, 1)
+        rec.write_health(T0 + 5)
+        again = self.recorder()
+        self.assertEqual(self.counts(again), {"messages": 1, "creations": 1})
+
+
+class FeedFormatLineTests(HealthBase):
+    NAME = "launch record: feed format"
+    lines = HealthLineTests.lines
+
+    def hours(self, creations, last=None, undecoded=0, messages=None, current=None):
+        """feed_counts for the 24 full hours before the file was saved: `creations` per hour,
+        the last full hour with `last` creations; `current` for the hour in progress."""
+        saved = HEALTH_NOW - timedelta(minutes=20)
+        top = saved.replace(minute=0, second=0, microsecond=0)
+        out = {}
+        for i in range(1, 25):
+            key_ = (top - timedelta(hours=i)).strftime("%Y-%m-%dT%H")
+            out[key_] = {"creations": creations, "trades": creations * 20,
+                         "messages": creations * 30, "undecoded": 0}
+        newest = (top - timedelta(hours=1)).strftime("%Y-%m-%dT%H")
+        out[newest] = {"creations": creations if last is None else last,
+                       "trades": 6000, "messages": messages or 9000, "undecoded": undecoded}
+        if current is not None:
+            out[top.strftime("%Y-%m-%dT%H")] = {"creations": current, "messages": 10}
+        return out
+
+    def write_counts(self, counts):
+        data = {"updated": (HEALTH_NOW - timedelta(minutes=20)).strftime(lr.ISO),
+                "feed_counts": counts}
+        self.write("launch-record/health.json", data)
+
+    def row(self, counts):
+        gh = self.healthy()
+        self.write_counts(counts)
+        return self.lines(gh)[1][self.NAME]
+
+    def test_normal_counts_are_ok(self):
+        row = self.row(self.hours(300))
+        self.assertIn(OK, row)
+        self.assertIn("creations per hour median 300, lowest 300", row)
+        self.assertIn("trades per hour median", row)
+        self.assertIn("0 of 9000 message(s) undecoded", row)
+
+    def test_warning_when_creations_fall_below_half_the_median(self):
+        row = self.row(self.hours(300, last=149))
+        self.assertIn(WARN, row)
+        self.assertIn("below 50% of the 24 h median", row)
+        self.assertIn(OK, self.row(self.hours(300, last=150)))            # exactly half is fine
+        self.assertIn("lowest 149", self.row(self.hours(300, last=149)))
+
+    def test_the_hour_in_progress_is_not_judged(self):
+        self.assertIn(OK, self.row(self.hours(300, current=2)))
+
+    def test_warning_when_more_than_five_percent_cannot_be_decoded(self):
+        row = self.row(self.hours(300, undecoded=451, messages=9000))     # 5.01%
+        self.assertIn(WARN, row)
+        self.assertIn("451 of 9000 message(s) in the last full hour could not be decoded", row)
+        self.assertIn(OK, self.row(self.hours(300, undecoded=450, messages=9000)))   # 5.0%
+
+    def test_a_silent_last_hour_is_a_warning(self):
+        counts = self.hours(300)
+        del counts[max(k for k in counts if counts[k]["messages"] == 9000)]
+        self.assertIn(WARN, self.row(counts))
+
+    def test_too_little_history_never_warns_on_the_median(self):
+        counts = self.hours(300, last=1)
+        counts = dict(sorted(counts.items())[-2:])
+        self.assertIn(OK, self.row(counts))
+
+    def test_no_counts_yet_is_information(self):
+        gh = self.healthy()
+        self.write("launch-record/health.json",
+                   {"updated": (HEALTH_NOW - timedelta(minutes=20)).strftime(lr.ISO)})
+        row = self.lines(gh)[1][self.NAME]
+        self.assertIn(INFO, row)
+        self.assertIn("no feed counts pushed yet", row)
+
+
 if __name__ == "__main__":
     unittest.main()

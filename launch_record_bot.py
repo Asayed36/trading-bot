@@ -205,6 +205,12 @@ class RecordRunner:
                          "up" if h["feed_up"] else "DOWN", h["launches_seen_last_hour"],
                          h["in_flight"], h["rows_written_today"], h["rows_skipped_by_cap_today"])
                 last_status = now
+                hours = sorted(h["feed_counts"])
+                if hours:                     # what the feed sent in the hour in progress
+                    c = h["feed_counts"][hours[-1]]
+                    log.info("feed this hour (%s UTC): %d creation(s), %d trade(s), %d message(s) "
+                             "not decoded of %d", hours[-1], c.get("creations", 0),
+                             c.get("trades", 0), c.get("undecoded", 0), c.get("messages", 0))
 
     async def backdrop_task(self):
         """The market backdrop for new launches. Asking is cheap: the answer is cached for 15

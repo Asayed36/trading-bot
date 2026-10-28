@@ -51,6 +51,7 @@ hours leave room for busy ones; pace_cap_through_day = false turns the pacing of
 rows are always written so the baseline cannot be cut off by the cap.
 """
 
+import base64
 import csv
 import hashlib
 import io
@@ -59,7 +60,7 @@ import os
 from collections import deque
 from datetime import datetime, timezone
 
-from screener.pumpfeed import decode
+from screener.pumpfeed import COMPLETE_EVENT, CREATE_EVENT, TRADE_EVENT, decode
 
 TRACK_SECONDS = 3600
 BUYERS_WINDOW_SECONDS = 60
@@ -86,6 +87,8 @@ def columns(checkpoints=DEFAULT_CHECKPOINTS):
 
 COLUMNS = columns()
 ISO = "%Y-%m-%dT%H:%M:%SZ"
+FEED_HOURS_KEPT = 26               # hourly feed counts kept (health.json shows the last 24 hours)
+KNOWN_EVENTS = (TRADE_EVENT, CREATE_EVENT, COMPLETE_EVENT)
 
 
 def utc(t):
@@ -255,6 +258,7 @@ class LaunchRecorder:
         self.lags = []                  # receive time minus on-chain creation time (a sample)
         self.chain_creates = self.received_creates = 0
         self.messages = 0               # feed notifications received (for the test report)
+        self.feed_counts = {}           # "YYYY-MM-DDTHH" (UTC) -> what the feed sent that hour
         self._load()
 
     # ---- persistence ---------------------------------------------------
@@ -279,6 +283,9 @@ class LaunchRecorder:
             with open(self._health_path()) as fh:
                 old = json.load(fh)
             self.days = old.get("days", {})
+            counts = old.get("feed_counts")
+            if isinstance(counts, dict):
+                self.feed_counts = {k: dict(v) for k, v in counts.items() if isinstance(v, dict)}
             self.last_row = old.get("last_row_ts")
             self.dropped_at_start = int(old.get("in_flight", 0) or 0)
             if self.dropped_at_start:
@@ -323,6 +330,8 @@ class LaunchRecorder:
             self.gaps.popleft()
         for day in sorted(self.days)[:-8]:
             del self.days[day]
+        for hour in sorted(self.feed_counts)[:-FEED_HOURS_KEPT]:
+            del self.feed_counts[hour]
 
     @staticmethod
     def _newest(table, keep, when):
@@ -378,10 +387,13 @@ class LaunchRecorder:
             self.gaps.append((self.last_message, t))
             self._count(t, "gap_seconds", round(t - self.last_message))
         self.last_message = t
+        self._feed_count(t, "messages")
         if failed:
             return
         in_tx = set()                               # launches created in this transaction
-        for e in decode(logs):
+        events = decode(logs)
+        self._count_feed_events(t, logs, events)
+        for e in events:
             if e["kind"] == "create":
                 if self._on_create(e, t, slot):
                     in_tx.add(e["mint"])
@@ -389,6 +401,38 @@ class LaunchRecorder:
                 self._on_trade(e, t, slot, e["mint"] in in_tx)
             else:
                 self._on_complete(e, t)
+
+    # ---- the data-change monitor (counting only; nothing here changes what is recorded) ----
+
+    def _feed_count(self, t, key, n=1):
+        try:
+            hour = self.feed_counts.setdefault(utc(t).strftime("%Y-%m-%dT%H"), {})
+            hour[key] = hour.get(key, 0) + n
+        except Exception:                           # counting must never stop the recording
+            pass
+
+    def _count_feed_events(self, t, logs, events):
+        """Per UTC hour: the creations and trades the feed sent, and the messages that could
+        not be decoded: with "Program data" lines but no event we know (an unknown event type),
+        or with a line of a known type that failed to decode (a changed layout)."""
+        try:
+            for kind, key in (("create", "creations"), ("trade", "trades")):
+                n = sum(1 for e in events if e["kind"] == kind)
+                if n:
+                    self._feed_count(t, key, n)
+            lines = [x for x in logs or [] if x.startswith("Program data: ")]
+            if not lines:
+                return
+            known = 0
+            for x in lines:
+                try:
+                    known += base64.b64decode(x[14:], validate=False)[:8] in KNOWN_EVENTS
+                except ValueError:
+                    pass                            # not even base64: counted as undecoded
+            if not events or known > len(events):
+                self._feed_count(t, "undecoded")
+        except Exception:
+            pass
 
     def set_backdrop(self, values):
         values = values or {}
@@ -647,7 +691,13 @@ class LaunchRecorder:
             "started": utc(self.started).strftime(ISO),
             "dropped_at_last_restart": self.dropped_at_start,
             "days": self.days,
+            "feed_counts": self._feed_counts_24h(t),
         }
+
+    def _feed_counts_24h(self, t):
+        """The hourly feed counts of the last 24 hours (and the hour in progress)."""
+        first = utc(t - 24 * 3600).strftime("%Y-%m-%dT%H")
+        return {h: c for h, c in sorted(self.feed_counts.items()) if h >= first}
 
     def write_health(self, t=None):
         data = self.health(t)
