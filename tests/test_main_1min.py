@@ -211,7 +211,7 @@ class LoopTests(unittest.TestCase):
 
     def test_test_mode_saves_nothing(self):
         with tempfile.TemporaryDirectory() as d, \
-                mock.patch.object(m1, "PublicApi", lambda *a: DemoApi()), \
+                mock.patch.object(m1, "PublicApi", lambda *a, **kw: DemoApi()), \
                 mock.patch.object(m1, "JupiterOrganic", lambda: None), \
                 mock.patch.object(m1, "HERE", d), \
                 mock.patch.object(m1.PaperTrader, "market", None), \
