@@ -510,6 +510,11 @@ silent_gap_seconds = 10
 # no row was written for this many minutes (it reads the pushed health.json).
 warn_feed_silent_minutes = 10
 warn_no_rows_minutes = 60
+# The "feed format" health line: a warning when the last full hour's launch creations are below
+# this share of the last 24 hours' median, or when more than this share of its messages could
+# not be decoded (an unknown event type or a decode error: pump.fun may have changed its events).
+warn_creations_below_pct_of_median = 50
+warn_undecoded_above_pct = 5
 
 [launch.paper_trading]
 # Pretend dollars per buy.

@@ -18,6 +18,7 @@ Read-only: nothing here trades or changes any setting.
 
 import json
 import os
+import statistics
 from datetime import datetime, timedelta, timezone
 
 OK, WARN, INFO = "✅", "⚠️", "ℹ️"
@@ -257,6 +258,53 @@ def add_launch_record(add, folder, cfg, now, github):
         detail += " (" + "; ".join(problems) + ")"
     add(name, WARN if problems else OK, detail,
         "launch record: " + "; ".join(problems) if problems else None)
+
+
+def add_launch_feed_format(add, folder, cfg, now):
+    """One row: "launch record: feed format", from the recorder's pushed health.json
+    ("feed_counts": per UTC hour, the creations and trades the feed sent and the messages that
+    could not be decoded). Shows the last 24 hours' creations per hour (median and lowest),
+    trades per hour and the undecoded messages. A warning when the last FULL hour's creations
+    are below warn_creations_below_pct_of_median of the median, or when more than
+    warn_undecoded_above_pct of that hour's messages could not be decoded (the hour in
+    progress is too short to judge). The hour is taken relative to when the file was saved."""
+    name = "launch record: feed format"
+    c = cfg["launch_record"]
+    data = _load(os.path.join(folder, c.get("folder", "launch-record"), "health.json"))
+    counts = (data or {}).get("feed_counts")
+    saved = _utc((data or {}).get("updated"))
+    if not counts or saved is None:
+        add(name, INFO, "no feed counts pushed yet (they start with the next recorder save)")
+        return
+    this_hour = saved.strftime("%Y-%m-%dT%H")
+    last_full = (saved - timedelta(hours=1)).strftime("%Y-%m-%dT%H")
+    full = {k: v for k, v in counts.items() if k < this_hour}
+    if last_full not in full:
+        full[last_full] = {}                 # nothing came in that hour (or the recorder was down)
+    creations = [v.get("creations", 0) for _, v in sorted(full.items())]
+    trades = [v.get("trades", 0) for _, v in sorted(full.items())]
+    latest = full[last_full]
+    median = statistics.median(creations)
+    undecoded, messages = latest.get("undecoded", 0), latest.get("messages", 0)
+    below = c.get("warn_creations_below_pct_of_median", 50)
+    above = c.get("warn_undecoded_above_pct", 5)
+    problems = []
+    if len(creations) >= 3 and median > 0 and latest.get("creations", 0) < median * below / 100:
+        problems.append(f"creations in the last full hour ({latest.get('creations', 0)}) are "
+                        f"below {below:g}% of the 24 h median ({median:g})")
+    if messages and undecoded > messages * above / 100:
+        problems.append(f"{undecoded} of {messages} message(s) in the last full hour could not "
+                        f"be decoded (more than {above:g}%)")
+    share = f" ({100 * undecoded / messages:.1f}%)" if messages else ""
+    detail = (f"last {len(full)} full hour(s): launch creations per hour median {median:g}, "
+              f"lowest {min(creations)}; trades per hour median {statistics.median(trades):g}; "
+              f"last full hour ({last_full[11:]}:00 UTC): {latest.get('creations', 0)} creation(s), "
+              f"{latest.get('trades', 0)} trade(s), {undecoded} of {messages} message(s) "
+              f"undecoded{share}")
+    if problems:
+        detail += " (" + "; ".join(problems) + ")"
+    add(name, WARN if problems else OK, detail,
+        "launch record feed format: " + "; ".join(problems) if problems else None)
 
 
 def add_main_1min(add, folder, cfg, now, github):
@@ -705,6 +753,7 @@ def health_lines(folder, cfg, now, github=None, found=None):
     # 8b. The early-launch recorder on your server (it runs while the launch strategy is stopped).
     if cfg.get("launch_record", {}).get("enabled") and cfg.get("launch", {}).get("stopped"):
         add_launch_record(add, folder, cfg, now, github)
+        add_launch_feed_format(add, folder, cfg, now)
 
     # 9. The news listings bot on your server.
     if cfg.get("news_listings", {}).get("enabled") and cfg.get("news"):
