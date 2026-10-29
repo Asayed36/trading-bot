@@ -1,19 +1,19 @@
 {
- "updated": "2026-10-29T17:02:35Z",
+ "updated": "2026-10-29T18:00:01Z",
  "feed_up": true,
  "endpoint": "api.mainnet-beta.solana.com",
- "last_message": "2026-10-29T17:02:35Z",
+ "last_message": "2026-10-29T18:00:01Z",
  "feed_silent_seconds": 0,
- "last_row": "2026-10-29T17:02:35Z",
- "last_row_ts": 1793293355.5520117,
- "since_last_row_seconds": 0,
- "launches_seen_last_hour": 822,
- "in_flight": 822,
- "rows_written_today": 2956,
- "rows_skipped_by_cap_today": 3546,
+ "last_row": "2026-10-29T17:59:31Z",
+ "last_row_ts": 1793296771.7195966,
+ "since_last_row_seconds": 30,
+ "launches_seen_last_hour": 572,
+ "in_flight": 572,
+ "rows_written_today": 3122,
+ "rows_skipped_by_cap_today": 3684,
  "max_rows_per_day": 4000,
- "feed_disconnects_today": 379,
- "gap_seconds_today": 412,
+ "feed_disconnects_today": 433,
+ "gap_seconds_today": 486,
  "started": "2026-10-28T20:04:46Z",
  "dropped_at_last_restart": 757,
  "days": {
@@ -141,37 +141,31 @@
    "skipped_by_cap": 730
   },
   "2026-10-29": {
-   "launches_seen": 14504,
-   "feed_disconnects": 379,
-   "gap_seconds": 412,
-   "finished": 13677,
-   "watched_60": 13677,
-   "watched_60_ge_1": 9501,
-   "watched_60_ge_2": 7566,
-   "buyers_qualified": 6315,
-   "watched_60_ge_3": 6315,
-   "qualified": 6352,
-   "nonsample_rows": 2679,
-   "rows_written": 2956,
-   "sample": 277,
-   "watched_60_ge_4": 5442,
-   "watched_60_ge_5": 4794,
-   "watched_60_ge_8": 3412,
-   "watched_60_ge_10": 2843,
-   "watched_60_ge_15": 1964,
-   "watched_60_ge_20": 1481,
-   "watched_60_ge_30": 955,
-   "watched_60_ge_50": 540,
-   "skipped_by_cap": 3546
+   "launches_seen": 15052,
+   "feed_disconnects": 433,
+   "gap_seconds": 486,
+   "finished": 14475,
+   "watched_60": 14475,
+   "watched_60_ge_1": 9973,
+   "watched_60_ge_2": 7923,
+   "buyers_qualified": 6608,
+   "watched_60_ge_3": 6608,
+   "qualified": 6647,
+   "nonsample_rows": 2834,
+   "rows_written": 3122,
+   "sample": 288,
+   "watched_60_ge_4": 5678,
+   "watched_60_ge_5": 5007,
+   "watched_60_ge_8": 3567,
+   "watched_60_ge_10": 2973,
+   "watched_60_ge_15": 2059,
+   "watched_60_ge_20": 1557,
+   "watched_60_ge_30": 996,
+   "watched_60_ge_50": 559,
+   "skipped_by_cap": 3684
   }
  },
  "feed_counts": {
-  "2026-10-28T17": {
-   "messages": 489063,
-   "trades": 77614,
-   "undecoded": 9056,
-   "creations": 903
-  },
   "2026-10-28T18": {
    "messages": 481550,
    "trades": 83994,
@@ -311,21 +305,25 @@
    "creations": 837
   },
   "2026-10-29T17": {
-   "messages": 19458,
-   "trades": 1942,
-   "creations": 24,
-   "undecoded": 135
+   "messages": 459614,
+   "trades": 47832,
+   "creations": 572,
+   "undecoded": 5974
+  },
+  "2026-10-29T18": {
+   "messages": 177,
+   "trades": 7
   }
  },
  "endpoints": {
   "api.mainnet-beta.solana.com": {
-   "attempts": 525,
-   "successes": 525,
-   "failures": 524,
+   "attempts": 579,
+   "successes": 579,
+   "failures": 578,
    "top_failure": "closed without a close frame (code 1006); we sent code 1002 (invalid status code)",
-   "top_failure_count": 524,
-   "avg_connected_seconds": 142.7,
-   "ended_connections": 524
+   "top_failure_count": 577,
+   "avg_connected_seconds": 135.2,
+   "ended_connections": 578
   }
  },
  "endpoint_hours": {
@@ -562,13 +560,14 @@
   },
   "2026-10-29T17": {
    "api.mainnet-beta.solana.com": {
-    "attempts": 2,
-    "successes": 2,
+    "attempts": 56,
+    "successes": 56,
     "failures": {
-     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 2
+     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 55,
+     "ConnectionError: no message for 15 s": 1
     },
-    "ended": 2,
-    "connected_seconds": 129.62302041053772
+    "ended": 56,
+    "connected_seconds": 3521.335383415222
    }
   }
  }
