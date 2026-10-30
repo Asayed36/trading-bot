@@ -111,16 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0xda671dfb542eece042b66aa701c582073e4fa2d6362c5fa0fb68e89e7aa52317": {
-      "pool": "0xda671dfb542eece042b66aa701c582073e4fa2d6362c5fa0fb68e89e7aa52317",
-      "dex": "uniswap-pools-trade",
-      "token": "0x943696261a75716823ec984618c9377bab5f6029",
-      "name": "SAFU",
-      "title": "Funds Are Safu",
-      "created": "2026-10-30T09:01:50Z",
-      "liquidity_usd": 65549.1341,
-      "market_cap_usd": 221959.8966
-    },
     "0x5ca237419d81f02e08dc78c4d54dcc3989d947b65d41e9b507e5b302087312ea": {
       "pool": "0x5ca237419d81f02e08dc78c4d54dcc3989d947b65d41e9b507e5b302087312ea",
       "dex": "uniswap-pools-trade",
@@ -178,14 +168,19 @@
       "created": "2026-10-30T14:44:08Z",
       "liquidity_usd": 13559.3693,
       "market_cap_usd": 16776.30286
+    },
+    "0x2fe2d684f8fd5b9835f5103051d76fbc39c058d0cef777bfff9062ff3815d573": {
+      "pool": "0x2fe2d684f8fd5b9835f5103051d76fbc39c058d0cef777bfff9062ff3815d573",
+      "dex": "uniswap-pools-trade",
+      "token": "0xc557b84665d273a1ac6a18345e806766e828196d",
+      "name": "Aristotle",
+      "title": "End of Debug",
+      "created": "2026-10-30T14:56:32Z",
+      "liquidity_usd": 93415.8493,
+      "market_cap_usd": 255387.8435
     }
   },
   "checked": {
-    "0xda671dfb542eece042b66aa701c582073e4fa2d6362c5fa0fb68e89e7aa52317": {
-      "at": "2026-10-30T09:41:06.773813+00:00",
-      "passed": true,
-      "failed": []
-    },
     "0x5ca237419d81f02e08dc78c4d54dcc3989d947b65d41e9b507e5b302087312ea": {
       "at": "2026-10-30T11:20:53.515071+00:00",
       "passed": true,
@@ -202,6 +197,19 @@
       "at": "2026-10-30T14:31:12.293061+00:00",
       "passed": true,
       "failed": []
+    },
+    "0xd9177d36c662b14ea27ec742cc0a7b71492242e5bf5dd0f1ae30ec296c9273d7": {
+      "at": "2026-10-30T15:11:30.915489+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h"
+      ]
+    },
+    "0xdc4a4a0c7312b1e7e1833be32b4aaea48ecb885695652fd7195d9d810015a667": {
+      "at": "2026-10-30T15:11:30.915489+00:00",
+      "passed": true,
+      "failed": []
     }
   },
   "sources": {
@@ -210,7 +218,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-30T15:01:34.034315+00:00",
+      "at": "2026-10-30T15:11:30.915489+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -218,7 +226,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-30T15:01:34.034315+00:00",
+      "at": "2026-10-30T15:11:30.915489+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -226,45 +234,26 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-30T14:31:12.293061+00:00",
-      "used_this_run": false
+      "at": "2026-10-30T15:11:30.915489+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 8,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-30T15:01:34.034315+00:00",
+      "at": "2026-10-30T15:11:30.915489+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0xda671dfb542eece042b66aa701c582073e4fa2d6362c5fa0fb68e89e7aa52317": "PASS|",
     "0x5ca237419d81f02e08dc78c4d54dcc3989d947b65d41e9b507e5b302087312ea": "PASS|",
     "onchain:0xe4971addd7199beb04a56b9ac48f9e2078db3580": "FAIL|Liquidity: $8,442 (need $10,000+ on Pons)",
-    "0xfbc46ce95c3a1375bab74282ade42008894afd1b61af54e2f85168f451375e35": "PASS|"
+    "0xfbc46ce95c3a1375bab74282ade42008894afd1b61af54e2f85168f451375e35": "PASS|",
+    "0xd9177d36c662b14ea27ec742cc0a7b71492242e5bf5dd0f1ae30ec296c9273d7": "FAIL|Market cap: $5,635 (need $25,000+); Not down >50% in 24h: -85% in 24h",
+    "0xdc4a4a0c7312b1e7e1833be32b4aaea48ecb885695652fd7195d9d810015a667": "PASS|"
   },
   "launchpad_tokens": {
-    "0xbffb81d2f22e2915330c4ff57efff2d34f5a3501": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-23T09:05:35Z",
-      "symbol": "SHADOW",
-      "title": "SHADOW",
-      "seen": "2026-10-24T09:01:05.557249+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 5980.3678,
-      "market_cap_usd": 6065.765664
-    },
-    "0x1bd2cfc0f7d29a3950001a6764100124a92609f3": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-23T09:02:10Z",
-      "symbol": "SHADOW",
-      "title": "SHADOW",
-      "seen": "2026-10-24T05:43:53.674639+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 5984.0064,
-      "market_cap_usd": 6038.554051
-    },
     "0x0b41df7bbe824bc181a8ab8f7b721c7ae2b897bc": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-23T09:12:23Z",
@@ -3818,7 +3807,7 @@
       "graduated": "2026-10-29T14:15:43Z",
       "symbol": "WOFL",
       "title": "Wofl",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5870.2674,
       "market_cap_usd": 6150.998218
@@ -3838,7 +3827,7 @@
       "graduated": "2026-10-29T15:39:14Z",
       "symbol": "RSGP",
       "title": "Cambria",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5688.7473,
       "market_cap_usd": 5963.695381
@@ -3848,7 +3837,7 @@
       "graduated": "2026-10-29T15:44:31Z",
       "symbol": "ELOOONG",
       "title": "elooong",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6190.2994,
       "market_cap_usd": 5960.268471
@@ -3887,7 +3876,7 @@
       "graduated": "2026-10-29T19:10:14Z",
       "symbol": "HI",
       "title": "Hyper Inu",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6438.4947,
       "market_cap_usd": 6315.286701
@@ -3907,7 +3896,7 @@
       "graduated": "2026-10-29T22:43:53Z",
       "symbol": "ZERODAY",
       "title": "ZEROday",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 7632.5533,
       "market_cap_usd": 7332.497262
@@ -4165,7 +4154,7 @@
       "graduated": "2026-10-30T05:49:38Z",
       "symbol": "Aristotle",
       "title": "End of Debug",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5703.9298,
       "market_cap_usd": 5664.884657
@@ -4175,7 +4164,7 @@
       "graduated": "2026-10-30T06:30:48Z",
       "symbol": "Aristotle",
       "title": "End of Debug",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5634.9387,
       "market_cap_usd": 5662.591361
@@ -4195,7 +4184,7 @@
       "graduated": "2026-10-30T07:21:48Z",
       "symbol": "SAFU",
       "title": "Funds Are Safu",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5665.0805,
       "market_cap_usd": 5681.777354
@@ -4205,7 +4194,7 @@
       "graduated": "2026-10-30T07:36:31Z",
       "symbol": "SAFU",
       "title": "Funds Are Safu",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5636.0551,
       "market_cap_usd": 5626.451637
@@ -4225,7 +4214,7 @@
       "graduated": "2026-10-30T08:06:08Z",
       "symbol": "ZERO",
       "title": "Zero Day",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6548.3445,
       "market_cap_usd": 5628.675759
@@ -4255,9 +4244,9 @@
       "graduated": "2026-10-30T08:21:59Z",
       "symbol": "SHELLZERO",
       "title": "ShellZero",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5664.7733,
+      "liquidity_usd": 5685.8071,
       "market_cap_usd": 5607.600101
     },
     "0x943696261a75716823ec984618c9377bab5f6029": {
@@ -4265,7 +4254,7 @@
       "graduated": "2026-10-30T09:01:50Z",
       "symbol": "SAFU",
       "title": "Funds Are Safu",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5803.3637,
       "market_cap_usd": 5747.068164
@@ -4275,9 +4264,9 @@
       "graduated": "2026-10-30T10:47:50Z",
       "symbol": "CTO",
       "title": "Chief Troll Officer",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6113.3912,
+      "liquidity_usd": 6130.4664,
       "market_cap_usd": 5999.225207
     },
     "0xe4971addd7199beb04a56b9ac48f9e2078db3580": {
@@ -4295,19 +4284,19 @@
       "graduated": "2026-10-30T13:49:07Z",
       "symbol": "AQUA",
       "title": "Aqua Protocol",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 30337.2681,
-      "market_cap_usd": 49488.02075
+      "liquidity_usd": 31711.1943,
+      "market_cap_usd": 54707.52247
     },
     "0x6a258f10a6043df54f8db4f301ca86c40d27c1ac": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-30T14:34:40Z",
       "symbol": "Aristotle",
       "title": "End of Debug",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5664.3262,
+      "liquidity_usd": 5685.3584,
       "market_cap_usd": 5660.030822
     },
     "0xf9ee3fbcf3fc11b5681e9a44666d2e1e4f8c5834": {
@@ -4325,14 +4314,24 @@
       "graduated": "2026-10-30T14:44:08Z",
       "symbol": "AQUA",
       "title": "Aqua Protocol",
-      "seen": "2026-10-30T15:01:34.034315+00:00",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5708.8093,
+      "liquidity_usd": 5730.0067,
       "market_cap_usd": 5683.252436
+    },
+    "0xc557b84665d273a1ac6a18345e806766e828196d": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-30T14:56:32Z",
+      "symbol": "Aristotle",
+      "title": "End of Debug",
+      "seen": "2026-10-30T15:11:30.915489+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 93415.8493,
+      "market_cap_usd": 255387.8435
     }
   },
   "graduations": {
-    "at": "2026-10-30T15:01:34.034315+00:00",
+    "at": "2026-10-30T15:11:30.915489+00:00",
     "hours": 24,
     "seen": {
       "0x6ccc3111af49ead5d2159fd9fa9f049298b08e89": "2026-10-29T15:14:30.637800+00:00",
@@ -4360,7 +4359,7 @@
       "0xf5893950430b949565666997b11765e6618b8508",
       "0xf9ee3fbcf3fc11b5681e9a44666d2e1e4f8c5834"
     ],
-    "scanned_to": 101815806,
+    "scanned_to": 101821601,
     "complete": true
   },
   "issues_to_close": [],
@@ -4488,7 +4487,7 @@
       0
     ],
     "2026-10-30 15:00": [
-      1,
+      2,
       0,
       0
     ]
