@@ -111,14 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "onchain:0x5f855acbcf1c32e0a096c0bca8b06c73064c3576": {
-      "pool": null,
-      "dex": "pons-v2-dex",
-      "token": "0x5f855acbcf1c32e0a096c0bca8b06c73064c3576",
-      "name": "KITTY",
-      "created": "2026-10-30T17:44:13.108200+00:00",
-      "source": "chain"
-    },
     "0xe262e2caaa6b27138c75ee09f0fc937ab29b7a5d1c9610ec8e39a55513649ac0": {
       "pool": "0xe262e2caaa6b27138c75ee09f0fc937ab29b7a5d1c9610ec8e39a55513649ac0",
       "dex": "uniswap-pools-trade",
@@ -148,20 +140,47 @@
       "created": "2026-10-30T23:21:19Z",
       "liquidity_usd": 71.3791,
       "market_cap_usd": 4527175.738
+    },
+    "0x24ba01ebc9ef68c3603f23d9909f85f3ff34841b353f96c7812221dcd573a093": {
+      "pool": "0x24ba01ebc9ef68c3603f23d9909f85f3ff34841b353f96c7812221dcd573a093",
+      "dex": "uniswap-pools-trade",
+      "token": "0x50595110e71a1abd77c0f6cdf6d5364d2002b380",
+      "name": "iCoin",
+      "title": "iCoin",
+      "created": "2026-10-30T23:50:03Z",
+      "liquidity_usd": 5692.3575,
+      "market_cap_usd": 5670.605432
+    },
+    "0xd29878a579376edeb9c0f1c8506b3d2ce1e5953cf24a0654658bd7571a8070c7": {
+      "pool": "0xd29878a579376edeb9c0f1c8506b3d2ce1e5953cf24a0654658bd7571a8070c7",
+      "dex": "uniswap-pools-trade",
+      "token": "0x9c5b04cd5c6a09f91db2b618a7b2820545cdb78b",
+      "name": "iCoin",
+      "title": "iCoin",
+      "created": "2026-10-30T23:56:46Z",
+      "liquidity_usd": null,
+      "market_cap_usd": 20148.99118
     }
   },
   "checked": {
-    "onchain:0x5f855acbcf1c32e0a096c0bca8b06c73064c3576": {
-      "at": "2026-10-30T22:51:08.580734+00:00",
+    "0xe262e2caaa6b27138c75ee09f0fc937ab29b7a5d1c9610ec8e39a55513649ac0": {
+      "at": "2026-10-30T20:01:28.528986+00:00",
+      "passed": true,
+      "failed": []
+    },
+    "0x48f5877d6d2d76620e9ab1970ea64cb5d9ca442c42e29608871365dc6b0ad0fe": {
+      "at": "2026-10-31T00:01:08.270903+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
-    "0xe262e2caaa6b27138c75ee09f0fc937ab29b7a5d1c9610ec8e39a55513649ac0": {
-      "at": "2026-10-30T20:01:28.528986+00:00",
-      "passed": true,
-      "failed": []
+    "0x20efc80f55727fbfc1dde1f6233515e3a21fd84aaace354d5b46c49e82c46a98": {
+      "at": "2026-10-31T00:01:08.270903+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
     }
   },
   "sources": {
@@ -170,7 +189,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-30T23:44:12.999441+00:00",
+      "at": "2026-10-31T00:01:08.270903+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -178,8 +197,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-30T22:51:08.580734+00:00",
-      "used_this_run": false
+      "at": "2026-10-31T00:01:08.270903+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -194,26 +213,16 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-30T23:41:25.425459+00:00",
-      "used_this_run": false
+      "at": "2026-10-31T00:01:08.270903+00:00",
+      "used_this_run": true
     }
   },
   "logged": {
-    "onchain:0x14535d686b26e18b789deb8abfb1bf4840f62b7e": "FAIL|Liquidity: $4,356 (need $10,000+ on Pons)",
-    "onchain:0x5f855acbcf1c32e0a096c0bca8b06c73064c3576": "FAIL|Liquidity: $3,917 (need $10,000+ on Pons)",
-    "0xe262e2caaa6b27138c75ee09f0fc937ab29b7a5d1c9610ec8e39a55513649ac0": "PASS|"
+    "0xe262e2caaa6b27138c75ee09f0fc937ab29b7a5d1c9610ec8e39a55513649ac0": "PASS|",
+    "0x48f5877d6d2d76620e9ab1970ea64cb5d9ca442c42e29608871365dc6b0ad0fe": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
+    "0x20efc80f55727fbfc1dde1f6233515e3a21fd84aaace354d5b46c49e82c46a98": "FAIL|Liquidity: $125 (need $5,000+ on Pools.trade)"
   },
   "launchpad_tokens": {
-    "0x1af1bb6189ba3857a43909595d54af130a968391": {
-      "dex": "pons-v2-dex",
-      "graduated": "2026-10-23T18:00:28Z",
-      "symbol": "MDAN",
-      "title": "MedAxis Network",
-      "seen": "2026-10-23T18:01:29.714682+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 20208.9873878646,
-      "market_cap_usd": 49330.19376
-    },
     "0xd71f326eb9068cc4ba5586cfef017d0bd6140000": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-23T18:05:50Z",
@@ -3796,9 +3805,9 @@
       "graduated": "2026-10-30T05:49:38Z",
       "symbol": "Aristotle",
       "title": "End of Debug",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5716.3712,
+      "liquidity_usd": 5728.0717,
       "market_cap_usd": 5664.884657
     },
     "0xfda3b4d5b385203e1c1d5ca29a7f7cf5fe9de568": {
@@ -3806,9 +3815,9 @@
       "graduated": "2026-10-30T06:30:48Z",
       "symbol": "Aristotle",
       "title": "End of Debug",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5647.2296,
+      "liquidity_usd": 5658.7886,
       "market_cap_usd": 5662.591361
     },
     "0x50a6f89b15847bf7da45848ba592836c93b1474b": {
@@ -3826,9 +3835,9 @@
       "graduated": "2026-10-30T07:21:48Z",
       "symbol": "SAFU",
       "title": "Funds Are Safu",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5677.4371,
+      "liquidity_usd": 5689.0579,
       "market_cap_usd": 5681.777354
     },
     "0x66af47a5a92f8be5696d61bab93a786a3383bc22": {
@@ -3836,9 +3845,9 @@
       "graduated": "2026-10-30T07:36:31Z",
       "symbol": "SAFU",
       "title": "Funds Are Safu",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5648.3484,
+      "liquidity_usd": 5659.9097,
       "market_cap_usd": 5626.451637
     },
     "0x1ee0199d0795011842067f16638a690ff5bc17d0": {
@@ -3856,9 +3865,9 @@
       "graduated": "2026-10-30T08:06:08Z",
       "symbol": "ZERO",
       "title": "Zero Day",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6562.6277,
+      "liquidity_usd": 6576.0604,
       "market_cap_usd": 5628.675759
     },
     "0xf0969a213017241f81215d3bc3f2bdcbc76449ac": {
@@ -3886,9 +3895,9 @@
       "graduated": "2026-10-30T08:21:59Z",
       "symbol": "SHELLZERO",
       "title": "ShellZero",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5670.5006,
+      "liquidity_usd": 5682.1072,
       "market_cap_usd": 5607.600101
     },
     "0x943696261a75716823ec984618c9377bab5f6029": {
@@ -3896,9 +3905,9 @@
       "graduated": "2026-10-30T09:01:50Z",
       "symbol": "SAFU",
       "title": "Funds Are Safu",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5809.2312,
+      "liquidity_usd": 5821.1218,
       "market_cap_usd": 5747.068164
     },
     "0x5d7ceb89297680e71441d2aa199ae2a372eda548": {
@@ -3906,9 +3915,9 @@
       "graduated": "2026-10-30T10:47:50Z",
       "symbol": "CTO",
       "title": "Chief Troll Officer",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6065.659,
+      "liquidity_usd": 6078.0744,
       "market_cap_usd": 5946.664706
     },
     "0xe4971addd7199beb04a56b9ac48f9e2078db3580": {
@@ -3926,9 +3935,9 @@
       "graduated": "2026-10-30T13:49:07Z",
       "symbol": "AQUA",
       "title": "Aqua Protocol",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6290.5368,
+      "liquidity_usd": 6303.4125,
       "market_cap_usd": 6164.072106
     },
     "0x6a258f10a6043df54f8db4f301ca86c40d27c1ac": {
@@ -3936,9 +3945,9 @@
       "graduated": "2026-10-30T14:34:40Z",
       "symbol": "Aristotle",
       "title": "End of Debug",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5670.0531,
+      "liquidity_usd": 5681.6588,
       "market_cap_usd": 5660.030822
     },
     "0xf9ee3fbcf3fc11b5681e9a44666d2e1e4f8c5834": {
@@ -3956,9 +3965,9 @@
       "graduated": "2026-10-30T14:44:08Z",
       "symbol": "AQUA",
       "title": "Aqua Protocol",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5681.4648,
+      "liquidity_usd": 5693.0938,
       "market_cap_usd": 5650.463528
     },
     "0xc557b84665d273a1ac6a18345e806766e828196d": {
@@ -3966,9 +3975,9 @@
       "graduated": "2026-10-30T14:56:32Z",
       "symbol": "Aristotle",
       "title": "End of Debug",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5777.4574,
+      "liquidity_usd": 5789.2829,
       "market_cap_usd": 5735.139301
     },
     "0x0a4b053cb29a574057ad093fc92d16b938b605d6": {
@@ -3976,7 +3985,7 @@
       "graduated": "2026-10-30T15:45:23Z",
       "symbol": "NET",
       "title": "Nasdaq Equity Token",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5733.375896
     },
@@ -3985,10 +3994,10 @@
       "graduated": "2026-10-30T15:57:25Z",
       "symbol": "SPACECAT",
       "title": "Space Cat",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6448.9581,
-      "market_cap_usd": 6234.86427
+      "liquidity_usd": 6461.4855,
+      "market_cap_usd": 6241.53561
     },
     "0x5f855acbcf1c32e0a096c0bca8b06c73064c3576": {
       "dex": "pons-v2-dex",
@@ -4015,9 +4024,9 @@
       "graduated": "2026-10-30T19:30:57Z",
       "symbol": "TYGR",
       "title": "Tygr",
-      "seen": "2026-10-30T23:44:12.999441+00:00",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
       "source": "geckoterminal",
-      "market_cap_usd": 6144.834256
+      "market_cap_usd": 6161.679927
     },
     "0x09bc88a77ba957c33b6dee3120363b8c45d01749": {
       "dex": "uniswap-pools-trade",
@@ -4038,10 +4047,29 @@
       "source": "geckoterminal",
       "liquidity_usd": 71.3791,
       "market_cap_usd": 4527175.738
+    },
+    "0x50595110e71a1abd77c0f6cdf6d5364d2002b380": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-30T23:50:03Z",
+      "symbol": "iCoin",
+      "title": "iCoin",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 5692.3575,
+      "market_cap_usd": 5670.605432
+    },
+    "0x9c5b04cd5c6a09f91db2b618a7b2820545cdb78b": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-10-30T23:56:46Z",
+      "symbol": "iCoin",
+      "title": "iCoin",
+      "seen": "2026-10-31T00:01:08.270903+00:00",
+      "source": "geckoterminal",
+      "market_cap_usd": 20320.52073
     }
   },
   "graduations": {
-    "at": "2026-10-30T23:41:25.425459+00:00",
+    "at": "2026-10-31T00:01:08.270903+00:00",
     "hours": 24,
     "seen": {
       "0xa869bbf8814f8573c310181705ea35143f3b5be5": "2026-10-30T02:18:09.600500+00:00",
@@ -4061,7 +4089,7 @@
       "0xe4971addd7199beb04a56b9ac48f9e2078db3580",
       "0xf9ee3fbcf3fc11b5681e9a44666d2e1e4f8c5834"
     ],
-    "scanned_to": 102119098,
+    "scanned_to": 102130535,
     "complete": true
   },
   "issues_to_close": [],
@@ -4073,11 +4101,6 @@
     "0x14535d686b26e18b789deb8abfb1bf4840f62b7e": "2026-10-30T18:01:12.108188+00:00"
   },
   "gecko_hours": {
-    "2026-10-30 00:00": [
-      6,
-      0,
-      0
-    ],
     "2026-10-30 01:00": [
       6,
       0,
@@ -4190,6 +4213,11 @@
     ],
     "2026-10-30 23:00": [
       6,
+      0,
+      0
+    ],
+    "2026-10-31 00:00": [
+      1,
       0,
       0
     ]
