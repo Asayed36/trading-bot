@@ -197,10 +197,11 @@
   "sources": {
     "geckoterminal": {
       "calls": 2,
-      "errors": 0,
-      "rate_limited": 0,
-      "ok": true,
-      "at": "2026-10-31T07:51:24.433549+00:00",
+      "errors": 2,
+      "rate_limited": 2,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
+      "ok": false,
+      "at": "2026-10-31T08:01:13.877402+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -224,7 +225,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-10-31T07:51:24.433549+00:00",
+      "at": "2026-10-31T08:01:13.877402+00:00",
       "used_this_run": true
     }
   },
@@ -3817,7 +3818,7 @@
     }
   },
   "graduations": {
-    "at": "2026-10-31T07:51:24.433549+00:00",
+    "at": "2026-10-31T08:01:13.877402+00:00",
     "hours": 24,
     "seen": {
       "0xe4971addd7199beb04a56b9ac48f9e2078db3580": "2026-10-30T13:23:06.919200+00:00",
@@ -3837,7 +3838,7 @@
       "0xf9ee3fbcf3fc11b5681e9a44666d2e1e4f8c5834",
       "0xff0fa3799686ac47e3aff62aa2210a8441737cc3"
     ],
-    "scanned_to": 102396939,
+    "scanned_to": 102402548,
     "complete": true
   },
   "issues_to_close": [],
@@ -3849,11 +3850,6 @@
     "0x14535d686b26e18b789deb8abfb1bf4840f62b7e": "2026-10-30T18:01:12.108188+00:00"
   },
   "gecko_hours": {
-    "2026-10-30 08:00": [
-      7,
-      0,
-      0
-    ],
     "2026-10-30 09:00": [
       5,
       0,
@@ -3968,6 +3964,11 @@
       6,
       0,
       0
+    ],
+    "2026-10-31 08:00": [
+      1,
+      1,
+      1
     ]
   }
 }
