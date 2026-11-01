@@ -111,26 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0x74c4971a2f29d24cf200b8f4f2d1fb5495b0eb43c9009d22b15360a88ddc67f9": {
-      "pool": "0x74c4971a2f29d24cf200b8f4f2d1fb5495b0eb43c9009d22b15360a88ddc67f9",
-      "dex": "uniswap-pools-trade",
-      "token": "0x07a3bea6f2cf9b541f6ed70916b28848602760ee",
-      "name": "TERA",
-      "title": "Tera",
-      "created": "2026-11-01T06:23:17Z",
-      "liquidity_usd": null,
-      "market_cap_usd": 5726.638267
-    },
-    "0x95b85d6e033093370a42c399e2c07b4285506a876c751ab1237e9a75755eb55d": {
-      "pool": "0x95b85d6e033093370a42c399e2c07b4285506a876c751ab1237e9a75755eb55d",
-      "dex": "pons-v2-dex",
-      "token": "0x090980a62d5007f6190b04782d0ea690ab53c210",
-      "name": "INSULA",
-      "title": "Insula World",
-      "created": "2026-11-01T06:22:51Z",
-      "liquidity_usd": 19371.5984,
-      "market_cap_usd": 43772.73263
-    },
     "0xcb775731c93ea75d6eabfefc06934d7cebb23110128d055abba7861efc94fbbe": {
       "pool": "0xcb775731c93ea75d6eabfefc06934d7cebb23110128d055abba7861efc94fbbe",
       "dex": "uniswap-pools-trade",
@@ -311,22 +291,6 @@
     }
   },
   "checked": {
-    "0x95b85d6e033093370a42c399e2c07b4285506a876c751ab1237e9a75755eb55d": {
-      "at": "2026-11-01T11:41:20.712663+00:00",
-      "passed": false,
-      "failed": [
-        "More buys than sells (1h)"
-      ]
-    },
-    "0x74c4971a2f29d24cf200b8f4f2d1fb5495b0eb43c9009d22b15360a88ddc67f9": {
-      "at": "2026-11-01T11:41:20.712663+00:00",
-      "passed": false,
-      "failed": [
-        "Market cap",
-        "Not down >50% in 24h",
-        "More buys than sells (1h)"
-      ]
-    },
     "0xcb775731c93ea75d6eabfefc06934d7cebb23110128d055abba7861efc94fbbe": {
       "at": "2026-11-01T11:41:20.712663+00:00",
       "passed": false,
@@ -439,6 +403,21 @@
       "failed": [
         "Market cap"
       ]
+    },
+    "0xf50fe4af1b18562ddcfa512a90f88b2caaa1ce049aaf650394bbace7ca5db3e4": {
+      "at": "2026-11-01T12:31:08.138292+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap"
+      ]
+    },
+    "0x3784aa965764cae0039387c63348cd4ce7be3b3b4b9752c502180b1cb432be58": {
+      "at": "2026-11-01T12:31:08.138292+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h"
+      ]
     }
   },
   "sources": {
@@ -447,7 +426,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T12:21:05.320350+00:00",
+      "at": "2026-11-01T12:31:08.138292+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -455,7 +434,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T12:21:05.320350+00:00",
+      "at": "2026-11-01T12:31:08.138292+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -471,13 +450,11 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T12:21:05.320350+00:00",
+      "at": "2026-11-01T12:31:08.138292+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x95b85d6e033093370a42c399e2c07b4285506a876c751ab1237e9a75755eb55d": "FAIL|More buys than sells (1h): 1 buys vs 5 sells",
-    "0x74c4971a2f29d24cf200b8f4f2d1fb5495b0eb43c9009d22b15360a88ddc67f9": "FAIL|Market cap: $5,728 (need $25,000+); Not down >50% in 24h: -60% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0xcb775731c93ea75d6eabfefc06934d7cebb23110128d055abba7861efc94fbbe": "FAIL|Market cap: $6,464 (need $25,000+); Not down >50% in 24h: -54% in 24h; More buys than sells (1h): 0 buys vs 1 sells",
     "0xda77bb1dd63a8793c4058746bdba0a376cbd371068b625dfd862f842d4986c4e": "PASS|",
     "0xc9f929c5630ce70033ef88584abe3c438a177246dd30097de8467e9db2ef7bc5": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls",
@@ -493,19 +470,11 @@
     "0x7d24fd885052e043f3c47ba6e82b4d50d5c3c42ed346b9756bd05a0207106515": "FAIL|Market cap: $5,699 (need $25,000+)",
     "0xb87c292fd9331c968e8f0ba28ee4cc30895457e6163c85e25a214cb9fd6da3fa": "FAIL|Market cap: $5,699 (need $25,000+)",
     "0x45a1778a2a3b196f3c6e65ec4b6027334e941fdaf96149ddfa664df4d2e63361": "FAIL|Market cap: $5,696 (need $25,000+)",
-    "0x828c4814a01d27390d3bdbbeeb21ffef678974511909abff9ce430ffa43937b3": "FAIL|Market cap: $5,685 (need $25,000+)"
+    "0x828c4814a01d27390d3bdbbeeb21ffef678974511909abff9ce430ffa43937b3": "FAIL|Market cap: $5,685 (need $25,000+)",
+    "0xf50fe4af1b18562ddcfa512a90f88b2caaa1ce049aaf650394bbace7ca5db3e4": "FAIL|Market cap: $5,691 (need $25,000+)",
+    "0x3784aa965764cae0039387c63348cd4ce7be3b3b4b9752c502180b1cb432be58": "FAIL|Market cap: $5,708 (need $25,000+); Not down >50% in 24h: -85% in 24h"
   },
   "launchpad_tokens": {
-    "0xe28b452f2c7d846f058273a0743c81ba8bd2d0e8": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-25T06:22:40Z",
-      "symbol": "Chunkee",
-      "title": "Chunkee",
-      "seen": "2026-10-26T05:01:26.336569+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 5866.6885,
-      "market_cap_usd": 5879.204637
-    },
     "0x87e1f84bf08eade51a4c109dc88d96531588adbe": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-25T06:51:40Z",
@@ -3804,7 +3773,7 @@
       "graduated": "2026-10-31T16:30:13Z",
       "symbol": "DAVID",
       "title": "David Dobrik Coin",
-      "seen": "2026-11-01T12:21:05.320350+00:00",
+      "seen": "2026-11-01T12:31:08.138292+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5991.4503,
       "market_cap_usd": 5907.252899
@@ -3824,7 +3793,7 @@
       "graduated": "2026-10-31T19:42:01Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T12:21:05.320350+00:00",
+      "seen": "2026-11-01T12:31:08.138292+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6016.8541,
       "market_cap_usd": 5968.964124
@@ -3834,7 +3803,7 @@
       "graduated": "2026-10-31T21:51:20Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T12:21:05.320350+00:00",
+      "seen": "2026-11-01T12:31:08.138292+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5745.5774,
       "market_cap_usd": 5686.90563
@@ -3844,7 +3813,7 @@
       "graduated": "2026-10-31T21:53:40Z",
       "symbol": "STREET",
       "title": "Stonk Street",
-      "seen": "2026-11-01T12:21:05.320350+00:00",
+      "seen": "2026-11-01T12:31:08.138292+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 71.4483,
       "market_cap_usd": 323601.0938
@@ -3872,7 +3841,7 @@
       "graduated": "2026-11-01T05:19:16Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T12:21:05.320350+00:00",
+      "seen": "2026-11-01T12:31:08.138292+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5700.1006,
       "market_cap_usd": 5716.367439
@@ -3892,7 +3861,7 @@
       "graduated": "2026-11-01T05:31:32Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T12:21:05.320350+00:00",
+      "seen": "2026-11-01T12:31:08.138292+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5699.8748,
       "market_cap_usd": 5710.25091
@@ -3902,7 +3871,7 @@
       "graduated": "2026-11-01T06:06:58Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T12:21:05.320350+00:00",
+      "seen": "2026-11-01T12:31:08.138292+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5731.4918,
       "market_cap_usd": 5731.069069
@@ -3912,7 +3881,7 @@
       "graduated": "2026-11-01T06:15:28Z",
       "symbol": "TERA",
       "title": "Tera",
-      "seen": "2026-11-01T12:21:05.320350+00:00",
+      "seen": "2026-11-01T12:31:08.138292+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5745.3506,
       "market_cap_usd": 5723.670192
@@ -3922,7 +3891,7 @@
       "graduated": "2026-11-01T06:23:17Z",
       "symbol": "TERA",
       "title": "Tera",
-      "seen": "2026-11-01T12:21:05.320350+00:00",
+      "seen": "2026-11-01T12:31:08.138292+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5715.80221
     },
@@ -3941,7 +3910,7 @@
       "graduated": "2026-11-01T06:36:34Z",
       "symbol": "TERA",
       "title": "Tera",
-      "seen": "2026-11-01T12:21:05.320350+00:00",
+      "seen": "2026-11-01T12:31:08.138292+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6565.73,
       "market_cap_usd": 6454.656863
@@ -3971,7 +3940,7 @@
       "graduated": "2026-11-01T08:01:38Z",
       "symbol": "TERA",
       "title": "Tera",
-      "seen": "2026-11-01T12:21:05.320350+00:00",
+      "seen": "2026-11-01T12:31:08.138292+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5743.0824,
       "market_cap_usd": 5718.365224
@@ -4100,9 +4069,9 @@
       "graduated": "2026-11-01T11:54:02Z",
       "symbol": "Scooby",
       "title": "Scooby Doo",
-      "seen": "2026-11-01T12:21:05.320350+00:00",
+      "seen": "2026-11-01T12:31:08.138292+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5724.8196,
+      "liquidity_usd": 5721.9059,
       "market_cap_usd": 5701.80009
     },
     "0x0aafd60496e5094b83c042727d2de6b084816d1a": {
@@ -4110,14 +4079,14 @@
       "graduated": "2026-11-01T11:51:22Z",
       "symbol": "COINSIDE",
       "title": "COINSIDE",
-      "seen": "2026-11-01T12:21:05.320350+00:00",
+      "seen": "2026-11-01T12:31:08.138292+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5677.0052,
       "market_cap_usd": 5681.682924
     }
   },
   "graduations": {
-    "at": "2026-11-01T12:21:05.320350+00:00",
+    "at": "2026-11-01T12:31:08.138292+00:00",
     "hours": 24,
     "seen": {
       "0xb961886115fb9e4f732e20e89efd6d0406c3527f": "2026-10-31T18:59:39.050400+00:00",
@@ -4137,7 +4106,7 @@
       "0xf722b7b078b4b69430586b907ce82122d603c3ba",
       "0xfda080f64d84c989cfc50ff18253542cfe502db3"
     ],
-    "scanned_to": 103379596,
+    "scanned_to": 103385363,
     "complete": true
   },
   "issues_to_close": [],
@@ -4262,7 +4231,7 @@
       0
     ],
     "2026-11-01 12:00": [
-      3,
+      4,
       0,
       0
     ]
