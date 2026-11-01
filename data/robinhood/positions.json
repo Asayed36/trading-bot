@@ -210,11 +210,21 @@
       "created": "2026-11-01T07:24:59Z",
       "liquidity_usd": 17843.5024,
       "market_cap_usd": 40993.27297
+    },
+    "0x658633095c08bf190f920b446f100977a6baa21a43b690f8289f9560136be37f": {
+      "pool": "0x658633095c08bf190f920b446f100977a6baa21a43b690f8289f9560136be37f",
+      "dex": "uniswap-pools-trade",
+      "token": "0x1cc8ecaf7b9d430b323139147e98d8d4aae2812c",
+      "name": "TERA",
+      "title": "Tera",
+      "created": "2026-11-01T08:01:38Z",
+      "liquidity_usd": 5743.3749,
+      "market_cap_usd": 5718.365224
     }
   },
   "checked": {
     "0xd9cd413d4393728e0a023b875bddc570248ec59ca4660777bcf19237c2a32e29": {
-      "at": "2026-11-01T07:01:10.616065+00:00",
+      "at": "2026-11-01T08:11:23.410854+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -223,10 +233,11 @@
       ]
     },
     "0x17a89d83c6185bcfbdf60a3907ec9586de64db2c60de97fcce3aff7c9094c039": {
-      "at": "2026-11-01T07:01:10.616065+00:00",
+      "at": "2026-11-01T08:11:23.410854+00:00",
       "passed": false,
       "failed": [
-        "More buys than sells (1h)"
+        "Creator share",
+        "Top 10 holders"
       ]
     },
     "0x3deba399d7ac5c65151932b5163215d281eb1bcb6085b41ecda4ae6f9605ca4b": {
@@ -257,29 +268,27 @@
       ]
     },
     "0x95b85d6e033093370a42c399e2c07b4285506a876c751ab1237e9a75755eb55d": {
-      "at": "2026-11-01T07:01:10.616065+00:00",
+      "at": "2026-11-01T08:11:23.410854+00:00",
       "passed": false,
       "failed": [
-        "Holders"
+        "More buys than sells (1h)"
       ]
     },
     "0x74c4971a2f29d24cf200b8f4f2d1fb5495b0eb43c9009d22b15360a88ddc67f9": {
-      "at": "2026-11-01T07:01:10.616065+00:00",
+      "at": "2026-11-01T08:11:23.410854+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h",
+        "More buys than sells (1h)"
+      ]
+    },
+    "0xcb775731c93ea75d6eabfefc06934d7cebb23110128d055abba7861efc94fbbe": {
+      "at": "2026-11-01T08:11:23.410854+00:00",
       "passed": false,
       "failed": [
         "Market cap",
         "Not down >50% in 24h"
-      ]
-    },
-    "0xcb775731c93ea75d6eabfefc06934d7cebb23110128d055abba7861efc94fbbe": {
-      "at": "2026-11-01T07:11:08.012425+00:00",
-      "passed": false,
-      "failed": [
-        "Not a honeypot",
-        "Not mintable",
-        "No hidden owner",
-        "Owner can't change balances",
-        "No blacklist"
       ]
     },
     "0xda77bb1dd63a8793c4058746bdba0a376cbd371068b625dfd862f842d4986c4e": {
@@ -304,7 +313,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T07:59:19.045073+00:00",
+      "at": "2026-11-01T08:11:23.410854+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -312,7 +321,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T07:59:19.045073+00:00",
+      "at": "2026-11-01T08:11:23.410854+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -320,27 +329,27 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T07:59:19.045073+00:00",
+      "at": "2026-11-01T08:11:23.410854+00:00",
       "used_this_run": true
     },
     "rpc": {
-      "calls": 18,
+      "calls": 11,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T07:59:19.045073+00:00",
+      "at": "2026-11-01T08:11:23.410854+00:00",
       "used_this_run": true
     }
   },
   "logged": {
     "0xd9cd413d4393728e0a023b875bddc570248ec59ca4660777bcf19237c2a32e29": "FAIL|Market cap: $5,723 (need $25,000+); Not down >50% in 24h: -58% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "0x17a89d83c6185bcfbdf60a3907ec9586de64db2c60de97fcce3aff7c9094c039": "FAIL|More buys than sells (1h): 13 buys vs 13 sells",
+    "0x17a89d83c6185bcfbdf60a3907ec9586de64db2c60de97fcce3aff7c9094c039": "FAIL|Creator share: 65.03% (need under 5%); Top 10 holders: 80.6% (need under 30%; pools, launchpad and burn addresses left out)",
     "0x3deba399d7ac5c65151932b5163215d281eb1bcb6085b41ecda4ae6f9605ca4b": "FAIL|Market cap: $5,732 (need $25,000+); Not down >50% in 24h: -58% in 24h; More buys than sells (1h): 0 buys vs 1 sells",
     "0xfb673907e17963fd0b60058d5e27af74f7f6ab24859d21b6ee5322bc0ebc58eb": "FAIL|Market cap: $5,753 (need $25,000+); Not down >50% in 24h: -59% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0xf74e4b624ae213f21adbdcddb2540552ac604646de5e16d8fae9559b02534980": "FAIL|Market cap: $5,735 (need $25,000+); Not down >50% in 24h: -59% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "0x95b85d6e033093370a42c399e2c07b4285506a876c751ab1237e9a75755eb55d": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls",
-    "0x74c4971a2f29d24cf200b8f4f2d1fb5495b0eb43c9009d22b15360a88ddc67f9": "FAIL|Market cap: $5,728 (need $25,000+); Not down >50% in 24h: -60% in 24h",
-    "0xcb775731c93ea75d6eabfefc06934d7cebb23110128d055abba7861efc94fbbe": "FAIL|Not a honeypot: unknown: GoPlus gave no is_honeypot; Not mintable: unknown: GoPlus gave no is_mintable; No hidden owner: unknown: GoPlus gave no hidden_owner; Owner can't change balances: unknown: GoPlus gave no owner_change_balance; No blacklist: unknown: GoPlus gave no is_blacklisted",
+    "0x95b85d6e033093370a42c399e2c07b4285506a876c751ab1237e9a75755eb55d": "FAIL|More buys than sells (1h): 13 buys vs 14 sells",
+    "0x74c4971a2f29d24cf200b8f4f2d1fb5495b0eb43c9009d22b15360a88ddc67f9": "FAIL|Market cap: $5,728 (need $25,000+); Not down >50% in 24h: -60% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
+    "0xcb775731c93ea75d6eabfefc06934d7cebb23110128d055abba7861efc94fbbe": "FAIL|Market cap: $6,576 (need $25,000+); Not down >50% in 24h: -53% in 24h",
     "0xda77bb1dd63a8793c4058746bdba0a376cbd371068b625dfd862f842d4986c4e": "FAIL|Market cap: $18,488 (need $25,000+); Not down >50% in 24h: -62% in 24h",
     "0xc9f929c5630ce70033ef88584abe3c438a177246dd30097de8467e9db2ef7bc5": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls"
   },
@@ -3623,9 +3632,9 @@
       "graduated": "2026-10-31T06:31:20Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T07:59:19.045073+00:00",
+      "seen": "2026-11-01T08:11:23.410854+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6665.9285,
+      "liquidity_usd": 6668.3674,
       "market_cap_usd": 6413.539403
     },
     "0x97ffca152de18df6676b437defb249cba3429d03": {
@@ -3633,9 +3642,9 @@
       "graduated": "2026-10-31T08:44:54Z",
       "symbol": "ICOIN",
       "title": "iCoin",
-      "seen": "2026-11-01T07:59:19.045073+00:00",
+      "seen": "2026-11-01T08:11:23.410854+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 95.346,
+      "liquidity_usd": 95.538,
       "market_cap_usd": 2890702.165
     },
     "0xfeff13525d2203f09ff6e16ffc948a707c9fc626": {
@@ -3653,9 +3662,9 @@
       "graduated": "2026-10-31T16:30:13Z",
       "symbol": "DAVID",
       "title": "David Dobrik Coin",
-      "seen": "2026-11-01T07:59:19.045073+00:00",
+      "seen": "2026-11-01T08:11:23.410854+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5982.3371,
+      "liquidity_usd": 5994.3824,
       "market_cap_usd": 5907.252899
     },
     "0xb961886115fb9e4f732e20e89efd6d0406c3527f": {
@@ -3673,9 +3682,9 @@
       "graduated": "2026-10-31T19:42:01Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T07:59:19.045073+00:00",
+      "seen": "2026-11-01T08:11:23.410854+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6007.7023,
+      "liquidity_usd": 6020.17,
       "market_cap_usd": 5968.964124
     },
     "0x3f7b1735e19bdf12d5573418ac2eab6c5f6d0567": {
@@ -3683,9 +3692,9 @@
       "graduated": "2026-10-31T21:51:20Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T07:59:19.045073+00:00",
+      "seen": "2026-11-01T08:11:23.410854+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5736.8382,
+      "liquidity_usd": 5748.7438,
       "market_cap_usd": 5686.90563
     },
     "0xd25f40419e789e9a10e26e5e5402c4d923d239f2": {
@@ -3693,9 +3702,9 @@
       "graduated": "2026-10-31T21:53:40Z",
       "symbol": "STREET",
       "title": "Stonk Street",
-      "seen": "2026-11-01T07:59:19.045073+00:00",
+      "seen": "2026-11-01T08:11:23.410854+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 71.3396,
+      "liquidity_usd": 71.4877,
       "market_cap_usd": 323601.0938
     },
     "0x555bd2e247c039f6d730cdc57a6799d23302ac05": {
@@ -3721,9 +3730,9 @@
       "graduated": "2026-11-01T05:19:16Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T07:59:19.045073+00:00",
+      "seen": "2026-11-01T08:11:23.410854+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5720.7585,
+      "liquidity_usd": 5732.2771,
       "market_cap_usd": 5713.932718
     },
     "0xc4bea7e18409b2d1042cea57243964b76a3fc4bb": {
@@ -3741,9 +3750,9 @@
       "graduated": "2026-11-01T05:31:32Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T07:59:19.045073+00:00",
+      "seen": "2026-11-01T08:11:23.410854+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5720.7417,
+      "liquidity_usd": 5729.7808,
       "market_cap_usd": 5718.716551
     },
     "0xf1c9720e2281d94b707b3ec4f2eafa47dab04fd2": {
@@ -3751,9 +3760,9 @@
       "graduated": "2026-11-01T06:06:58Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T07:59:19.045073+00:00",
+      "seen": "2026-11-01T08:11:23.410854+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5757.0209,
+      "liquidity_usd": 5766.2186,
       "market_cap_usd": 5749.557965
     },
     "0xbc8258956f4c6dc15e8c5866fadd27762f65d225": {
@@ -3761,9 +3770,9 @@
       "graduated": "2026-11-01T06:15:28Z",
       "symbol": "TERA",
       "title": "Tera",
-      "seen": "2026-11-01T07:59:19.045073+00:00",
+      "seen": "2026-11-01T08:11:23.410854+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5734.636,
+      "liquidity_usd": 5748.1622,
       "market_cap_usd": 5723.670192
     },
     "0x07a3bea6f2cf9b541f6ed70916b28848602760ee": {
@@ -3771,7 +3780,7 @@
       "graduated": "2026-11-01T06:23:17Z",
       "symbol": "TERA",
       "title": "Tera",
-      "seen": "2026-11-01T07:59:19.045073+00:00",
+      "seen": "2026-11-01T08:11:23.410854+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5715.80221
     },
@@ -3790,10 +3799,10 @@
       "graduated": "2026-11-01T06:36:34Z",
       "symbol": "TERA",
       "title": "Tera",
-      "seen": "2026-11-01T07:59:19.045073+00:00",
+      "seen": "2026-11-01T08:11:23.410854+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6711.8997,
-      "market_cap_usd": 6573.56037
+      "liquidity_usd": 6733.09,
+      "market_cap_usd": 6596.49114
     },
     "0xfda080f64d84c989cfc50ff18253542cfe502db3": {
       "dex": "pons-v2-dex",
@@ -3814,10 +3823,20 @@
       "source": "geckoterminal",
       "liquidity_usd": 18216.0996,
       "market_cap_usd": 47978.2962
+    },
+    "0x1cc8ecaf7b9d430b323139147e98d8d4aae2812c": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-11-01T08:01:38Z",
+      "symbol": "TERA",
+      "title": "Tera",
+      "seen": "2026-11-01T08:11:23.410854+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 5743.3749,
+      "market_cap_usd": 5718.365224
     }
   },
   "graduations": {
-    "at": "2026-11-01T07:59:19.045073+00:00",
+    "at": "2026-11-01T08:11:23.410854+00:00",
     "hours": 24,
     "seen": {
       "0xb961886115fb9e4f732e20e89efd6d0406c3527f": "2026-10-31T18:59:39.050400+00:00",
@@ -3835,7 +3854,7 @@
       "0xf722b7b078b4b69430586b907ce82122d603c3ba",
       "0xfda080f64d84c989cfc50ff18253542cfe502db3"
     ],
-    "scanned_to": 103228500,
+    "scanned_to": 103235422,
     "complete": true
   },
   "issues_to_close": [],
@@ -3843,11 +3862,6 @@
     "0xb961886115fb9e4f732e20e89efd6d0406c3527f": "2026-10-31T19:01:17.696197+00:00"
   },
   "gecko_hours": {
-    "2026-10-31 08:00": [
-      7,
-      1,
-      1
-    ],
     "2026-10-31 09:00": [
       5,
       0,
@@ -3960,6 +3974,11 @@
     ],
     "2026-11-01 07:00": [
       7,
+      0,
+      0
+    ],
+    "2026-11-01 08:00": [
+      1,
       0,
       0
     ]
