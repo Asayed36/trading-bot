@@ -142,14 +142,31 @@
       "market_cap_usd": 5728.044546
     }
   },
-  "checked": {},
+  "checked": {
+    "0xd9cd413d4393728e0a023b875bddc570248ec59ca4660777bcf19237c2a32e29": {
+      "at": "2026-11-01T05:51:18.758728+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h"
+      ]
+    },
+    "0x17a89d83c6185bcfbdf60a3907ec9586de64db2c60de97fcce3aff7c9094c039": {
+      "at": "2026-11-01T05:51:18.758728+00:00",
+      "passed": false,
+      "failed": [
+        "Creator share",
+        "Top 10 holders"
+      ]
+    }
+  },
   "sources": {
     "geckoterminal": {
       "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T05:40:53.023763+00:00",
+      "at": "2026-11-01T05:51:18.758728+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -157,28 +174,29 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T04:01:24.173669+00:00",
-      "used_this_run": false
+      "at": "2026-11-01T05:51:18.758728+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T04:01:24.173669+00:00",
-      "used_this_run": false
+      "at": "2026-11-01T05:51:18.758728+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 11,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T05:40:53.023763+00:00",
+      "at": "2026-11-01T05:51:18.758728+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0xbb84f6544a65d52bd2c410be6229a72bc298d81be912bbc752cadb3e782743ff": "FAIL|Top 10 holders: 30.5% (need under 30%; pools, launchpad and burn addresses left out)"
+    "0xd9cd413d4393728e0a023b875bddc570248ec59ca4660777bcf19237c2a32e29": "FAIL|Market cap: $5,723 (need $25,000+); Not down >50% in 24h: -58% in 24h",
+    "0x17a89d83c6185bcfbdf60a3907ec9586de64db2c60de97fcce3aff7c9094c039": "FAIL|Creator share: 65.68% (need under 5%); Top 10 holders: 79.9% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
     "0x5a8e6bb390b51978b0cea029a070cfcdd495138e": {
@@ -3459,7 +3477,7 @@
       "graduated": "2026-10-31T06:10:03Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T05:40:53.023763+00:00",
+      "seen": "2026-11-01T05:51:18.758728+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5690.5404,
       "market_cap_usd": 5624.905054
@@ -3469,7 +3487,7 @@
       "graduated": "2026-10-31T06:31:20Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T05:40:53.023763+00:00",
+      "seen": "2026-11-01T05:51:18.758728+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6695.8472,
       "market_cap_usd": 6405.999488
@@ -3479,7 +3497,7 @@
       "graduated": "2026-10-31T08:44:54Z",
       "symbol": "ICOIN",
       "title": "iCoin",
-      "seen": "2026-11-01T05:40:53.023763+00:00",
+      "seen": "2026-11-01T05:51:18.758728+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 95.4735,
       "market_cap_usd": 2890702.165
@@ -3499,7 +3517,7 @@
       "graduated": "2026-10-31T16:30:13Z",
       "symbol": "DAVID",
       "title": "David Dobrik Coin",
-      "seen": "2026-11-01T05:40:53.023763+00:00",
+      "seen": "2026-11-01T05:51:18.758728+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5990.3409,
       "market_cap_usd": 5907.252899
@@ -3519,7 +3537,7 @@
       "graduated": "2026-10-31T19:42:01Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T05:40:53.023763+00:00",
+      "seen": "2026-11-01T05:51:18.758728+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6015.74,
       "market_cap_usd": 5968.964124
@@ -3529,7 +3547,7 @@
       "graduated": "2026-10-31T21:51:20Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T05:40:53.023763+00:00",
+      "seen": "2026-11-01T05:51:18.758728+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5744.5135,
       "market_cap_usd": 5686.90563
@@ -3539,7 +3557,7 @@
       "graduated": "2026-10-31T21:53:40Z",
       "symbol": "STREET",
       "title": "Stonk Street",
-      "seen": "2026-11-01T05:40:53.023763+00:00",
+      "seen": "2026-11-01T05:51:18.758728+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 71.4351,
       "market_cap_usd": 323601.0938
@@ -3567,9 +3585,9 @@
       "graduated": "2026-11-01T05:19:16Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T05:40:53.023763+00:00",
+      "seen": "2026-11-01T05:51:18.758728+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5726.5683,
+      "liquidity_usd": 5719.4197,
       "market_cap_usd": 5713.932718
     },
     "0xc4bea7e18409b2d1042cea57243964b76a3fc4bb": {
@@ -3587,14 +3605,14 @@
       "graduated": "2026-11-01T05:31:32Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T05:40:53.023763+00:00",
+      "seen": "2026-11-01T05:51:18.758728+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5744.0246,
+      "liquidity_usd": 5736.8542,
       "market_cap_usd": 5728.044546
     }
   },
   "graduations": {
-    "at": "2026-11-01T05:40:53.023763+00:00",
+    "at": "2026-11-01T05:51:18.758728+00:00",
     "hours": 24,
     "seen": {
       "0xb961886115fb9e4f732e20e89efd6d0406c3527f": "2026-10-31T18:59:39.050400+00:00",
@@ -3606,7 +3624,7 @@
       "0xc4bea7e18409b2d1042cea57243964b76a3fc4bb",
       "0xf722b7b078b4b69430586b907ce82122d603c3ba"
     ],
-    "scanned_to": 103148610,
+    "scanned_to": 103154592,
     "complete": true
   },
   "issues_to_close": [],
@@ -3730,7 +3748,7 @@
       0
     ],
     "2026-11-01 05:00": [
-      5,
+      6,
       0,
       0
     ]
