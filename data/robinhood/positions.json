@@ -179,10 +179,10 @@
       ]
     },
     "onchain:0x50ae9929e5954c3f06b927351ecfe40732a6a6f8": {
-      "at": "2026-11-01T20:10:58.406279+00:00",
+      "at": "2026-11-01T21:11:07.761785+00:00",
       "passed": false,
       "failed": [
-        "Holders"
+        "More buys than sells (1h)"
       ]
     },
     "0x38657215d9608e45401c9b558f3f010e1b1f42b34c9aa1a514d38ce504ddc129": {
@@ -197,10 +197,11 @@
   "sources": {
     "geckoterminal": {
       "calls": 2,
-      "errors": 0,
-      "rate_limited": 0,
-      "ok": true,
-      "at": "2026-11-01T21:01:00.701451+00:00",
+      "errors": 2,
+      "rate_limited": 2,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
+      "ok": false,
+      "at": "2026-11-01T21:11:07.761785+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -208,7 +209,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T21:01:00.701451+00:00",
+      "at": "2026-11-01T21:11:07.761785+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -224,13 +225,13 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T21:01:00.701451+00:00",
+      "at": "2026-11-01T21:11:07.761785+00:00",
       "used_this_run": true
     }
   },
   "logged": {
     "0x7de8908d53166a6f811fb0b6a2c0639dce607dd225b3d2317d1ef453bbb6f4ad": "FAIL|Top 10 holders: 58.9% (need under 30%; pools, launchpad and burn addresses left out)",
-    "onchain:0x50ae9929e5954c3f06b927351ecfe40732a6a6f8": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls",
+    "onchain:0x50ae9929e5954c3f06b927351ecfe40732a6a6f8": "FAIL|More buys than sells (1h): 16 buys vs 19 sells",
     "0x38657215d9608e45401c9b558f3f010e1b1f42b34c9aa1a514d38ce504ddc129": "FAIL|Market cap: $5,711 (need $25,000+); Not down >50% in 24h: -58% in 24h"
   },
   "launchpad_tokens": {
@@ -3843,7 +3844,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-01T21:01:00.701451+00:00",
+    "at": "2026-11-01T21:11:07.761785+00:00",
     "hours": 24,
     "seen": {
       "0xf722b7b078b4b69430586b907ce82122d603c3ba": "2026-10-31T22:51:43.674600+00:00",
@@ -3865,7 +3866,7 @@
       "0xf722b7b078b4b69430586b907ce82122d603c3ba",
       "0xfda080f64d84c989cfc50ff18253542cfe502db3"
     ],
-    "scanned_to": 103680950,
+    "scanned_to": 103686840,
     "complete": true
   },
   "issues_to_close": [],
@@ -3990,9 +3991,9 @@
       0
     ],
     "2026-11-01 21:00": [
+      2,
       1,
-      0,
-      0
+      1
     ]
   }
 }
