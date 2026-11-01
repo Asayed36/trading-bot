@@ -298,6 +298,16 @@
       "created": "2026-11-01T11:31:26Z",
       "liquidity_usd": 5699.4666,
       "market_cap_usd": 5700.392043
+    },
+    "0x828c4814a01d27390d3bdbbeeb21ffef678974511909abff9ce430ffa43937b3": {
+      "pool": "0x828c4814a01d27390d3bdbbeeb21ffef678974511909abff9ce430ffa43937b3",
+      "dex": "uniswap-pools-trade",
+      "token": "0x13cb279d28c461925add9eb21951b8b093fb20c3",
+      "name": "AUDACITY",
+      "title": "AudaCity",
+      "created": "2026-11-01T11:45:06Z",
+      "liquidity_usd": 6890.7149,
+      "market_cap_usd": 6891.556955
     }
   },
   "checked": {
@@ -377,6 +387,20 @@
       "at": "2026-11-01T11:41:20.712663+00:00",
       "passed": true,
       "failed": []
+    },
+    "0x399e9e11901de73c059b317b403f14d68fab1e270f2b14347fcdc9c45ce74b1d": {
+      "at": "2026-11-01T11:51:14.170865+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap"
+      ]
+    },
+    "0x6d439e27a2aa3945cab768465e917cd211bc71706d1b37020d9c42339a67eedf": {
+      "at": "2026-11-01T11:51:14.170865+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap"
+      ]
     }
   },
   "sources": {
@@ -385,7 +409,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T11:41:20.712663+00:00",
+      "at": "2026-11-01T11:51:14.170865+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -393,7 +417,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T11:41:20.712663+00:00",
+      "at": "2026-11-01T11:51:14.170865+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -402,14 +426,14 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-11-01T11:41:20.712663+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "rpc": {
-      "calls": 22,
+      "calls": 4,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-01T11:41:20.712663+00:00",
+      "at": "2026-11-01T11:51:14.170865+00:00",
       "used_this_run": true
     }
   },
@@ -423,7 +447,9 @@
     "0xc9f929c5630ce70033ef88584abe3c438a177246dd30097de8467e9db2ef7bc5": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls",
     "0x658633095c08bf190f920b446f100977a6baa21a43b690f8289f9560136be37f": "FAIL|Market cap: $5,732 (need $25,000+); Not down >50% in 24h: -59% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x0132a17f5ea5d32551b81103d5ac7de3cb4184d02050e33e46f21b353538db79": "FAIL|Market cap: $5,688 (need $25,000+); More buys than sells (1h): 6 buys vs 6 sells",
-    "onchain:0xf65762c40e3f0488384d2c2f43a2636a79fdf0b9": "PASS|"
+    "onchain:0xf65762c40e3f0488384d2c2f43a2636a79fdf0b9": "PASS|",
+    "0x399e9e11901de73c059b317b403f14d68fab1e270f2b14347fcdc9c45ce74b1d": "FAIL|Market cap: $5,695 (need $25,000+)",
+    "0x6d439e27a2aa3945cab768465e917cd211bc71706d1b37020d9c42339a67eedf": "FAIL|Market cap: $5,696 (need $25,000+)"
   },
   "launchpad_tokens": {
     "0xe28b452f2c7d846f058273a0743c81ba8bd2d0e8": {
@@ -3704,7 +3730,7 @@
       "graduated": "2026-10-31T06:31:20Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T11:41:20.712663+00:00",
+      "seen": "2026-11-01T11:51:14.170865+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6652.7756,
       "market_cap_usd": 6426.138884
@@ -3734,7 +3760,7 @@
       "graduated": "2026-10-31T16:30:13Z",
       "symbol": "DAVID",
       "title": "David Dobrik Coin",
-      "seen": "2026-11-01T11:41:20.712663+00:00",
+      "seen": "2026-11-01T11:51:14.170865+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5988.5182,
       "market_cap_usd": 5907.252899
@@ -3754,7 +3780,7 @@
       "graduated": "2026-10-31T19:42:01Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T11:41:20.712663+00:00",
+      "seen": "2026-11-01T11:51:14.170865+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6013.9096,
       "market_cap_usd": 5968.964124
@@ -3764,7 +3790,7 @@
       "graduated": "2026-10-31T21:51:20Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T11:41:20.712663+00:00",
+      "seen": "2026-11-01T11:51:14.170865+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5742.7657,
       "market_cap_usd": 5686.90563
@@ -3774,7 +3800,7 @@
       "graduated": "2026-10-31T21:53:40Z",
       "symbol": "STREET",
       "title": "Stonk Street",
-      "seen": "2026-11-01T11:41:20.712663+00:00",
+      "seen": "2026-11-01T11:51:14.170865+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 71.4133,
       "market_cap_usd": 323601.0938
@@ -3802,9 +3828,9 @@
       "graduated": "2026-11-01T05:19:16Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T11:41:20.712663+00:00",
+      "seen": "2026-11-01T11:51:14.170865+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5721.8828,
+      "liquidity_usd": 5721.9332,
       "market_cap_usd": 5716.367439
     },
     "0xc4bea7e18409b2d1042cea57243964b76a3fc4bb": {
@@ -3822,9 +3848,9 @@
       "graduated": "2026-11-01T05:31:32Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T11:41:20.712663+00:00",
+      "seen": "2026-11-01T11:51:14.170865+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5720.5455,
+      "liquidity_usd": 5721.7065,
       "market_cap_usd": 5710.25091
     },
     "0xf1c9720e2281d94b707b3ec4f2eafa47dab04fd2": {
@@ -3832,7 +3858,7 @@
       "graduated": "2026-11-01T06:06:58Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-01T11:41:20.712663+00:00",
+      "seen": "2026-11-01T11:51:14.170865+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5760.2223,
       "market_cap_usd": 5749.557965
@@ -3842,7 +3868,7 @@
       "graduated": "2026-11-01T06:15:28Z",
       "symbol": "TERA",
       "title": "Tera",
-      "seen": "2026-11-01T11:41:20.712663+00:00",
+      "seen": "2026-11-01T11:51:14.170865+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5742.539,
       "market_cap_usd": 5723.670192
@@ -3852,7 +3878,7 @@
       "graduated": "2026-11-01T06:23:17Z",
       "symbol": "TERA",
       "title": "Tera",
-      "seen": "2026-11-01T11:41:20.712663+00:00",
+      "seen": "2026-11-01T11:51:14.170865+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5715.80221
     },
@@ -3871,9 +3897,9 @@
       "graduated": "2026-11-01T06:36:34Z",
       "symbol": "TERA",
       "title": "Tera",
-      "seen": "2026-11-01T11:41:20.712663+00:00",
+      "seen": "2026-11-01T11:51:14.170865+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6590.82,
+      "liquidity_usd": 6590.8782,
       "market_cap_usd": 6454.656863
     },
     "0xfda080f64d84c989cfc50ff18253542cfe502db3": {
@@ -3901,7 +3927,7 @@
       "graduated": "2026-11-01T08:01:38Z",
       "symbol": "TERA",
       "title": "Tera",
-      "seen": "2026-11-01T11:41:20.712663+00:00",
+      "seen": "2026-11-01T11:51:14.170865+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5740.2719,
       "market_cap_usd": 5718.365224
@@ -4014,10 +4040,20 @@
       "source": "geckoterminal",
       "liquidity_usd": 5699.4666,
       "market_cap_usd": 5700.392043
+    },
+    "0x13cb279d28c461925add9eb21951b8b093fb20c3": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-11-01T11:45:06Z",
+      "symbol": "AUDACITY",
+      "title": "AudaCity",
+      "seen": "2026-11-01T11:51:14.170865+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 6890.7149,
+      "market_cap_usd": 6891.556955
     }
   },
   "graduations": {
-    "at": "2026-11-01T11:41:20.712663+00:00",
+    "at": "2026-11-01T11:51:14.170865+00:00",
     "hours": 24,
     "seen": {
       "0xb961886115fb9e4f732e20e89efd6d0406c3527f": "2026-10-31T18:59:39.050400+00:00",
@@ -4037,7 +4073,7 @@
       "0xf722b7b078b4b69430586b907ce82122d603c3ba",
       "0xfda080f64d84c989cfc50ff18253542cfe502db3"
     ],
-    "scanned_to": 103356651,
+    "scanned_to": 103362358,
     "complete": true
   },
   "issues_to_close": [],
@@ -4162,7 +4198,7 @@
       0
     ],
     "2026-11-01 11:00": [
-      5,
+      6,
       0,
       0
     ]
