@@ -323,6 +323,11 @@
       "failed": [
         "Liquidity"
       ]
+    },
+    "0x9233fd6c4d49ef180b7c2672025bdc430200c4a1ad9e52acacd78243271bcf7d": {
+      "at": "2026-11-02T14:41:04.028283+00:00",
+      "passed": true,
+      "failed": []
     }
   },
   "sources": {
@@ -331,7 +336,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-02T14:31:13.645872+00:00",
+      "at": "2026-11-02T14:41:04.028283+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -339,7 +344,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-02T14:31:13.645872+00:00",
+      "at": "2026-11-02T14:41:04.028283+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -347,15 +352,16 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-02T13:51:16.312031+00:00",
-      "used_this_run": false
+      "at": "2026-11-02T14:41:04.028283+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
-      "errors": 0,
-      "rate_limited": 0,
+      "calls": 9,
+      "errors": 1,
+      "rate_limited": 1,
+      "error": "Robinhood Chain RPC said 'too many requests' (HTTP 429)",
       "ok": true,
-      "at": "2026-11-02T14:31:13.645872+00:00",
+      "at": "2026-11-02T14:41:04.028283+00:00",
       "used_this_run": true
     }
   },
@@ -370,7 +376,8 @@
     "onchain:0xcb3c64f2e44056940d5eea2a23e95f8efd0b5704": "FAIL|Liquidity: $4,347 (need $10,000+ on Pons)",
     "onchain:0x08be018e2e7d45ed161a30eef3c605ce20fc68c9": "FAIL|Liquidity: $4,337 (need $10,000+ on Pons)",
     "0x8647f3ea99e66dec7df907cecf6f7386416115e7930555784ac05f622f41f698": "FAIL|Market cap: $5,848 (need $25,000+); Not down >50% in 24h: -69% in 24h",
-    "onchain:0x423214fad02715afcdcf5e4dca7c12b671a88f6a": "FAIL|Liquidity: $4,345 (need $10,000+ on Pons)"
+    "onchain:0x423214fad02715afcdcf5e4dca7c12b671a88f6a": "FAIL|Liquidity: $4,345 (need $10,000+ on Pons)",
+    "0x9233fd6c4d49ef180b7c2672025bdc430200c4a1ad9e52acacd78243271bcf7d": "PASS|"
   },
   "launchpad_tokens": {
     "0xd0ff6d6fa0228f03d09f74ebce557726d2d4ee77": {
@@ -3609,7 +3616,7 @@
       "graduated": "2026-11-01T14:22:08Z",
       "symbol": "BURROW",
       "title": "Burrow",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5831.2749,
       "market_cap_usd": 5732.402574
@@ -3639,7 +3646,7 @@
       "graduated": "2026-11-01T20:23:08Z",
       "symbol": "AI",
       "title": "Authentic Inu",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5728.225018
     },
@@ -3648,7 +3655,7 @@
       "graduated": "2026-11-01T20:46:08Z",
       "symbol": "Anakin",
       "title": "Anakin Skywalker",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5836.3092,
       "market_cap_usd": 5754.497108
@@ -3668,7 +3675,7 @@
       "graduated": "2026-11-01T20:59:23Z",
       "symbol": "Anakin",
       "title": "Anakin Skywalker",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5989.2457
     },
@@ -3687,7 +3694,7 @@
       "graduated": "2026-11-01T23:01:32Z",
       "symbol": "Learjet",
       "title": "Slightly crashed Learjet",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5845.92,
       "market_cap_usd": 5801.875807
@@ -3707,7 +3714,7 @@
       "graduated": "2026-11-01T23:53:47Z",
       "symbol": "PI",
       "title": "Power Inu",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5947.0629,
       "market_cap_usd": 5834.131206
@@ -3717,7 +3724,7 @@
       "graduated": "2026-11-02T01:49:09Z",
       "symbol": "DIMENSION",
       "title": "Dimension Zero",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5830.3596,
       "market_cap_usd": 5765.134345
@@ -3737,9 +3744,9 @@
       "graduated": "2026-11-02T02:33:36Z",
       "symbol": "HEN",
       "title": "Hen One",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6729.3686,
+      "liquidity_usd": 6744.0926,
       "market_cap_usd": 6523.061138
     },
     "0xd5045aeda2ba8fc606a038a9e986de29d054f38e": {
@@ -3757,7 +3764,7 @@
       "graduated": "2026-11-02T02:47:19Z",
       "symbol": "Orang",
       "title": "Orang",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5818.0028,
       "market_cap_usd": 5780.445617
@@ -3777,9 +3784,9 @@
       "graduated": "2026-11-02T05:38:13Z",
       "symbol": "PEACE",
       "title": "Peace Coin",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6860.7157,
+      "liquidity_usd": 6880.8158,
       "market_cap_usd": 6602.08148
     },
     "0xc5eae04811de22cf035f2324ef08e098a7a0afbf": {
@@ -3797,7 +3804,7 @@
       "graduated": "2026-11-02T05:40:49Z",
       "symbol": "XAR",
       "title": "Aerospace Defense Index",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5864.9129,
       "market_cap_usd": 5817.126079
@@ -3826,9 +3833,9 @@
       "graduated": "2026-11-02T08:29:39Z",
       "symbol": "HOPE",
       "title": "hope",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6833.5422,
+      "liquidity_usd": 6853.5627,
       "market_cap_usd": 6782.779022
     },
     "0xc2f6f79178193e376e90147a1339d9f803085ffd": {
@@ -3836,7 +3843,7 @@
       "graduated": "2026-11-02T08:58:35Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5819.317339
     },
@@ -3845,7 +3852,7 @@
       "graduated": "2026-11-02T09:10:26Z",
       "symbol": "MIND",
       "title": "MindGamesAI",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5812.5108,
       "market_cap_usd": 5793.854623
@@ -3855,9 +3862,9 @@
       "graduated": "2026-11-02T13:03:28Z",
       "symbol": "BRAIN",
       "title": "BrainChain",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5936.1346,
+      "liquidity_usd": 5953.5259,
       "market_cap_usd": 5885.639843
     },
     "0xb44cb3f361fc60d6cf7565865a79fa318a64aa62": {
@@ -3915,9 +3922,9 @@
       "graduated": "2026-11-02T13:58:24Z",
       "symbol": "TERA",
       "title": "TERA",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5894.9288,
+      "liquidity_usd": 5904.2873,
       "market_cap_usd": 5834.088685
     },
     "0x423214fad02715afcdcf5e4dca7c12b671a88f6a": {
@@ -3944,10 +3951,10 @@
       "graduated": "2026-11-02T14:15:59Z",
       "symbol": "YOU",
       "title": "i want you",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 29001.6186,
-      "market_cap_usd": 52300.09111
+      "liquidity_usd": 27550.6126,
+      "market_cap_usd": 45059.08633
     },
     "0xcb3c64f2e44056940d5eea2a23e95f8efd0b5704": {
       "dex": "pons-v2-dex",
@@ -3964,14 +3971,14 @@
       "graduated": "2026-11-02T14:26:09Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
+      "seen": "2026-11-02T14:41:04.028283+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 16296.2977,
-      "market_cap_usd": 23061.75793
+      "liquidity_usd": 5821.6121,
+      "market_cap_usd": 5798.30293
     }
   },
   "graduations": {
-    "at": "2026-11-02T14:31:13.645872+00:00",
+    "at": "2026-11-02T14:41:04.028283+00:00",
     "hours": 24,
     "seen": {
       "0x4ad0d62059ee0f4a5d7483e81b82ff40c4a7091c": "2026-11-01T15:28:37.824300+00:00",
@@ -4001,7 +4008,7 @@
       "0xcb3c64f2e44056940d5eea2a23e95f8efd0b5704",
       "0xe4d2422ed4d203a0f1ec2043a4db1eda426fca18"
     ],
-    "scanned_to": 104287749,
+    "scanned_to": 104293569,
     "complete": true
   },
   "issues_to_close": [],
@@ -4130,7 +4137,7 @@
       1
     ],
     "2026-11-02 14:00": [
-      4,
+      5,
       0,
       0
     ]
