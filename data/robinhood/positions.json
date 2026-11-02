@@ -111,14 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "onchain:0x6444e8d6e4ce9b28f1c68c090e4a494cbf0dc832": {
-      "pool": null,
-      "dex": "pons-v2-dex",
-      "token": "0x6444e8d6e4ce9b28f1c68c090e4a494cbf0dc832",
-      "name": "OREX",
-      "created": "2026-11-02T13:20:46.302100+00:00",
-      "source": "chain"
-    },
     "0x7cc31c21a2ef4fe925f0321f0472e62b87e2e3bff4fd7e73baf1100b56977215": {
       "pool": "0x7cc31c21a2ef4fe925f0321f0472e62b87e2e3bff4fd7e73baf1100b56977215",
       "dex": "pons-v2-dex",
@@ -382,14 +374,19 @@
       "name": "?",
       "created": "2026-11-02T18:51:14.327200+00:00",
       "source": "chain"
+    },
+    "0x572545a41c96e7c3dd691db3a403d738a52c5ad6484a5423d486f89a383dcca1": {
+      "pool": "0x572545a41c96e7c3dd691db3a403d738a52c5ad6484a5423d486f89a383dcca1",
+      "dex": "uniswap-pools-trade",
+      "token": "0xb9179dd272771bbcf9bbb18e0f0b6d49f7e1084e",
+      "name": "VESP",
+      "title": "Vespora",
+      "created": "2026-11-02T19:15:04Z",
+      "liquidity_usd": 19022.629,
+      "market_cap_usd": 26893.25071
     }
   },
   "checked": {
-    "onchain:0x6444e8d6e4ce9b28f1c68c090e4a494cbf0dc832": {
-      "at": "2026-11-02T13:51:16.312031+00:00",
-      "passed": true,
-      "failed": []
-    },
     "onchain:0x87841553531c473ffaf2b72a5f47323b2a47fc49": {
       "at": "2026-11-02T18:21:35.253197+00:00",
       "passed": false,
@@ -562,18 +559,17 @@
       ]
     },
     "0x4d21f028d3de4b7b2d415ffd7b3a76734e8ad94447bfb5e421f23c20d9ed22dc": {
-      "at": "2026-11-02T18:01:04.163639+00:00",
+      "at": "2026-11-02T19:21:27.430141+00:00",
       "passed": false,
       "failed": [
-        "Market cap"
+        "Market cap",
+        "More buys than sells (1h)"
       ]
     },
     "0x6fb2c07e741db06dffec2ca0d2acf6bdfce937545a603c119c32c9a81895d621": {
-      "at": "2026-11-02T18:01:04.163639+00:00",
-      "passed": false,
-      "failed": [
-        "Top 10 holders"
-      ]
+      "at": "2026-11-02T19:21:27.430141+00:00",
+      "passed": true,
+      "failed": []
     },
     "onchain:0x3c9f88e44ddd7de04c35400966a3a1c7c826c6eb": {
       "at": "2026-11-02T18:21:35.253197+00:00",
@@ -597,6 +593,13 @@
         "Market cap",
         "Not down >50% in 24h"
       ]
+    },
+    "onchain:0xb0196ea2df69b4c26b949ac78ee3d7483796acee": {
+      "at": "2026-11-02T19:21:27.430141+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
     }
   },
   "sources": {
@@ -605,7 +608,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-02T19:11:29.959568+00:00",
+      "at": "2026-11-02T19:21:27.430141+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -613,28 +616,27 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-02T19:11:29.959568+00:00",
+      "at": "2026-11-02T19:21:27.430141+00:00",
       "used_this_run": true
     },
     "goplus": {
-      "calls": 2,
+      "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-02T18:01:04.163639+00:00",
-      "used_this_run": false
+      "at": "2026-11-02T19:21:27.430141+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 11,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-02T19:11:29.959568+00:00",
+      "at": "2026-11-02T19:21:27.430141+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "onchain:0x6444e8d6e4ce9b28f1c68c090e4a494cbf0dc832": "PASS|",
     "onchain:0x87841553531c473ffaf2b72a5f47323b2a47fc49": "FAIL|Liquidity: $4,464 (need $10,000+ on Pons)",
     "0x7cc31c21a2ef4fe925f0321f0472e62b87e2e3bff4fd7e73baf1100b56977215": "FAIL|Liquidity: $4,363 (need $10,000+ on Pons)",
     "0xb3ab3de25451ac45f722f88c40381f8b6c4a8a7c19f7a1c6165fc08987ce6a23": "FAIL|Liquidity: $4,231 (need $10,000+ on Pons)",
@@ -657,11 +659,12 @@
     "0x753c8219b4a91cae71cde2fcd3882a6cd44bd2bf742306c4e6f8b3a1f2fa2301": "FAIL|Market cap: $5,675 (need $25,000+); More buys than sells (1h): 0 buys vs 1 sells",
     "0x1f0c41497e77dfd73bfa80e2cb6f500bee6941036b78ae7d9a101572049f8f41": "FAIL|Market cap: $5,862 (need $25,000+); Not down >50% in 24h: -60% in 24h; More buys than sells (1h): 0 buys vs 3 sells",
     "0xde48daf3f7ec0e80b7d2771671d70af88624e581c922cb6b6c9fa811d3890a57": "FAIL|Market cap: $5,648 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
-    "0x4d21f028d3de4b7b2d415ffd7b3a76734e8ad94447bfb5e421f23c20d9ed22dc": "FAIL|Market cap: $5,657 (need $25,000+)",
-    "0x6fb2c07e741db06dffec2ca0d2acf6bdfce937545a603c119c32c9a81895d621": "FAIL|Top 10 holders: 30.5% (need under 30%; pools, launchpad and burn addresses left out)",
+    "0x4d21f028d3de4b7b2d415ffd7b3a76734e8ad94447bfb5e421f23c20d9ed22dc": "FAIL|Market cap: $5,657 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
+    "0x6fb2c07e741db06dffec2ca0d2acf6bdfce937545a603c119c32c9a81895d621": "PASS|",
     "onchain:0x3c9f88e44ddd7de04c35400966a3a1c7c826c6eb": "FAIL|Liquidity: $4,363 (need $10,000+ on Pons)",
     "0xa729e5a080b84c60570b12decb4a763971a092c596bed85cd0d8b70962115c3d": "FAIL|Market cap: $5,723 (need $25,000+); Not down >50% in 24h: -68% in 24h",
-    "0xc0929199d7fe9d2271fe9cbebbd64f2b3305d4694d38fc10b48afd055848a57c": "FAIL|Market cap: $5,774 (need $25,000+); Not down >50% in 24h: -68% in 24h"
+    "0xc0929199d7fe9d2271fe9cbebbd64f2b3305d4694d38fc10b48afd055848a57c": "FAIL|Market cap: $5,774 (need $25,000+); Not down >50% in 24h: -68% in 24h",
+    "onchain:0xb0196ea2df69b4c26b949ac78ee3d7483796acee": "FAIL|Liquidity: $4,307 (need $10,000+ on Pons)"
   },
   "launchpad_tokens": {
     "0x28fd34ad82fb0a218c351b2595796455efaa258c": {
@@ -3791,7 +3794,7 @@
       "graduated": "2026-11-01T20:46:08Z",
       "symbol": "Anakin",
       "title": "Anakin Skywalker",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5736.4964,
       "market_cap_usd": 5712.904197
@@ -3811,7 +3814,7 @@
       "graduated": "2026-11-01T20:59:23Z",
       "symbol": "Anakin",
       "title": "Anakin Skywalker",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5924.899068
     },
@@ -3830,7 +3833,7 @@
       "graduated": "2026-11-01T23:01:32Z",
       "symbol": "Learjet",
       "title": "Slightly crashed Learjet",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5746.6188,
       "market_cap_usd": 5801.875807
@@ -3850,7 +3853,7 @@
       "graduated": "2026-11-01T23:53:47Z",
       "symbol": "PI",
       "title": "Power Inu",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5846.0436,
       "market_cap_usd": 5834.131206
@@ -3860,7 +3863,7 @@
       "graduated": "2026-11-02T01:49:09Z",
       "symbol": "DIMENSION",
       "title": "Dimension Zero",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5731.3227,
       "market_cap_usd": 5765.134345
@@ -3880,7 +3883,7 @@
       "graduated": "2026-11-02T02:33:36Z",
       "symbol": "HEN",
       "title": "Hen One",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6610.6249,
       "market_cap_usd": 6436.021565
@@ -3920,7 +3923,7 @@
       "graduated": "2026-11-02T05:38:13Z",
       "symbol": "PEACE",
       "title": "Peace Coin",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6595.1038,
       "market_cap_usd": 6445.379688
@@ -3969,7 +3972,7 @@
       "graduated": "2026-11-02T08:29:39Z",
       "symbol": "HOPE",
       "title": "hope",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6731.6442,
       "market_cap_usd": 6782.779022
@@ -3988,7 +3991,7 @@
       "graduated": "2026-11-02T09:10:26Z",
       "symbol": "MIND",
       "title": "MindGamesAI",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5711.3028,
       "market_cap_usd": 5780.606421
@@ -3998,7 +4001,7 @@
       "graduated": "2026-11-02T13:03:28Z",
       "symbol": "BRAIN",
       "title": "BrainChain",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5820.1752,
       "market_cap_usd": 5810.875511
@@ -4058,7 +4061,7 @@
       "graduated": "2026-11-02T13:58:24Z",
       "symbol": "TERA",
       "title": "TERA",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5799.2555,
       "market_cap_usd": 5834.088685
@@ -4087,9 +4090,9 @@
       "graduated": "2026-11-02T14:15:59Z",
       "symbol": "YOU",
       "title": "i want you",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5761.9927,
+      "liquidity_usd": 5762.8643,
       "market_cap_usd": 5725.923901
     },
     "0xcb3c64f2e44056940d5eea2a23e95f8efd0b5704": {
@@ -4107,7 +4110,7 @@
       "graduated": "2026-11-02T14:26:09Z",
       "symbol": "VOLITION",
       "title": "Volition",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5718.0511,
       "market_cap_usd": 5798.30293
@@ -4117,7 +4120,7 @@
       "graduated": "2026-11-02T15:18:41Z",
       "symbol": "MAMESUKE",
       "title": "MAMESUKE",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5732.8973,
       "market_cap_usd": 5786.740168
@@ -4157,7 +4160,7 @@
       "graduated": "2026-11-02T16:16:44Z",
       "symbol": "GIFI",
       "title": "Glider Finance",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5750.877904
     },
@@ -4166,7 +4169,7 @@
       "graduated": "2026-11-02T16:37:48Z",
       "symbol": "VOLT",
       "title": "Volt Inu",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5817.026,
       "market_cap_usd": 5797.294787
@@ -4235,7 +4238,7 @@
       "graduated": "2026-11-02T17:23:43Z",
       "symbol": "GTACHESS",
       "title": "GTA CHESS",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5842.963952
     },
@@ -4263,24 +4266,34 @@
       "graduated": "2026-11-02T18:21:10Z",
       "symbol": "SEASON",
       "title": "Farming Season",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5740.1916,
-      "market_cap_usd": 5711.082944
+      "liquidity_usd": 5736.5083,
+      "market_cap_usd": 5700.008908
     },
     "0x1d4522401b20dc8697133518bbfb9ed49c359079": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-11-02T18:38:18Z",
       "symbol": "CORP",
       "title": "Yield Farm",
-      "seen": "2026-11-02T19:11:29.959568+00:00",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5846.0669,
+      "liquidity_usd": 5847.1594,
       "market_cap_usd": 5789.781047
+    },
+    "0xb9179dd272771bbcf9bbb18e0f0b6d49f7e1084e": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-11-02T19:15:04Z",
+      "symbol": "VESP",
+      "title": "Vespora",
+      "seen": "2026-11-02T19:21:27.430141+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 19022.629,
+      "market_cap_usd": 26893.25071
     }
   },
   "graduations": {
-    "at": "2026-11-02T19:11:29.959568+00:00",
+    "at": "2026-11-02T19:21:27.430141+00:00",
     "hours": 24,
     "seen": {
       "0x50ae9929e5954c3f06b927351ecfe40732a6a6f8": "2026-11-01T19:34:11.481600+00:00",
@@ -4320,7 +4333,7 @@
       "0xd39142cf605e31988153718fc6487b4d95389eca",
       "0xe4d2422ed4d203a0f1ec2043a4db1eda426fca18"
     ],
-    "scanned_to": 104453460,
+    "scanned_to": 104459342,
     "complete": true
   },
   "issues_to_close": [],
@@ -4453,7 +4466,7 @@
       0
     ],
     "2026-11-02 19:00": [
-      2,
+      3,
       0,
       0
     ]
