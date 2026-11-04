@@ -185,10 +185,10 @@
       ]
     },
     "0x2ef53c302fc560321ee1d7361074822e1ad1774676c04b23a58f92d4cf8c4ae1": {
-      "at": "2026-11-04T13:51:05.637200+00:00",
+      "at": "2026-11-04T14:51:51.248876+00:00",
       "passed": false,
       "failed": [
-        "More buys than sells (1h)"
+        "Holders"
       ]
     },
     "0xb10c1061d5a41090c133f12e744ab0911690d7642dd623ef652c3124aa371100": {
@@ -203,6 +203,13 @@
         "Market cap",
         "Not down >50% in 24h"
       ]
+    },
+    "onchain:0xb05cd6554521921c9c621fceba0369b6182cf186": {
+      "at": "2026-11-04T14:51:51.248876+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
     }
   },
   "sources": {
@@ -211,7 +218,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-04T14:41:29.444353+00:00",
+      "at": "2026-11-04T14:51:51.248876+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -219,7 +226,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-04T14:41:29.444353+00:00",
+      "at": "2026-11-04T14:51:51.248876+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -227,36 +234,27 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-04T13:11:10.105337+00:00",
-      "used_this_run": false
+      "at": "2026-11-04T14:51:51.248876+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 18,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-04T14:41:29.444353+00:00",
+      "at": "2026-11-04T14:51:51.248876+00:00",
       "used_this_run": true
     }
   },
   "logged": {
     "0x2ecdb70e912bf172094ff1e7ed42d27ceb5aaccd3c66fc759ce2d0422a9b649d": "PASS|",
     "0xaede860a7e5cc9f3f76dc7434ea3eb3d959e15a0c69a4effd17a929a76dd3e21": "FAIL|Market cap: $5,827 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
-    "0x2ef53c302fc560321ee1d7361074822e1ad1774676c04b23a58f92d4cf8c4ae1": "FAIL|More buys than sells (1h): 0 buys vs 2 sells",
+    "0x2ef53c302fc560321ee1d7361074822e1ad1774676c04b23a58f92d4cf8c4ae1": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls",
     "0xb10c1061d5a41090c133f12e744ab0911690d7642dd623ef652c3124aa371100": "PASS|",
-    "0x8804ec96374d48fee465f593fa211339423065cf7236b8f0375c29ae450b2399": "FAIL|Market cap: $12,533 (need $25,000+); Not down >50% in 24h: -74% in 24h"
+    "0x8804ec96374d48fee465f593fa211339423065cf7236b8f0375c29ae450b2399": "FAIL|Market cap: $12,533 (need $25,000+); Not down >50% in 24h: -74% in 24h",
+    "onchain:0xb05cd6554521921c9c621fceba0369b6182cf186": "FAIL|Liquidity: $7,500 (need $10,000+ on Pons)"
   },
   "launchpad_tokens": {
-    "0xd40aeb4b8b2360c5e818813a12bf0102e08cdb85": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-28T08:49:53Z",
-      "symbol": "HarmonicMath",
-      "title": "Harmonic",
-      "seen": "2026-10-29T09:01:06.206424+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 5847.791,
-      "market_cap_usd": 5912.538802
-    },
     "0x301f2899527437357af5ba4a033695389b5814a3": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-28T09:42:53Z",
@@ -2942,9 +2940,9 @@
       "graduated": "2026-11-03T14:28:54Z",
       "symbol": "CLAU",
       "title": "Anthropic",
-      "seen": "2026-11-04T14:41:29.444353+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5874.284,
+      "liquidity_usd": 5991.6387,
       "market_cap_usd": 5649.358409
     },
     "0xd62b4203da8f5e905a02fe47f0d44b99f0afddcd": {
@@ -2962,9 +2960,9 @@
       "graduated": "2026-11-03T15:30:44Z",
       "symbol": "SHIPPED",
       "title": "Shipped",
-      "seen": "2026-11-04T14:41:29.444353+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5874.0525,
+      "liquidity_usd": 5991.4026,
       "market_cap_usd": 5846.053262
     },
     "0xa017ff2102ee0138e1c2077f4a457606726412ac": {
@@ -3041,9 +3039,9 @@
       "graduated": "2026-11-04T00:02:42Z",
       "symbol": "T7ADDCA",
       "title": "TEST DO NOT BUY",
-      "seen": "2026-11-04T00:11:02.572285+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5682.631,
+      "liquidity_usd": 5901.4359,
       "market_cap_usd": 5690.37213
     },
     "0xd6e3251f6ec468c530ab59c3cafca056495d7e1b": {
@@ -3121,7 +3119,7 @@
       "graduated": "2026-11-04T01:24:12Z",
       "symbol": "GOREVERY",
       "title": "Gorgodex Every",
-      "seen": "2026-11-04T14:41:29.444353+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5688.246884
     },
@@ -3130,7 +3128,7 @@
       "graduated": "2026-11-04T01:29:07Z",
       "symbol": "TULPA",
       "title": "TulpaMinds",
-      "seen": "2026-11-04T14:41:29.444353+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5704.774546
     },
@@ -3139,7 +3137,7 @@
       "graduated": "2026-11-04T01:50:21Z",
       "symbol": "CPHS",
       "title": "Comprehension Labs",
-      "seen": "2026-11-04T14:41:29.444353+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5706.985728
     },
@@ -3148,9 +3146,9 @@
       "graduated": "2026-11-04T02:04:46Z",
       "symbol": "SCHNOZ",
       "title": "SCHNOZ",
-      "seen": "2026-11-04T14:41:29.444353+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5973.3694,
+      "liquidity_usd": 6092.7037,
       "market_cap_usd": 5779.368153
     },
     "0x044d409296b3eb1b53fd97c1e6309fc8b50bfde7": {
@@ -3158,9 +3156,9 @@
       "graduated": "2026-11-04T03:16:20Z",
       "symbol": "updown",
       "title": "updown",
-      "seen": "2026-11-04T14:41:29.444353+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6132.2565,
+      "liquidity_usd": 6254.927,
       "market_cap_usd": 5888.20785
     },
     "0x63b5c2b1eb93ad62ea06560370f4f317ee1b97d3": {
@@ -3178,19 +3176,19 @@
       "graduated": "2026-11-04T04:12:48Z",
       "symbol": "ANONVOYAGE",
       "title": "ANONVOYAGE",
-      "seen": "2026-11-04T14:41:29.444353+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5864.8717,
-      "market_cap_usd": 5854.603618
+      "liquidity_usd": 6035.4589,
+      "market_cap_usd": 5979.861138
     },
     "0x3548b2aa12862e4c8cef6b82a2c9b5db26c32444": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-11-04T04:20:30Z",
       "symbol": "SA",
       "title": "SA",
-      "seen": "2026-11-04T14:41:29.444353+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5870.1962,
+      "liquidity_usd": 5987.6245,
       "market_cap_usd": 5809.643079
     },
     "0xf5f580156ffbfd09a28569fa875b416b9bd31cca": {
@@ -3198,9 +3196,9 @@
       "graduated": "2026-11-04T06:37:03Z",
       "symbol": "GM",
       "title": "Good Morning",
-      "seen": "2026-11-04T14:41:29.444353+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5841.7215,
+      "liquidity_usd": 5958.5801,
       "market_cap_usd": 5771.455493
     },
     "0xcd24502593798396c5132d6e9c99881f3fa7b8c6": {
@@ -3218,7 +3216,7 @@
       "graduated": "2026-11-04T06:56:07Z",
       "symbol": "MUMMY",
       "title": "Tired Mummy",
-      "seen": "2026-11-04T14:41:29.444353+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5778.734964
     },
@@ -3237,9 +3235,9 @@
       "graduated": "2026-11-04T07:27:36Z",
       "symbol": "FUCK",
       "title": "Fuck",
-      "seen": "2026-11-04T14:41:29.444353+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5875.0578,
+      "liquidity_usd": 5992.5833,
       "market_cap_usd": 5847.722215
     },
     "0x2b1ba7b3c67110def5e8b7758b4ed8d3bd45b475": {
@@ -3277,9 +3275,9 @@
       "graduated": "2026-11-04T10:57:46Z",
       "symbol": "DUET",
       "title": "Claude Duet",
-      "seen": "2026-11-04T14:41:29.444353+00:00",
+      "seen": "2026-11-04T14:51:51.248876+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5939.1838,
+      "liquidity_usd": 6057.9921,
       "market_cap_usd": 5928.861757
     },
     "0x938d767f1cd789850867a881fdf09631f2e43714": {
@@ -3303,7 +3301,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-04T14:41:29.444353+00:00",
+    "at": "2026-11-04T14:51:51.248876+00:00",
     "hours": 24,
     "seen": {
       "0xd62b4203da8f5e905a02fe47f0d44b99f0afddcd": "2026-11-03T15:00:02.681000+00:00",
@@ -3333,7 +3331,7 @@
       "0xe27136f29472596bf42c6bf8798ab295d85e7716",
       "0xfc483d90946ecc6ef18280b58cbbdfc77b35d56b"
     ],
-    "scanned_to": 105978028,
+    "scanned_to": 105983963,
     "complete": true
   },
   "issues_to_close": [],
@@ -3460,7 +3458,7 @@
       0
     ],
     "2026-11-04 14:00": [
-      5,
+      6,
       0,
       0
     ]
