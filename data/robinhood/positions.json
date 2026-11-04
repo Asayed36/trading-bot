@@ -111,14 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "onchain:0x5e948189807ad655dd0d180f2e3df3fa1d03cf05": {
-      "pool": null,
-      "dex": "pons-v2-dex",
-      "token": "0x5e948189807ad655dd0d180f2e3df3fa1d03cf05",
-      "name": "NOVUS",
-      "created": "2026-11-04T15:50:45.244000+00:00",
-      "source": "chain"
-    },
     "onchain:0xef50274cfe89d3bbddd52544f2f1a0ef15a3259f": {
       "pool": null,
       "dex": "pons-v2-dex",
@@ -195,21 +187,13 @@
     }
   },
   "checked": {
-    "onchain:0x5e948189807ad655dd0d180f2e3df3fa1d03cf05": {
-      "at": "2026-11-04T20:41:41.149102+00:00",
-      "passed": false,
-      "failed": [
-        "Market cap",
-        "Not down >50% in 24h"
-      ]
-    },
     "onchain:0xef50274cfe89d3bbddd52544f2f1a0ef15a3259f": {
       "at": "2026-11-04T17:51:31.481381+00:00",
       "passed": true,
       "failed": []
     },
     "0x10fb4a98dbd0bcb3d2615d9556dc86b3cf60098a008a27f1b58e6ce323c70c4b": {
-      "at": "2026-11-04T20:41:41.149102+00:00",
+      "at": "2026-11-04T21:51:21.116588+00:00",
       "passed": false,
       "failed": [
         "Creator share",
@@ -222,10 +206,10 @@
       "failed": []
     },
     "0x3dde2e2ca95e3b2f1593796482e5871dd64919ddf844d306cd9af6a68b7a2b1f": {
-      "at": "2026-11-04T20:41:41.149102+00:00",
+      "at": "2026-11-04T21:51:21.116588+00:00",
       "passed": false,
       "failed": [
-        "More buys than sells (1h)"
+        "Top 10 holders"
       ]
     },
     "0x3bc3b16c1c4bce9379e9e5334c4d4a4d586ee8a85d655ff64e08912dedb51f30": {
@@ -263,7 +247,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-04T21:41:26.635249+00:00",
+      "at": "2026-11-04T21:51:21.116588+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -271,48 +255,37 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-04T21:41:26.635249+00:00",
+      "at": "2026-11-04T21:51:21.116588+00:00",
       "used_this_run": true
     },
     "goplus": {
-      "calls": 1,
+      "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-04T21:41:26.635249+00:00",
+      "at": "2026-11-04T21:51:21.116588+00:00",
       "used_this_run": true
     },
     "rpc": {
-      "calls": 8,
+      "calls": 20,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-04T21:41:26.635249+00:00",
+      "at": "2026-11-04T21:51:21.116588+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "onchain:0x5e948189807ad655dd0d180f2e3df3fa1d03cf05": "FAIL|Market cap: $16,987 (need $25,000+); Not down >50% in 24h: -67% in 24h",
     "onchain:0xef50274cfe89d3bbddd52544f2f1a0ef15a3259f": "PASS|",
-    "0x10fb4a98dbd0bcb3d2615d9556dc86b3cf60098a008a27f1b58e6ce323c70c4b": "FAIL|Creator share: 5.00% (need under 5%); Top 10 holders: 36.0% (need under 30%; pools, launchpad and burn addresses left out)",
+    "0x10fb4a98dbd0bcb3d2615d9556dc86b3cf60098a008a27f1b58e6ce323c70c4b": "FAIL|Creator share: 5.00% (need under 5%); Top 10 holders: 35.4% (need under 30%; pools, launchpad and burn addresses left out)",
     "0x72a21c05b288e0e9eba135360ed4ffa6204727a854d2e8d4c996e6c84e4472e0": "PASS|",
-    "0x3dde2e2ca95e3b2f1593796482e5871dd64919ddf844d306cd9af6a68b7a2b1f": "FAIL|More buys than sells (1h): 34 buys vs 35 sells",
+    "0x3dde2e2ca95e3b2f1593796482e5871dd64919ddf844d306cd9af6a68b7a2b1f": "FAIL|Top 10 holders: 33.4% (need under 30%; pools, launchpad and burn addresses left out)",
     "0x3bc3b16c1c4bce9379e9e5334c4d4a4d586ee8a85d655ff64e08912dedb51f30": "FAIL|Market cap: $17,927 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 2 buys vs 8 sells",
     "onchain:0x6b28fb65fe80a113386541134f6a22801d2e234c": "FAIL|More buys than sells (1h): 1 buys vs 6 sells",
     "0x996abff8b56cc8a0b3491fd991cf0ff43ebff7248c7d0e8a0fe1580120fa8ec7": "PASS|",
     "onchain:0xf7c31a6df1f0997dcadd216ea48f8bfcbbf9d570": "FAIL|Top 10 holders: 30.0% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
-    "0xe699d18dcb442ff0052f14b7a5343309bbf7343e": {
-      "dex": "pons-v2-dex",
-      "graduated": "2026-10-28T15:43:13.740500+00:00",
-      "symbol": "FLIP",
-      "title": "FLIP",
-      "seen": "2026-10-28T15:50:53.020423+00:00",
-      "source": "chain",
-      "liquidity_usd": 25857.0,
-      "market_cap_usd": 82730.0
-    },
     "0xddccd4690cc99cf19d2e0bdbcb390d17e913958a": {
       "dex": "pons-v2-dex",
       "graduated": "2026-10-28T16:30:13Z",
@@ -2968,7 +2941,7 @@
       "graduated": "2026-11-04T00:02:23Z",
       "symbol": "T79A63E",
       "title": "TEST DO NOT BUY",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6050.4781,
       "market_cap_usd": 5688.262838
@@ -2988,7 +2961,7 @@
       "graduated": "2026-11-04T00:01:37Z",
       "symbol": "T28E4EF",
       "title": "TEST DO NOT BUY",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6049.5109,
       "market_cap_usd": 5689.86599
@@ -2998,7 +2971,7 @@
       "graduated": "2026-11-04T00:01:17Z",
       "symbol": "T1B8690",
       "title": "TEST DO NOT BUY",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6044.4327,
       "market_cap_usd": 5691.67345
@@ -3008,7 +2981,7 @@
       "graduated": "2026-11-04T00:00:57Z",
       "symbol": "T882305",
       "title": "TEST DO NOT BUY",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6049.5109,
       "market_cap_usd": 5704.163516
@@ -3038,7 +3011,7 @@
       "graduated": "2026-11-04T01:24:12Z",
       "symbol": "GOREVERY",
       "title": "Gorgodex Every",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5688.246884
     },
@@ -3047,7 +3020,7 @@
       "graduated": "2026-11-04T01:29:07Z",
       "symbol": "TULPA",
       "title": "TulpaMinds",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5704.774546
     },
@@ -3056,7 +3029,7 @@
       "graduated": "2026-11-04T01:50:21Z",
       "symbol": "CPHS",
       "title": "Comprehension Labs",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5706.985728
     },
@@ -3065,7 +3038,7 @@
       "graduated": "2026-11-04T02:04:46Z",
       "symbol": "SCHNOZ",
       "title": "SCHNOZ",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6239.3364,
       "market_cap_usd": 5779.368153
@@ -3075,7 +3048,7 @@
       "graduated": "2026-11-04T03:16:20Z",
       "symbol": "updown",
       "title": "updown",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6405.464,
       "market_cap_usd": 5888.20785
@@ -3095,7 +3068,7 @@
       "graduated": "2026-11-04T04:12:48Z",
       "symbol": "ANONVOYAGE",
       "title": "ANONVOYAGE",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6145.7536,
       "market_cap_usd": 6189.180181
@@ -3105,7 +3078,7 @@
       "graduated": "2026-11-04T04:20:30Z",
       "symbol": "SA",
       "title": "SA",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6131.7283,
       "market_cap_usd": 5809.643079
@@ -3115,7 +3088,7 @@
       "graduated": "2026-11-04T06:37:03Z",
       "symbol": "GM",
       "title": "Good Morning",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6100.0504,
       "market_cap_usd": 6108.707722
@@ -3135,7 +3108,7 @@
       "graduated": "2026-11-04T06:56:07Z",
       "symbol": "MUMMY",
       "title": "Tired Mummy",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5778.734964
     },
@@ -3154,7 +3127,7 @@
       "graduated": "2026-11-04T07:27:36Z",
       "symbol": "FUCK",
       "title": "Fuck",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6136.8064,
       "market_cap_usd": 5847.722215
@@ -3194,7 +3167,7 @@
       "graduated": "2026-11-04T10:57:46Z",
       "symbol": "DUET",
       "title": "Claude Duet",
-      "seen": "2026-11-04T21:41:26.635249+00:00",
+      "seen": "2026-11-04T21:51:21.116588+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 6203.7895,
       "market_cap_usd": 5928.861757
@@ -3309,7 +3282,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-04T21:41:26.635249+00:00",
+    "at": "2026-11-04T21:51:21.116588+00:00",
     "hours": 24,
     "seen": {
       "0xe27136f29472596bf42c6bf8798ab295d85e7716": "2026-11-03T22:18:10.976000+00:00",
@@ -3347,7 +3320,7 @@
       "0xf7c31a6df1f0997dcadd216ea48f8bfcbbf9d570",
       "0xfc483d90946ecc6ef18280b58cbbdfc77b35d56b"
     ],
-    "scanned_to": 106222518,
+    "scanned_to": 106228280,
     "complete": true
   },
   "issues_to_close": [],
@@ -3477,7 +3450,7 @@
       0
     ],
     "2026-11-04 21:00": [
-      5,
+      6,
       0,
       0
     ]
