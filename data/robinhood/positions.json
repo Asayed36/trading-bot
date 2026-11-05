@@ -141,15 +141,24 @@
         "Not down >50% in 24h",
         "More buys than sells (1h)"
       ]
+    },
+    "0xef0aae1e26cce45941c62dc43b03d526a8021e6d42772a8f3f0860aef60e531f": {
+      "at": "2026-11-05T10:41:02.134801+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h"
+      ]
     }
   },
   "sources": {
     "geckoterminal": {
       "calls": 2,
-      "errors": 0,
-      "rate_limited": 0,
-      "ok": true,
-      "at": "2026-11-05T10:31:17.606392+00:00",
+      "errors": 2,
+      "rate_limited": 2,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
+      "ok": false,
+      "at": "2026-11-05T10:41:02.134801+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -157,8 +166,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-05T09:41:10.272057+00:00",
-      "used_this_run": false
+      "at": "2026-11-05T10:41:02.134801+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -173,14 +182,13 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-05T10:31:17.606392+00:00",
+      "at": "2026-11-05T10:41:02.134801+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0xa734bf8bbb39c138a8779294b80c5daad1e7ea3b0d7c0725d7143d4af846adbe": "FAIL|Market cap: $6,121 (need $25,000+); Not down >50% in 24h: -75% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "0x9ccbbbd0b4c3b4254eac0fa7e6bb29bda49cc734cb60d4239178213d71c30172": "PASS|",
-    "0x68b5886bba0d6dd74bc748449dcb0053431df79120c5d3dba8aaae8ffd48ad09": "FAIL|Market cap: $6,174 (need $25,000+); Not down >50% in 24h: -85% in 24h; More buys than sells (1h): 0 buys vs 0 sells"
+    "0x68b5886bba0d6dd74bc748449dcb0053431df79120c5d3dba8aaae8ffd48ad09": "FAIL|Market cap: $6,174 (need $25,000+); Not down >50% in 24h: -85% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
+    "0xef0aae1e26cce45941c62dc43b03d526a8021e6d42772a8f3f0860aef60e531f": "FAIL|Market cap: $6,142 (need $25,000+); Not down >50% in 24h: -62% in 24h"
   },
   "launchpad_tokens": {
     "0x52387e4ee9299073541d32413c4b6f61a6170d1a": {
@@ -2923,7 +2931,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-05T10:31:17.606392+00:00",
+    "at": "2026-11-05T10:41:02.134801+00:00",
     "hours": 24,
     "seen": {
       "0x938d767f1cd789850867a881fdf09631f2e43714": "2026-11-04T12:33:55.334200+00:00",
@@ -2955,7 +2963,7 @@
       "0xef50274cfe89d3bbddd52544f2f1a0ef15a3259f",
       "0xf7c31a6df1f0997dcadd216ea48f8bfcbbf9d570"
     ],
-    "scanned_to": 106669435,
+    "scanned_to": 106675117,
     "complete": true
   },
   "issues_to_close": [],
@@ -3085,9 +3093,9 @@
       0
     ],
     "2026-11-05 10:00": [
-      3,
-      0,
-      0
+      4,
+      1,
+      1
     ]
   }
 }
