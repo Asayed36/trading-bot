@@ -1,19 +1,19 @@
 {
- "updated": "2026-11-06T01:01:44Z",
+ "updated": "2026-11-06T02:04:38Z",
  "feed_up": true,
  "endpoint": "api.mainnet-beta.solana.com",
- "last_message": "2026-11-06T01:01:44Z",
+ "last_message": "2026-11-06T02:04:38Z",
  "feed_silent_seconds": 0,
- "last_row": "2026-11-06T01:01:44Z",
- "last_row_ts": 1793926904.6429205,
+ "last_row": "2026-11-06T02:04:38Z",
+ "last_row_ts": 1793930678.0399,
  "since_last_row_seconds": 0,
- "launches_seen_last_hour": 729,
- "in_flight": 729,
- "rows_written_today": 2,
- "rows_skipped_by_cap_today": 0,
+ "launches_seen_last_hour": 642,
+ "in_flight": 642,
+ "rows_written_today": 203,
+ "rows_skipped_by_cap_today": 151,
  "max_rows_per_day": 4000,
- "feed_disconnects_today": 44,
- "gap_seconds_today": 78,
+ "feed_disconnects_today": 83,
+ "gap_seconds_today": 128,
  "started": "2026-11-05T21:31:36Z",
  "dropped_at_last_restart": 773,
  "days": {
@@ -190,29 +190,31 @@
    "dropped_at_restart": 773
   },
   "2026-11-06": {
-   "launches_seen": 751,
-   "feed_disconnects": 44,
-   "gap_seconds": 78,
-   "finished": 7,
-   "watched_60": 7,
-   "watched_60_ge_1": 5,
-   "buyers_qualified": 2,
-   "watched_60_ge_2": 4,
-   "watched_60_ge_3": 2,
-   "watched_60_ge_4": 2,
-   "qualified": 2,
-   "nonsample_rows": 2,
-   "watched_60_ge_5": 1,
-   "rows_written": 2
+   "launches_seen": 1415,
+   "feed_disconnects": 83,
+   "gap_seconds": 128,
+   "finished": 758,
+   "watched_60": 758,
+   "watched_60_ge_1": 577,
+   "buyers_qualified": 342,
+   "watched_60_ge_2": 464,
+   "watched_60_ge_3": 342,
+   "watched_60_ge_4": 272,
+   "qualified": 343,
+   "nonsample_rows": 183,
+   "watched_60_ge_5": 226,
+   "rows_written": 203,
+   "watched_60_ge_8": 134,
+   "watched_60_ge_10": 116,
+   "watched_60_ge_15": 84,
+   "watched_60_ge_20": 56,
+   "watched_60_ge_30": 33,
+   "watched_60_ge_50": 13,
+   "sample": 20,
+   "skipped_by_cap": 151
   }
  },
  "feed_counts": {
-  "2026-11-05T01": {
-   "messages": 450618,
-   "trades": 61360,
-   "undecoded": 10197,
-   "creations": 664
-  },
   "2026-11-05T02": {
    "messages": 469457,
    "trades": 74520,
@@ -352,35 +354,30 @@
    "creations": 740
   },
   "2026-11-06T01": {
-   "messages": 14017,
-   "trades": 1189,
-   "undecoded": 216,
-   "creations": 11
+   "messages": 483915,
+   "trades": 67732,
+   "undecoded": 9005,
+   "creations": 604
+  },
+  "2026-11-06T02": {
+   "messages": 39454,
+   "trades": 4560,
+   "creations": 71,
+   "undecoded": 862
   }
  },
  "endpoints": {
   "api.mainnet-beta.solana.com": {
-   "attempts": 778,
-   "successes": 778,
-   "failures": 777,
+   "attempts": 787,
+   "successes": 787,
+   "failures": 786,
    "top_failure": "closed without a close frame (code 1006); we sent code 1002 (invalid status code)",
-   "top_failure_count": 776,
-   "avg_connected_seconds": 109.6,
-   "ended_connections": 778
+   "top_failure_count": 785,
+   "avg_connected_seconds": 108.5,
+   "ended_connections": 787
   }
  },
  "endpoint_hours": {
-  "2026-11-04T23": {
-   "api.mainnet-beta.solana.com": {
-    "attempts": 45,
-    "successes": 45,
-    "failures": {
-     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 44
-    },
-    "ended": 44,
-    "connected_seconds": 3459.481379508972
-   }
-  },
   "2026-11-05T00": {
    "api.mainnet-beta.solana.com": {
     "attempts": 41,
@@ -659,13 +656,24 @@
   },
   "2026-11-06T01": {
    "api.mainnet-beta.solana.com": {
-    "attempts": 1,
-    "successes": 1,
+    "attempts": 38,
+    "successes": 38,
     "failures": {
-     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 1
+     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 38
     },
-    "ended": 1,
-    "connected_seconds": 120.45722150802612
+    "ended": 38,
+    "connected_seconds": 3458.9747166633606
+   }
+  },
+  "2026-11-06T02": {
+   "api.mainnet-beta.solana.com": {
+    "attempts": 2,
+    "successes": 2,
+    "failures": {
+     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 2
+    },
+    "ended": 2,
+    "connected_seconds": 269.6865038871765
    }
   }
  }
