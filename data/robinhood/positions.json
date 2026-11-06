@@ -121,26 +121,6 @@
       "liquidity_usd": 22027.2548,
       "market_cap_usd": 37887.8183
     },
-    "0x7eefa51b991f13f2596c069756701b43f9a5b6da76aec67a40753610cf5f0c1f": {
-      "pool": "0x7eefa51b991f13f2596c069756701b43f9a5b6da76aec67a40753610cf5f0c1f",
-      "dex": "uniswap-pools-trade",
-      "token": "0x2ff2284ad1972b16635e4d847cdc48ac8e1d0080",
-      "name": "ARCMAN",
-      "title": "Arc-man",
-      "created": "2026-11-06T07:50:06Z",
-      "liquidity_usd": 5615.7122,
-      "market_cap_usd": 5610.425291
-    },
-    "0xe5ad6e43f59f9c8f8a79160229991c245e6830859912f8f2b030d4e1d7b7605d": {
-      "pool": "0xe5ad6e43f59f9c8f8a79160229991c245e6830859912f8f2b030d4e1d7b7605d",
-      "dex": "uniswap-pools-trade",
-      "token": "0x1ad98314ebf8b47773f34377a35a08c0df9f02ef",
-      "name": "MU",
-      "title": "Micron Technology Inc",
-      "created": "2026-11-06T07:50:54Z",
-      "liquidity_usd": 5639.1228,
-      "market_cap_usd": 5628.298479
-    },
     "0xb2de63d5b6f41bab110c20f53cc3208ee31a020c2bbde200682561f6a86a7b1e": {
       "pool": "0xb2de63d5b6f41bab110c20f53cc3208ee31a020c2bbde200682561f6a86a7b1e",
       "dex": "uniswap-pools-trade",
@@ -183,26 +163,8 @@
     }
   },
   "checked": {
-    "0x7eefa51b991f13f2596c069756701b43f9a5b6da76aec67a40753610cf5f0c1f": {
-      "at": "2026-11-06T13:31:31.960074+00:00",
-      "passed": false,
-      "failed": [
-        "Market cap",
-        "Not down >50% in 24h",
-        "More buys than sells (1h)"
-      ]
-    },
-    "0xe5ad6e43f59f9c8f8a79160229991c245e6830859912f8f2b030d4e1d7b7605d": {
-      "at": "2026-11-06T13:31:31.960074+00:00",
-      "passed": false,
-      "failed": [
-        "Market cap",
-        "Not down >50% in 24h",
-        "More buys than sells (1h)"
-      ]
-    },
     "0x59f370c4563ca4ca7976ba6cf016b600afc7d5dc3ad34d3308931131b41fcbfb": {
-      "at": "2026-11-06T12:51:15.933925+00:00",
+      "at": "2026-11-06T13:51:28.719679+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -228,6 +190,13 @@
       "at": "2026-11-06T13:11:14.519763+00:00",
       "passed": true,
       "failed": []
+    },
+    "0xfe50c758d152fbd2638446cf07f3722f648bf19f642579c43857802eb64bd396": {
+      "at": "2026-11-06T13:51:28.719679+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
     }
   },
   "sources": {
@@ -236,7 +205,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-06T13:41:30.208678+00:00",
+      "at": "2026-11-06T13:51:28.719679+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -244,8 +213,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-06T13:31:31.960074+00:00",
-      "used_this_run": false
+      "at": "2026-11-06T13:51:28.719679+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -260,32 +229,18 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-06T13:41:30.208678+00:00",
+      "at": "2026-11-06T13:51:28.719679+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x64ccb08597cf4224ff1018c1f53c6c163710d88e2bdcca29884a050b9d80484c": "FAIL|Market cap: $5,584 (need $25,000+); Not down >50% in 24h: -63% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "0x797e78612ac8c62f8a10d4be38c6485c0a6ee971a48f718fcbcbacca1d7e6be2": "FAIL|Market cap: $5,655 (need $25,000+); Not down >50% in 24h: -74% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "0x56284db0da702e412c91625431bee7f954dbe67c0355d6018474f2d02a7a1b52": "FAIL|Market cap: $5,620 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "0x7eefa51b991f13f2596c069756701b43f9a5b6da76aec67a40753610cf5f0c1f": "FAIL|Market cap: $5,610 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "0xe5ad6e43f59f9c8f8a79160229991c245e6830859912f8f2b030d4e1d7b7605d": "FAIL|Market cap: $5,617 (need $25,000+); Not down >50% in 24h: -75% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x59f370c4563ca4ca7976ba6cf016b600afc7d5dc3ad34d3308931131b41fcbfb": "FAIL|Market cap: $5,664 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0xb2de63d5b6f41bab110c20f53cc3208ee31a020c2bbde200682561f6a86a7b1e": "FAIL|Market cap: $5,616 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
     "0x347d16b3a1de92dfb361cbcfeb34d68c3771df87edd365bfce3f7949a954a5a7": "PASS|",
-    "0xe25ab929558cc6d69208ac1533224c1885ccedcfdeafefff72ea83887471229e": "PASS|"
+    "0xe25ab929558cc6d69208ac1533224c1885ccedcfdeafefff72ea83887471229e": "PASS|",
+    "0xfe50c758d152fbd2638446cf07f3722f648bf19f642579c43857802eb64bd396": "FAIL|Liquidity: $8,009 (need $10,000+ on Pons)"
   },
   "launchpad_tokens": {
-    "0x1ee0199d0795011842067f16638a690ff5bc17d0": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-30T07:48:57Z",
-      "symbol": "ZERO",
-      "title": "Zero Day",
-      "seen": "2026-10-31T07:51:24.433549+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 5643.6792,
-      "market_cap_usd": 5614.326639
-    },
     "0xc9f61639deb6a21a3f4778c8c599c654aa0c569d": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-10-30T08:06:08Z",
@@ -450,7 +405,7 @@
       "graduated": "2026-10-30T19:30:57Z",
       "symbol": "TYGR",
       "title": "Tygr",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6131.215612
     },
@@ -2219,7 +2174,7 @@
       "graduated": "2026-11-05T14:48:08Z",
       "symbol": "HENK",
       "title": "HENK",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5873.7645,
       "market_cap_usd": 5788.366357
@@ -2279,7 +2234,7 @@
       "graduated": "2026-11-05T18:57:20Z",
       "symbol": "Nasdaqistan",
       "title": "Nasdaqistan",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5845.624184
     },
@@ -2288,7 +2243,7 @@
       "graduated": "2026-11-05T18:56:19Z",
       "symbol": "frongin",
       "title": "frong in",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5608.4241,
       "market_cap_usd": 5577.276823
@@ -2338,10 +2293,10 @@
       "graduated": "2026-11-06T02:16:06Z",
       "symbol": "COGE",
       "title": "COGE",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5784.9868,
-      "market_cap_usd": 5768.224426
+      "liquidity_usd": 5791.2081,
+      "market_cap_usd": 5806.446379
     },
     "0xd31e178d7e33694a7f538b5c2698a644556699ee": {
       "dex": "pons-v2-dex",
@@ -2378,7 +2333,7 @@
       "graduated": "2026-11-06T02:43:34Z",
       "symbol": "AMD",
       "title": "AMD",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5724.1886,
       "market_cap_usd": 5645.465007
@@ -2408,7 +2363,7 @@
       "graduated": "2026-11-06T06:38:40Z",
       "symbol": "PCT1",
       "title": "Pons C Test",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5602.6022,
       "market_cap_usd": 5549.437004
@@ -2418,7 +2373,7 @@
       "graduated": "2026-11-06T07:23:28Z",
       "symbol": "SNDK",
       "title": "SanDisk Corp",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5572.272877
     },
@@ -2427,7 +2382,7 @@
       "graduated": "2026-11-06T07:30:41Z",
       "symbol": "SNDK",
       "title": "SanDisk Corp",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5667.5379,
       "market_cap_usd": 5644.788308
@@ -2437,7 +2392,7 @@
       "graduated": "2026-11-06T07:41:16Z",
       "symbol": "ARCMAN",
       "title": "Arc-man",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5661.7161,
       "market_cap_usd": 5623.914413
@@ -2447,7 +2402,7 @@
       "graduated": "2026-11-06T07:52:51Z",
       "symbol": "ARCMAN",
       "title": "Arc-man",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5723.9647,
       "market_cap_usd": 5652.864401
@@ -2457,7 +2412,7 @@
       "graduated": "2026-11-06T07:50:06Z",
       "symbol": "ARCMAN",
       "title": "Arc-man",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5637.3092,
       "market_cap_usd": 5597.525945
@@ -2477,7 +2432,7 @@
       "graduated": "2026-11-06T08:28:09Z",
       "symbol": "ARMY",
       "title": "PONS ARMY",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5653.4312,
       "market_cap_usd": 5607.363899
@@ -2487,9 +2442,9 @@
       "graduated": "2026-11-06T09:10:21Z",
       "symbol": "KYTE",
       "title": "Kyte",
-      "seen": "2026-11-06T13:41:30.208678+00:00",
+      "seen": "2026-11-06T13:51:28.719679+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5871.2752,
+      "liquidity_usd": 5880.2436,
       "market_cap_usd": 5829.778145
     },
     "0x072d88c2f31f568c0f4b8f613692eb489541ed45": {
@@ -2514,7 +2469,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-06T13:41:30.208678+00:00",
+    "at": "2026-11-06T13:51:28.719679+00:00",
     "hours": 24,
     "seen": {
       "0x476d9e01e2aca0fd57d3d3331f73332810e8230c": "2026-11-05T18:02:34.089400+00:00",
@@ -2544,7 +2499,7 @@
       "0xdb4aa5e5a6c050adcb7ec973ee6bab5599243892",
       "0xec98d315c098e01dbef66eee09ca6d686b3f9cb6"
     ],
-    "scanned_to": 107621408,
+    "scanned_to": 107627350,
     "complete": true
   },
   "issues_to_close": [],
@@ -2674,7 +2629,7 @@
       0
     ],
     "2026-11-06 13:00": [
-      5,
+      6,
       0,
       0
     ]
