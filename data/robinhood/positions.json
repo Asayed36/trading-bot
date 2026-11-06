@@ -230,6 +230,16 @@
       "created": "2026-11-06T15:59:26Z",
       "liquidity_usd": 31708.7037,
       "market_cap_usd": 120717.6469
+    },
+    "0x0af8ee4cbbab234661711598e21cc7d04573bbe7a5dbda0f380b8c6dcd06b1a1": {
+      "pool": "0x0af8ee4cbbab234661711598e21cc7d04573bbe7a5dbda0f380b8c6dcd06b1a1",
+      "dex": "pons-v2-dex",
+      "token": "0x5a6486ba20181b959e3113b800af1e2828ceedc4",
+      "name": "Velum",
+      "title": "Velum",
+      "created": "2026-11-06T17:19:14Z",
+      "liquidity_usd": null,
+      "market_cap_usd": 52755.39654
     }
   },
   "checked": {
@@ -239,10 +249,11 @@
       "failed": []
     },
     "0xfe50c758d152fbd2638446cf07f3722f648bf19f642579c43857802eb64bd396": {
-      "at": "2026-11-06T16:11:15.942341+00:00",
+      "at": "2026-11-06T17:22:09.856406+00:00",
       "passed": false,
       "failed": [
         "Market cap",
+        "Not down >50% in 24h",
         "More buys than sells (1h)"
       ]
     },
@@ -254,7 +265,7 @@
       ]
     },
     "0xda580276e6b8ed9fd5bfaeb9e1dd615c85c4ba69d5929545e8eab5721bee9355": {
-      "at": "2026-11-06T16:21:06.856352+00:00",
+      "at": "2026-11-06T17:22:09.856406+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -262,7 +273,7 @@
       ]
     },
     "0x254782f5f54fb34c6c2a2af794bb2e8a650e84ad3aff16143fdb54de0b2024a1": {
-      "at": "2026-11-06T16:21:06.856352+00:00",
+      "at": "2026-11-06T17:22:09.856406+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -270,7 +281,7 @@
       ]
     },
     "0xa70d792a6c4e665665d607f1c05d00e129a9f74506b34d2c728b708c5bab3d48": {
-      "at": "2026-11-06T16:21:06.856352+00:00",
+      "at": "2026-11-06T17:22:09.856406+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -310,10 +321,11 @@
       ]
     },
     "0xd348b191f754b096f098856b2d50fc7954c5c6aa0602797ed666270b08dd8ce9": {
-      "at": "2026-11-06T16:21:06.856352+00:00",
+      "at": "2026-11-06T17:22:09.856406+00:00",
       "passed": false,
       "failed": [
-        "Market cap"
+        "Market cap",
+        "More buys than sells (1h)"
       ]
     },
     "0xa08c6e712e47a2cd3f4319b9d9daa7d60e4f1ad049151c6b9c49b0025ffd6306": {
@@ -330,7 +342,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-06T17:11:07.070889+00:00",
+      "at": "2026-11-06T17:22:09.856406+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -338,8 +350,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-06T17:01:59.194788+00:00",
-      "used_this_run": false
+      "at": "2026-11-06T17:22:09.856406+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -354,22 +366,22 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-06T17:11:07.070889+00:00",
+      "at": "2026-11-06T17:22:09.856406+00:00",
       "used_this_run": true
     }
   },
   "logged": {
     "0xe25ab929558cc6d69208ac1533224c1885ccedcfdeafefff72ea83887471229e": "PASS|",
-    "0xfe50c758d152fbd2638446cf07f3722f648bf19f642579c43857802eb64bd396": "FAIL|Market cap: $23,653 (need $25,000+); More buys than sells (1h): 46 buys vs 48 sells",
+    "0xfe50c758d152fbd2638446cf07f3722f648bf19f642579c43857802eb64bd396": "FAIL|Market cap: $15,233 (need $25,000+); Not down >50% in 24h: -66% in 24h; More buys than sells (1h): 22 buys vs 24 sells",
     "0x83da31f2fa1d872ccbdfd4cc73b13cac58f5269bad7370292fe4fe96e6fb5550": "FAIL|Liquidity: $9,859 (need $10,000+ on Pons)",
     "0xda580276e6b8ed9fd5bfaeb9e1dd615c85c4ba69d5929545e8eab5721bee9355": "FAIL|Market cap: $5,581 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
-    "0x254782f5f54fb34c6c2a2af794bb2e8a650e84ad3aff16143fdb54de0b2024a1": "FAIL|Market cap: $5,575 (need $25,000+); More buys than sells (1h): 0 buys vs 1 sells",
+    "0x254782f5f54fb34c6c2a2af794bb2e8a650e84ad3aff16143fdb54de0b2024a1": "FAIL|Market cap: $5,575 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
     "0xa70d792a6c4e665665d607f1c05d00e129a9f74506b34d2c728b708c5bab3d48": "FAIL|Market cap: $5,580 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
     "0xbbcea40c1dbdf01e0357d77bbc78b935c9bf083d3792bbd64501f8237f2b908e": "FAIL|Market cap: $5,616 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
     "0xf2aa795f56dd009726dbd7e58563572f092b9355a44da0e13f40ee8939e9fc08": "FAIL|Market cap: $5,774 (need $25,000+); More buys than sells (1h): 0 buys vs 5 sells",
     "0x65beccb84837a3f32eeb9b306f77feab50330283172efb44b4e78fcf2100a772": "FAIL|Market cap: $5,573 (need $25,000+); More buys than sells (1h): 0 buys vs 2 sells",
     "0x9e2450fcf62c682068246e0fc089e490ea7e021275c3a60540bf91600765d0b6": "FAIL|Market cap: $5,591 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
-    "0xd348b191f754b096f098856b2d50fc7954c5c6aa0602797ed666270b08dd8ce9": "FAIL|Market cap: $5,592 (need $25,000+)",
+    "0xd348b191f754b096f098856b2d50fc7954c5c6aa0602797ed666270b08dd8ce9": "FAIL|Market cap: $5,592 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
     "0xa08c6e712e47a2cd3f4319b9d9daa7d60e4f1ad049151c6b9c49b0025ffd6306": "FAIL|Top 10 holders: 57.6% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
@@ -477,7 +489,7 @@
       "graduated": "2026-10-30T19:30:57Z",
       "symbol": "TYGR",
       "title": "Tygr",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6103.604824
     },
@@ -2306,7 +2318,7 @@
       "graduated": "2026-11-05T18:57:20Z",
       "symbol": "Nasdaqistan",
       "title": "Nasdaqistan",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5845.624184
     },
@@ -2365,7 +2377,7 @@
       "graduated": "2026-11-06T02:16:06Z",
       "symbol": "COGE",
       "title": "COGE",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5843.912,
       "market_cap_usd": 5795.828004
@@ -2405,7 +2417,7 @@
       "graduated": "2026-11-06T02:43:34Z",
       "symbol": "AMD",
       "title": "AMD",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5698.1133,
       "market_cap_usd": 5645.465007
@@ -2445,7 +2457,7 @@
       "graduated": "2026-11-06T07:23:28Z",
       "symbol": "SNDK",
       "title": "SanDisk Corp",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5572.272877
     },
@@ -2454,7 +2466,7 @@
       "graduated": "2026-11-06T07:30:41Z",
       "symbol": "SNDK",
       "title": "SanDisk Corp",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5641.7207,
       "market_cap_usd": 5644.788308
@@ -2464,7 +2476,7 @@
       "graduated": "2026-11-06T07:41:16Z",
       "symbol": "ARCMAN",
       "title": "Arc-man",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5635.9254,
       "market_cap_usd": 5623.914413
@@ -2474,7 +2486,7 @@
       "graduated": "2026-11-06T07:52:51Z",
       "symbol": "ARCMAN",
       "title": "Arc-man",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5697.8904,
       "market_cap_usd": 5652.864401
@@ -2484,7 +2496,7 @@
       "graduated": "2026-11-06T07:50:06Z",
       "symbol": "ARCMAN",
       "title": "Arc-man",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5611.6297,
       "market_cap_usd": 5597.525945
@@ -2504,7 +2516,7 @@
       "graduated": "2026-11-06T08:28:09Z",
       "symbol": "ARMY",
       "title": "PONS ARMY",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5627.6782,
       "market_cap_usd": 5607.363899
@@ -2514,7 +2526,7 @@
       "graduated": "2026-11-06T09:10:21Z",
       "symbol": "KYTE",
       "title": "Kyte",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5866.3998,
       "market_cap_usd": 5829.778145
@@ -2554,7 +2566,7 @@
       "graduated": "2026-11-06T14:32:26Z",
       "symbol": "SIN",
       "title": "SINDICAT",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5661.304059
     },
@@ -2583,9 +2595,9 @@
       "graduated": "2026-11-06T14:49:41Z",
       "symbol": "SIN",
       "title": "SINDICAT",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
-      "market_cap_usd": 5756.16285
+      "market_cap_usd": 5731.235288
     },
     "0xf45542a9b75c0c244d46bbfcfea48c656d9ee0f5": {
       "dex": "uniswap-pools-trade",
@@ -2622,7 +2634,7 @@
       "graduated": "2026-11-06T15:30:16Z",
       "symbol": "GTA",
       "title": "Grand Tenev Army",
-      "seen": "2026-11-06T17:11:07.070889+00:00",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5595.460141
     },
@@ -2635,10 +2647,19 @@
       "source": "geckoterminal",
       "liquidity_usd": 31708.7037,
       "market_cap_usd": 120717.6469
+    },
+    "0x5a6486ba20181b959e3113b800af1e2828ceedc4": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-11-06T17:19:14Z",
+      "symbol": "Velum",
+      "title": "Velum",
+      "seen": "2026-11-06T17:22:09.856406+00:00",
+      "source": "geckoterminal",
+      "market_cap_usd": 52755.39654
     }
   },
   "graduations": {
-    "at": "2026-11-06T17:11:07.070889+00:00",
+    "at": "2026-11-06T17:22:09.856406+00:00",
     "hours": 24,
     "seen": {
       "0x476d9e01e2aca0fd57d3d3331f73332810e8230c": "2026-11-05T18:02:34.089400+00:00",
@@ -2654,13 +2675,15 @@
       "0x072d88c2f31f568c0f4b8f613692eb489541ed45": "2026-11-06T12:33:04.029200+00:00",
       "0x78544c8974a41d26246a814da90143c2707ae7eb": "2026-11-06T13:12:22.826700+00:00",
       "0x05ab5974839cbef493a0958751185f1a45fb2a3b": "2026-11-06T13:56:58.118400+00:00",
-      "0xadce6fd937e5e5955864235e88e08e24846b719c": "2026-11-06T15:59:26.244800+00:00"
+      "0xadce6fd937e5e5955864235e88e08e24846b719c": "2026-11-06T15:59:26.244800+00:00",
+      "0x5a6486ba20181b959e3113b800af1e2828ceedc4": "2026-11-06T17:19:15.894000+00:00"
     },
     "tokens": [
       "0x05ab5974839cbef493a0958751185f1a45fb2a3b",
       "0x072d88c2f31f568c0f4b8f613692eb489541ed45",
       "0x412143c9398e8a9419d7f90ef6696d083cfa36a8",
       "0x476d9e01e2aca0fd57d3d3331f73332810e8230c",
+      "0x5a6486ba20181b959e3113b800af1e2828ceedc4",
       "0x78544c8974a41d26246a814da90143c2707ae7eb",
       "0x7a9194934e9e87689dfbb18a36d844ba737ea731",
       "0x8c4be7763f446df2b5a8c331e7ccf497e7f78b1d",
@@ -2672,7 +2695,7 @@
       "0xdb4aa5e5a6c050adcb7ec973ee6bab5599243892",
       "0xec98d315c098e01dbef66eee09ca6d686b3f9cb6"
     ],
-    "scanned_to": 107744812,
+    "scanned_to": 107751347,
     "complete": true
   },
   "issues_to_close": [],
@@ -2802,7 +2825,7 @@
       0
     ],
     "2026-11-06 17:00": [
-      2,
+      3,
       0,
       0
     ]
