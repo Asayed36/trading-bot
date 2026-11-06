@@ -188,6 +188,16 @@
       "created": "2026-11-06T06:38:40Z",
       "liquidity_usd": 6690.5435,
       "market_cap_usd": 6738.648471
+    },
+    "0x64ccb08597cf4224ff1018c1f53c6c163710d88e2bdcca29884a050b9d80484c": {
+      "pool": "0x64ccb08597cf4224ff1018c1f53c6c163710d88e2bdcca29884a050b9d80484c",
+      "dex": "uniswap-pools-trade",
+      "token": "0x0a15553b27ff51ad42b087086bc39ea64834c3f2",
+      "name": "SNDK",
+      "title": "SanDisk Corp",
+      "created": "2026-11-06T07:23:28Z",
+      "liquidity_usd": null,
+      "market_cap_usd": 5591.352511
     }
   },
   "checked": {
@@ -201,7 +211,7 @@
       ]
     },
     "0xeabce6e77147fe00901a75bc153a68c4e0061951aa5b7f33cc97a71395c88bf2": {
-      "at": "2026-11-06T06:30:59.562353+00:00",
+      "at": "2026-11-06T07:31:05.082025+00:00",
       "passed": false,
       "failed": [
         "Top 10 holders"
@@ -218,7 +228,7 @@
       "failed": []
     },
     "0xfb3a13237512a2a48cab03600bb2917890303404b8a69369f66795a5b63a19ff": {
-      "at": "2026-11-06T06:30:59.562353+00:00",
+      "at": "2026-11-06T07:31:05.082025+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -227,11 +237,12 @@
       ]
     },
     "0x812bc56dbf454dba13c42ce0f6eb462fe75bfcbd98e3c7fb6fc45d36f144b082": {
-      "at": "2026-11-06T06:30:59.562353+00:00",
+      "at": "2026-11-06T07:31:05.082025+00:00",
       "passed": false,
       "failed": [
         "Market cap",
-        "Not down >50% in 24h"
+        "Not down >50% in 24h",
+        "More buys than sells (1h)"
       ]
     },
     "0x24986b637a25c48faf7f5d134091754f6b613ce29a68feb338d2ed523df55d55": {
@@ -255,7 +266,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-06T07:21:26.962008+00:00",
+      "at": "2026-11-06T07:31:05.082025+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -263,7 +274,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-06T07:21:26.962008+00:00",
+      "at": "2026-11-06T07:31:05.082025+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -271,25 +282,25 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-06T06:30:59.562353+00:00",
-      "used_this_run": false
+      "at": "2026-11-06T07:31:05.082025+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 9,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-06T07:21:26.962008+00:00",
+      "at": "2026-11-06T07:31:05.082025+00:00",
       "used_this_run": true
     }
   },
   "logged": {
     "0x48e8d55abb357def71882a18b18fe6cebcd65bca17402d2a902aa1422875a85c": "FAIL|Market cap: $5,660 (need $25,000+); Not down >50% in 24h: -82% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
-    "0xeabce6e77147fe00901a75bc153a68c4e0061951aa5b7f33cc97a71395c88bf2": "FAIL|Top 10 holders: 32.7% (need under 30%; pools, launchpad and burn addresses left out)",
+    "0xeabce6e77147fe00901a75bc153a68c4e0061951aa5b7f33cc97a71395c88bf2": "FAIL|Top 10 holders: 31.5% (need under 30%; pools, launchpad and burn addresses left out)",
     "0x1c9a2018472f20d6e542f5dcb3350d0e7c4622aa3d4a405bb1e8c4c8796d45a6": "PASS|",
     "onchain:0xa05496e2100cc14920d969f918343f863eae209e": "PASS|",
-    "0xfb3a13237512a2a48cab03600bb2917890303404b8a69369f66795a5b63a19ff": "FAIL|Market cap: $5,661 (need $25,000+); Not down >50% in 24h: -82% in 24h; More buys than sells (1h): 1 buys vs 2 sells",
-    "0x812bc56dbf454dba13c42ce0f6eb462fe75bfcbd98e3c7fb6fc45d36f144b082": "FAIL|Market cap: $5,570 (need $25,000+); Not down >50% in 24h: unknown",
+    "0xfb3a13237512a2a48cab03600bb2917890303404b8a69369f66795a5b63a19ff": "FAIL|Market cap: $5,661 (need $25,000+); Not down >50% in 24h: -82% in 24h; More buys than sells (1h): 0 buys vs 0 sells",
+    "0x812bc56dbf454dba13c42ce0f6eb462fe75bfcbd98e3c7fb6fc45d36f144b082": "FAIL|Market cap: $5,570 (need $25,000+); Not down >50% in 24h: unknown; More buys than sells (1h): 0 buys vs 0 sells",
     "0x24986b637a25c48faf7f5d134091754f6b613ce29a68feb338d2ed523df55d55": "FAIL|Market cap: $5,562 (need $25,000+)",
     "0xd014879beb1c94f4ea425447a4a824f4c2462b22bce7afabcedd255ce76deeee": "FAIL|Market cap: $5,561 (need $25,000+)"
   },
@@ -567,7 +578,7 @@
       "graduated": "2026-10-30T19:30:57Z",
       "symbol": "TYGR",
       "title": "Tygr",
-      "seen": "2026-11-06T07:21:26.962008+00:00",
+      "seen": "2026-11-06T07:31:05.082025+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 6131.215612
     },
@@ -2316,9 +2327,9 @@
       "graduated": "2026-11-05T10:02:45Z",
       "symbol": "Harmonic",
       "title": "Next is code",
-      "seen": "2026-11-06T07:21:26.962008+00:00",
+      "seen": "2026-11-06T07:31:05.082025+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5680.8562,
+      "liquidity_usd": 5660.7072,
       "market_cap_usd": 5881.858461
     },
     "0x97a27ec0fc776e284dec3a36b20ea5e27e69304d": {
@@ -2336,9 +2347,9 @@
       "graduated": "2026-11-05T14:48:08Z",
       "symbol": "HENK",
       "title": "HENK",
-      "seen": "2026-11-06T07:21:26.962008+00:00",
+      "seen": "2026-11-06T07:31:05.082025+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5842.7845,
+      "liquidity_usd": 5822.0612,
       "market_cap_usd": 5822.400689
     },
     "0x981b6cab798ef6824a8929f5ae4f42fb685f411f": {
@@ -2396,7 +2407,7 @@
       "graduated": "2026-11-05T18:57:20Z",
       "symbol": "Nasdaqistan",
       "title": "Nasdaqistan",
-      "seen": "2026-11-06T07:21:26.962008+00:00",
+      "seen": "2026-11-06T07:31:05.082025+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5818.664163
     },
@@ -2405,9 +2416,9 @@
       "graduated": "2026-11-05T18:56:19Z",
       "symbol": "frongin",
       "title": "frong in",
-      "seen": "2026-11-06T07:21:26.962008+00:00",
+      "seen": "2026-11-06T07:31:05.082025+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5578.8435,
+      "liquidity_usd": 5559.0564,
       "market_cap_usd": 5577.276823
     },
     "0x5f6b7444bb3d7714570f9ad618107ed90104049f": {
@@ -2455,9 +2466,9 @@
       "graduated": "2026-11-06T02:16:06Z",
       "symbol": "COGE",
       "title": "COGE",
-      "seen": "2026-11-06T07:21:26.962008+00:00",
+      "seen": "2026-11-06T07:31:05.082025+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5685.4538,
+      "liquidity_usd": 5672.4703,
       "market_cap_usd": 5644.162685
     },
     "0xd31e178d7e33694a7f538b5c2698a644556699ee": {
@@ -2495,9 +2506,9 @@
       "graduated": "2026-11-06T02:43:34Z",
       "symbol": "AMD",
       "title": "AMD",
-      "seen": "2026-11-06T07:21:26.962008+00:00",
+      "seen": "2026-11-06T07:31:05.082025+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5686.7885,
+      "liquidity_usd": 5673.802,
       "market_cap_usd": 5645.465007
     },
     "0x2da769dbf91515e3deaf01ae39c8f395ae495c55": {
@@ -2525,14 +2536,23 @@
       "graduated": "2026-11-06T06:38:40Z",
       "symbol": "PCT1",
       "title": "Pons C Test",
-      "seen": "2026-11-06T07:21:26.962008+00:00",
+      "seen": "2026-11-06T07:31:05.082025+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5552.9856,
+      "liquidity_usd": 5545.8796,
       "market_cap_usd": 5549.437004
+    },
+    "0x0a15553b27ff51ad42b087086bc39ea64834c3f2": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-11-06T07:23:28Z",
+      "symbol": "SNDK",
+      "title": "SanDisk Corp",
+      "seen": "2026-11-06T07:31:05.082025+00:00",
+      "source": "geckoterminal",
+      "market_cap_usd": 5591.352511
     }
   },
   "graduations": {
-    "at": "2026-11-06T07:21:26.962008+00:00",
+    "at": "2026-11-06T07:31:05.082025+00:00",
     "hours": 24,
     "seen": {
       "0x97a27ec0fc776e284dec3a36b20ea5e27e69304d": "2026-11-05T12:59:33.756800+00:00",
@@ -2560,7 +2580,7 @@
       "0xdb4aa5e5a6c050adcb7ec973ee6bab5599243892",
       "0xec98d315c098e01dbef66eee09ca6d686b3f9cb6"
     ],
-    "scanned_to": 107399307,
+    "scanned_to": 107404849,
     "complete": true
   },
   "issues_to_close": [],
@@ -2690,7 +2710,7 @@
       0
     ],
     "2026-11-06 07:00": [
-      3,
+      4,
       0,
       0
     ]
