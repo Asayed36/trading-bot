@@ -130,21 +130,32 @@
       "created": "2026-11-07T18:27:18Z",
       "liquidity_usd": null,
       "market_cap_usd": 43902.69648
+    },
+    "0x7ef727c7da33fb24af27505ef884d0ee0b35df0fc9a28a82c0f22e402de730c0": {
+      "pool": "0x7ef727c7da33fb24af27505ef884d0ee0b35df0fc9a28a82c0f22e402de730c0",
+      "dex": "pons-v2-dex",
+      "token": "0x3dff19a2db018ddbb3459d549d1f4283c3b772a8",
+      "name": "CIO",
+      "title": "Chigga Its Over",
+      "created": "2026-11-07T22:30:08Z",
+      "liquidity_usd": null,
+      "market_cap_usd": 50325.81872
     }
   },
   "checked": {
     "0x3b6014b4006ae0242514f4a05e80c0688ca372a2b6917dad53582b18e35a457f": {
-      "at": "2026-11-07T21:21:31.600422+00:00",
+      "at": "2026-11-07T22:31:04.221538+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
       ]
     },
     "0x0a0609d80a250203539a48826b3b13728488f7bc7ec00c4815539e092314b2fe": {
-      "at": "2026-11-07T21:21:31.600422+00:00",
+      "at": "2026-11-07T22:31:04.221538+00:00",
       "passed": false,
       "failed": [
-        "Top 10 holders"
+        "Market cap",
+        "Not down >50% in 24h"
       ]
     }
   },
@@ -154,7 +165,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-07T22:21:07.330707+00:00",
+      "at": "2026-11-07T22:31:04.221538+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -162,8 +173,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-07T21:21:31.600422+00:00",
-      "used_this_run": false
+      "at": "2026-11-07T22:31:04.221538+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -178,26 +189,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-07T22:21:07.330707+00:00",
+      "at": "2026-11-07T22:31:04.221538+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "onchain:0x8c8378a6a7dea5d0c37ab12aced6682a3bc0919f": "PASS|",
-    "0x3b6014b4006ae0242514f4a05e80c0688ca372a2b6917dad53582b18e35a457f": "FAIL|Liquidity: $4,571 (need $10,000+ on Pons)",
-    "0x0a0609d80a250203539a48826b3b13728488f7bc7ec00c4815539e092314b2fe": "FAIL|Top 10 holders: 31.8% (need under 30%; pools, launchpad and burn addresses left out)"
+    "0x3b6014b4006ae0242514f4a05e80c0688ca372a2b6917dad53582b18e35a457f": "FAIL|Liquidity: $4,397 (need $10,000+ on Pons)",
+    "0x0a0609d80a250203539a48826b3b13728488f7bc7ec00c4815539e092314b2fe": "FAIL|Market cap: $16,787 (need $25,000+); Not down >50% in 24h: -62% in 24h"
   },
   "launchpad_tokens": {
-    "0x1dc8ea274d38f586c7235120e88cacd1b3931c3c": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-10-31T16:30:13Z",
-      "symbol": "DAVID",
-      "title": "David Dobrik Coin",
-      "seen": "2026-11-01T17:51:14.100606+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 5953.7405,
-      "market_cap_usd": 5871.931021
-    },
     "0xb961886115fb9e4f732e20e89efd6d0406c3527f": {
       "dex": "pons-v2-dex",
       "graduated": "2026-10-31T18:59:39.050400+00:00",
@@ -677,9 +677,9 @@
       "graduated": "2026-11-02T05:38:13Z",
       "symbol": "PEACE",
       "title": "Peace Coin",
-      "seen": "2026-11-07T22:21:07.330707+00:00",
+      "seen": "2026-11-07T22:31:04.221538+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 6432.6606,
+      "liquidity_usd": 6440.4596,
       "market_cap_usd": 6230.155453
     },
     "0xc5eae04811de22cf035f2324ef08e098a7a0afbf": {
@@ -2052,9 +2052,9 @@
       "graduated": "2026-11-06T07:30:41Z",
       "symbol": "SNDK",
       "title": "SanDisk Corp",
-      "seen": "2026-11-07T22:21:07.330707+00:00",
+      "seen": "2026-11-07T22:31:04.221538+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5638.9614,
+      "liquidity_usd": 5647.7984,
       "market_cap_usd": 5634.820871
     },
     "0xc1e5be5cdb987f5664033a388c48b0316b5caf81": {
@@ -2062,9 +2062,9 @@
       "graduated": "2026-11-06T07:41:16Z",
       "symbol": "ARCMAN",
       "title": "Arc-man",
-      "seen": "2026-11-07T22:21:07.330707+00:00",
+      "seen": "2026-11-07T22:31:04.221538+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5611.7921,
+      "liquidity_usd": 5620.5866,
       "market_cap_usd": 5638.306856
     },
     "0x327e4104aeee3268e00c22c3afe1fa1d973e9f09": {
@@ -2181,7 +2181,7 @@
       "graduated": "2026-11-06T14:49:41Z",
       "symbol": "SIN",
       "title": "SINDICAT",
-      "seen": "2026-11-07T22:21:07.330707+00:00",
+      "seen": "2026-11-07T22:31:04.221538+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5753.607659
     },
@@ -2288,9 +2288,9 @@
       "graduated": "2026-11-06T20:50:51Z",
       "symbol": "GTAVI",
       "title": "GTAVI",
-      "seen": "2026-11-07T22:21:07.330707+00:00",
+      "seen": "2026-11-07T22:31:04.221538+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5722.1052,
+      "liquidity_usd": 5730.9953,
       "market_cap_usd": 5727.185228
     },
     "0xa01f353b72ef6557359f2c110ab7c738dfd8405d": {
@@ -2391,10 +2391,19 @@
       "seen": "2026-11-07T18:31:17.788469+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 43902.69648
+    },
+    "0x3dff19a2db018ddbb3459d549d1f4283c3b772a8": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-11-07T22:30:08Z",
+      "symbol": "CIO",
+      "title": "Chigga Its Over",
+      "seen": "2026-11-07T22:31:04.221538+00:00",
+      "source": "geckoterminal",
+      "market_cap_usd": 50325.81872
     }
   },
   "graduations": {
-    "at": "2026-11-07T22:21:07.330707+00:00",
+    "at": "2026-11-07T22:31:04.221538+00:00",
     "hours": 24,
     "seen": {
       "0xa01f353b72ef6557359f2c110ab7c738dfd8405d": "2026-11-07T01:58:34.573600+00:00",
@@ -2403,10 +2412,12 @@
       "0x31ced11f076e45da2508da2db4a2f296021a1e21": "2026-11-07T12:23:08.409500+00:00",
       "0x8c8378a6a7dea5d0c37ab12aced6682a3bc0919f": "2026-11-07T15:47:39.606400+00:00",
       "0x7a5cd17c0076a2d87ef7a23a75a03a7e96255cd2": "2026-11-07T17:23:22.796000+00:00",
-      "0xcf47ff6d4342a67d0535a08cadee6b2ea9e22e03": "2026-11-07T18:27:23.108700+00:00"
+      "0xcf47ff6d4342a67d0535a08cadee6b2ea9e22e03": "2026-11-07T18:27:23.108700+00:00",
+      "0x3dff19a2db018ddbb3459d549d1f4283c3b772a8": "2026-11-07T22:30:04.094500+00:00"
     },
     "tokens": [
       "0x31ced11f076e45da2508da2db4a2f296021a1e21",
+      "0x3dff19a2db018ddbb3459d549d1f4283c3b772a8",
       "0x5e09f8fb59a1c336959abc6d74e227806d710ffe",
       "0x7a5cd17c0076a2d87ef7a23a75a03a7e96255cd2",
       "0x8c8378a6a7dea5d0c37ab12aced6682a3bc0919f",
@@ -2414,7 +2425,7 @@
       "0xb9fd927f8ebdc35a83274324b138a242a8b37674",
       "0xcf47ff6d4342a67d0535a08cadee6b2ea9e22e03"
     ],
-    "scanned_to": 108747669,
+    "scanned_to": 108753314,
     "complete": true
   },
   "issues_to_close": [],
@@ -2538,7 +2549,7 @@
       0
     ],
     "2026-11-07 22:00": [
-      3,
+      4,
       0,
       0
     ]
