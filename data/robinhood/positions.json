@@ -120,14 +120,24 @@
       "created": "2026-11-08T01:17:12Z",
       "liquidity_usd": null,
       "market_cap_usd": 48929.63918
+    },
+    "0x183e7881705bfa26fd05dfe73122b0533c11eaf88bc880a5de0c02a86916042c": {
+      "pool": "0x183e7881705bfa26fd05dfe73122b0533c11eaf88bc880a5de0c02a86916042c",
+      "dex": "pons-v2-dex",
+      "token": "0x71d85b295653d9c3e7dd2fc26f26f2c3db51b2fc",
+      "name": "QUERO",
+      "title": "Quero",
+      "created": "2026-11-08T04:49:15Z",
+      "liquidity_usd": 19158.3667,
+      "market_cap_usd": 37132.03968
     }
   },
   "checked": {
     "0x39c4e8a6607675d02c472e1b921a725272053daafacba1fe1cb08a2ea9698eb0": {
-      "at": "2026-11-08T03:51:27.031679+00:00",
+      "at": "2026-11-08T04:51:27.255937+00:00",
       "passed": false,
       "failed": [
-        "Holders"
+        "More buys than sells (1h)"
       ]
     }
   },
@@ -137,7 +147,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-08T04:41:15.574556+00:00",
+      "at": "2026-11-08T04:51:27.255937+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -145,8 +155,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-08T04:21:28.325449+00:00",
-      "used_this_run": false
+      "at": "2026-11-08T04:51:27.255937+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -161,13 +171,12 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-08T04:41:15.574556+00:00",
+      "at": "2026-11-08T04:51:27.255937+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x7ef727c7da33fb24af27505ef884d0ee0b35df0fc9a28a82c0f22e402de730c0": "FAIL|Liquidity: $4,250 (need $10,000+ on Pons)",
-    "0x39c4e8a6607675d02c472e1b921a725272053daafacba1fe1cb08a2ea9698eb0": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls"
+    "0x39c4e8a6607675d02c472e1b921a725272053daafacba1fe1cb08a2ea9698eb0": "FAIL|More buys than sells (1h): 7 buys vs 14 sells"
   },
   "launchpad_tokens": {
     "0xf722b7b078b4b69430586b907ce82122d603c3ba": {
@@ -1975,9 +1984,9 @@
       "graduated": "2026-11-06T07:30:41Z",
       "symbol": "SNDK",
       "title": "SanDisk Corp",
-      "seen": "2026-11-08T04:41:15.574556+00:00",
+      "seen": "2026-11-08T04:51:27.255937+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5659.8765,
+      "liquidity_usd": 5654.1287,
       "market_cap_usd": 5634.820871
     },
     "0xc1e5be5cdb987f5664033a388c48b0316b5caf81": {
@@ -1985,9 +1994,9 @@
       "graduated": "2026-11-06T07:41:16Z",
       "symbol": "ARCMAN",
       "title": "Arc-man",
-      "seen": "2026-11-08T04:41:15.574556+00:00",
+      "seen": "2026-11-08T04:51:27.255937+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5632.6065,
+      "liquidity_usd": 5626.8863,
       "market_cap_usd": 5638.306856
     },
     "0x327e4104aeee3268e00c22c3afe1fa1d973e9f09": {
@@ -2104,7 +2113,7 @@
       "graduated": "2026-11-06T14:49:41Z",
       "symbol": "SIN",
       "title": "SINDICAT",
-      "seen": "2026-11-08T04:41:15.574556+00:00",
+      "seen": "2026-11-08T04:51:27.255937+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5753.607659
     },
@@ -2211,9 +2220,9 @@
       "graduated": "2026-11-06T20:50:51Z",
       "symbol": "GTAVI",
       "title": "GTAVI",
-      "seen": "2026-11-08T04:41:15.574556+00:00",
+      "seen": "2026-11-08T04:51:27.255937+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5743.2514,
+      "liquidity_usd": 5735.4661,
       "market_cap_usd": 5727.185228
     },
     "0xa01f353b72ef6557359f2c110ab7c738dfd8405d": {
@@ -2332,10 +2341,20 @@
       "seen": "2026-11-08T01:21:06.344685+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 48929.63918
+    },
+    "0x71d85b295653d9c3e7dd2fc26f26f2c3db51b2fc": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-11-08T04:49:15Z",
+      "symbol": "QUERO",
+      "title": "Quero",
+      "seen": "2026-11-08T04:51:27.255937+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 19158.3667,
+      "market_cap_usd": 37132.03968
     }
   },
   "graduations": {
-    "at": "2026-11-08T04:41:15.574556+00:00",
+    "at": "2026-11-08T04:51:27.255937+00:00",
     "hours": 24,
     "seen": {
       "0xb9fd927f8ebdc35a83274324b138a242a8b37674": "2026-11-07T09:23:38.970000+00:00",
@@ -2345,19 +2364,21 @@
       "0x7a5cd17c0076a2d87ef7a23a75a03a7e96255cd2": "2026-11-07T17:23:22.796000+00:00",
       "0xcf47ff6d4342a67d0535a08cadee6b2ea9e22e03": "2026-11-07T18:27:23.108700+00:00",
       "0x3dff19a2db018ddbb3459d549d1f4283c3b772a8": "2026-11-07T22:30:04.094500+00:00",
-      "0x98dcc6f9b8298ae1a225b8df1519e7565d45672d": "2026-11-08T01:17:13.160000+00:00"
+      "0x98dcc6f9b8298ae1a225b8df1519e7565d45672d": "2026-11-08T01:17:13.160000+00:00",
+      "0x71d85b295653d9c3e7dd2fc26f26f2c3db51b2fc": "2026-11-08T04:49:15.472400+00:00"
     },
     "tokens": [
       "0x31ced11f076e45da2508da2db4a2f296021a1e21",
       "0x3dff19a2db018ddbb3459d549d1f4283c3b772a8",
       "0x5e09f8fb59a1c336959abc6d74e227806d710ffe",
+      "0x71d85b295653d9c3e7dd2fc26f26f2c3db51b2fc",
       "0x7a5cd17c0076a2d87ef7a23a75a03a7e96255cd2",
       "0x8c8378a6a7dea5d0c37ab12aced6682a3bc0919f",
       "0x98dcc6f9b8298ae1a225b8df1519e7565d45672d",
       "0xb9fd927f8ebdc35a83274324b138a242a8b37674",
       "0xcf47ff6d4342a67d0535a08cadee6b2ea9e22e03"
     ],
-    "scanned_to": 108963573,
+    "scanned_to": 108969558,
     "complete": true
   },
   "issues_to_close": [],
@@ -2481,7 +2502,7 @@
       0
     ],
     "2026-11-08 04:00": [
-      5,
+      6,
       0,
       0
     ]
