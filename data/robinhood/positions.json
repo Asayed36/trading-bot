@@ -132,11 +132,19 @@
   },
   "checked": {
     "0xe3719999fad864662a56ac73a06b3639ab0021834bbf3bf2585aaf2c9c9ea75b": {
-      "at": "2026-11-08T16:01:32.249916+00:00",
+      "at": "2026-11-08T17:11:24.405120+00:00",
       "passed": false,
       "failed": [
         "Market cap",
         "More buys than sells (1h)"
+      ]
+    },
+    "onchain:0x0ddcab9ae04bda0c87ecc1640636fa11e8e613e8": {
+      "at": "2026-11-08T17:11:24.405120+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h"
       ]
     }
   },
@@ -146,7 +154,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-08T17:01:12.182004+00:00",
+      "at": "2026-11-08T17:11:24.405120+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -154,8 +162,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-08T16:41:08.785145+00:00",
-      "used_this_run": false
+      "at": "2026-11-08T17:11:24.405120+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -170,35 +178,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-08T17:01:12.182004+00:00",
+      "at": "2026-11-08T17:11:24.405120+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x5df995ab55e266e583be7e4c332b38b5d3362e0041db284bbc5acefef9bb5f87": "FAIL|Market cap: $5,605 (need $25,000+); Not down >50% in 24h: unknown; More buys than sells (1h): 0 buys vs 0 sells",
-    "0xe3719999fad864662a56ac73a06b3639ab0021834bbf3bf2585aaf2c9c9ea75b": "FAIL|Market cap: $5,673 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells"
+    "0xe3719999fad864662a56ac73a06b3639ab0021834bbf3bf2585aaf2c9c9ea75b": "FAIL|Market cap: $5,673 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
+    "onchain:0x0ddcab9ae04bda0c87ecc1640636fa11e8e613e8": "FAIL|Market cap: $18,608 (need $25,000+); Not down >50% in 24h: -57% in 24h"
   },
   "launchpad_tokens": {
-    "0x31173bec6c9581ea5879c43301107a001468c26b": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-11-01T11:05:21Z",
-      "symbol": "PAX",
-      "title": "Pax",
-      "seen": "2026-11-01T11:11:23.613686+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 5723.4207,
-      "market_cap_usd": 5695.270329
-    },
-    "0xf65762c40e3f0488384d2c2f43a2636a79fdf0b9": {
-      "dex": "pons-v2-dex",
-      "graduated": "2026-11-01T11:07:29.641800+00:00",
-      "symbol": "BIAO",
-      "title": "Biaoqing",
-      "seen": "2026-11-01T11:11:23.613686+00:00",
-      "source": "chain",
-      "liquidity_usd": 15832.46,
-      "market_cap_usd": 39698.0
-    },
     "0x05bdca0eda613bbc36a73968178e4156e89ee468": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-11-01T11:14:53Z",
@@ -1866,7 +1854,7 @@
       "graduated": "2026-11-06T07:30:41Z",
       "symbol": "SNDK",
       "title": "SanDisk Corp",
-      "seen": "2026-11-08T17:01:12.182004+00:00",
+      "seen": "2026-11-08T17:11:24.405120+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5648.1023,
       "market_cap_usd": 5634.820871
@@ -2249,7 +2237,7 @@
       "graduated": "2026-11-08T13:14:56Z",
       "symbol": "Debtcat",
       "title": "Debtcat",
-      "seen": "2026-11-08T17:01:12.182004+00:00",
+      "seen": "2026-11-08T17:11:24.405120+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5648.5484,
       "market_cap_usd": 5655.096921
@@ -2266,7 +2254,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-08T17:01:12.182004+00:00",
+    "at": "2026-11-08T17:11:24.405120+00:00",
     "hours": 24,
     "seen": {
       "0x7a5cd17c0076a2d87ef7a23a75a03a7e96255cd2": "2026-11-07T17:23:22.796000+00:00",
@@ -2284,7 +2272,7 @@
       "0x98dcc6f9b8298ae1a225b8df1519e7565d45672d",
       "0xcf47ff6d4342a67d0535a08cadee6b2ea9e22e03"
     ],
-    "scanned_to": 109382375,
+    "scanned_to": 109388326,
     "complete": true
   },
   "issues_to_close": [],
@@ -2408,7 +2396,7 @@
       0
     ],
     "2026-11-08 17:00": [
-      1,
+      2,
       0,
       0
     ]
