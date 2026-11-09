@@ -142,14 +142,23 @@
   },
   "checked": {
     "0x415f54ecb03e7e0a8707b3a685b8e2b55cda93b7782648c04434eab204b90d00": {
-      "at": "2026-11-09T16:41:26.552183+00:00",
+      "at": "2026-11-09T17:51:05.709256+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h",
+        "More buys than sells (1h)"
+      ]
+    },
+    "onchain:0x608de3e89a6506b881125f67463623d7eb063fba": {
+      "at": "2026-11-09T17:31:12.448662+00:00",
       "passed": false,
       "failed": [
         "Top 10 holders"
       ]
     },
-    "onchain:0x608de3e89a6506b881125f67463623d7eb063fba": {
-      "at": "2026-11-09T17:31:12.448662+00:00",
+    "0x84f4152bd8b38ae9f075ae2c07008fa59bb0b394e69eec0c0c40330e6c038405": {
+      "at": "2026-11-09T17:51:05.709256+00:00",
       "passed": false,
       "failed": [
         "Top 10 holders"
@@ -162,7 +171,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T17:41:09.023586+00:00",
+      "at": "2026-11-09T17:51:05.709256+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -170,29 +179,30 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T17:31:12.448662+00:00",
-      "used_this_run": false
+      "at": "2026-11-09T17:51:05.709256+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T17:31:12.448662+00:00",
-      "used_this_run": false
+      "at": "2026-11-09T17:51:05.709256+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 8,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T17:41:09.023586+00:00",
+      "at": "2026-11-09T17:51:05.709256+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x415f54ecb03e7e0a8707b3a685b8e2b55cda93b7782648c04434eab204b90d00": "FAIL|Top 10 holders: 56.8% (need under 30%; pools, launchpad and burn addresses left out)",
-    "onchain:0x608de3e89a6506b881125f67463623d7eb063fba": "FAIL|Top 10 holders: 32.8% (need under 30%; pools, launchpad and burn addresses left out)"
+    "0x415f54ecb03e7e0a8707b3a685b8e2b55cda93b7782648c04434eab204b90d00": "FAIL|Market cap: $20,518 (need $25,000+); Not down >50% in 24h: -54% in 24h; More buys than sells (1h): 23 buys vs 40 sells",
+    "onchain:0x608de3e89a6506b881125f67463623d7eb063fba": "FAIL|Top 10 holders: 32.8% (need under 30%; pools, launchpad and burn addresses left out)",
+    "0x84f4152bd8b38ae9f075ae2c07008fa59bb0b394e69eec0c0c40330e6c038405": "FAIL|Top 10 holders: 31.6% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
     "0x0088b8f55372a24e5e53b7abf8a463aa7b4d0ebf": {
@@ -1626,7 +1636,7 @@
       "graduated": "2026-11-06T14:49:41Z",
       "symbol": "SIN",
       "title": "SINDICAT",
-      "seen": "2026-11-09T17:41:09.023586+00:00",
+      "seen": "2026-11-09T17:51:05.709256+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 5413.853458
     },
@@ -1960,7 +1970,7 @@
       "graduated": "2026-11-09T10:45:01Z",
       "symbol": "COCK",
       "title": "Cock",
-      "seen": "2026-11-09T17:41:09.023586+00:00",
+      "seen": "2026-11-09T17:51:05.709256+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5336.2071,
       "market_cap_usd": 5334.62974
@@ -1970,7 +1980,7 @@
       "graduated": "2026-11-09T10:45:31Z",
       "symbol": "COCK",
       "title": "Coc",
-      "seen": "2026-11-09T17:41:09.023586+00:00",
+      "seen": "2026-11-09T17:51:05.709256+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5313.687,
       "market_cap_usd": 5302.218316
@@ -2007,7 +2017,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-09T17:41:09.023586+00:00",
+    "at": "2026-11-09T17:51:05.709256+00:00",
     "hours": 24,
     "seen": {
       "0x1382c204ba4e3785f05ea0d48c3cc666365b446b": "2026-11-09T00:31:12.536000+00:00",
@@ -2031,7 +2041,7 @@
       "0xa41eeaeba92f79b25237d05244e81e528b3f2062",
       "0xf6de8b3b7db6eaba4d0ecdc374e56be5eeb6b2f2"
     ],
-    "scanned_to": 110240786,
+    "scanned_to": 110246588,
     "complete": true
   },
   "issues_to_close": [],
@@ -2159,7 +2169,7 @@
       0
     ],
     "2026-11-09 17:00": [
-      5,
+      6,
       0,
       0
     ]
