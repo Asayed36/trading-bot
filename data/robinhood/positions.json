@@ -111,16 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0x84f4152bd8b38ae9f075ae2c07008fa59bb0b394e69eec0c0c40330e6c038405": {
-      "pool": "0x84f4152bd8b38ae9f075ae2c07008fa59bb0b394e69eec0c0c40330e6c038405",
-      "dex": "pons-v2-dex",
-      "token": "0x688d8c004af3c292330fea8af8a594adc8c3b0c8",
-      "name": "AGENTDOM",
-      "title": "Agentdom",
-      "created": "2026-11-09T17:15:44Z",
-      "liquidity_usd": 17065.8761,
-      "market_cap_usd": 37775.36436
-    },
     "0xbc5ba99682c8ccfe0d1782d432950ed89d263c128365395a3486805db062d0c3": {
       "pool": "0xbc5ba99682c8ccfe0d1782d432950ed89d263c128365395a3486805db062d0c3",
       "dex": "pons-v2-dex",
@@ -159,15 +149,6 @@
     }
   },
   "checked": {
-    "0x84f4152bd8b38ae9f075ae2c07008fa59bb0b394e69eec0c0c40330e6c038405": {
-      "at": "2026-11-09T23:10:59.312151+00:00",
-      "passed": false,
-      "failed": [
-        "Market cap",
-        "Not down >50% in 24h",
-        "More buys than sells (1h)"
-      ]
-    },
     "0xbc5ba99682c8ccfe0d1782d432950ed89d263c128365395a3486805db062d0c3": {
       "at": "2026-11-09T19:01:03.043828+00:00",
       "passed": true,
@@ -175,6 +156,13 @@
     },
     "onchain:0xc928115d65ba633c806ea14ff6d35b9163e0e2b1": {
       "at": "2026-11-09T22:41:36.501861+00:00",
+      "passed": false,
+      "failed": [
+        "Top 10 holders"
+      ]
+    },
+    "onchain:0xc9e1e87d8bb3632589e324db6f37001427e07134": {
+      "at": "2026-11-09T23:21:33.214193+00:00",
       "passed": false,
       "failed": [
         "Top 10 holders"
@@ -187,7 +175,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T23:10:59.312151+00:00",
+      "at": "2026-11-09T23:21:33.214193+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -195,7 +183,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T23:10:59.312151+00:00",
+      "at": "2026-11-09T23:21:33.214193+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -203,63 +191,24 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T22:41:36.501861+00:00",
-      "used_this_run": false
+      "at": "2026-11-09T23:21:33.214193+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 8,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T23:10:59.312151+00:00",
+      "at": "2026-11-09T23:21:33.214193+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x84f4152bd8b38ae9f075ae2c07008fa59bb0b394e69eec0c0c40330e6c038405": "FAIL|Market cap: $16,592 (need $25,000+); Not down >50% in 24h: -62% in 24h; More buys than sells (1h): 10 buys vs 12 sells",
     "0xbc5ba99682c8ccfe0d1782d432950ed89d263c128365395a3486805db062d0c3": "PASS|",
-    "onchain:0xc928115d65ba633c806ea14ff6d35b9163e0e2b1": "FAIL|Top 10 holders: 31.1% (need under 30%; pools, launchpad and burn addresses left out)"
+    "onchain:0xc928115d65ba633c806ea14ff6d35b9163e0e2b1": "FAIL|Top 10 holders: 31.1% (need under 30%; pools, launchpad and burn addresses left out)",
+    "onchain:0xc9e1e87d8bb3632589e324db6f37001427e07134": "FAIL|Top 10 holders: 82.6% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
-    "0x843ec7c513f745116fa3e698dcd4ce60f1b30863": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-11-02T17:18:47Z",
-      "symbol": "UNI",
-      "title": "UNI",
-      "seen": "2026-11-02T17:21:08.104619+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 6833.6579,
-      "market_cap_usd": 6239.657494
-    },
-    "0x3d4b4f100bc01a9ec0935e7183350588a5f3e586": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-11-02T17:18:30Z",
-      "symbol": "UNI",
-      "title": "UNI",
-      "seen": "2026-11-02T17:21:08.104619+00:00",
-      "source": "geckoterminal",
-      "market_cap_usd": 5689.805858
-    },
-    "0x0e63a08d33af2ead484045cb818744c8622894fc": {
-      "dex": "pons-v2-dex",
-      "graduated": "2026-11-02T17:18:27Z",
-      "symbol": "LORD",
-      "title": "Lord Hood",
-      "seen": "2026-11-02T17:21:08.104619+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 18337.1295,
-      "market_cap_usd": 43364.16879
-    },
-    "0xc84a124053dc086ba52ef5f4163beb9b3451b425": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-11-02T17:18:06Z",
-      "symbol": "UNI",
-      "title": "Uni",
-      "seen": "2026-11-02T17:21:08.104619+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 5811.1372,
-      "market_cap_usd": 5774.415669
-    },
     "0x8290a77be1546e8a4f219fc0cb3f309deabc691c": {
       "dex": "pons-v2-dex",
       "graduated": "2026-11-02T17:29:40Z",
@@ -1799,7 +1748,7 @@
       "graduated": "2026-11-09T10:45:01Z",
       "symbol": "COCK",
       "title": "Cock",
-      "seen": "2026-11-09T23:10:59.312151+00:00",
+      "seen": "2026-11-09T23:21:33.214193+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5349.9461,
       "market_cap_usd": 5334.62974
@@ -1809,7 +1758,7 @@
       "graduated": "2026-11-09T10:45:31Z",
       "symbol": "COCK",
       "title": "Coc",
-      "seen": "2026-11-09T23:10:59.312151+00:00",
+      "seen": "2026-11-09T23:21:33.214193+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5327.368,
       "market_cap_usd": 5302.218316
@@ -1885,7 +1834,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-09T23:10:59.312151+00:00",
+    "at": "2026-11-09T23:21:33.214193+00:00",
     "hours": 24,
     "seen": {
       "0x1382c204ba4e3785f05ea0d48c3cc666365b446b": "2026-11-09T00:31:12.536000+00:00",
@@ -1917,7 +1866,7 @@
       "0xc9e1e87d8bb3632589e324db6f37001427e07134",
       "0xf6de8b3b7db6eaba4d0ecdc374e56be5eeb6b2f2"
     ],
-    "scanned_to": 110431797,
+    "scanned_to": 110437745,
     "complete": true
   },
   "issues_to_close": [],
@@ -2046,7 +1995,7 @@
       0
     ],
     "2026-11-09 23:00": [
-      2,
+      3,
       0,
       0
     ]
