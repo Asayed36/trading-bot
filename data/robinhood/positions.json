@@ -111,16 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0xd4c2040cdca2b0d4a49386fb3e3d63c39c59d0fdbe3b64b470c6b8325dd3589a": {
-      "pool": "0xd4c2040cdca2b0d4a49386fb3e3d63c39c59d0fdbe3b64b470c6b8325dd3589a",
-      "dex": "pons-v2-dex",
-      "token": "0xf6de8b3b7db6eaba4d0ecdc374e56be5eeb6b2f2",
-      "name": "AGI",
-      "title": "Artificial Girlfriend Inu",
-      "created": "2026-11-09T08:24:44Z",
-      "liquidity_usd": 15050.8938,
-      "market_cap_usd": 37559.17154
-    },
     "0x3ee28cbac94024be531538c61b16ede47b186cfcb621f05d9e8f87a4ca302b4c": {
       "pool": "0x3ee28cbac94024be531538c61b16ede47b186cfcb621f05d9e8f87a4ca302b4c",
       "dex": "uniswap-pools-trade",
@@ -153,13 +143,8 @@
     }
   },
   "checked": {
-    "0xd4c2040cdca2b0d4a49386fb3e3d63c39c59d0fdbe3b64b470c6b8325dd3589a": {
-      "at": "2026-11-09T09:01:15.135197+00:00",
-      "passed": true,
-      "failed": []
-    },
     "0x3ee28cbac94024be531538c61b16ede47b186cfcb621f05d9e8f87a4ca302b4c": {
-      "at": "2026-11-09T13:31:27.957911+00:00",
+      "at": "2026-11-09T14:31:29.627924+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -167,11 +152,18 @@
       ]
     },
     "0x69179b066601a50f086a710c3dcbc030a1f42f2dfedf5aeb4abf724a57242668": {
-      "at": "2026-11-09T13:31:27.957911+00:00",
+      "at": "2026-11-09T14:31:29.627924+00:00",
       "passed": false,
       "failed": [
         "Market cap",
         "More buys than sells (1h)"
+      ]
+    },
+    "0x415f54ecb03e7e0a8707b3a685b8e2b55cda93b7782648c04434eab204b90d00": {
+      "at": "2026-11-09T14:31:29.627924+00:00",
+      "passed": false,
+      "failed": [
+        "Top 10 holders"
       ]
     }
   },
@@ -181,7 +173,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T14:21:36.659171+00:00",
+      "at": "2026-11-09T14:31:29.627924+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -189,53 +181,32 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T13:31:27.957911+00:00",
-      "used_this_run": false
+      "at": "2026-11-09T14:31:29.627924+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T12:41:23.381855+00:00",
-      "used_this_run": false
+      "at": "2026-11-09T14:31:29.627924+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 8,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T14:21:36.659171+00:00",
+      "at": "2026-11-09T14:31:29.627924+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0xcd7b9efdd7461128fe1388e021d27ad8f944e1341483e979041c8104b265257e": "FAIL|Top 10 holders: 36.4% (need under 30%; pools, launchpad and burn addresses left out)",
-    "0xd4c2040cdca2b0d4a49386fb3e3d63c39c59d0fdbe3b64b470c6b8325dd3589a": "PASS|",
     "0x3ee28cbac94024be531538c61b16ede47b186cfcb621f05d9e8f87a4ca302b4c": "FAIL|Market cap: $5,339 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
-    "0x69179b066601a50f086a710c3dcbc030a1f42f2dfedf5aeb4abf724a57242668": "FAIL|Market cap: $5,315 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells"
+    "0x69179b066601a50f086a710c3dcbc030a1f42f2dfedf5aeb4abf724a57242668": "FAIL|Market cap: $5,315 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
+    "0x415f54ecb03e7e0a8707b3a685b8e2b55cda93b7782648c04434eab204b90d00": "FAIL|Top 10 holders: 56.3% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
-    "0xa20a3d259ec378c638ac54f294a82502da5ba5f9": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-11-02T08:25:56Z",
-      "symbol": "SOLDIER",
-      "title": "SOLdier",
-      "seen": "2026-11-02T13:01:13.128001+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 5758.1069,
-      "market_cap_usd": 5751.084774
-    },
-    "0x84643986337876d13ef7ba13d28d6210a8689370": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-11-02T08:29:39Z",
-      "symbol": "HOPE",
-      "title": "hope",
-      "seen": "2026-11-03T09:51:00.552120+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 5878.8902,
-      "market_cap_usd": 5769.699563
-    },
     "0xc2f6f79178193e376e90147a1339d9f803085ffd": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-11-02T08:58:35Z",
@@ -2020,9 +1991,9 @@
       "graduated": "2026-11-09T10:45:01Z",
       "symbol": "COCK",
       "title": "Cock",
-      "seen": "2026-11-09T14:21:36.659171+00:00",
+      "seen": "2026-11-09T14:31:29.627924+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5365.5012,
+      "liquidity_usd": 5360.2887,
       "market_cap_usd": 5334.742224
     },
     "0xd5e87241d876e6c5bee6fb8eb87846267d81abc5": {
@@ -2030,9 +2001,9 @@
       "graduated": "2026-11-09T10:45:31Z",
       "symbol": "COCK",
       "title": "Coc",
-      "seen": "2026-11-09T14:21:36.659171+00:00",
+      "seen": "2026-11-09T14:31:29.627924+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5303.5826,
+      "liquidity_usd": 5298.4303,
       "market_cap_usd": 5302.218316
     },
     "0x8c214b77f7ededa453ebd43df848cc02ecc1b431": {
@@ -2047,7 +2018,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-09T14:21:36.659171+00:00",
+    "at": "2026-11-09T14:31:29.627924+00:00",
     "hours": 24,
     "seen": {
       "0x0ddcab9ae04bda0c87ecc1640636fa11e8e613e8": "2026-11-08T16:34:19.140400+00:00",
@@ -2069,7 +2040,7 @@
       "0xa41eeaeba92f79b25237d05244e81e528b3f2062",
       "0xf6de8b3b7db6eaba4d0ecdc374e56be5eeb6b2f2"
     ],
-    "scanned_to": 110123242,
+    "scanned_to": 110128816,
     "complete": true
   },
   "issues_to_close": [],
@@ -2196,7 +2167,7 @@
       0
     ],
     "2026-11-09 14:00": [
-      3,
+      4,
       0,
       0
     ]
