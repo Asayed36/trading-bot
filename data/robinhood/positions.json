@@ -159,10 +159,11 @@
       ]
     },
     "0x84f4152bd8b38ae9f075ae2c07008fa59bb0b394e69eec0c0c40330e6c038405": {
-      "at": "2026-11-09T20:01:12.287164+00:00",
+      "at": "2026-11-09T21:01:13.095531+00:00",
       "passed": false,
       "failed": [
-        "Top 10 holders"
+        "Market cap",
+        "Not down >50% in 24h"
       ]
     },
     "0xbc5ba99682c8ccfe0d1782d432950ed89d263c128365395a3486805db062d0c3": {
@@ -184,7 +185,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T20:51:08.697469+00:00",
+      "at": "2026-11-09T21:01:13.095531+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -192,7 +193,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T20:51:08.697469+00:00",
+      "at": "2026-11-09T21:01:13.095531+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -208,13 +209,13 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T20:51:08.697469+00:00",
+      "at": "2026-11-09T21:01:13.095531+00:00",
       "used_this_run": true
     }
   },
   "logged": {
     "onchain:0x608de3e89a6506b881125f67463623d7eb063fba": "FAIL|Market cap: $13,790 (need $25,000+); Not down >50% in 24h: -69% in 24h; More buys than sells (1h): 52 buys vs 62 sells",
-    "0x84f4152bd8b38ae9f075ae2c07008fa59bb0b394e69eec0c0c40330e6c038405": "FAIL|Top 10 holders: 31.4% (need under 30%; pools, launchpad and burn addresses left out)",
+    "0x84f4152bd8b38ae9f075ae2c07008fa59bb0b394e69eec0c0c40330e6c038405": "FAIL|Market cap: $20,979 (need $25,000+); Not down >50% in 24h: -51% in 24h",
     "0xbc5ba99682c8ccfe0d1782d432950ed89d263c128365395a3486805db062d0c3": "PASS|",
     "onchain:0xc928115d65ba633c806ea14ff6d35b9163e0e2b1": "FAIL|Top 10 holders: 32.6% (need under 30%; pools, launchpad and burn addresses left out)"
   },
@@ -541,15 +542,6 @@
       "source": "geckoterminal",
       "liquidity_usd": 5898.3758,
       "market_cap_usd": 5704.849501
-    },
-    "0x3a2161b1e9fed47f6ec9993381ceaeb8b4330f39": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-11-02T15:00:59Z",
-      "symbol": "GIFI",
-      "title": "Glider Finance",
-      "seen": "2026-11-03T15:31:31.249900+00:00",
-      "source": "geckoterminal",
-      "market_cap_usd": 5760.032179
     },
     "0x4debdbd3e6e523a31023bf89fc4bc388e2550ae4": {
       "dex": "uniswap-pools-trade",
@@ -1865,9 +1857,9 @@
       "graduated": "2026-11-09T10:45:01Z",
       "symbol": "COCK",
       "title": "Cock",
-      "seen": "2026-11-09T20:51:08.697469+00:00",
+      "seen": "2026-11-09T21:01:13.095531+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5345.5255,
+      "liquidity_usd": 5344.4957,
       "market_cap_usd": 5334.62974
     },
     "0xd5e87241d876e6c5bee6fb8eb87846267d81abc5": {
@@ -1875,9 +1867,9 @@
       "graduated": "2026-11-09T10:45:31Z",
       "symbol": "COCK",
       "title": "Coc",
-      "seen": "2026-11-09T20:51:08.697469+00:00",
+      "seen": "2026-11-09T21:01:13.095531+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5322.9661,
+      "liquidity_usd": 5321.9406,
       "market_cap_usd": 5302.218316
     },
     "0x8c214b77f7ededa453ebd43df848cc02ecc1b431": {
@@ -1932,7 +1924,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-09T20:51:08.697469+00:00",
+    "at": "2026-11-09T21:01:13.095531+00:00",
     "hours": 24,
     "seen": {
       "0x1382c204ba4e3785f05ea0d48c3cc666365b446b": "2026-11-09T00:31:12.536000+00:00",
@@ -1960,7 +1952,7 @@
       "0xc928115d65ba633c806ea14ff6d35b9163e0e2b1",
       "0xf6de8b3b7db6eaba4d0ecdc374e56be5eeb6b2f2"
     ],
-    "scanned_to": 110351863,
+    "scanned_to": 110357787,
     "complete": true
   },
   "issues_to_close": [],
@@ -1972,11 +1964,6 @@
     "0xc928115d65ba633c806ea14ff6d35b9163e0e2b1": "2026-11-09T20:01:12.287164+00:00"
   },
   "gecko_hours": {
-    "2026-11-08 21:00": [
-      6,
-      0,
-      0
-    ],
     "2026-11-08 22:00": [
       6,
       0,
@@ -2089,6 +2076,11 @@
     ],
     "2026-11-09 20:00": [
       6,
+      0,
+      0
+    ],
+    "2026-11-09 21:00": [
+      1,
       0,
       0
     ]
