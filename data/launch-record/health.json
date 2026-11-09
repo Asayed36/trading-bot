@@ -1,19 +1,19 @@
 {
- "updated": "2026-11-09T01:03:12Z",
+ "updated": "2026-11-09T02:01:44Z",
  "feed_up": true,
  "endpoint": "solana-rpc.publicnode.com",
- "last_message": "2026-11-09T01:03:04Z",
- "feed_silent_seconds": 7,
- "last_row": "2026-11-09T00:51:36Z",
- "last_row_ts": 1794185496.215898,
- "since_last_row_seconds": 696,
- "launches_seen_last_hour": 33,
- "in_flight": 33,
- "rows_written_today": 0,
+ "last_message": "2026-11-09T02:01:37Z",
+ "feed_silent_seconds": 6,
+ "last_row": "2026-11-09T01:39:01Z",
+ "last_row_ts": 1794188341.0757194,
+ "since_last_row_seconds": 1363,
+ "launches_seen_last_hour": 6,
+ "in_flight": 6,
+ "rows_written_today": 10,
  "rows_skipped_by_cap_today": 0,
  "max_rows_per_day": 4000,
- "feed_disconnects_today": 206,
- "gap_seconds_today": 220,
+ "feed_disconnects_today": 403,
+ "gap_seconds_today": 423,
  "started": "2026-11-05T21:31:36Z",
  "dropped_at_last_restart": 773,
  "days": {
@@ -189,18 +189,30 @@
    "skipped_by_cap": 4658
   },
   "2026-11-09": {
-   "feed_disconnects": 206,
-   "gap_seconds": 220,
-   "launches_seen": 33
+   "feed_disconnects": 403,
+   "gap_seconds": 423,
+   "launches_seen": 39,
+   "finished": 33,
+   "watched_60": 33,
+   "buyers_qualified": 10,
+   "watched_60_ge_1": 21,
+   "watched_60_ge_2": 14,
+   "watched_60_ge_3": 10,
+   "watched_60_ge_4": 8,
+   "watched_60_ge_5": 7,
+   "watched_60_ge_8": 7,
+   "watched_60_ge_10": 7,
+   "watched_60_ge_15": 7,
+   "qualified": 10,
+   "nonsample_rows": 9,
+   "watched_60_ge_20": 5,
+   "watched_60_ge_30": 3,
+   "rows_written": 10,
+   "watched_60_ge_50": 1,
+   "sample": 1
   }
  },
  "feed_counts": {
-  "2026-11-08T01": {
-   "messages": 465147,
-   "trades": 76241,
-   "undecoded": 8061,
-   "creations": 689
-  },
   "2026-11-08T02": {
    "messages": 952104,
    "trades": 129192,
@@ -332,31 +344,26 @@
    "trades": 2620,
    "creations": 33,
    "undecoded": 213
+  },
+  "2026-11-09T01": {
+   "messages": 6865,
+   "trades": 352,
+   "undecoded": 53,
+   "creations": 6
   }
  },
  "endpoints": {
   "solana-rpc.publicnode.com": {
-   "attempts": 2738,
-   "successes": 2738,
-   "failures": 2738,
+   "attempts": 2835,
+   "successes": 2835,
+   "failures": 2835,
    "top_failure": "ConnectionError: no message for 15 s",
-   "top_failure_count": 2732,
-   "avg_connected_seconds": 30.5,
-   "ended_connections": 2738
+   "top_failure_count": 2829,
+   "avg_connected_seconds": 30.0,
+   "ended_connections": 2835
   }
  },
  "endpoint_hours": {
-  "2026-11-07T17": {
-   "solana-rpc.publicnode.com": {
-    "attempts": 205,
-    "successes": 205,
-    "failures": {
-     "ConnectionError: no message for 15 s": 205
-    },
-    "ended": 205,
-    "connected_seconds": 3363.5631914138794
-   }
-  },
   "2026-11-07T18": {
    "solana-rpc.publicnode.com": {
     "attempts": 202,
@@ -639,13 +646,24 @@
   },
   "2026-11-09T01": {
    "solana-rpc.publicnode.com": {
-    "attempts": 11,
-    "successes": 11,
+    "attempts": 202,
+    "successes": 202,
     "failures": {
-     "ConnectionError: no message for 15 s": 11
+     "ConnectionError: no message for 15 s": 202
     },
-    "ended": 11,
-    "connected_seconds": 176.14684224128723
+    "ended": 202,
+    "connected_seconds": 3369.953710079193
+   }
+  },
+  "2026-11-09T02": {
+   "solana-rpc.publicnode.com": {
+    "attempts": 6,
+    "successes": 6,
+    "failures": {
+     "ConnectionError: no message for 15 s": 6
+    },
+    "ended": 6,
+    "connected_seconds": 97.78175973892212
    }
   }
  }
