@@ -120,16 +120,34 @@
       "created": "2026-11-09T00:31:12Z",
       "liquidity_usd": 11824.9583,
       "market_cap_usd": 22102.08438
+    },
+    "0xbcb1ba4f455bcaab0b3ec98d2c86f162f1ad2a32c78159cb947478f4895728c9": {
+      "pool": "0xbcb1ba4f455bcaab0b3ec98d2c86f162f1ad2a32c78159cb947478f4895728c9",
+      "dex": "pons-v2-dex",
+      "token": "0x767e31c8ba121aa381eda90abeab5c4289d08853",
+      "name": "ACTUARY",
+      "title": "Actuary AI",
+      "created": "2026-11-09T00:52:48Z",
+      "liquidity_usd": 13894.9285,
+      "market_cap_usd": 26029.83712
     }
   },
-  "checked": {},
+  "checked": {
+    "0x5922bcb67de506bde6a21b81acd1e7994a90ec921d26dc159862433ab20c64e8": {
+      "at": "2026-11-09T01:02:01.732208+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
+      ]
+    }
+  },
   "sources": {
     "geckoterminal": {
       "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T00:52:08.087995+00:00",
+      "at": "2026-11-09T01:02:01.732208+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -137,8 +155,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T00:32:07.532089+00:00",
-      "used_this_run": false
+      "at": "2026-11-09T01:02:01.732208+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -153,13 +171,12 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T00:52:08.087995+00:00",
+      "at": "2026-11-09T01:02:01.732208+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0xe3719999fad864662a56ac73a06b3639ab0021834bbf3bf2585aaf2c9c9ea75b": "FAIL|Market cap: $5,625 (need $25,000+); More buys than sells (1h): 0 buys vs 0 sells",
-    "onchain:0x0ddcab9ae04bda0c87ecc1640636fa11e8e613e8": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls"
+    "0x5922bcb67de506bde6a21b81acd1e7994a90ec921d26dc159862433ab20c64e8": "FAIL|Liquidity: $4,114 (need $10,000+ on Pons)"
   },
   "launchpad_tokens": {
     "0x50ae9929e5954c3f06b927351ecfe40732a6a6f8": {
@@ -2073,9 +2090,9 @@
       "graduated": "2026-11-08T13:14:56Z",
       "symbol": "Debtcat",
       "title": "Debtcat",
-      "seen": "2026-11-09T00:52:08.087995+00:00",
+      "seen": "2026-11-09T01:02:01.732208+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5424.0586,
+      "liquidity_usd": 5456.1024,
       "market_cap_usd": 5644.293319
     },
     "0x0ddcab9ae04bda0c87ecc1640636fa11e8e613e8": {
@@ -2097,24 +2114,36 @@
       "source": "geckoterminal",
       "liquidity_usd": 11824.9583,
       "market_cap_usd": 22102.08438
+    },
+    "0x767e31c8ba121aa381eda90abeab5c4289d08853": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-11-09T00:52:48Z",
+      "symbol": "ACTUARY",
+      "title": "Actuary AI",
+      "seen": "2026-11-09T01:02:01.732208+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 13894.9285,
+      "market_cap_usd": 26029.83712
     }
   },
   "graduations": {
-    "at": "2026-11-09T00:52:08.087995+00:00",
+    "at": "2026-11-09T01:02:01.732208+00:00",
     "hours": 24,
     "seen": {
       "0x98dcc6f9b8298ae1a225b8df1519e7565d45672d": "2026-11-08T01:17:13.160000+00:00",
       "0x71d85b295653d9c3e7dd2fc26f26f2c3db51b2fc": "2026-11-08T04:49:15.472400+00:00",
       "0x0ddcab9ae04bda0c87ecc1640636fa11e8e613e8": "2026-11-08T16:34:19.140400+00:00",
-      "0x1382c204ba4e3785f05ea0d48c3cc666365b446b": "2026-11-09T00:31:12.536000+00:00"
+      "0x1382c204ba4e3785f05ea0d48c3cc666365b446b": "2026-11-09T00:31:12.536000+00:00",
+      "0x767e31c8ba121aa381eda90abeab5c4289d08853": "2026-11-09T00:52:50.687600+00:00"
     },
     "tokens": [
       "0x0ddcab9ae04bda0c87ecc1640636fa11e8e613e8",
       "0x1382c204ba4e3785f05ea0d48c3cc666365b446b",
       "0x71d85b295653d9c3e7dd2fc26f26f2c3db51b2fc",
+      "0x767e31c8ba121aa381eda90abeab5c4289d08853",
       "0x98dcc6f9b8298ae1a225b8df1519e7565d45672d"
     ],
-    "scanned_to": 109654387,
+    "scanned_to": 109660076,
     "complete": true
   },
   "issues_to_close": [],
@@ -2123,11 +2152,6 @@
     "0x1382c204ba4e3785f05ea0d48c3cc666365b446b": "2026-11-09T00:32:07.532089+00:00"
   },
   "gecko_hours": {
-    "2026-11-08 01:00": [
-      6,
-      0,
-      0
-    ],
     "2026-11-08 02:00": [
       7,
       0,
@@ -2240,6 +2264,11 @@
     ],
     "2026-11-09 00:00": [
       6,
+      0,
+      0
+    ],
+    "2026-11-09 01:00": [
+      1,
       0,
       0
     ]
