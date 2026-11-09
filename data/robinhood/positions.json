@@ -169,6 +169,13 @@
       "at": "2026-11-09T04:41:14.344508+00:00",
       "passed": true,
       "failed": []
+    },
+    "onchain:0x859d1a7ce265c24996a95630dc35a4fecb5a5ad0": {
+      "at": "2026-11-09T05:51:06.020070+00:00",
+      "passed": false,
+      "failed": [
+        "More buys than sells (1h)"
+      ]
     }
   },
   "sources": {
@@ -177,7 +184,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T05:41:18.300619+00:00",
+      "at": "2026-11-09T05:51:06.020070+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -185,7 +192,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T05:41:18.300619+00:00",
+      "at": "2026-11-09T05:51:06.020070+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -201,26 +208,17 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-09T05:41:18.300619+00:00",
+      "at": "2026-11-09T05:51:06.020070+00:00",
       "used_this_run": true
     }
   },
   "logged": {
     "0x5922bcb67de506bde6a21b81acd1e7994a90ec921d26dc159862433ab20c64e8": "FAIL|Liquidity: $4,431 (need $10,000+ on Pons)",
     "0xbcb1ba4f455bcaab0b3ec98d2c86f162f1ad2a32c78159cb947478f4895728c9": "FAIL|Liquidity: $8,141 (need $10,000+ on Pons)",
-    "0x479c91ed5f48e892bb9ca38384ad495b86bf75ab2543f393cb379b2931f08006": "PASS|"
+    "0x479c91ed5f48e892bb9ca38384ad495b86bf75ab2543f393cb379b2931f08006": "PASS|",
+    "onchain:0x859d1a7ce265c24996a95630dc35a4fecb5a5ad0": "FAIL|More buys than sells (1h): 22 buys vs 30 sells"
   },
   "launchpad_tokens": {
-    "0xd4ac4639a4212c138adccbbca5ba66424973e3ae": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-11-01T23:41:51Z",
-      "symbol": "PI",
-      "title": "Power Inu",
-      "seen": "2026-11-02T14:31:13.645872+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 5769.0331,
-      "market_cap_usd": 5742.213145
-    },
     "0xa1b2a9e2fb34d871147416a1f6e5aa692ad9b02f": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-11-01T23:53:47Z",
@@ -2054,7 +2052,7 @@
       "graduated": "2026-11-08T13:14:56Z",
       "symbol": "Debtcat",
       "title": "Debtcat",
-      "seen": "2026-11-09T05:41:18.300619+00:00",
+      "seen": "2026-11-09T05:51:06.020070+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5431.6238,
       "market_cap_usd": 5644.293319
@@ -2111,7 +2109,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-09T05:41:18.300619+00:00",
+    "at": "2026-11-09T05:51:06.020070+00:00",
     "hours": 24,
     "seen": {
       "0x0ddcab9ae04bda0c87ecc1640636fa11e8e613e8": "2026-11-08T16:34:19.140400+00:00",
@@ -2127,7 +2125,7 @@
       "0x767e31c8ba121aa381eda90abeab5c4289d08853",
       "0x859d1a7ce265c24996a95630dc35a4fecb5a5ad0"
     ],
-    "scanned_to": 109821557,
+    "scanned_to": 109827111,
     "complete": true
   },
   "issues_to_close": [],
@@ -2253,7 +2251,7 @@
       0
     ],
     "2026-11-09 05:00": [
-      5,
+      6,
       0,
       0
     ]
