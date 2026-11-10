@@ -29,6 +29,12 @@ def _read(folder):
     if os.path.exists(positions):
         with open(positions) as fh:
             state = json.load(fh)
+    # A version with a recorded start (positions.json "started_utc", the liquid l5 and l6) counts
+    # only its trades from that moment on.
+    started = state.get("started_utc")
+    if started:
+        begin = _when(started)
+        rows = [r for r in rows if _when(r["time_utc"]) >= begin]
     return rows, state
 
 
@@ -235,6 +241,51 @@ def slippage_lines(strategies):
     return [f"**Buy slippage:** paper buys pay extra over the market price, for a person's "
             f"reaction time: {'; '.join(parts)}. Their results include it from then on; "
             f"buys before that date were made at the market price.", ""]
+
+
+def liquid_filter_lines(versions, day):
+    """For the liquid versions with an entry filter of their own (l5): how many tokens that
+    passed the liquidity trigger were bought, and how many were skipped by each condition (a
+    token can fail several), for `day` and since the version started. `versions` is a list of
+    (name, folder, {config key: value})."""
+    lines = []
+    for name, folder, entry in versions:
+        try:
+            with open(os.path.join(folder, "positions.json")) as fh:
+                state = json.load(fh)
+        except (OSError, ValueError):
+            state = {}
+        days = state.get("filter_skips") or {}
+        started = state.get("started_utc")
+        sentence = []
+
+        def part(counts):
+            def n(key):
+                return counts.get(key, 0)
+            conditions = []
+            if "min_pool_age_minutes" in entry:
+                conditions.append(f"pool age under {entry['min_pool_age_minutes']:g} min: "
+                                  f"{n('failed_pool_age')} (no value: {n('missing_pool_age')})")
+            if "max_price_change_5m_pct" in entry:
+                conditions.append(f"5-minute price change above {entry['max_price_change_5m_pct']:g}%: "
+                                  f"{n('failed_price_change_5m')} "
+                                  f"(no value: {n('missing_price_change_5m')})")
+            if "min_market_cap_usd" in entry:
+                conditions.append(f"market cap under ${entry['min_market_cap_usd']:,.0f}: "
+                                  f"{n('failed_market_cap')} (no value: {n('missing_market_cap')})")
+            return (f"{n('considered')} token(s) reached the filter, {n('bought')} bought, "
+                    f"{n('skipped')} skipped: " + "; ".join(conditions))
+        total = {}
+        for counts in days.values():
+            for key, value in counts.items():
+                total[key] = total.get(key, 0) + value
+        sentence.append(f"{day}: " + part(days.get(day, {})))
+        sentence.append("since the start: " + part(total))
+        lines.append(f"**{name} entry filter** ("
+                     + (f"started {_when(started).strftime('%Y-%m-%d %H:%M')} UTC, only trades from "
+                        "then on are counted" if started else "not started yet")
+                     + "; one token can fail several conditions): " + " | ".join(sentence))
+    return lines + [""] if lines else []
 
 
 def closed_trades(folder):

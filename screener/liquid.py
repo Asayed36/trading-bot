@@ -1,11 +1,18 @@
 """The "liquid" paper strategy, run inside main (1 min) (main_1min.py, every minute).
 
-ENTRY (the same for all four versions, [liquid] in config.toml): when a token gets its
+ENTRY (the same trigger for every version, [liquid] in config.toml): when a token gets its
 first check (the minute its row is written to candidates.csv) and its pool holds at least
 min_liquidity_usd of liquidity (DexScreener, the candidates.csv column liquidity_usd), each
 version opens one paper buy of the [paper_trading] buy amount at the first-check price plus
 buy_slippage_pct. Nothing else is checked: not main's filters, not RugCheck. A token with
 no price or no liquidity value is skipped; a version never buys the same token twice.
+A version can add an entry filter of its own (l5: min_pool_age_minutes,
+max_price_change_5m_pct, min_market_cap_usd, read from the same DexScreener pair as the
+candidates.csv columns pool_age_minutes, price_change_5m_pct, market_cap_usd): it buys only
+when ALL of its conditions hold at that moment, and not when a value is missing. How many
+tokens each condition skipped is kept in the version's positions.json ("filter_skips", per
+UTC day). A version with track_start = true keeps its start time ("started_utc") in
+positions.json; the daily comparison counts only trades from that moment on.
 
 EXITS (checked every minute, with the same prices main (1 min) reads for its open
 positions), per version ([[liquid.versions]]): optionally sell part at +take_profit_pct,
@@ -20,11 +27,14 @@ PAPER TRADING ONLY: nothing here touches a wallet, a key or a real order.
 import os
 from datetime import datetime
 
+from screener.filters import to_float
 from screener.paper_trader import _iso
 from screener.token_record import pair_facts
 
 PRICE_KEYS = ("take_profit_pct", "take_profit_sell_fraction", "trailing_stop_pct",
               "stop_loss_pct", "max_hold_minutes")
+# A version's own entry filter: config key -> (the condition's short name, the value's name).
+ENTRY_KEYS = ("min_pool_age_minutes", "max_price_change_5m_pct", "min_market_cap_usd")
 
 
 class LiquidTrader:
@@ -106,6 +116,10 @@ class LiquidVersion:
                              "take_profit_sell_fraction")
         if self.cfg.get("max_hold_minutes") is None:
             raise ValueError(f"liquid version {self.name}: max_hold_minutes is required")
+        # An optional entry filter of its own (all of its conditions must hold), and whether
+        # to keep this version's start time in its positions.json.
+        self.entry = {k: float(v[k]) for k in ENTRY_KEYS if v.get(k) is not None}
+        self.track_start = bool(v.get("track_start"))
 
 
 def entry_problem(result, now, min_liquidity_usd):
@@ -118,3 +132,45 @@ def entry_problem(result, now, min_liquidity_usd):
     if liquidity < min_liquidity_usd:
         return f"liquidity ${liquidity:,.0f} below ${min_liquidity_usd:,.0f}"
     return None
+
+
+def entry_filter_problems(result, now, entry):
+    """What stops a version's own entry filter ([[liquid.versions]] min_pool_age_minutes,
+    max_price_change_5m_pct, min_market_cap_usd) from buying this token at its first check:
+    a list of (condition, "failed" or "missing"), empty when every condition holds. A value
+    that is missing is never bought. The values are the candidates.csv columns
+    pool_age_minutes, price_change_5m_pct and market_cap_usd."""
+    facts = pair_facts(result.pair, now)
+    change = to_float(((result.pair or {}).get("priceChange") or {}).get("m5"))
+    values = {"pool_age": facts["pool_age_minutes"], "price_change_5m": change,
+              "market_cap": facts["market_cap_usd"]}
+    problems = []
+    for key, name in (("min_pool_age_minutes", "pool_age"),
+                      ("max_price_change_5m_pct", "price_change_5m"),
+                      ("min_market_cap_usd", "market_cap")):
+        if key not in entry:
+            continue
+        value = values[name]
+        if value is None:
+            problems.append((name, "missing"))
+        elif key.startswith("min_") and value < entry[key]:
+            problems.append((name, "failed"))
+        elif key.startswith("max_") and value > entry[key]:
+            problems.append((name, "failed"))
+    return problems
+
+
+def count_entry(state, when, problems, bought):
+    """Add one token that reached a version's entry filter to its positions.json
+    "filter_skips" (per UTC day): considered, bought, skipped by at least one condition,
+    and for each condition how many tokens failed it or had no value for it (a token can
+    be counted under several conditions)."""
+    day = state.setdefault("filter_skips", {}).setdefault(when.strftime("%Y-%m-%d"), {})
+    day["considered"] = day.get("considered", 0) + 1
+    if bought:
+        day["bought"] = day.get("bought", 0) + 1
+    if problems:
+        day["skipped"] = day.get("skipped", 0) + 1
+    for name, kind in problems:
+        key = f"{kind}_{name}"
+        day[key] = day.get(key, 0) + 1

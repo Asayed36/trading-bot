@@ -226,6 +226,44 @@ label = "main (1 min) liquid l4"
 folder = "main-1min/liquid/l4"
 max_hold_minutes = 60
 
+# ---- Added later (2026-11-10): l5 and l6. l1-l4 above are not changed. FIXED RULES, decided in
+# advance: the numbers below (30 minutes, 10%, $250,000, -25%, ...) are not tuned from how l5 or
+# l6 perform. A change later is a NEW version, not an edit of these.
+# track_start = true: the version keeps the moment it began (UTC) in its positions.json
+# ("started_utc", set by the first run that has the version, never back-filled) and the daily
+# comparison counts only trades from that moment on.
+
+# L5 "filtered l3": l3's exits (half at +50%, trailing 15%, -25% stop loss, 30 minutes) and the
+# same trigger as the others (first check, liquidity >= min_liquidity_usd), but it buys only if
+# ALL of these hold at that moment: pool age >= 30 minutes, price change over the last 5 minutes
+# <= 10%, market cap >= $250,000 (the candidates.csv columns pool_age_minutes,
+# price_change_5m_pct, market_cap_usd). A token missing any of the three values is not bought.
+# How many tokens each condition skipped is kept in positions.json ("filter_skips") and shown
+# in the daily comparison.
+[[liquid.versions]]
+name = "l5"
+label = "main (1 min) liquid l5"
+folder = "main-1min/liquid/l5"
+track_start = true
+min_pool_age_minutes = 30
+max_price_change_5m_pct = 10
+min_market_cap_usd = 250_000
+take_profit_pct = 50
+take_profit_sell_fraction = 0.5
+trailing_stop_pct = 15
+stop_loss_pct = 25
+max_hold_minutes = 30
+
+# L6 "l4 with a stop loss": l4's exit (everything after 60 minutes) plus a stop loss at -25%
+# from the buy price. No entry filter: it buys the same tokens as l1-l4.
+[[liquid.versions]]
+name = "l6"
+label = "main (1 min) liquid l6"
+folder = "main-1min/liquid/l6"
+track_start = true
+stop_loss_pct = 25
+max_hold_minutes = 60
+
 # ---------------------------------------------------------------------
 # EARLY STRATEGY: a second paper strategy that runs alongside the one above
 # (its own positions and journal in data/early/). It looks for tokens under

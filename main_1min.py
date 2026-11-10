@@ -67,7 +67,8 @@ from screener.filters import (PASS, best_pair, current_prices, evaluate, find_ca
                               market_checks, to_float)
 from screener.jupiter import ERROR as JUPITER_ERROR
 from screener.jupiter import JupiterOrganic
-from screener.liquid import LiquidTrader, LiquidVersion, entry_problem
+from screener.liquid import (LiquidTrader, LiquidVersion, count_entry, entry_filter_problems,
+                             entry_problem)
 from screener.paper_trader import PaperTrader, now_utc
 from screener.settings import HERE, load_config
 from screener.token_record import CandidateLog, CreatorLedger, reprice
@@ -303,6 +304,9 @@ class MainOneMinute:
                 ltraders[lv.name] = LiquidSafeTrader(lv.cfg, lv.folder)
                 ltraders[lv.name].ledger = self.ledger
                 ltraders[lv.name].buying = not lv.stopped
+                if lv.track_start:           # when this version began (UTC), kept for good
+                    ltraders[lv.name].state.setdefault(
+                        "started_utc", now.replace(microsecond=0).isoformat())
             held, seen = [], set()
             for t in [trader, *vtraders.values(), *ltraders.values()]:
                 for pos in t.open_positions:
@@ -451,7 +455,19 @@ class MainOneMinute:
                 counts["liquid skipped"] = counts.get("liquid skipped", 0) + 1
                 continue
             for lv in self.liquid:
-                if ltraders[lv.name].buy(r, when=now, fetched_at=pairs_at):
+                lt = ltraders[lv.name]
+                problems = []
+                if lv.entry and lt.can_buy(r.address):       # the version's own entry filter
+                    problems = entry_filter_problems(r, now, lv.entry)
+                    if problems:
+                        count_entry(lt.state, now, problems, False)
+                        counts[f"{lv.name} filtered"] = counts.get(f"{lv.name} filtered", 0) + 1
+                        continue
+                    bought = lt.buy(r, when=now, fetched_at=pairs_at)
+                    count_entry(lt.state, now, [], bool(bought))
+                else:
+                    bought = lt.buy(r, when=now, fetched_at=pairs_at)
+                if bought:
                     counts[f"{lv.name} buys"] = counts.get(f"{lv.name} buys", 0) + 1
                     lines.append(f"[{lv.name}] BUY  {r.symbol} ${self.pt['buy_amount_usd']} at "
                                  f"${r.price:.10g}")
