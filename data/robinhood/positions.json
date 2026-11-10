@@ -154,6 +154,15 @@
       "failed": [
         "Top 10 holders"
       ]
+    },
+    "0x417e1f5361a5296f93a133142651e07d203f7a4ddecaa2de4460f1fb182e6d74": {
+      "at": "2026-11-10T16:41:16.542625+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "Not down >50% in 24h",
+        "More buys than sells (1h)"
+      ]
     }
   },
   "sources": {
@@ -162,7 +171,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-10T16:31:12.535404+00:00",
+      "at": "2026-11-10T16:41:16.542625+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -170,8 +179,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-10T16:01:37.113242+00:00",
-      "used_this_run": false
+      "at": "2026-11-10T16:41:16.542625+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -186,13 +195,14 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-10T16:31:12.535404+00:00",
+      "at": "2026-11-10T16:41:16.542625+00:00",
       "used_this_run": true
     }
   },
   "logged": {
     "onchain:0xb6f2e3d5f9f1bfb0363f3aecec26b5b9bdbeedc1": "FAIL|Liquidity: $2,609 (need $10,000+ on Pons)",
-    "0x8d96a6e5d3ba10aad1bff2de26845b3bc6f3f0a62d49e13df5bdf2edd7abf1a1": "FAIL|Top 10 holders: 39.5% (need under 30%; pools, launchpad and burn addresses left out)"
+    "0x8d96a6e5d3ba10aad1bff2de26845b3bc6f3f0a62d49e13df5bdf2edd7abf1a1": "FAIL|Top 10 holders: 39.5% (need under 30%; pools, launchpad and burn addresses left out)",
+    "0x417e1f5361a5296f93a133142651e07d203f7a4ddecaa2de4460f1fb182e6d74": "FAIL|Market cap: $17,398 (need $25,000+); Not down >50% in 24h: -57% in 24h; More buys than sells (1h): 264 buys vs 303 sells"
   },
   "launchpad_tokens": {
     "0x2d23b603b6ed096a61a6de47fe2a1e240de77ded": {
@@ -1626,7 +1636,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-10T16:31:12.535404+00:00",
+    "at": "2026-11-10T16:41:16.542625+00:00",
     "hours": 24,
     "seen": {
       "0x688d8c004af3c292330fea8af8a594adc8c3b0c8": "2026-11-09T17:15:44.916600+00:00",
@@ -1654,7 +1664,7 @@
       "0xc9e1e87d8bb3632589e324db6f37001427e07134",
       "0xdc1ea590c071a688d21abbca82c7bd84080fc243"
     ],
-    "scanned_to": 111022748,
+    "scanned_to": 111028395,
     "complete": true
   },
   "issues_to_close": [],
@@ -1781,7 +1791,7 @@
       0
     ],
     "2026-11-10 16:00": [
-      4,
+      5,
       0,
       0
     ]
