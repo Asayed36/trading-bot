@@ -18,12 +18,14 @@ from tests import running  # noqa: E402
 import main_1min as m1  # noqa: E402
 from run import load_config  # noqa: E402
 from screener.demo import GOOD, DemoApi  # noqa: E402
-from screener.liquid import LiquidVersion, entry_problem  # noqa: E402
+from screener.liquid import (LiquidVersion, count_entry, entry_filter_problems,  # noqa: E402
+                             entry_problem)  # noqa: E402
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CFG = running(load_config())
 NOW = datetime(2026, 10, 4, 12, 0, tzinfo=timezone.utc)
 VERSIONS = ("l1", "l2", "l3", "l4")
+NEW = ("l5", "l6")                    # added later; l1-l4 are unchanged by them
 
 
 def rows(path):
@@ -63,7 +65,8 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual((lc["min_liquidity_usd"], lc["buy_slippage_pct"],
                           lc["round_trip_cost_pct"]), (50_000, 1.5, 3))
         v = {x["name"]: x for x in lc["versions"]}
-        self.assertEqual(list(v), list(VERSIONS))
+        self.assertEqual(list(v)[:4], list(VERSIONS))
+        self.assertEqual(list(v)[4:], list(NEW))
         self.assertEqual(
             {k: v["l1"].get(k) for k in ("take_profit_pct", "take_profit_sell_fraction",
                                          "trailing_stop_pct", "stop_loss_pct",
@@ -315,6 +318,368 @@ class BotTests(unittest.TestCase):
             self.assertGreater(data["versions"][n]["open"], 0)
         hour = next(iter(data["calls_per_hour"].values()))
         self.assertGreater(hour["l1 buys"], 0)
+
+
+# ---------------------------------------------------------------------
+# l5 ("filtered l3") and l6 ("l4 with a stop loss"), added 2026-11-10
+# ---------------------------------------------------------------------
+
+def pair(age_minutes=60, change_5m=5.0, mcap=500_000, liquidity=60_000, now=NOW, fdv=None):
+    created = now - timedelta(minutes=age_minutes) if age_minutes is not None else None
+    p = {"pairAddress": "POOL", "priceUsd": "1.0", "liquidity": {"usd": liquidity},
+         "priceChange": {"m5": change_5m}, "marketCap": mcap, "fdv": fdv}
+    if created is not None:
+        p["pairCreatedAt"] = created.timestamp() * 1000
+    return p
+
+
+def with_pair(**kw):
+    return SimpleNamespace(address="TOKEN", symbol="TOKEN", price=1.0, pair=pair(**kw),
+                           insider=None, record=None)
+
+
+L5 = {"min_pool_age_minutes": 30.0, "max_price_change_5m_pct": 10.0, "min_market_cap_usd": 250000.0}
+
+
+class NewVersionConfigTests(unittest.TestCase):
+    def versions(self):
+        return {v["name"]: v for v in CFG["liquid"]["versions"]}
+
+    def test_l5_is_l3_plus_the_entry_filter(self):
+        v = self.versions()
+        exits = ("take_profit_pct", "take_profit_sell_fraction", "trailing_stop_pct",
+                 "stop_loss_pct", "max_hold_minutes")
+        self.assertEqual({k: v["l5"][k] for k in exits}, {k: v["l3"][k] for k in exits})
+        self.assertEqual({k: v["l5"][k] for k in exits},
+                         {"take_profit_pct": 50, "take_profit_sell_fraction": 0.5,
+                          "trailing_stop_pct": 15, "stop_loss_pct": 25, "max_hold_minutes": 30})
+        self.assertEqual((v["l5"]["min_pool_age_minutes"], v["l5"]["max_price_change_5m_pct"],
+                          v["l5"]["min_market_cap_usd"]), (30, 10, 250000))
+        self.assertEqual(v["l5"]["folder"], "main-1min/liquid/l5")
+        self.assertTrue(v["l5"]["track_start"])
+
+    def test_l6_is_l4_plus_a_stop_loss_and_has_no_entry_filter(self):
+        v = self.versions()
+        self.assertEqual({k: v["l6"].get(k) for k in ("take_profit_pct", "trailing_stop_pct",
+                                                       "stop_loss_pct", "max_hold_minutes")},
+                         {"take_profit_pct": None, "trailing_stop_pct": None,
+                          "stop_loss_pct": 25, "max_hold_minutes": 60})
+        for key in ("min_pool_age_minutes", "max_price_change_5m_pct", "min_market_cap_usd"):
+            self.assertNotIn(key, v["l6"])
+        self.assertEqual(v["l6"]["folder"], "main-1min/liquid/l6")
+        self.assertTrue(v["l6"]["track_start"])
+
+    def test_l1_to_l4_have_no_entry_filter_and_no_start_tracking(self):
+        for n in VERSIONS:
+            v = self.versions()[n]
+            self.assertFalse(v.get("track_start"), n)
+            for key in ("min_pool_age_minutes", "max_price_change_5m_pct", "min_market_cap_usd"):
+                self.assertNotIn(key, v)
+            self.assertEqual(LiquidVersion(CFG["liquid"], v, "/tmp", 10).entry, {})
+
+    def test_the_liquid_trigger_and_the_costs_are_shared(self):
+        lc = CFG["liquid"]
+        self.assertEqual((lc["min_liquidity_usd"], lc["buy_slippage_pct"],
+                          lc["round_trip_cost_pct"]), (50_000, 1.5, 3))
+        for n in NEW:
+            cfg = version(n, "/tmp").cfg
+            self.assertEqual((cfg["buy_amount_usd"], cfg["buy_slippage_pct"],
+                              cfg["round_trip_cost_pct"]), (10, 1.5, 3))
+
+
+class EntryFilterTests(unittest.TestCase):
+    def problems(self, **kw):
+        return entry_filter_problems(with_pair(**kw), NOW, L5)
+
+    def test_a_token_that_meets_every_condition_is_bought(self):
+        self.assertEqual(self.problems(), [])
+
+    def test_the_boundaries(self):
+        self.assertEqual(self.problems(age_minutes=30), [])
+        self.assertEqual(self.problems(age_minutes=29.9), [("pool_age", "failed")])
+        self.assertEqual(self.problems(change_5m=10), [])
+        self.assertEqual(self.problems(change_5m=10.01), [("price_change_5m", "failed")])
+        self.assertEqual(self.problems(change_5m=-50), [])
+        self.assertEqual(self.problems(mcap=250_000), [])
+        self.assertEqual(self.problems(mcap=249_999), [("market_cap", "failed")])
+
+    def test_every_failed_condition_is_listed(self):
+        self.assertEqual(self.problems(age_minutes=5, change_5m=40, mcap=1000),
+                         [("pool_age", "failed"), ("price_change_5m", "failed"),
+                          ("market_cap", "failed")])
+
+    def test_a_missing_value_is_never_bought(self):
+        self.assertEqual(self.problems(age_minutes=None), [("pool_age", "missing")])
+        self.assertEqual(self.problems(change_5m=None), [("price_change_5m", "missing")])
+        self.assertEqual(self.problems(mcap=None), [("market_cap", "missing")])
+        self.assertEqual(self.problems(age_minutes=None, change_5m=None, mcap=None),
+                         [("pool_age", "missing"), ("price_change_5m", "missing"),
+                          ("market_cap", "missing")])
+        res = with_pair()
+        res.pair["priceChange"] = None
+        self.assertEqual(entry_filter_problems(res, NOW, L5), [("price_change_5m", "missing")])
+        res.pair = None
+        self.assertEqual(len(entry_filter_problems(res, NOW, L5)), 3)
+
+    def test_the_market_cap_falls_back_to_fdv_like_candidates_csv(self):
+        self.assertEqual(self.problems(mcap=None, fdv=400_000), [])
+
+    def test_counting_each_condition(self):
+        state = {}
+        count_entry(state, NOW, [("pool_age", "failed"), ("market_cap", "missing")], False)
+        count_entry(state, NOW, [], True)
+        count_entry(state, NOW + timedelta(days=1), [("pool_age", "failed")], False)
+        self.assertEqual(state["filter_skips"]["2026-10-04"],
+                         {"considered": 2, "bought": 1, "skipped": 1, "failed_pool_age": 1,
+                          "missing_market_cap": 1})
+        self.assertEqual(state["filter_skips"]["2026-10-05"]["failed_pool_age"], 1)
+
+
+class L6StopLossTests(ExitTests):
+    """l6: l4's hour, plus a -25% stop loss and nothing else."""
+
+    def test_l6_stops_at_minus_25_and_holds_otherwise(self):
+        t = trader("l6", self.d)
+        buy_at(t)                                              # entry 1.015
+        self.assertEqual(self.go(t, 0.77, 5), [])              # -24.1%: not yet
+        (sale,) = self.go(t, 0.75, 6)                          # -26.1%
+        self.assertIn("stop loss", sale["reason"])
+        self.assertTrue(sale["closed"])
+        self.assertEqual(t.open_positions, [])
+
+    def test_l6_has_no_take_profit_no_trailing_stop_and_sells_after_an_hour(self):
+        t = trader("l6", os.path.join(self.d, "b"))
+        buy_at(t)
+        for minutes, price in ((5, 3.0), (10, 0.9), (59, 1.0)):
+            self.assertEqual(self.go(t, price, minutes), [])
+        (sale,) = self.go(t, 1.0, 60)
+        self.assertIn("time exit", sale["reason"])
+
+    def test_l6_costs_match_l4(self):
+        a, b = trader("l4", os.path.join(self.d, "a")), trader("l6", os.path.join(self.d, "b"))
+        buy_at(a)
+        buy_at(b)
+        (x,), (y,) = self.go(a, 1.2, 60), self.go(b, 1.2, 60)
+        self.assertEqual(x["pnl_usd"], y["pnl_usd"])
+
+    def test_l5_exits_are_l3s(self):
+        a, b = trader("l3", os.path.join(self.d, "a")), trader("l5", os.path.join(self.d, "b"))
+        buy_at(a)
+        buy_at(b)
+        for minutes, price in ((1, 1.6), (2, 1.9), (3, 1.6)):
+            ra, rb = self.go(a, price, minutes), self.go(b, price, minutes)
+            self.assertEqual([(s["reason"], s["pnl_usd"]) for s in ra],
+                             [(s["reason"], s["pnl_usd"]) for s in rb])
+        self.assertEqual(a.open_positions, b.open_positions)
+
+
+class FilteredApi(DemoApi):
+    """DemoApi whose pairs carry the given 5-minute change, market cap and pool age."""
+
+    def __init__(self, change_5m=5.0, mcap=None, age_minutes=3 * 24 * 60):
+        super().__init__()
+        self.change_5m, self.mcap, self.age_minutes = change_5m, mcap, age_minutes
+
+    def pairs_for_tokens(self, addresses):
+        pairs = super().pairs_for_tokens(addresses)
+        for p in pairs:
+            p["priceChange"]["m5"] = self.change_5m
+            if self.mcap is not None:
+                p["marketCap"] = p["fdv"] = self.mcap
+            if self.age_minutes is not None:       # relative to the tests' fixed clock (NOW)
+                p["pairCreatedAt"] = (NOW - timedelta(minutes=self.age_minutes)).timestamp() * 1000
+        return pairs
+
+
+class NewVersionBotTests(BotTests):
+    """The bot with l5 and l6 (BotTests' own tests run again on the bigger config)."""
+
+    def liquid_tokens(self):
+        candidates = rows(os.path.join(self.d, "main-1min", "candidates.csv"))
+        return {r["token_address"] for r in candidates
+                if r["liquidity_usd"] and float(r["liquidity_usd"]) >= 50_000 and r["price_usd"]}
+
+    def bought(self, name):
+        return {r["token_address"] for r in rows(os.path.join(self.folder(name), "journal.csv"))}
+
+    def skips(self, name="l5"):
+        with open(os.path.join(self.folder(name), "positions.json")) as fh:
+            days = json.load(fh).get("filter_skips") or {}
+        total = {}
+        for counts in days.values():
+            for key, n in counts.items():
+                total[key] = total.get(key, 0) + n
+        return total
+
+    def test_l6_buys_exactly_what_l4_buys(self):
+        self.bot(api=FilteredApi()).run_once(NOW, lambda *a: None)
+        self.assertTrue(self.liquid_tokens())
+        self.assertEqual(self.bought("l6"), self.bought("l4"))
+        self.assertEqual(self.bought("l6"), self.liquid_tokens())
+
+    def test_l5_buys_when_every_condition_holds(self):
+        self.bot(api=FilteredApi(change_5m=5.0)).run_once(NOW, lambda *a: None)
+        self.assertEqual(self.bought("l5"), self.liquid_tokens())
+        self.assertEqual(self.bought("l5"), self.bought("l3"))
+        n = len(self.liquid_tokens())
+        self.assertEqual(self.skips(), {"considered": n, "bought": n})
+        entry = rows(os.path.join(self.folder("l5"), "entries.csv"))[0]
+        self.assertAlmostEqual(float(entry["fill_price_usd"]),
+                               float(entry["price_usd"]) * 1.015, places=9)
+
+    def test_l5_skips_each_failed_condition_and_counts_it(self):
+        cases = ((dict(change_5m=11.0), "failed_price_change_5m"),
+                 (dict(change_5m=5.0, mcap=100_000), "failed_market_cap"),
+                 (dict(change_5m=5.0, age_minutes=10), "failed_pool_age"))
+        for kw, key in cases:
+            with self.subTest(key=key), tempfile.TemporaryDirectory() as d:
+                self.d = d
+                self.bot(api=FilteredApi(**kw)).run_once(NOW, lambda *a: None)
+                n = len(self.liquid_tokens())
+                self.assertGreater(n, 0)
+                self.assertEqual(self.bought("l5"), set())
+                skips = self.skips()
+                self.assertEqual((skips["considered"], skips["skipped"], skips[key]), (n, n, n))
+                self.assertNotIn("bought", skips)
+                # the other versions are not affected by l5's filter
+                self.assertEqual(self.bought("l3"), self.liquid_tokens())
+                self.assertEqual(self.bought("l6"), self.liquid_tokens())
+                self.assertFalse(os.path.exists(os.path.join(self.folder("l5"), "journal.csv")))
+
+    def test_l5_does_not_buy_when_a_value_is_missing(self):
+        self.bot(api=FilteredApi(change_5m=None)).run_once(NOW, lambda *a: None)
+        n = len(self.liquid_tokens())
+        self.assertEqual(self.bought("l5"), set())
+        self.assertEqual(self.skips()["missing_price_change_5m"], n)
+        self.assertEqual(self.bought("l3"), self.liquid_tokens())
+
+    def test_l5_never_buys_a_token_twice(self):
+        bot = self.bot(api=FilteredApi())
+        bot.run_once(NOW, lambda *a: None)
+        before = len(rows(os.path.join(self.folder("l5"), "journal.csv")))
+        bot.run_once(NOW + timedelta(minutes=1), lambda *a: None)
+        self.bot(api=FilteredApi()).run_once(NOW + timedelta(minutes=2), lambda *a: None)
+        self.assertEqual(len(rows(os.path.join(self.folder("l5"), "journal.csv"))), before)
+        self.assertEqual(self.skips()["considered"], before)          # counted once each
+
+    def test_the_start_time_is_recorded_once_and_only_for_l5_and_l6(self):
+        self.bot(api=FilteredApi()).run_once(NOW + timedelta(seconds=7.5), lambda *a: None)
+        self.bot(api=FilteredApi()).run_once(NOW + timedelta(minutes=5), lambda *a: None)
+        for n in NEW:
+            with open(os.path.join(self.folder(n), "positions.json")) as fh:
+                state = json.load(fh)
+            self.assertEqual(state["started_utc"],        # the first run's minute, to the second
+                             (NOW + timedelta(seconds=7)).isoformat())
+        for n in VERSIONS:
+            with open(os.path.join(self.folder(n), "positions.json")) as fh:
+                state = json.load(fh)
+            self.assertNotIn("started_utc", state)
+            self.assertNotIn("filter_skips", state)
+
+    def test_l1_to_l4_files_are_the_same_with_or_without_l5_and_l6(self):
+        import copy
+        only_old = copy.deepcopy(CFG)
+        only_old["liquid"]["versions"] = [v for v in only_old["liquid"]["versions"]
+                                          if v["name"] in VERSIONS]
+        results = {}
+        for label, cfg in (("old", only_old), ("new", CFG)):
+            with tempfile.TemporaryDirectory() as d:
+                bot = m1.MainOneMinute(cfg, d, FilteredApi())
+                bot.run_once(NOW, lambda *a: None)
+                later = m1.MainOneMinute(cfg, d, DemoApi({GOOD: 1.6}))
+                later.run_once(NOW + timedelta(minutes=1), lambda *a: None)
+                later.run_once(NOW + timedelta(minutes=31), lambda *a: None)
+                files = {}
+                for n in VERSIONS:
+                    folder = os.path.join(d, "main-1min", "liquid", n)
+                    for name in ("journal.csv", "entries.csv", "positions.json"):
+                        with open(os.path.join(folder, name)) as fh:
+                            text = fh.read()
+                        if name == "positions.json":          # the slippage "since" is the wall clock
+                            state = json.loads(text)
+                            state.pop("buy_slippage", None)
+                            text = json.dumps(state, sort_keys=True)
+                        files[(n, name)] = text
+                results[label] = files
+        self.assertEqual(results["old"].keys(), results["new"].keys())
+        for key in results["old"]:
+            self.assertEqual(results["old"][key], results["new"][key], key)
+
+    def test_the_new_versions_have_their_own_files(self):
+        self.bot(api=FilteredApi()).run_once(NOW, lambda *a: None)
+        for n in NEW:
+            for name in ("journal.csv", "entries.csv", "positions.json"):
+                self.assertTrue(os.path.exists(os.path.join(self.folder(n), name)), (n, name))
+        for n in NEW:
+            for name in ("journal.csv", "entries.csv", "positions.json"):
+                path = f"data/main-1min/liquid/{n}/{name}"
+                self.assertNotEqual(subprocess.run(["git", "check-ignore", "-q", path],
+                                                   cwd=HERE).returncode, 0, path)
+
+    def test_l6_stop_loss_runs_in_the_bot(self):
+        self.bot(api=FilteredApi()).run_once(NOW, lambda *a: None)
+        self.bot(api=DemoApi({GOOD: 0.7})).run_once(NOW + timedelta(minutes=1), lambda *a: None)
+        sold = lambda n: [r for r in rows(os.path.join(self.folder(n), "journal.csv"))  # noqa: E731
+                          if r["action"] == "SELL" and r["token_address"] == GOOD]
+        self.assertIn("stop loss", sold("l6")[0]["reason"])
+        self.assertIn("stop loss", sold("l5")[0]["reason"])
+        self.assertEqual(sold("l4"), [])                       # l4 has no stop loss
+        self.assertEqual(sold("l1"), [])
+
+
+class NewVersionReportTests(unittest.TestCase):
+    def test_the_daily_comparison_has_a_column_for_each_new_version_and_the_filter_lines(self):
+        import io
+        import compare
+        with tempfile.TemporaryDirectory() as d:
+            m1.MainOneMinute(CFG, d, FilteredApi(change_5m=11.0)).run_once(NOW, lambda *a: None)
+            cfg = dict(CFG, files={"data_folder": d})
+            with unittest.mock.patch.object(compare, "load_config", lambda: cfg), \
+                    unittest.mock.patch.dict(os.environ, {"GITHUB_TOKEN": "", "GITHUB_REPOSITORY": ""}), \
+                    unittest.mock.patch("sys.argv", ["compare.py", "--date", "2026-10-04"]), \
+                    unittest.mock.patch("sys.stdout", io.StringIO()) as out:
+                self.assertEqual(compare.main(), 0)
+        text = out.getvalue()
+        header = next(x for x in text.splitlines() if x.startswith("| | main"))
+        self.assertIn("main (1 min) liquid l4 | main (1 min) liquid l5 | main (1 min) liquid l6 "
+                      "| early", header)
+        self.assertIn("| main (1 min) liquid l5: server |", text)
+        self.assertIn("| main (1 min) liquid l6: server |", text)
+        self.assertIn("**main (1 min) liquid l5 entry filter** (started 2026-10-04 12:00 UTC", text)
+        self.assertIn("5-minute price change above 10%:", text)
+        self.assertIn("pool age under 30 min: 0 (no value: 0)", text)
+        self.assertIn("market cap under $250,000: 0 (no value: 0)", text)
+        self.assertNotIn("liquid l6 entry filter", text)           # l6 has no filter
+
+    def test_only_trades_from_the_start_are_counted(self):
+        from screener import compare as sc
+        with tempfile.TemporaryDirectory() as d:
+            journal = ("time_utc,action,symbol,token_address,reason,price_usd,usd_amount,pnl_usd,"
+                       "pnl_pct,running_total_pnl_usd,price_source,price_time_utc\n"
+                       "2026-11-09 10:00:00,BUY,OLD,OLDADDR,x,1,10.00,0.00,0.0,0.00,,\n"
+                       "2026-11-09 10:30:00,SELL,OLD,OLDADDR,x,1,10.00,5.00,50.0,5.00,,\n"
+                       "2026-11-10 10:00:00,BUY,NEW,NEWADDR,x,1,10.00,0.00,0.0,5.00,,\n"
+                       "2026-11-10 10:30:00,SELL,NEW,NEWADDR,x,1,10.00,-2.00,-20.0,3.00,,\n")
+            with open(os.path.join(d, "journal.csv"), "w") as fh:
+                fh.write(journal)
+            with open(os.path.join(d, "positions.json"), "w") as fh:
+                json.dump({"open_positions": [], "started_utc": "2026-11-10T00:00:00"}, fh)
+            stats = sc.strategy_stats(d, 3, "2026-11-10")
+            self.assertEqual((stats["closed"], round(stats["realized"], 2)), (1, -2.0))
+            self.assertEqual([t["symbol"] for t in sc.closed_trades(d)], ["NEW"])
+            os.remove(os.path.join(d, "positions.json"))          # no start recorded: all counted
+            self.assertEqual(sc.strategy_stats(d, 3, "2026-11-10")["closed"], 2)
+
+    def test_the_health_row_says_what_l5_needs(self):
+        from screener.health import health_lines
+        with tempfile.TemporaryDirectory() as d:
+            text = "\n".join(health_lines(d, CFG, NOW))
+        line5 = next(x for x in text.splitlines() if x.startswith("| main (1 min) liquid l5: server"))
+        self.assertIn("pool age at least 30 min", line5)
+        self.assertIn("5-minute change at most 10%", line5)
+        self.assertIn("market cap at least $250,000", line5)
+        line6 = next(x for x in text.splitlines() if x.startswith("| main (1 min) liquid l6: server"))
+        self.assertNotIn("pool age", line6)
 
 
 class LiquidErrorTests(unittest.TestCase):

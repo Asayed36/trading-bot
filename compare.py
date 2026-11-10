@@ -17,7 +17,8 @@ from datetime import timedelta
 
 from run import HERE, load_config
 from screener.compare import (MARKER, PASS_MARKER, actual_intervals, checklist,
-                              helius_lines, report, schedule_lines, trend_section)
+                              helius_lines, liquid_filter_lines, report, schedule_lines,
+                              trend_section)
 from screener.github_issues import GitHubError, GitHubIssues
 from screener.health import RUN_EVENTS, health_lines
 from screener.paper_trader import now_utc
@@ -146,6 +147,13 @@ def main():
                 strategies.insert(first + j, (
                     v.get("label") or f"main (1 min) liquid {v['name']}",
                     os.path.join(folder, v["folder"]), cfg["liquid"]["round_trip_cost_pct"]))
+            # A version with an entry filter of its own (l5): what each condition skipped.
+            keys = ("min_pool_age_minutes", "max_price_change_5m_pct", "min_market_cap_usd")
+            extra += liquid_filter_lines(
+                [(v.get("label") or f"main (1 min) liquid {v['name']}",
+                  os.path.join(folder, v["folder"]), {k: v[k] for k in keys if k in v})
+                 for v in cfg["liquid"].get("versions", [])
+                 if v.get("enabled", True) and any(k in v for k in keys)], day)
     if cfg.get("news", {}).get("enabled"):
         strategies.append(("news", os.path.join(folder, "news"),
                            cfg["news"]["paper_trading"]["round_trip_cost_pct"]))

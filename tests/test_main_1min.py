@@ -623,7 +623,8 @@ class CompareTests(unittest.TestCase):
         self.assertTrue(header.startswith(
             "| | main | main (1 min) | main (1 min) A | main (1 min) B | main (1 min) C | "
             "main (1 min) liquid l1 | main (1 min) liquid l2 | main (1 min) liquid l3 | "
-            "main (1 min) liquid l4 | early"), header)
+            "main (1 min) liquid l4 | main (1 min) liquid l5 | main (1 min) liquid l6 | early"),
+            header)
         self.assertIn("| main (1 min): server |", text)
         self.assertIn("| main (1 min) A: server |", text)
         self.assertIn("| main (1 min) B: server |", text)

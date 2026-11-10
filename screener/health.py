@@ -535,12 +535,21 @@ def add_liquid(add, folder, cfg, now):
     data = _load(os.path.join(folder, c["folder"], "health.json")) or {}
     hours = [v for k, v in (data.get("calls_per_hour") or {}).items()
              if _utc(k) and now - _utc(k) <= timedelta(hours=24)]
-    rule = (f"buys a token's first check when liquidity is at least "
-            f"${lc['min_liquidity_usd']:,.0f}")
+    base_rule = (f"buys a token's first check when liquidity is at least "
+                 f"${lc['min_liquidity_usd']:,.0f}")
     for v in lc.get("versions", []):
         if not v.get("enabled", True):
             continue
         name = v.get("label") or f"main (1 min) liquid {v['name']}"
+        own = []
+        if v.get("min_pool_age_minutes") is not None:
+            own.append(f"pool age at least {v['min_pool_age_minutes']:g} min")
+        if v.get("max_price_change_5m_pct") is not None:
+            own.append(f"5-minute change at most {v['max_price_change_5m_pct']:g}%")
+        if v.get("min_market_cap_usd") is not None:
+            own.append(f"market cap at least ${v['min_market_cap_usd']:,.0f}")
+        rule = base_rule + (" and " + ", ".join(own) + " (all needed, no missing value)"
+                            if own else "")
         if v.get("stopped"):
             held = _open_count(os.path.join(folder, v["folder"]))
             add(f"{name}: server", INFO, f"stopped (no new buys); {held} open position(s)"
