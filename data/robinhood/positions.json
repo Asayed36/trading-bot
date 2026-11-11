@@ -152,17 +152,18 @@
   },
   "checked": {
     "0x0fe9464df01e5056cced12ce078e065cf94e45eefd01182df1158757b528e5eb": {
-      "at": "2026-11-11T16:01:19.897714+00:00",
+      "at": "2026-11-11T17:01:28.085449+00:00",
       "passed": false,
       "failed": [
         "Top 10 holders"
       ]
     },
     "onchain:0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": {
-      "at": "2026-11-11T15:51:32.173983+00:00",
+      "at": "2026-11-11T17:01:28.085449+00:00",
       "passed": false,
       "failed": [
-        "Top 10 holders"
+        "Market cap",
+        "More buys than sells (1h)"
       ]
     },
     "0x58c2549d9c53f12dc50f97b39dacd45d01a9cb9e49ee29c0e332ab56414ee135": {
@@ -179,7 +180,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T16:51:20.814291+00:00",
+      "at": "2026-11-11T17:01:28.085449+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -187,42 +188,32 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T16:41:18.467393+00:00",
-      "used_this_run": false
+      "at": "2026-11-11T17:01:28.085449+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T16:01:19.897714+00:00",
-      "used_this_run": false
+      "at": "2026-11-11T17:01:28.085449+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 12,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T16:51:20.814291+00:00",
+      "at": "2026-11-11T17:01:28.085449+00:00",
       "used_this_run": true
     }
   },
   "logged": {
     "0x0fe9464df01e5056cced12ce078e065cf94e45eefd01182df1158757b528e5eb": "FAIL|Top 10 holders: 39.3% (need under 30%; pools, launchpad and burn addresses left out)",
-    "onchain:0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": "FAIL|Top 10 holders: 34.1% (need under 30%; pools, launchpad and burn addresses left out)",
+    "onchain:0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": "FAIL|Market cap: $24,661 (need $25,000+); More buys than sells (1h): 16 buys vs 20 sells",
     "0x58c2549d9c53f12dc50f97b39dacd45d01a9cb9e49ee29c0e332ab56414ee135": "FAIL|Market cap: $20,925 (need $25,000+)"
   },
   "launchpad_tokens": {
-    "0xbcd34ba28612a8e8f6aace2863789fbe95b9b9ef": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-11-04T10:57:46Z",
-      "symbol": "DUET",
-      "title": "Claude Duet",
-      "seen": "2026-11-05T11:41:11.211933+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 6207.7917,
-      "market_cap_usd": 5928.861757
-    },
     "0x938d767f1cd789850867a881fdf09631f2e43714": {
       "dex": "pons-v2-dex",
       "graduated": "2026-11-04T12:33:56Z",
@@ -1289,7 +1280,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-11T16:51:20.814291+00:00",
+    "at": "2026-11-11T17:01:28.085449+00:00",
     "hours": 24,
     "seen": {
       "0x839d6dea3de497ee5a8338410cb2865afa51141e": "2026-11-11T09:19:24.887800+00:00",
@@ -1305,7 +1296,7 @@
       "0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42",
       "0xe436b775239d381471d70d3cef4b336abcf98283"
     ],
-    "scanned_to": 111853117,
+    "scanned_to": 111859065,
     "complete": true
   },
   "issues_to_close": [],
@@ -1313,11 +1304,6 @@
     "0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": "2026-11-11T15:21:20.925023+00:00"
   },
   "gecko_hours": {
-    "2026-11-10 17:00": [
-      6,
-      0,
-      0
-    ],
     "2026-11-10 18:00": [
       6,
       0,
@@ -1430,6 +1416,11 @@
     ],
     "2026-11-11 16:00": [
       6,
+      0,
+      0
+    ],
+    "2026-11-11 17:00": [
+      1,
       0,
       0
     ]
