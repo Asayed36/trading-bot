@@ -137,6 +137,13 @@
       "at": "2026-11-11T10:51:29.350801+00:00",
       "passed": true,
       "failed": []
+    },
+    "0x0fe9464df01e5056cced12ce078e065cf94e45eefd01182df1158757b528e5eb": {
+      "at": "2026-11-11T12:41:14.644937+00:00",
+      "passed": false,
+      "failed": [
+        "Top 10 holders"
+      ]
     }
   },
   "sources": {
@@ -145,7 +152,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T12:31:17.485885+00:00",
+      "at": "2026-11-11T12:41:14.644937+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -153,40 +160,31 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T10:51:29.350801+00:00",
-      "used_this_run": false
+      "at": "2026-11-11T12:41:14.644937+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T10:51:29.350801+00:00",
-      "used_this_run": false
+      "at": "2026-11-11T12:41:14.644937+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 12,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T12:31:17.485885+00:00",
+      "at": "2026-11-11T12:41:14.644937+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x9b7103f36c6f0e9d65f2edb78b9f2d44a46a27dd09253ee7119a6dfceba6cf9e": "PASS|"
+    "0x9b7103f36c6f0e9d65f2edb78b9f2d44a46a27dd09253ee7119a6dfceba6cf9e": "PASS|",
+    "0x0fe9464df01e5056cced12ce078e065cf94e45eefd01182df1158757b528e5eb": "FAIL|Top 10 holders: 38.7% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
-    "0xf5f580156ffbfd09a28569fa875b416b9bd31cca": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-11-04T06:37:03Z",
-      "symbol": "GM",
-      "title": "Good Morning",
-      "seen": "2026-11-05T06:51:12.760401+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 6118.3897,
-      "market_cap_usd": 6108.707722
-    },
     "0x32c3fee95f15b89e5c21465bfddaf8b56bc42dc7": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-11-04T06:56:07Z",
@@ -1293,7 +1291,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-11T12:31:17.485885+00:00",
+    "at": "2026-11-11T12:41:14.644937+00:00",
     "hours": 24,
     "seen": {
       "0xdc1ea590c071a688d21abbca82c7bd84080fc243": "2026-11-10T13:54:44.712100+00:00",
@@ -1307,7 +1305,7 @@
       "0x8e04549484d0612be8373a0263b11928a5f7681f",
       "0xdc1ea590c071a688d21abbca82c7bd84080fc243"
     ],
-    "scanned_to": 111701246,
+    "scanned_to": 111706936,
     "complete": true
   },
   "issues_to_close": [],
@@ -1434,7 +1432,7 @@
       0
     ],
     "2026-11-11 12:00": [
-      4,
+      5,
       0,
       0
     ]
