@@ -137,6 +137,13 @@
       "failed": [
         "More buys than sells (1h)"
       ]
+    },
+    "onchain:0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": {
+      "at": "2026-11-11T15:51:32.173983+00:00",
+      "passed": false,
+      "failed": [
+        "Top 10 holders"
+      ]
     }
   },
   "sources": {
@@ -145,7 +152,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T15:41:16.841924+00:00",
+      "at": "2026-11-11T15:51:32.173983+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -153,51 +160,31 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T15:21:20.925023+00:00",
-      "used_this_run": false
+      "at": "2026-11-11T15:51:32.173983+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T13:51:29.628328+00:00",
-      "used_this_run": false
+      "at": "2026-11-11T15:51:32.173983+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 11,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T15:41:16.841924+00:00",
+      "at": "2026-11-11T15:51:32.173983+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x9b7103f36c6f0e9d65f2edb78b9f2d44a46a27dd09253ee7119a6dfceba6cf9e": "PASS|",
-    "0x0fe9464df01e5056cced12ce078e065cf94e45eefd01182df1158757b528e5eb": "FAIL|More buys than sells (1h): 6 buys vs 12 sells"
+    "0x0fe9464df01e5056cced12ce078e065cf94e45eefd01182df1158757b528e5eb": "FAIL|More buys than sells (1h): 6 buys vs 12 sells",
+    "onchain:0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": "FAIL|Top 10 holders: 34.1% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
-    "0x2b1ba7b3c67110def5e8b7758b4ed8d3bd45b475": {
-      "dex": "uniswap-pools-trade",
-      "graduated": "2026-11-04T09:45:25Z",
-      "symbol": "UNIPROOF",
-      "title": "Uni Proof",
-      "seen": "2026-11-05T10:21:05.097475+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 6067.2658,
-      "market_cap_usd": 5822.717643
-    },
-    "0x63a209b0b41f0e5de845baebd8c8f7c438a96edc": {
-      "dex": "pons-v2-dex",
-      "graduated": "2026-11-04T09:41:27Z",
-      "symbol": "RURU",
-      "title": "Ruru the Kangaroo",
-      "seen": "2026-11-04T09:51:27.459796+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 37226.5314,
-      "market_cap_usd": 60970.87117
-    },
     "0xfc483d90946ecc6ef18280b58cbbdfc77b35d56b": {
       "dex": "pons-v2-dex",
       "graduated": "2026-11-04T09:52:18Z",
@@ -1265,7 +1252,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-11T15:41:16.841924+00:00",
+    "at": "2026-11-11T15:51:32.173983+00:00",
     "hours": 24,
     "seen": {
       "0x8e04549484d0612be8373a0263b11928a5f7681f": "2026-11-10T16:03:02.930800+00:00",
@@ -1279,7 +1266,7 @@
       "0x8e04549484d0612be8373a0263b11928a5f7681f",
       "0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42"
     ],
-    "scanned_to": 111811809,
+    "scanned_to": 111817900,
     "complete": true
   },
   "issues_to_close": [],
@@ -1403,7 +1390,7 @@
       0
     ],
     "2026-11-11 15:00": [
-      5,
+      6,
       0,
       0
     ]
