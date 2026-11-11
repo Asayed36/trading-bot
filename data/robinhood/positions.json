@@ -111,16 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0x9b7103f36c6f0e9d65f2edb78b9f2d44a46a27dd09253ee7119a6dfceba6cf9e": {
-      "pool": "0x9b7103f36c6f0e9d65f2edb78b9f2d44a46a27dd09253ee7119a6dfceba6cf9e",
-      "dex": "pons-v2-dex",
-      "token": "0x839d6dea3de497ee5a8338410cb2865afa51141e",
-      "name": "PAYOLA",
-      "title": "Payola.Promo",
-      "created": "2026-11-11T09:19:23Z",
-      "liquidity_usd": null,
-      "market_cap_usd": 37387.01166
-    },
     "0x0fe9464df01e5056cced12ce078e065cf94e45eefd01182df1158757b528e5eb": {
       "pool": "0x0fe9464df01e5056cced12ce078e065cf94e45eefd01182df1158757b528e5eb",
       "dex": "pons-v2-dex",
@@ -130,14 +120,17 @@
       "created": "2026-11-11T12:07:19Z",
       "liquidity_usd": 16510.6861,
       "market_cap_usd": 37895.80765
+    },
+    "onchain:0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": {
+      "pool": null,
+      "dex": "pons-v2-dex",
+      "token": "0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42",
+      "name": "SHERWOOD",
+      "created": "2026-11-11T15:12:51.028400+00:00",
+      "source": "chain"
     }
   },
   "checked": {
-    "0x9b7103f36c6f0e9d65f2edb78b9f2d44a46a27dd09253ee7119a6dfceba6cf9e": {
-      "at": "2026-11-11T10:51:29.350801+00:00",
-      "passed": true,
-      "failed": []
-    },
     "0x0fe9464df01e5056cced12ce078e065cf94e45eefd01182df1158757b528e5eb": {
       "at": "2026-11-11T14:52:27.436790+00:00",
       "passed": false,
@@ -152,7 +145,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T15:07:17.204693+00:00",
+      "at": "2026-11-11T15:21:20.925023+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -160,8 +153,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T14:52:27.436790+00:00",
-      "used_this_run": false
+      "at": "2026-11-11T15:21:20.925023+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -176,7 +169,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T15:07:17.204693+00:00",
+      "at": "2026-11-11T15:21:20.925023+00:00",
       "used_this_run": true
     }
   },
@@ -1259,30 +1252,39 @@
       "source": "geckoterminal",
       "liquidity_usd": 16087.9567,
       "market_cap_usd": 36695.75831
+    },
+    "0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-11-11T15:12:51.028400+00:00",
+      "symbol": "SHERWOOD",
+      "title": "Sherwood",
+      "seen": "2026-11-11T15:21:20.925023+00:00",
+      "source": "chain",
+      "liquidity_usd": 15193.44,
+      "market_cap_usd": 32580.0
     }
   },
   "graduations": {
-    "at": "2026-11-11T15:07:17.204693+00:00",
+    "at": "2026-11-11T15:21:20.925023+00:00",
     "hours": 24,
     "seen": {
       "0x8e04549484d0612be8373a0263b11928a5f7681f": "2026-11-10T16:03:02.930800+00:00",
       "0x839d6dea3de497ee5a8338410cb2865afa51141e": "2026-11-11T09:19:24.887800+00:00",
-      "0x8665f6e7ce1df1abe042d4b044e681be98a62974": "2026-11-11T12:07:18.841300+00:00"
+      "0x8665f6e7ce1df1abe042d4b044e681be98a62974": "2026-11-11T12:07:18.841300+00:00",
+      "0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": "2026-11-11T15:12:51.028400+00:00"
     },
     "tokens": [
       "0x839d6dea3de497ee5a8338410cb2865afa51141e",
       "0x8665f6e7ce1df1abe042d4b044e681be98a62974",
-      "0x8e04549484d0612be8373a0263b11928a5f7681f"
+      "0x8e04549484d0612be8373a0263b11928a5f7681f",
+      "0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42"
     ],
-    "scanned_to": 111791829,
+    "scanned_to": 111800151,
     "complete": true
   },
   "issues_to_close": [],
   "onchain_lookups": {
-    "0x608de3e89a6506b881125f67463623d7eb063fba": "2026-11-09T15:51:06.763221+00:00",
-    "0xc928115d65ba633c806ea14ff6d35b9163e0e2b1": "2026-11-09T20:01:12.287164+00:00",
-    "0xc9e1e87d8bb3632589e324db6f37001427e07134": "2026-11-09T23:01:11.385945+00:00",
-    "0xb6f2e3d5f9f1bfb0363f3aecec26b5b9bdbeedc1": "2026-11-10T12:31:02.070415+00:00"
+    "0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": "2026-11-11T15:21:20.925023+00:00"
   },
   "gecko_hours": {
     "2026-11-10 16:00": [
@@ -1401,7 +1403,7 @@
       0
     ],
     "2026-11-11 15:00": [
-      2,
+      3,
       0,
       0
     ]
