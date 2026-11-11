@@ -111,16 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0x0fe9464df01e5056cced12ce078e065cf94e45eefd01182df1158757b528e5eb": {
-      "pool": "0x0fe9464df01e5056cced12ce078e065cf94e45eefd01182df1158757b528e5eb",
-      "dex": "pons-v2-dex",
-      "token": "0x8665f6e7ce1df1abe042d4b044e681be98a62974",
-      "name": "FHERUM",
-      "title": "FHERUM",
-      "created": "2026-11-11T12:07:19Z",
-      "liquidity_usd": 16510.6861,
-      "market_cap_usd": 37895.80765
-    },
     "onchain:0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": {
       "pool": null,
       "dex": "pons-v2-dex",
@@ -161,19 +151,11 @@
     }
   },
   "checked": {
-    "0x0fe9464df01e5056cced12ce078e065cf94e45eefd01182df1158757b528e5eb": {
-      "at": "2026-11-11T17:01:28.085449+00:00",
-      "passed": false,
-      "failed": [
-        "Top 10 holders"
-      ]
-    },
     "onchain:0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": {
-      "at": "2026-11-11T17:01:28.085449+00:00",
+      "at": "2026-11-11T18:11:27.589344+00:00",
       "passed": false,
       "failed": [
-        "Market cap",
-        "More buys than sells (1h)"
+        "Liquidity"
       ]
     },
     "0x58c2549d9c53f12dc50f97b39dacd45d01a9cb9e49ee29c0e332ab56414ee135": {
@@ -184,11 +166,9 @@
       ]
     },
     "0x4c8704462f5c657c018cd72c923572da283ac6930fbdfe5dad44a4acfcb273e6": {
-      "at": "2026-11-11T17:11:01.333964+00:00",
-      "passed": false,
-      "failed": [
-        "More buys than sells (1h)"
-      ]
+      "at": "2026-11-11T18:11:27.589344+00:00",
+      "passed": true,
+      "failed": []
     }
   },
   "sources": {
@@ -197,7 +177,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T18:01:12.910252+00:00",
+      "at": "2026-11-11T18:11:27.589344+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -205,31 +185,30 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T17:41:20.815942+00:00",
-      "used_this_run": false
+      "at": "2026-11-11T18:11:27.589344+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T17:01:28.085449+00:00",
-      "used_this_run": false
+      "at": "2026-11-11T18:11:27.589344+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 8,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-11T18:01:12.910252+00:00",
+      "at": "2026-11-11T18:11:27.589344+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x0fe9464df01e5056cced12ce078e065cf94e45eefd01182df1158757b528e5eb": "FAIL|Top 10 holders: 39.3% (need under 30%; pools, launchpad and burn addresses left out)",
-    "onchain:0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": "FAIL|Market cap: $24,661 (need $25,000+); More buys than sells (1h): 16 buys vs 20 sells",
+    "onchain:0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42": "FAIL|Liquidity: $7,678 (need $10,000+ on Pons)",
     "0x58c2549d9c53f12dc50f97b39dacd45d01a9cb9e49ee29c0e332ab56414ee135": "FAIL|Liquidity: $4,801 (need $10,000+ on Pons)",
-    "0x4c8704462f5c657c018cd72c923572da283ac6930fbdfe5dad44a4acfcb273e6": "FAIL|More buys than sells (1h): 669 buys vs 879 sells"
+    "0x4c8704462f5c657c018cd72c923572da283ac6930fbdfe5dad44a4acfcb273e6": "PASS|"
   },
   "launchpad_tokens": {
     "0x938d767f1cd789850867a881fdf09631f2e43714": {
@@ -1307,7 +1286,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-11T18:01:12.910252+00:00",
+    "at": "2026-11-11T18:11:27.589344+00:00",
     "hours": 24,
     "seen": {
       "0x839d6dea3de497ee5a8338410cb2865afa51141e": "2026-11-11T09:19:24.887800+00:00",
@@ -1325,7 +1304,7 @@
       "0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42",
       "0xe436b775239d381471d70d3cef4b336abcf98283"
     ],
-    "scanned_to": 111894077,
+    "scanned_to": 111900105,
     "complete": true
   },
   "issues_to_close": [],
@@ -1449,7 +1428,7 @@
       0
     ],
     "2026-11-11 18:00": [
-      1,
+      2,
       0,
       0
     ]
