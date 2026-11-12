@@ -1,21 +1,21 @@
 {
- "updated": "2026-11-12T02:03:08Z",
+ "updated": "2026-11-12T03:01:32Z",
  "feed_up": true,
  "endpoint": "api.mainnet-beta.solana.com",
- "last_message": "2026-11-12T02:03:08Z",
+ "last_message": "2026-11-12T03:01:32Z",
  "feed_silent_seconds": 0,
- "last_row": "2026-11-12T02:03:08Z",
- "last_row_ts": 1794448988.164502,
- "since_last_row_seconds": 0,
- "launches_seen_last_hour": 744,
- "in_flight": 744,
- "rows_written_today": 204,
+ "last_row": "2026-11-12T02:26:21Z",
+ "last_row_ts": 1794450381.9250493,
+ "since_last_row_seconds": 2111,
+ "launches_seen_last_hour": 359,
+ "in_flight": 359,
+ "rows_written_today": 220,
  "rows_skipped_by_cap_today": 97,
  "max_rows_per_day": 4000,
- "feed_disconnects_today": 84,
- "gap_seconds_today": 128,
- "started": "2026-11-05T21:31:36Z",
- "dropped_at_last_restart": 773,
+ "feed_disconnects_today": 110,
+ "gap_seconds_today": 159,
+ "started": "2026-11-12T02:26:42Z",
+ "dropped_at_last_restart": 940,
  "days": {
   "2026-11-05": {
    "launches_seen": 18651,
@@ -186,37 +186,32 @@
    "skipped_by_cap": 5153
   },
   "2026-11-12": {
-   "launches_seen": 1431,
-   "feed_disconnects": 84,
-   "gap_seconds": 128,
-   "finished": 676,
-   "watched_60": 676,
-   "buyers_qualified": 295,
-   "watched_60_ge_1": 490,
-   "watched_60_ge_2": 376,
-   "watched_60_ge_3": 295,
-   "watched_60_ge_4": 249,
-   "watched_60_ge_5": 211,
-   "watched_60_ge_8": 138,
-   "watched_60_ge_10": 107,
-   "watched_60_ge_15": 72,
-   "watched_60_ge_20": 50,
-   "watched_60_ge_30": 30,
-   "qualified": 296,
-   "nonsample_rows": 190,
-   "rows_written": 204,
+   "launches_seen": 2024,
+   "feed_disconnects": 110,
+   "gap_seconds": 159,
+   "finished": 714,
+   "watched_60": 714,
+   "buyers_qualified": 311,
+   "watched_60_ge_1": 516,
+   "watched_60_ge_2": 398,
+   "watched_60_ge_3": 311,
+   "watched_60_ge_4": 263,
+   "watched_60_ge_5": 223,
+   "watched_60_ge_8": 146,
+   "watched_60_ge_10": 115,
+   "watched_60_ge_15": 77,
+   "watched_60_ge_20": 54,
+   "watched_60_ge_30": 32,
+   "qualified": 312,
+   "nonsample_rows": 206,
+   "rows_written": 220,
    "sample": 14,
-   "watched_60_ge_50": 18,
-   "skipped_by_cap": 97
+   "watched_60_ge_50": 19,
+   "skipped_by_cap": 97,
+   "dropped_at_restart": 940
   }
  },
  "feed_counts": {
-  "2026-11-11T02": {
-   "messages": 485637,
-   "trades": 69484,
-   "undecoded": 12039,
-   "creations": 728
-  },
   "2026-11-11T03": {
    "messages": 510968,
    "trades": 66227,
@@ -356,35 +351,30 @@
    "creations": 749
   },
   "2026-11-12T02": {
-   "messages": 19950,
-   "trades": 4958,
-   "undecoded": 898,
-   "creations": 44
+   "messages": 473640,
+   "trades": 71417,
+   "undecoded": 14231,
+   "creations": 620
+  },
+  "2026-11-12T03": {
+   "messages": 10691,
+   "trades": 1650,
+   "undecoded": 266,
+   "creations": 17
   }
  },
  "endpoints": {
   "api.mainnet-beta.solana.com": {
-   "attempts": 905,
-   "successes": 905,
-   "failures": 905,
+   "attempts": 891,
+   "successes": 891,
+   "failures": 890,
    "top_failure": "closed without a close frame (code 1006); we sent code 1002 (invalid status code)",
-   "top_failure_count": 904,
-   "avg_connected_seconds": 94.1,
-   "ended_connections": 905
+   "top_failure_count": 888,
+   "avg_connected_seconds": 95.3,
+   "ended_connections": 891
   }
  },
  "endpoint_hours": {
-  "2026-11-11T00": {
-   "api.mainnet-beta.solana.com": {
-    "attempts": 38,
-    "successes": 38,
-    "failures": {
-     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 38
-    },
-    "ended": 38,
-    "connected_seconds": 3407.784849882126
-   }
-  },
   "2026-11-11T01": {
    "api.mainnet-beta.solana.com": {
     "attempts": 32,
@@ -663,13 +653,14 @@
   },
   "2026-11-12T02": {
    "api.mainnet-beta.solana.com": {
-    "attempts": 1,
-    "successes": 1,
+    "attempts": 28,
+    "successes": 28,
     "failures": {
-     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 1
+     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 26,
+     "closed by the server with code 1000; we sent code 1000": 1
     },
-    "ended": 1,
-    "connected_seconds": 176.55246806144714
+    "ended": 28,
+    "connected_seconds": 3514.7269711494446
    }
   }
  }
