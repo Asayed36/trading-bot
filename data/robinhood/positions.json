@@ -137,6 +137,14 @@
       "at": "2026-11-12T00:00:53.198446+00:00",
       "passed": true,
       "failed": []
+    },
+    "0x96247d30c8d2d76c942831d9e30902fdb6623ff0ed226758c6ca15eb672f3121": {
+      "at": "2026-11-12T02:21:15.804623+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap",
+        "More buys than sells (1h)"
+      ]
     }
   },
   "sources": {
@@ -145,7 +153,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-12T02:11:06.189867+00:00",
+      "at": "2026-11-12T02:21:15.804623+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -153,8 +161,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-12T00:00:53.198446+00:00",
-      "used_this_run": false
+      "at": "2026-11-12T02:21:15.804623+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -169,12 +177,13 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-12T02:11:06.189867+00:00",
+      "at": "2026-11-12T02:21:15.804623+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x872f5f82dbcc52fdc6e547706d04dd97dd9b8c575d855bb4d5ea21282aa5f337": "PASS|"
+    "0x872f5f82dbcc52fdc6e547706d04dd97dd9b8c575d855bb4d5ea21282aa5f337": "PASS|",
+    "0x96247d30c8d2d76c942831d9e30902fdb6623ff0ed226758c6ca15eb672f3121": "FAIL|Market cap: $5,131 (need $25,000+); More buys than sells (1h): 5 buys vs 5 sells"
   },
   "launchpad_tokens": {
     "0xf7c31a6df1f0997dcadd216ea48f8bfcbbf9d570": {
@@ -685,7 +694,7 @@
       "graduated": "2026-11-06T17:27:39Z",
       "symbol": "RECLAIM",
       "title": "Robinhackers",
-      "seen": "2026-11-12T02:11:06.189867+00:00",
+      "seen": "2026-11-12T02:21:15.804623+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 5190.8187,
       "market_cap_usd": 5251.644108
@@ -1167,14 +1176,14 @@
       "graduated": "2026-11-12T01:45:43Z",
       "symbol": "TCLI12A",
       "title": "Turbine CLI Check A",
-      "seen": "2026-11-12T02:11:06.189867+00:00",
+      "seen": "2026-11-12T02:21:15.804623+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 5120.1691,
+      "liquidity_usd": 5141.8226,
       "market_cap_usd": 5116.124686
     }
   },
   "graduations": {
-    "at": "2026-11-12T02:11:06.189867+00:00",
+    "at": "2026-11-12T02:21:15.804623+00:00",
     "hours": 24,
     "seen": {
       "0x839d6dea3de497ee5a8338410cb2865afa51141e": "2026-11-11T09:19:24.887800+00:00",
@@ -1194,7 +1203,7 @@
       "0xb0b5bb465b3dcd5757e7bd30bdc85c3415bf4e42",
       "0xe436b775239d381471d70d3cef4b336abcf98283"
     ],
-    "scanned_to": 112178209,
+    "scanned_to": 112183947,
     "complete": true
   },
   "issues_to_close": [],
@@ -1318,7 +1327,7 @@
       0
     ],
     "2026-11-12 02:00": [
-      2,
+      3,
       0,
       0
     ]
