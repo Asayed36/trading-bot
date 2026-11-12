@@ -110,34 +110,16 @@
     "0xa7a7c2f7cea8f9bb3b5b85802f0cd844fa9b7586"
   ],
   "running_total_pnl_usd": -341.19861901705434,
-  "watch": {
-    "0x9aee7ac9e0723bfaa66fdc5f415d98a4efcc5b50e4fc5baecbb1e8707bc131a2": {
-      "pool": "0x9aee7ac9e0723bfaa66fdc5f415d98a4efcc5b50e4fc5baecbb1e8707bc131a2",
-      "dex": "pons-v2-dex",
-      "token": "0x20b25da8785990cc89330af56310024bb199cd36",
-      "name": "GIRAFF",
-      "title": "Giraffies Valley",
-      "created": "2026-11-12T14:14:42Z",
-      "liquidity_usd": 16376.5275,
-      "market_cap_usd": 38020.37298
-    }
-  },
-  "checked": {
-    "0x9aee7ac9e0723bfaa66fdc5f415d98a4efcc5b50e4fc5baecbb1e8707bc131a2": {
-      "at": "2026-11-12T20:11:28.497083+00:00",
-      "passed": false,
-      "failed": [
-        "Top 10 holders"
-      ]
-    }
-  },
+  "watch": {},
+  "checked": {},
   "sources": {
     "geckoterminal": {
       "calls": 2,
-      "errors": 0,
-      "rate_limited": 0,
-      "ok": true,
-      "at": "2026-11-12T20:11:28.497083+00:00",
+      "errors": 2,
+      "rate_limited": 2,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
+      "ok": false,
+      "at": "2026-11-12T20:21:24.174911+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -146,7 +128,7 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-11-12T20:11:28.497083+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "goplus": {
       "calls": 1,
@@ -154,14 +136,14 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-11-12T20:11:28.497083+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "rpc": {
-      "calls": 9,
+      "calls": 4,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-12T20:11:28.497083+00:00",
+      "at": "2026-11-12T20:21:24.174911+00:00",
       "used_this_run": true
     }
   },
@@ -1137,7 +1119,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-12T20:11:28.497083+00:00",
+    "at": "2026-11-12T20:21:24.174911+00:00",
     "hours": 24,
     "seen": {
       "0x534b76f46d69caee896c4f993a86ea2e12248b90": "2026-11-11T23:28:54.183000+00:00",
@@ -1147,7 +1129,7 @@
       "0x20b25da8785990cc89330af56310024bb199cd36",
       "0x534b76f46d69caee896c4f993a86ea2e12248b90"
     ],
-    "scanned_to": 112797896,
+    "scanned_to": 112803757,
     "complete": true
   },
   "issues_to_close": [],
@@ -1271,9 +1253,9 @@
       0
     ],
     "2026-11-12 20:00": [
-      2,
-      0,
-      0
+      3,
+      1,
+      1
     ]
   }
 }
