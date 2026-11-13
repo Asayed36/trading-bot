@@ -1,47 +1,22 @@
 {
- "updated": "2026-11-13T00:00:12Z",
+ "updated": "2026-11-13T01:04:41Z",
  "feed_up": true,
  "endpoint": "solana-rpc.publicnode.com",
- "last_message": "2026-11-13T00:00:03Z",
- "feed_silent_seconds": 10,
+ "last_message": "2026-11-13T01:04:36Z",
+ "feed_silent_seconds": 5,
  "last_row": "2026-11-12T22:04:13Z",
  "last_row_ts": 1794521053.0738513,
- "since_last_row_seconds": 6960,
- "launches_seen_last_hour": 0,
- "in_flight": 0,
+ "since_last_row_seconds": 10828,
+ "launches_seen_last_hour": 8,
+ "in_flight": 8,
  "rows_written_today": 0,
  "rows_skipped_by_cap_today": 0,
  "max_rows_per_day": 4000,
- "feed_disconnects_today": 1,
- "gap_seconds_today": 1,
+ "feed_disconnects_today": 220,
+ "gap_seconds_today": 229,
  "started": "2026-11-12T02:26:42Z",
  "dropped_at_last_restart": 940,
  "days": {
-  "2026-11-05": {
-   "launches_seen": 18651,
-   "feed_disconnects": 774,
-   "gap_seconds": 1123,
-   "finished": 17892,
-   "watched_60": 17892,
-   "buyers_qualified": 8130,
-   "watched_60_ge_1": 13291,
-   "watched_60_ge_2": 10236,
-   "watched_60_ge_3": 8130,
-   "qualified": 8164,
-   "nonsample_rows": 4000,
-   "watched_60_ge_4": 6750,
-   "watched_60_ge_5": 5713,
-   "rows_written": 4371,
-   "watched_60_ge_8": 3798,
-   "watched_60_ge_10": 3096,
-   "watched_60_ge_15": 2112,
-   "watched_60_ge_20": 1568,
-   "watched_60_ge_30": 992,
-   "watched_60_ge_50": 552,
-   "sample": 371,
-   "skipped_by_cap": 4002,
-   "dropped_at_restart": 773
-  },
   "2026-11-06": {
    "launches_seen": 19323,
    "feed_disconnects": 772,
@@ -211,17 +186,12 @@
    "dropped_at_restart": 940
   },
   "2026-11-13": {
-   "feed_disconnects": 1,
-   "gap_seconds": 1
+   "feed_disconnects": 220,
+   "gap_seconds": 229,
+   "launches_seen": 8
   }
  },
  "feed_counts": {
-  "2026-11-12T00": {
-   "messages": 435797,
-   "trades": 65109,
-   "undecoded": 10376,
-   "creations": 638
-  },
   "2026-11-12T01": {
    "messages": 505781,
    "trades": 64220,
@@ -329,40 +299,35 @@
    "trades": 1459,
    "undecoded": 2055,
    "creations": 11
+  },
+  "2026-11-13T00": {
+   "messages": 8417,
+   "trades": 719,
+   "undecoded": 56,
+   "creations": 8
   }
  },
  "endpoints": {
   "api.mainnet-beta.solana.com": {
-   "attempts": 226,
-   "successes": 225,
-   "failures": 226,
+   "attempts": 191,
+   "successes": 190,
+   "failures": 191,
    "top_failure": "closed without a close frame (code 1006); we sent code 1002 (invalid status code)",
-   "top_failure_count": 224,
-   "avg_connected_seconds": 144.9,
-   "ended_connections": 226
+   "top_failure_count": 189,
+   "avg_connected_seconds": 152.6,
+   "ended_connections": 191
   },
   "solana-rpc.publicnode.com": {
-   "attempts": 2689,
-   "successes": 2689,
-   "failures": 2688,
+   "attempts": 2908,
+   "successes": 2908,
+   "failures": 2907,
    "top_failure": "ConnectionError: no message for 15 s",
-   "top_failure_count": 2683,
-   "avg_connected_seconds": 18.6,
-   "ended_connections": 2688
+   "top_failure_count": 2902,
+   "avg_connected_seconds": 18.5,
+   "ended_connections": 2907
   }
  },
  "endpoint_hours": {
-  "2026-11-11T22": {
-   "api.mainnet-beta.solana.com": {
-    "attempts": 81,
-    "successes": 81,
-    "failures": {
-     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 81
-    },
-    "ended": 81,
-    "connected_seconds": 3428.8984339237213
-   }
-  },
   "2026-11-11T23": {
    "api.mainnet-beta.solana.com": {
     "attempts": 49,
@@ -655,13 +620,24 @@
   },
   "2026-11-13T00": {
    "solana-rpc.publicnode.com": {
-    "attempts": 1,
-    "successes": 1,
+    "attempts": 204,
+    "successes": 204,
     "failures": {
-     "ConnectionError: no message for 15 s": 1
+     "ConnectionError: no message for 15 s": 204
     },
-    "ended": 1,
-    "connected_seconds": 16.014100074768066
+    "ended": 204,
+    "connected_seconds": 3374.6873438358307
+   }
+  },
+  "2026-11-13T01": {
+   "solana-rpc.publicnode.com": {
+    "attempts": 16,
+    "successes": 16,
+    "failures": {
+     "ConnectionError: no message for 15 s": 16
+    },
+    "ended": 16,
+    "connected_seconds": 266.633508682251
    }
   }
  }
