@@ -1,19 +1,19 @@
 {
- "updated": "2026-11-14T01:01:03Z",
+ "updated": "2026-11-14T02:01:11Z",
  "feed_up": true,
  "endpoint": "api.mainnet-beta.solana.com",
- "last_message": "2026-11-14T01:01:03Z",
+ "last_message": "2026-11-14T02:01:11Z",
  "feed_silent_seconds": 0,
- "last_row": "2026-11-14T00:58:01Z",
- "last_row_ts": 1794617881.5330224,
- "since_last_row_seconds": 182,
- "launches_seen_last_hour": 525,
- "in_flight": 525,
- "rows_written_today": 0,
- "rows_skipped_by_cap_today": 0,
+ "last_row": "2026-11-14T01:49:33Z",
+ "last_row_ts": 1794620973.6072443,
+ "since_last_row_seconds": 698,
+ "launches_seen_last_hour": 757,
+ "in_flight": 757,
+ "rows_written_today": 177,
+ "rows_skipped_by_cap_today": 64,
  "max_rows_per_day": 4000,
- "feed_disconnects_today": 43,
- "gap_seconds_today": 79,
+ "feed_disconnects_today": 82,
+ "gap_seconds_today": 134,
  "started": "2026-11-13T04:01:12Z",
  "dropped_at_last_restart": 237,
  "days": {
@@ -187,18 +187,31 @@
    "skipped_by_cap": 1391
   },
   "2026-11-14": {
-   "launches_seen": 529,
-   "feed_disconnects": 43,
-   "gap_seconds": 79
+   "launches_seen": 1287,
+   "feed_disconnects": 82,
+   "gap_seconds": 134,
+   "finished": 526,
+   "watched_60": 526,
+   "watched_60_ge_1": 435,
+   "buyers_qualified": 236,
+   "watched_60_ge_2": 313,
+   "watched_60_ge_3": 236,
+   "watched_60_ge_4": 196,
+   "watched_60_ge_5": 164,
+   "watched_60_ge_8": 107,
+   "watched_60_ge_10": 81,
+   "watched_60_ge_15": 60,
+   "watched_60_ge_20": 47,
+   "watched_60_ge_30": 31,
+   "watched_60_ge_50": 19,
+   "qualified": 237,
+   "nonsample_rows": 167,
+   "rows_written": 177,
+   "sample": 10,
+   "skipped_by_cap": 64
   }
  },
  "feed_counts": {
-  "2026-11-13T01": {
-   "messages": 45324,
-   "trades": 5924,
-   "undecoded": 642,
-   "creations": 50
-  },
   "2026-11-13T02": {
    "messages": 54503,
    "trades": 11388,
@@ -326,44 +339,39 @@
    "creations": 522
   },
   "2026-11-14T01": {
-   "messages": 6366,
-   "trades": 838,
-   "undecoded": 52,
-   "creations": 7
+   "messages": 437492,
+   "trades": 79164,
+   "undecoded": 21173,
+   "creations": 750
+  },
+  "2026-11-14T02": {
+   "messages": 8114,
+   "trades": 1676,
+   "undecoded": 563,
+   "creations": 15
   }
  },
  "endpoints": {
   "api.mainnet-beta.solana.com": {
-   "attempts": 667,
-   "successes": 666,
-   "failures": 666,
+   "attempts": 706,
+   "successes": 705,
+   "failures": 705,
    "top_failure": "closed without a close frame (code 1006); we sent code 1002 (invalid status code)",
-   "top_failure_count": 665,
-   "avg_connected_seconds": 83.5,
-   "ended_connections": 665
+   "top_failure_count": 704,
+   "avg_connected_seconds": 83.9,
+   "ended_connections": 704
   },
   "solana-rpc.publicnode.com": {
-   "attempts": 1439,
-   "successes": 1439,
-   "failures": 1439,
+   "attempts": 1243,
+   "successes": 1243,
+   "failures": 1243,
    "top_failure": "ConnectionError: no message for 15 s",
-   "top_failure_count": 1436,
-   "avg_connected_seconds": 19.5,
-   "ended_connections": 1440
+   "top_failure_count": 1241,
+   "avg_connected_seconds": 19.9,
+   "ended_connections": 1244
   }
  },
  "endpoint_hours": {
-  "2026-11-12T23": {
-   "solana-rpc.publicnode.com": {
-    "attempts": 203,
-    "successes": 203,
-    "failures": {
-     "ConnectionError: no message for 15 s": 203
-    },
-    "ended": 203,
-    "connected_seconds": 3361.257244825363
-   }
-  },
   "2026-11-13T00": {
    "solana-rpc.publicnode.com": {
     "attempts": 204,
@@ -669,13 +677,24 @@
   },
   "2026-11-14T01": {
    "api.mainnet-beta.solana.com": {
+    "attempts": 39,
+    "successes": 39,
+    "failures": {
+     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 39
+    },
+    "ended": 39,
+    "connected_seconds": 3603.604129552841
+   }
+  },
+  "2026-11-14T02": {
+   "api.mainnet-beta.solana.com": {
     "attempts": 1,
     "successes": 1,
     "failures": {
      "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 1
     },
     "ended": 1,
-    "connected_seconds": 92.99961495399475
+    "connected_seconds": 70.27271604537964
    }
   }
  }
