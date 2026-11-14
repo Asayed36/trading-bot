@@ -1,19 +1,19 @@
 {
- "updated": "2026-11-14T13:00:12Z",
+ "updated": "2026-11-14T14:00:23Z",
  "feed_up": true,
  "endpoint": "solana-rpc.publicnode.com",
- "last_message": "2026-11-14T13:00:12Z",
- "feed_silent_seconds": 0,
- "last_row": "2026-11-14T13:00:12Z",
- "last_row_ts": 1794661212.775986,
+ "last_message": "2026-11-14T14:00:08Z",
+ "feed_silent_seconds": 15,
+ "last_row": "2026-11-14T14:00:23Z",
+ "last_row_ts": 1794664823.441078,
  "since_last_row_seconds": 0,
- "launches_seen_last_hour": 1371,
- "in_flight": 1371,
- "rows_written_today": 2166,
- "rows_skipped_by_cap_today": 2775,
+ "launches_seen_last_hour": 135,
+ "in_flight": 135,
+ "rows_written_today": 2370,
+ "rows_skipped_by_cap_today": 3319,
  "max_rows_per_day": 4000,
- "feed_disconnects_today": 431,
- "gap_seconds_today": 544,
+ "feed_disconnects_today": 618,
+ "gap_seconds_today": 742,
  "started": "2026-11-14T06:59:04Z",
  "dropped_at_last_restart": 787,
  "days": {
@@ -187,38 +187,32 @@
    "skipped_by_cap": 1391
   },
   "2026-11-14": {
-   "launches_seen": 11204,
-   "feed_disconnects": 431,
-   "gap_seconds": 544,
-   "finished": 9042,
-   "watched_60": 9042,
-   "watched_60_ge_1": 7673,
-   "buyers_qualified": 4847,
-   "watched_60_ge_2": 6112,
-   "watched_60_ge_3": 4847,
-   "watched_60_ge_4": 3991,
-   "watched_60_ge_5": 3368,
-   "watched_60_ge_8": 2263,
-   "watched_60_ge_10": 1811,
-   "watched_60_ge_15": 1142,
-   "watched_60_ge_20": 814,
-   "watched_60_ge_30": 490,
-   "watched_60_ge_50": 300,
-   "qualified": 4862,
-   "nonsample_rows": 2001,
-   "rows_written": 2166,
-   "sample": 165,
-   "skipped_by_cap": 2775,
+   "launches_seen": 11351,
+   "feed_disconnects": 618,
+   "gap_seconds": 742,
+   "finished": 10425,
+   "watched_60": 10425,
+   "watched_60_ge_1": 8798,
+   "buyers_qualified": 5582,
+   "watched_60_ge_2": 7036,
+   "watched_60_ge_3": 5582,
+   "watched_60_ge_4": 4615,
+   "watched_60_ge_5": 3893,
+   "watched_60_ge_8": 2643,
+   "watched_60_ge_10": 2124,
+   "watched_60_ge_15": 1346,
+   "watched_60_ge_20": 965,
+   "watched_60_ge_30": 587,
+   "watched_60_ge_50": 361,
+   "qualified": 5601,
+   "nonsample_rows": 2177,
+   "rows_written": 2370,
+   "sample": 193,
+   "skipped_by_cap": 3319,
    "dropped_at_restart": 787
   }
  },
  "feed_counts": {
-  "2026-11-13T13": {
-   "messages": 92423,
-   "undecoded": 3878,
-   "trades": 13274,
-   "creations": 146
-  },
   "2026-11-13T14": {
    "messages": 227990,
    "undecoded": 16283,
@@ -358,10 +352,10 @@
    "undecoded": 28232
   },
   "2026-11-14T13": {
-   "messages": 1962,
-   "trades": 450,
-   "undecoded": 58,
-   "creations": 6
+   "messages": 62124,
+   "trades": 11979,
+   "undecoded": 3022,
+   "creations": 153
   }
  },
  "endpoints": {
@@ -375,27 +369,16 @@
    "ended_connections": 781
   },
   "solana-rpc.publicnode.com": {
-   "attempts": 423,
-   "successes": 423,
-   "failures": 423,
+   "attempts": 425,
+   "successes": 425,
+   "failures": 425,
    "top_failure": "ConnectionError: no message for 15 s",
-   "top_failure_count": 423,
-   "avg_connected_seconds": 25.2,
-   "ended_connections": 423
+   "top_failure_count": 424,
+   "avg_connected_seconds": 32.1,
+   "ended_connections": 425
   }
  },
  "endpoint_hours": {
-  "2026-11-13T10": {
-   "solana-rpc.publicnode.com": {
-    "attempts": 205,
-    "successes": 205,
-    "failures": {
-     "ConnectionError: no message for 15 s": 205
-    },
-    "ended": 205,
-    "connected_seconds": 3350.960479259491
-   }
-  },
   "2026-11-13T11": {
    "solana-rpc.publicnode.com": {
     "attempts": 203,
@@ -686,6 +669,29 @@
     },
     "ended": 142,
     "connected_seconds": 4769.412076473236
+   }
+  },
+  "2026-11-14T13": {
+   "solana-rpc.publicnode.com": {
+    "attempts": 186,
+    "successes": 186,
+    "failures": {
+     "closed without a close frame (code 1006)": 1,
+     "ConnectionError: no message for 15 s": 185
+    },
+    "ended": 186,
+    "connected_seconds": 7266.081356525421
+   }
+  },
+  "2026-11-14T14": {
+   "solana-rpc.publicnode.com": {
+    "attempts": 1,
+    "successes": 1,
+    "failures": {
+     "ConnectionError: no message for 15 s": 1
+    },
+    "ended": 1,
+    "connected_seconds": 16.029818296432495
    }
   }
  }
