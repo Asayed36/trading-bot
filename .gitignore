@@ -113,6 +113,18 @@ data/backdrop_cache.json
 data/launch-record/*
 !data/launch-record/launches-*.csv
 !data/launch-record/health.json
+# The viral experiment (screener/viral.py, run inside the launch recorder): its launch rows,
+# flags, health file and the paper version's files are pushed; state.json stays on the server.
+!data/viral/
+data/viral/*
+!data/viral/launches-*.csv
+!data/viral/flags-*.csv
+!data/viral/health.json
+!data/viral/*/
+data/viral/*/*
+!data/viral/*/journal.csv
+!data/viral/*/positions.json
+!data/viral/*/entries.csv
 
 # The momentum strategy (run on your own server) pushes these; its state.json
 # (memory of recent launches) stays on the server.

@@ -335,6 +335,46 @@ def add_launch_endpoints(add, folder, cfg, now):
     add(name, OK, "last 24 h: " + "; ".join(parts).replace("|", "/"))
 
 
+def add_viral(add, folder, cfg, now):
+    """One row: the viral experiment (screener/viral.py, inside the launch recorder), from its
+    pushed health.json: launches recorded and tokens flagged in the last hour, tokens watched
+    now, DexScreener checks, and the paper version's open positions. A warning when the file is
+    older than [health] launch_stale_hours, or when tokens are watched but no DexScreener check
+    has worked for 15 minutes at the last save."""
+    name = "viral: server"
+    c = cfg["viral"]
+    data = _load(os.path.join(folder, c.get("folder", "viral"), "health.json"))
+    if not data:
+        add(name, INFO, "no results pushed yet (it starts with the launch recorder after the next "
+            "hourly push)")
+        return
+    saved = _utc(data.get("updated"))
+    late_after = timedelta(hours=cfg.get("health", {}).get("launch_stale_hours", 3))
+    h = data.get("last_hour") or {}
+    problems = []
+    if saved is None or now - saved > late_after:
+        problems.append(f"nothing saved since {_at(saved, now) if saved else 'ever'} "
+                        f"(older than {late_after.total_seconds() / 3600:.0f} h)")
+    checked = _utc(data.get("last_check_ok"))
+    if data.get("watched_now") and saved and (checked is None
+                                              or saved - checked > timedelta(minutes=15)):
+        problems.append("tokens are watched but no DexScreener check worked in the last 15 min")
+    opened = ", ".join(f"{v}: {s.get('open', 0)} open" for v, s in
+                       sorted((data.get("versions") or {}).items()))
+    detail = (f"last hour: {h.get('launches', 0)} launch(es) recorded, "
+              f"{h.get('flags_name_burst', 0)} flagged by name_burst, "
+              f"{h.get('flags_watchlist', 0)} by watchlist_match, {h.get('checks', 0)} check(s) "
+              f"({h.get('check_errors', 0)} failed), {h.get('buys', 0)} buy(s); "
+              f"{data.get('watched_now', 0)} token(s) watched now; {opened or 'no version'}")
+    if not data.get("first_of_name_known"):
+        detail += "; first-of-name not known yet (under 24 h of name memory)"
+    if saved:
+        detail += f"; saved {_at(saved, now)}"
+    if problems:
+        detail += " (" + "; ".join(problems) + ")"
+    add(name, WARN if problems else OK, detail, "viral: " + "; ".join(problems) if problems else None)
+
+
 def add_main_1min(add, folder, cfg, now, github):
     """One row: the main (1 min) strategy's last good run (from its pushed
     health.json), runs and requests per hour over the last 24 h, and its
@@ -792,6 +832,8 @@ def health_lines(folder, cfg, now, github=None, found=None):
         add_launch_record(add, folder, cfg, now, github)
         add_launch_feed_format(add, folder, cfg, now)
         add_launch_endpoints(add, folder, cfg, now)
+        if cfg.get("viral", {}).get("enabled"):
+            add_viral(add, folder, cfg, now)
 
     # 9. The news listings bot on your server.
     if cfg.get("news_listings", {}).get("enabled") and cfg.get("news"):

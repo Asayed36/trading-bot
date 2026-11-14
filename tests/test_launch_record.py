@@ -1382,7 +1382,7 @@ class WatchdogTests(Base):
     def test_the_watchdog_task_runs_beside_the_others(self):
         runner = lrb.RecordRunner(self.cfg(), self.d)
         coros = runner.tasks()
-        self.assertEqual(len(coros), 4)
+        self.assertEqual(len(coros), 5)                       # (the fifth: the viral experiment)
         self.assertIn("watchdog_task", [c.cr_code.co_name for c in coros])
         for c in coros:
             c.close()

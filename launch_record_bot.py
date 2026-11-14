@@ -28,11 +28,13 @@ from urllib.parse import urlparse
 
 import websockets
 
+from screener.api import PublicApi
 from screener.backdrop import MarketBackdrop
 from screener import launch_record as lr
 from screener.launch_record import LaunchRecorder
 from screener.pumpfeed import subscribe_request
 from screener.settings import HERE, load_config
+from screener.viral import Viral
 
 log = logging.getLogger("launch_record")
 
@@ -86,7 +88,7 @@ def describe_failure(exc):
 
 class RecordRunner:
     def __init__(self, cfg, data_folder, stop=None, connect=websockets.connect,
-                 backdrop=None, clock=time.time):
+                 backdrop=None, clock=time.time, viral_api=None):
         self.cfg, self.m = cfg, cfg["momentum"]
         self.recorder = LaunchRecorder(cfg, data_folder, clock=clock)
         self.connect, self.clock = connect, clock
@@ -100,6 +102,16 @@ class RecordRunner:
         self.feed_restarts = 0
         self.exit_requested = False
         self.exit_fn = os._exit            # replaced in tests
+        # The viral experiment ([viral], screener/viral.py): fed by the recorder's new launches;
+        # its flagged tokens are checked on DexScreener (free, read-only) every minute.
+        self.viral = None
+        if cfg.get("viral", {}).get("enabled"):
+            self.viral = Viral(cfg, data_folder, clock)
+            self.recorder.on_launch = self.viral.on_launch
+            api = cfg.get("api", {})
+            self.viral_api = viral_api or PublicApi(api.get("timeout_seconds", 20),
+                                                    api.get("rugcheck_delay_seconds", 1.5),
+                                                    dexscreener_attempts=1)
 
     # ---- the feed (the momentum bot's connection and reconnect rules) ----
 
@@ -291,9 +303,40 @@ class RecordRunner:
             except Exception:
                 log.exception("watchdog check failed")
 
+    async def viral_step(self):
+        """One viral round: ask DexScreener about the watched flags and the open positions (in
+        a thread, so the feed keeps running), apply the answer, save. A failed call is skipped
+        until the next round; an error here never stops the recorder."""
+        v = self.viral
+        now = self.clock()
+        try:
+            addresses = v.to_check(now)
+            if addresses:
+                try:
+                    pairs = await asyncio.to_thread(self.viral_api.pairs_for_tokens, addresses)
+                except Exception as exc:          # DexScreener down, a timeout, ...
+                    v.check_failed(now, exc)
+                else:
+                    v.apply(pairs or [], self.clock(), requests=(len(addresses) + 29) // 30)
+            v.save(self.clock())
+        except Exception:
+            log.exception("viral step failed; the recorder continues")
+
+    async def viral_task(self):
+        if self.viral is None:
+            return
+        while not self.stop.is_set():
+            await self.viral_step()
+            try:
+                await asyncio.wait_for(self.stop.wait(), self.cfg["viral"]["check_every_seconds"])
+                return
+            except asyncio.TimeoutError:
+                pass
+
     def tasks(self):
         """The coroutines to run beside other work (launch_bot.py adds them to its own loop)."""
-        return [self.feed(), self.clock_task(), self.backdrop_task(), self.watchdog_task()]
+        return [self.feed(), self.clock_task(), self.backdrop_task(), self.watchdog_task(),
+                self.viral_task()]
 
     def shutdown(self):
         """Save what is saved: finished rows, the ledger and the health file. Launches still
@@ -302,6 +345,12 @@ class RecordRunner:
         self.recorder.flush()
         self.recorder.write_health()
         self.recorder.save()
+        if self.viral is not None:
+            try:
+                self.viral.save()
+                self.viral.save_state()
+            except Exception:
+                log.exception("viral files could not be saved at shutdown")
 
     async def main(self, stop_after=None, partial_at_end=False):
         loop = asyncio.get_running_loop()

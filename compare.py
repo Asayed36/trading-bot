@@ -18,7 +18,7 @@ from datetime import timedelta
 from run import HERE, load_config
 from screener.compare import (MARKER, PASS_MARKER, actual_intervals, checklist,
                               helius_lines, liquid_filter_lines, report, schedule_lines,
-                              trend_section)
+                              trend_section, viral_lines)
 from screener.github_issues import GitHubError, GitHubIssues
 from screener.health import RUN_EVENTS, health_lines
 from screener.paper_trader import now_utc
@@ -78,6 +78,9 @@ def stopped(cfg, name):
             return bool(v.get("stopped"))
     for v in cfg.get("liquid", {}).get("versions", []):
         if name == (v.get("label") or f"main (1 min) liquid {v['name']}"):
+            return bool(v.get("stopped"))
+    for v in cfg.get("viral", {}).get("versions", []):
+        if name == (v.get("label") or f"viral {v['name']}"):
             return bool(v.get("stopped"))
     if name.startswith("launch "):
         return bool(cfg.get("launch", {}).get("stopped"))
@@ -192,6 +195,14 @@ def main():
         for v in m["variants"]:
             strategies.append((f"momentum {v['name']}",
                                os.path.join(folder, m["folder"], v["name"]), sell_cost))
+    if cfg.get("viral", {}).get("enabled"):
+        # The viral experiment runs inside the launch recorder (your server, pushed hourly).
+        vc = cfg["viral"]
+        for v in vc.get("versions", []):
+            if v.get("enabled", True):
+                strategies.append((v.get("label") or f"viral {v['name']}",
+                                   os.path.join(folder, v["folder"]), vc["round_trip_cost_pct"]))
+        extra += viral_lines(os.path.join(folder, vc.get("folder", "viral")), day)
     if cfg.get("convergence", {}).get("enabled"):
         extra += helius_lines(os.path.join(folder, "convergence"), day,
                               bool(cfg["convergence"].get("stopped")))

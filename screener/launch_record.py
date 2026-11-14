@@ -259,6 +259,7 @@ class LaunchRecorder:
         self.chain_creates = self.received_creates = 0
         self.messages = 0               # feed notifications received (for the test report)
         self.feed_counts = {}           # "YYYY-MM-DDTHH" (UTC) -> what the feed sent that hour
+        self.on_launch = None           # optional: called (mint, name, symbol, t) for a new launch
         self.endpoint_hours = {}        # "YYYY-MM-DDTHH" (UTC) -> endpoint host -> its attempts
         self._load()
 
@@ -546,6 +547,11 @@ class LaunchRecorder:
             self.creators.setdefault(ch, []).append((int(t), mid))
         self.launches[mint] = w
         self.order.append((w.due, mint))
+        if self.on_launch is not None:          # recording only (the viral experiment)
+            try:
+                self.on_launch(mint, w.name, w.symbol, t)
+            except Exception:                   # it can never stop the recording
+                pass
         return True
 
     def _forget(self, mint, dropped=False):

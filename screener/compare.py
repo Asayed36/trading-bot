@@ -288,6 +288,36 @@ def liquid_filter_lines(versions, day):
     return lines + [""] if lines else []
 
 
+def viral_lines(folder, day):
+    """Under the table, for the viral experiment: the tokens flagged by name_burst and by
+    watchlist_match (a token can be both), how many of each reached the liquidity needed, and
+    how many were bought, on `day` and since the start (its flags-YYYY-MM-DD.csv files)."""
+    rows = []
+    try:
+        names = sorted(n for n in os.listdir(folder)
+                       if n.startswith("flags-") and n.endswith(".csv"))
+    except OSError:
+        names = []
+    for name in names:
+        rows += _csv_rows(os.path.join(folder, name))
+    if not rows:
+        return ["**Viral flags:** none recorded yet.", ""]
+
+    def part(subset):
+        out = []
+        for key, label in (("by_name_burst", "name_burst"), ("by_watchlist", "watchlist_match")):
+            mine = [r for r in subset if r.get(key) == "yes"]
+            reached = sum(1 for r in mine if r.get("reached_liquidity_utc"))
+            bought = sum(1 for r in mine if r.get("bought_utc"))
+            out.append(f"{label} {len(mine)} (reached the liquidity {reached}, bought {bought})")
+        bought = sum(1 for r in subset if r.get("bought_utc"))
+        return "; ".join(out) + f"; bought in all {bought}"
+    today = [r for r in rows if (r.get("flagged_utc") or "").startswith(day)]
+    return [f"**Viral flags** (a token can be flagged both ways; a flag is checked for liquidity "
+            f"for its watch hours after it was flagged): {day}: {part(today)} | since the start: "
+            f"{part(rows)}", ""]
+
+
 def closed_trades(folder):
     """Each closed trade (a buy and its sells, after costs), oldest first:
     [{"symbol", "bought", "pnl"}]. A position still open isn't counted."""
