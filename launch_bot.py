@@ -45,7 +45,7 @@ from screener.settings import HERE, load_config
 from launch_record_bot import RecordRunner
 
 # The config.toml sections the bot reads: only changes there restart it.
-CONFIG_SECTIONS = ("launch", "files", "launch_record", "momentum")
+CONFIG_SECTIONS = ("launch", "files", "launch_record", "momentum", "viral")
 CODE_CHECK_SECONDS = 30
 # The only things this program ever asks PumpPortal for (read-only data).
 ALLOWED_METHODS = {"subscribeNewToken", "subscribeMigration"}

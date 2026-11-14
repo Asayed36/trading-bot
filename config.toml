@@ -1442,3 +1442,257 @@ symbol = "TAOUSDT"
 [[trend.coins]]
 name = "RENDER"
 symbol = "RENDERUSDT"
+
+# ---------------------------------------------------------------------
+# VIRAL TRIGGER (added 2026-11-14): a paper experiment that runs inside the launch recorder
+# (launch_record_bot.py, in the launch-bot service, while the recorder runs). screener/viral.py.
+# PAPER TRADING ONLY: no wallet, no key, no real order; it only reads the recorder's feed and
+# DexScreener's free pairs endpoint. Changing this section restarts the launch-bot service.
+# FIXED RULES decided in advance: these numbers are not tuned from results; a change later is a
+# new version, not an edit.
+#
+# Recording (every launch the recorder sees: data/viral/launches-YYYY-MM-DD.csv):
+#   name_burst: how many other launches used the same normalized symbol (letters and digits,
+#   lower case) in the previous burst_window_minutes, and whether this token was the first of
+#   that symbol in the last first_of_name_hours ("unknown" while the name memory is younger).
+#   watchlist_match: the [[viral.watchlist]] entry its name or symbol matches.
+# A token is FLAGGED (data/viral/flags-YYYY-MM-DD.csv) when it matches the watchlist, or when
+# it was the first of its name in 24 hours and min_followers other same-symbol launches followed
+# within burst_window_minutes. A flagged token is checked on DexScreener every
+# check_every_seconds for watch_hours (at most max_watched tokens at a time, the newest first).
+# ---------------------------------------------------------------------
+[viral]
+enabled = true
+folder = "viral"
+burst_window_minutes = 30
+first_of_name_hours = 24
+min_followers = 10
+min_liquidity_usd = 50_000
+check_every_seconds = 60
+watch_hours = 24
+max_watched = 600
+# Costs and size, the same as the liquid versions.
+buy_amount_usd = 10
+buy_slippage_pct = 1.5
+round_trip_cost_pct = 3
+
+# v1: buys a flagged token at the first check where its liquidity is at least
+# min_liquidity_usd; exits like liquid l6: everything after 60 minutes, or at -25% from the
+# buy price. It keeps its start time in positions.json ("started_utc"); the daily comparison
+# counts only trades after it.
+[[viral.versions]]
+name = "v1"
+label = "viral v1"
+folder = "viral/v1"
+stop_loss_pct = 25
+max_hold_minutes = 60
+
+# The watchlist: well-known people and brands that meme coins are named after. A token matches
+# when its normalized symbol equals a term ("TRUMP", "$trump"), or a term's words appear as
+# whole words in its name or symbol ("Trump Cat" matches; "Strumpet" does not). Terms need at
+# least 3 letters or digits. Categories: politician, celebrity, crypto (influencers and founders),
+# brand. The first matching entry wins.
+[[viral.watchlist]]
+name = "Donald Trump"
+category = "politician"
+terms = ["trump", "donald trump", "djt"]
+[[viral.watchlist]]
+name = "Melania Trump"
+category = "politician"
+terms = ["melania"]
+[[viral.watchlist]]
+name = "Barron Trump"
+category = "politician"
+terms = ["barron"]
+[[viral.watchlist]]
+name = "JD Vance"
+category = "politician"
+terms = ["vance", "jd vance"]
+[[viral.watchlist]]
+name = "Joe Biden"
+category = "politician"
+terms = ["biden"]
+[[viral.watchlist]]
+name = "Kamala Harris"
+category = "politician"
+terms = ["kamala"]
+[[viral.watchlist]]
+name = "Barack Obama"
+category = "politician"
+terms = ["obama"]
+[[viral.watchlist]]
+name = "Javier Milei"
+category = "politician"
+terms = ["milei"]
+[[viral.watchlist]]
+name = "Nayib Bukele"
+category = "politician"
+terms = ["bukele"]
+[[viral.watchlist]]
+name = "Vladimir Putin"
+category = "politician"
+terms = ["putin"]
+[[viral.watchlist]]
+name = "Xi Jinping"
+category = "politician"
+terms = ["xi jinping", "jinping"]
+[[viral.watchlist]]
+name = "Volodymyr Zelensky"
+category = "politician"
+terms = ["zelensky", "zelenskyy"]
+[[viral.watchlist]]
+name = "Narendra Modi"
+category = "politician"
+terms = ["modi"]
+[[viral.watchlist]]
+name = "Robert F. Kennedy Jr."
+category = "politician"
+terms = ["rfk", "rfk jr"]
+[[viral.watchlist]]
+name = "Elon Musk"
+category = "celebrity"
+terms = ["elon", "musk", "elon musk"]
+[[viral.watchlist]]
+name = "Kanye West"
+category = "celebrity"
+terms = ["kanye"]
+[[viral.watchlist]]
+name = "Taylor Swift"
+category = "celebrity"
+terms = ["taylor swift", "tswift"]
+[[viral.watchlist]]
+name = "MrBeast"
+category = "celebrity"
+terms = ["mrbeast", "mr beast"]
+[[viral.watchlist]]
+name = "Snoop Dogg"
+category = "celebrity"
+terms = ["snoop", "snoop dogg"]
+[[viral.watchlist]]
+name = "Drake"
+category = "celebrity"
+terms = ["drake"]
+[[viral.watchlist]]
+name = "Kim Kardashian"
+category = "celebrity"
+terms = ["kardashian"]
+[[viral.watchlist]]
+name = "Iggy Azalea"
+category = "celebrity"
+terms = ["iggy", "azalea"]
+[[viral.watchlist]]
+name = "Andrew Tate"
+category = "celebrity"
+terms = ["tate", "andrew tate"]
+[[viral.watchlist]]
+name = "Cristiano Ronaldo"
+category = "celebrity"
+terms = ["ronaldo", "cr7"]
+[[viral.watchlist]]
+name = "Lionel Messi"
+category = "celebrity"
+terms = ["messi"]
+[[viral.watchlist]]
+name = "Kai Cenat"
+category = "celebrity"
+terms = ["cenat", "kai cenat"]
+[[viral.watchlist]]
+name = "IShowSpeed"
+category = "celebrity"
+terms = ["ishowspeed"]
+[[viral.watchlist]]
+name = "Joe Rogan"
+category = "celebrity"
+terms = ["rogan"]
+[[viral.watchlist]]
+name = "Hawk Tuah"
+category = "celebrity"
+terms = ["hawk tuah", "hawktuah"]
+[[viral.watchlist]]
+name = "Changpeng Zhao"
+category = "crypto"
+terms = ["changpeng", "czbinance", "cz binance"]
+[[viral.watchlist]]
+name = "Vitalik Buterin"
+category = "crypto"
+terms = ["vitalik", "buterin"]
+[[viral.watchlist]]
+name = "Michael Saylor"
+category = "crypto"
+terms = ["saylor"]
+[[viral.watchlist]]
+name = "Anatoly Yakovenko"
+category = "crypto"
+terms = ["toly", "yakovenko"]
+[[viral.watchlist]]
+name = "Ansem"
+category = "crypto"
+terms = ["ansem"]
+[[viral.watchlist]]
+name = "Murad"
+category = "crypto"
+terms = ["murad"]
+[[viral.watchlist]]
+name = "Justin Sun"
+category = "crypto"
+terms = ["justin sun"]
+[[viral.watchlist]]
+name = "Satoshi Nakamoto"
+category = "crypto"
+terms = ["satoshi", "nakamoto"]
+[[viral.watchlist]]
+name = "Arthur Hayes"
+category = "crypto"
+terms = ["arthur hayes"]
+[[viral.watchlist]]
+name = "Tesla"
+category = "brand"
+terms = ["tesla"]
+[[viral.watchlist]]
+name = "SpaceX"
+category = "brand"
+terms = ["spacex"]
+[[viral.watchlist]]
+name = "Apple"
+category = "brand"
+terms = ["apple"]
+[[viral.watchlist]]
+name = "Nike"
+category = "brand"
+terms = ["nike"]
+[[viral.watchlist]]
+name = "McDonald's"
+category = "brand"
+terms = ["mcdonalds", "mcdonald"]
+[[viral.watchlist]]
+name = "Starbucks"
+category = "brand"
+terms = ["starbucks"]
+[[viral.watchlist]]
+name = "Coca-Cola"
+category = "brand"
+terms = ["coca cola", "cocacola"]
+[[viral.watchlist]]
+name = "Nvidia"
+category = "brand"
+terms = ["nvidia"]
+[[viral.watchlist]]
+name = "OpenAI"
+category = "brand"
+terms = ["openai", "chatgpt"]
+[[viral.watchlist]]
+name = "Grok"
+category = "brand"
+terms = ["grok"]
+[[viral.watchlist]]
+name = "Disney"
+category = "brand"
+terms = ["disney"]
+[[viral.watchlist]]
+name = "Ferrari"
+category = "brand"
+terms = ["ferrari"]
+[[viral.watchlist]]
+name = "Binance"
+category = "brand"
+terms = ["binance"]

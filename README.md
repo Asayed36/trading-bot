@@ -432,6 +432,21 @@ everything after 60 minutes. Costs: 3% round trip plus the 1.5% buy slippage. Fi
 `data/main-1min/liquid/l1` .. `l4` (pushed with the rest of `data/main-1min/`); one column per
 version in the daily comparison. Settings: `[liquid]` and `[[liquid.versions]]`.
 
+## The "viral trigger" experiment (inside the launch recorder, on your own server)
+
+Paper trading only. It runs inside the launch recorder (`launch_record_bot.py`, in the
+launch-bot service) and records two facts for every new pump.fun launch in
+`data/viral/launches-YYYY-MM-DD.csv`: **name_burst** (how many other launches used the same
+symbol in the previous 30 minutes, and whether this one was the first of that symbol in 24
+hours) and **watchlist_match** (a well-known person or brand from `[[viral.watchlist]]`). A
+token is flagged (`data/viral/flags-YYYY-MM-DD.csv`) when it matches the watchlist, or when it
+was the first of its name and 10 or more same-symbol launches followed within 30 minutes. Each
+flagged token is checked on DexScreener every minute for 24 hours; **viral v1** buys $10 (1.5%
+slippage, 3% round trip) at the first check with at least $50,000 of liquidity, and sells
+everything after 60 minutes or at -25% (like liquid l6). The numbers are fixed in advance.
+Settings: `[viral]` in `config.toml`; results in the daily comparison ("viral v1" and the
+"Viral flags" line).
+
 ## The "news (listings)" strategy (exchange listings every minute, on your own server)
 
 The news strategy for the exchange listings only, checked **every minute**
