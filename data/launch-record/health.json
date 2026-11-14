@@ -1,19 +1,19 @@
 {
- "updated": "2026-11-14T20:02:07Z",
- "feed_up": false,
+ "updated": "2026-11-14T21:00:15Z",
+ "feed_up": true,
  "endpoint": "solana-rpc.publicnode.com",
- "last_message": "2026-11-14T20:01:51Z",
- "feed_silent_seconds": 17,
+ "last_message": "2026-11-14T21:00:03Z",
+ "feed_silent_seconds": 12,
  "last_row": "2026-11-14T18:16:58Z",
  "last_row_ts": 1794680218.4195712,
- "since_last_row_seconds": 6310,
- "launches_seen_last_hour": 0,
- "in_flight": 0,
+ "since_last_row_seconds": 9797,
+ "launches_seen_last_hour": 110,
+ "in_flight": 110,
  "rows_written_today": 2558,
  "rows_skipped_by_cap_today": 3319,
  "max_rows_per_day": 4000,
- "feed_disconnects_today": 1805,
- "gap_seconds_today": 1977,
+ "feed_disconnects_today": 1985,
+ "gap_seconds_today": 2166,
  "started": "2026-11-14T06:59:04Z",
  "dropped_at_last_restart": 787,
  "days": {
@@ -187,9 +187,9 @@
    "skipped_by_cap": 1391
   },
   "2026-11-14": {
-   "launches_seen": 11565,
-   "feed_disconnects": 1805,
-   "gap_seconds": 1976,
+   "launches_seen": 11675,
+   "feed_disconnects": 1985,
+   "gap_seconds": 2166,
    "finished": 10774,
    "watched_60": 10774,
    "watched_60_ge_1": 9097,
@@ -213,12 +213,6 @@
   }
  },
  "feed_counts": {
-  "2026-11-13T20": {
-   "messages": 429478,
-   "trades": 72990,
-   "undecoded": 15437,
-   "creations": 671
-  },
   "2026-11-13T21": {
    "messages": 462278,
    "trades": 50152,
@@ -344,40 +338,35 @@
    "trades": 1253,
    "undecoded": 879,
    "creations": 8
+  },
+  "2026-11-14T20": {
+   "messages": 78360,
+   "trades": 11651,
+   "undecoded": 2794,
+   "creations": 110
   }
  },
  "endpoints": {
   "api.mainnet-beta.solana.com": {
-   "attempts": 515,
-   "successes": 514,
-   "failures": 515,
+   "attempts": 463,
+   "successes": 462,
+   "failures": 463,
    "top_failure": "closed without a close frame (code 1006); we sent code 1002 (invalid status code)",
-   "top_failure_count": 514,
-   "avg_connected_seconds": 100.1,
-   "ended_connections": 515
+   "top_failure_count": 462,
+   "avg_connected_seconds": 103.7,
+   "ended_connections": 463
   },
   "solana-rpc.publicnode.com": {
-   "attempts": 1516,
-   "successes": 1516,
-   "failures": 1516,
+   "attempts": 1697,
+   "successes": 1697,
+   "failures": 1696,
    "top_failure": "ConnectionError: no message for 15 s",
-   "top_failure_count": 1513,
-   "avg_connected_seconds": 21.4,
-   "ended_connections": 1516
+   "top_failure_count": 1692,
+   "avg_connected_seconds": 21.0,
+   "ended_connections": 1696
   }
  },
  "endpoint_hours": {
-  "2026-11-13T17": {
-   "api.mainnet-beta.solana.com": {
-    "attempts": 46,
-    "successes": 46,
-    "failures": {
-     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 46
-    },
-    "ended": 46,
-    "connected_seconds": 3465.6009612083435
-   }
-  },
   "2026-11-13T18": {
    "api.mainnet-beta.solana.com": {
     "attempts": 46,
@@ -666,13 +655,25 @@
   },
   "2026-11-14T20": {
    "solana-rpc.publicnode.com": {
-    "attempts": 7,
-    "successes": 7,
+    "attempts": 187,
+    "successes": 187,
     "failures": {
-     "ConnectionError: no message for 15 s": 8
+     "ConnectionError: no message for 15 s": 186,
+     "ConnectionError: refused the subscription: {'code': -32603, 'message': 'Internal error'}": 1
     },
-    "ended": 8,
-    "connected_seconds": 129.33423566818237
+    "ended": 187,
+    "connected_seconds": 3381.507836341858
+   }
+  },
+  "2026-11-14T21": {
+   "solana-rpc.publicnode.com": {
+    "attempts": 1,
+    "successes": 1,
+    "failures": {
+     "ConnectionError: no message for 15 s": 1
+    },
+    "ended": 1,
+    "connected_seconds": 16.019466161727905
    }
   }
  }
