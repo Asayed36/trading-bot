@@ -27,7 +27,11 @@ ProtectKernelModules=true
 ProtectControlGroups=true
 RestrictSUIDSGID=true
 LockPersonality=true
-MemoryMax=200M
+# It needs about 30 MB (the hourly report reads the launch files one row at a time). Above
+# 150 MB it is stopped and restarted rather than pushed into swap, where it would slow down
+# the other bots on this server.
+MemoryMax=150M
+MemorySwapMax=0
 
 [Install]
 WantedBy=multi-user.target

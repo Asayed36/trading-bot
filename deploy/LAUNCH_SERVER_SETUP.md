@@ -938,3 +938,20 @@ row **xposts: server** with the posts read today and the estimated cost.
 - The report `data/xposts/report.md` (rewritten about once an hour) lists, for each post, the
   pump.fun launches in the next 10 minutes whose name or symbol matches a word of the post,
   with how their price moved. It is a measurement only.
+
+### M7. When the service file changes (for example its memory limit)
+
+New code reaches the watcher by itself (the hourly push, then an automatic restart), but a
+change to `deploy/xposts.service` must be copied by hand. Paste these one at a time, pressing
+**Enter** after each:
+
+```
+sudo systemctl start launch-push
+sudo cp ~/trading-bot/deploy/xposts.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl restart xposts
+systemctl status xposts --no-pager
+```
+
+*You should see*, after the last one, `Active: active (running)` and a `Memory:` line well
+below the `max` shown next to it.
