@@ -567,6 +567,71 @@ class ReportTests(Base):
             self.assertIn("No posts saved yet.", fh.read())
 
 
+class ReportMemoryTests(ReportTests):
+    """The report reads only what it needs: whole days of launch rows once took ~300 MB."""
+
+    def opened(self, now):
+        paths = []
+        real = rep._stream
+
+        def spy(path, columns=None):
+            paths.append(os.path.relpath(path, self.d))
+            return real(path, columns)
+        with mock.patch.object(rep, "_stream", spy):
+            lines = rep.build(self.d, CFG["xposts"], now)
+        return paths, lines
+
+    def test_no_posts_no_launch_file_is_read(self):
+        self.setup_data()
+        os.remove(os.path.join(self.d, "xposts", "posts-2027-01-15.csv"))
+        paths, lines = self.opened(at(120))
+        self.assertEqual([p for p in paths if not p.startswith("xposts")], [])
+        self.assertEqual(lines[-1], "No posts saved yet.")
+
+    def test_only_the_days_of_the_posts_are_read(self):
+        self.setup_data()
+        for day in ("2027-01-10", "2027-01-12"):                  # other days in the window
+            self.write(f"viral/launches-{day}.csv", ["created_utc", "token_address", "symbol",
+                                                     "name"], [])
+            self.write(f"launch-record/launches-{day}.csv", ["created_at_utc", "token_address"], [])
+        paths, _ = self.opened(at(120))
+        self.assertNotIn("viral/launches-2027-01-10.csv", paths)
+        self.assertNotIn("launch-record/launches-2027-01-12.csv", paths)
+        self.assertIn("viral/launches-2027-01-15.csv", paths)
+        self.assertIn("launch-record/launches-2027-01-15.csv", paths)
+
+    def test_a_big_day_of_launch_rows_stays_small_in_memory(self):
+        import tracemalloc
+        self.setup_data()
+        cols = ["created_at_utc", "token_address", "price_sol_5s", "price_sol_60s",
+                "price_sol_300s", "price_sol_900s", "price_sol_3600s", "peak_price_sol",
+                "seconds_to_peak"] + [f"extra_{i}" for i in range(60)]
+        big = [dict({c: "x" * 12 for c in cols}, token_address=f"T{i}",
+                    created_at_utc="2027-01-15T12:00:00Z") for i in range(8000)]
+        self.write("launch-record/launches-2027-01-15.csv", cols, big)
+        vcols = ["created_utc", "token_address", "symbol", "name"]
+        self.write("viral/launches-2027-01-15.csv", vcols,
+                   [{"created_utc": "2027-01-15T12:01:00Z", "token_address": f"V{i}",
+                     "symbol": f"S{i}", "name": "nothing here"} for i in range(20000)])
+        tracemalloc.start()
+        rep.build(self.d, CFG["xposts"], at(120))
+        peak = tracemalloc.get_traced_memory()[1]
+        tracemalloc.stop()
+        self.assertLess(peak, 5_000_000, f"{peak / 1e6:.1f} MB")      # once over 100 MB
+
+    def test_the_stream_keeps_only_the_columns_asked_for(self):
+        self.setup_data()
+        rows = list(rep._stream(os.path.join(self.d, "launch-record", "launches-2027-01-15.csv"),
+                                ("token_address", "price_sol_5s")))
+        self.assertEqual(rows, [{"token_address": "A", "price_sol_5s": "1e-8"}])
+
+    def test_the_service_is_capped_well_under_200_mb_without_swap(self):
+        with open(os.path.join(HERE, "deploy", "xposts.service")) as fh:
+            text = fh.read()
+        self.assertIn("MemoryMax=150M", text)
+        self.assertIn("MemorySwapMax=0", text)
+
+
 class HealthRowTests(Base):
     def row(self, data, now=None):
         from screener.health import add_xposts

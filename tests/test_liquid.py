@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import unittest.mock
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
@@ -582,6 +583,11 @@ class NewVersionBotTests(BotTests):
         only_old["liquid"]["versions"] = [v for v in only_old["liquid"]["versions"]
                                           if v["name"] in VERSIONS]
         results = {}
+        # main (1 min) stamps each price with the wall-clock time it was fetched: frozen here,
+        # or the two runs differ whenever they fall in different seconds
+        frozen = unittest.mock.patch.object(m1, "now_utc", lambda: NOW)
+        frozen.start()
+        self.addCleanup(frozen.stop)
         for label, cfg in (("old", only_old), ("new", CFG)):
             with tempfile.TemporaryDirectory() as d:
                 bot = m1.MainOneMinute(cfg, d, FilteredApi())

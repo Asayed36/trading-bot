@@ -15,6 +15,7 @@ word (STOPWORDS), and equals the launch's normalized symbol, or (with 4 letters 
 one of the words of its name.
 """
 
+import bisect
 import csv
 import glob
 import os
@@ -46,14 +47,23 @@ def _when(text):
 
 
 def _rows(pattern):
+    """All rows of the files matching `pattern` (only for the small posts files)."""
     out = []
     for path in sorted(glob.glob(pattern)):
-        try:
-            with open(path, newline="") as fh:
-                out += list(csv.DictReader(fh))
-        except OSError:
-            pass
+        out += list(_stream(path))
     return out
+
+
+def _stream(path, columns=None):
+    """The rows of one CSV file, one at a time (a missing file has none). With `columns`, each
+    row keeps only those: a day of launch-record rows is several MB, and whole days held as
+    dictionaries took hundreds of MB."""
+    try:
+        with open(path, newline="") as fh:
+            for row in csv.DictReader(fh):
+                yield {k: row.get(k) for k in columns} if columns else row
+    except OSError:
+        return
 
 
 def _num(text):
@@ -86,25 +96,14 @@ def matches(launch_symbol, launch_name, wanted):
 
 
 def build(data_root, c, now=None, days=None):
-    """The report's lines."""
+    """The report's lines. Memory stays small: the posts are read first (nothing else is read
+    when there are none), then only the launch files of the days the posts' windows touch, one
+    row at a time, keeping only the launches that match a post and only the columns used."""
     now = now or datetime.now(timezone.utc)
     days = days if days is not None else c.get("report_days", 7)
     window = timedelta(minutes=c.get("report_window_minutes", 10))
     cutoff = (now - timedelta(days=days)).strftime("%Y-%m-%d")
     folder = os.path.join(data_root, c.get("folder", "xposts"))
-    posts = [p for p in _rows(os.path.join(folder, "posts-*.csv"))
-             if (p.get("posted_utc") or "")[:10] >= cutoff]
-    all_launches = [r for r in _rows(os.path.join(data_root, "viral", "launches-*.csv"))
-                    if (r.get("created_utc") or "")[:10] >= cutoff]
-    priced = {r["token_address"]: r for r in _rows(os.path.join(data_root, "launch-record",
-                                                                "launches-*.csv"))
-              if (r.get("created_at_utc") or "")[:10] >= cutoff}
-    launches = []
-    for r in all_launches:
-        when = _when(r.get("created_utc"))
-        if when:
-            launches.append((when, r))
-    launches.sort(key=lambda x: x[0])
     lines = [
         "# X posts and the pump.fun launches after them",
         "",
@@ -116,36 +115,69 @@ def build(data_root, c, now=None, days=None):
         "sample); a match is not a cause.",
         "",
     ]
+    posts = []
+    for p in _rows(os.path.join(folder, "posts-*.csv")):
+        if (p.get("posted_utc") or "")[:10] < cutoff:
+            continue
+        posted = _when(p.get("posted_utc")) or _when(p.get("seen_utc"))
+        if posted is not None:
+            posts.append((posted, p, post_words(p.get("text"), c.get("min_word_letters", 3))))
     if not posts:
         return lines + ["No posts saved yet."]
-    total = 0
-    for p in sorted(posts, key=lambda p: (p.get("posted_utc", ""), p.get("post_id", ""))):
-        posted = _when(p.get("posted_utc")) or _when(p.get("seen_utc"))
-        if posted is None:
-            continue
-        wanted = post_words(p.get("text"), c.get("min_word_letters", 3))
-        found = []
-        for when, r in launches:
-            if when < posted:
+    posts.sort(key=lambda x: (x[1].get("posted_utc", ""), x[1].get("post_id", "")))
+    starts = sorted(range(len(posts)), key=lambda i: posts[i][0])
+    times = [posts[i][0] for i in starts]
+
+    # the days whose launches can fall in a post's window
+    wanted_days = set()
+    for posted, _, _ in posts:
+        wanted_days.add(posted.strftime("%Y-%m-%d"))
+        wanted_days.add((posted + window).strftime("%Y-%m-%d"))
+    found = {i: [] for i in range(len(posts))}
+    for day in sorted(wanted_days):
+        path = os.path.join(data_root, "viral", f"launches-{day}.csv")
+        for r in _stream(path, ("created_utc", "token_address", "symbol", "name")):
+            when = _when(r.get("created_utc"))
+            if when is None:
                 continue
-            if when > posted + window:
-                break
-            hit = matches(r.get("symbol"), r.get("name"), wanted)
-            if hit:
-                found.append((when, r, hit))
+            # the posts made at most one window before this launch (and not after it)
+            lo = bisect.bisect_left(times, when - window)
+            hi = bisect.bisect_right(times, when)
+            for i in starts[lo:hi]:
+                hit = matches(r.get("symbol"), r.get("name"), posts[i][2])
+                if hit:
+                    found[i].append((when, r, hit))
+    needed = {r["token_address"] for hits in found.values() for _, r, _ in hits}
+    priced = {}
+    if needed:
+        price_days = set()
+        for hits in found.values():
+            for when, _, _ in hits:
+                price_days.add(when.strftime("%Y-%m-%d"))
+                price_days.add((when + timedelta(days=1)).strftime("%Y-%m-%d"))
+        keep = ("token_address", "peak_price_sol", "seconds_to_peak", "price_sol_5s",
+                *(col for _, col in CHECKPOINTS))
+        for day in sorted(price_days):
+            path = os.path.join(data_root, "launch-record", f"launches-{day}.csv")
+            for r in _stream(path, keep):
+                if r.get("token_address") in needed:
+                    priced[r["token_address"]] = r
+    total = 0
+    for i, (posted, p, _) in enumerate(posts):
+        hits = sorted(found[i], key=lambda x: x[0])
         text = " ".join((p.get("text") or "").split())[:140].replace("|", "/")
         lines.append(f"## @{p.get('account')} {posted:%Y-%m-%d %H:%M:%S} UTC (post {p.get('post_id')})")
         lines.append(f"> {text}")
         lines.append("")
-        if not found:
+        if not hits:
             lines += ["No matching launch in the next "
                       f"{window.total_seconds() / 60:g} minutes.", ""]
             continue
-        total += len(found)
+        total += len(hits)
         lines += ["| Launched after | Symbol | Name | Matched | " +
                   " | ".join(label for label, _ in CHECKPOINTS) + " | Peak (after) |",
                   "|---|---|---|---|" + "---|" * len(CHECKPOINTS) + "---|"]
-        for when, r, hit in found:
+        for when, r, hit in hits:
             rec = priced.get(r.get("token_address"))
             after = f"{(when - posted).total_seconds():.0f} s"
             if rec is None or not _num(rec.get("price_sol_5s")):
@@ -161,7 +193,7 @@ def build(data_root, c, now=None, days=None):
                 peak = (f"{(top / base - 1) * 100:+.0f}% ({rec.get('seconds_to_peak') or '?'} s)"
                         if top else "–")
             name = (r.get("name") or "").replace("|", "/")[:40]
-            lines.append(f"| {after} | {r.get('symbol', '')[:16]} | {name} | "
+            lines.append(f"| {after} | {(r.get('symbol') or '')[:16]} | {name} | "
                          f"{', '.join(sorted(hit))} | " + " | ".join(moves) + f" | {peak} |")
         lines.append("")
     lines.insert(4, f"{len(posts)} post(s), {total} matching launch(es).")
