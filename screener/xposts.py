@@ -312,8 +312,11 @@ class Watcher:
         data = {
             "updated": iso(now),
             "token": self.api is not None,
-            "accounts_watched": sorted(self.accounts.get("ids", {})),
-            "accounts_missing": self.accounts.get("missing", []),
+            "accounts_watched": sorted(h for h in self.accounts.get("ids", {})
+                                       if h in {x.lower() for x in self.handles}),
+            # (only handles still in [xposts] accounts: a removed one is no longer reported)
+            "accounts_missing": [m for m in self.accounts.get("missing", [])
+                                 if m in {h.lower() for h in self.handles}],
             "posts_read_today": day["posts_read"],
             "requests_today": day["requests"],
             "errors_today": day["errors"],
