@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-15 21:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-15 22:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-12 post(s), 3 matching launch(es).
+17 post(s), 4 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -66,6 +66,33 @@ No matching launch in the next 10 minutes.
 
 ## @elonmusk 2026-11-15 20:46:37 UTC (post 2122068777189716003)
 > Ship, in the future, will almost always be taken to mean spaceship https://t.co/vzvPxJiqTs
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-15 21:09:51 UTC (post 2122074625756819616)
+> wdyt of a robinhood chain turnaround here into 2027
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-15 21:20:37 UTC (post 2122077336501944663)
+> 👑👑👑 https://t.co/LtKXsFmrol
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-15 21:24:31 UTC (post 2122078316693999721)
+> Few https://t.co/hAZKGoklZg
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 33 s | FEW | Few | few | price not recorded |  |  |  |  |
+
+## @cz_binance 2026-11-15 22:00:22 UTC (post 2122087339669541321)
+> How others see you isn’t you, how you see yourself isn’t you, how you see others is the real you. - Sartre 1/2 👇 https://t.co/JOpZ2Y7JSk
+
+No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-15 22:00:24 UTC (post 2122087344392012232)
+> Not actually an original quote from Sartre, but still attributed to him. Some good books to read. https://t.co/8dWJ6pxb4O
 
 No matching launch in the next 10 minutes.
 
