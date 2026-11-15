@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-15 20:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-15 21:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-10 post(s), 3 matching launch(es).
+12 post(s), 3 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -56,6 +56,16 @@ No matching launch in the next 10 minutes.
 
 ## @toly 2026-11-15 19:53:34 UTC (post 2122055427366228031)
 > The goal isn’t to win. It’s to make the other person realize they are arguing with a libertarian https://t.co/hNfsacYVaF
+
+No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-15 20:20:14 UTC (post 2122062138126823754)
+> When you want to understand what’s happening with Bitcoin, start with the data. Strategy’s Bitcoin dashboard brings the key metrics into foc
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-15 20:46:37 UTC (post 2122068777189716003)
+> Ship, in the future, will almost always be taken to mean spaceship https://t.co/vzvPxJiqTs
 
 No matching launch in the next 10 minutes.
 
