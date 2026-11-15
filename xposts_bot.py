@@ -5,6 +5,10 @@
     python xposts_bot.py --test elonmusk   <- ONE paid request: that account's newest original
                                               posts (at most 5); prints them and the estimated
                                               cost; saves no post
+    python xposts_bot.py --empty-test elonmusk
+                                           <- 3 requests that can only come back EMPTY (posts
+                                              newer than now), to see on X's Usage page whether
+                                              an empty check costs anything; saves nothing
     python xposts_bot.py                   <- check every account every [xposts] every_seconds
                                               (the xposts service does this)
 
@@ -24,7 +28,10 @@ import sys
 from screener.autorestart import CodeWatcher
 from screener.autorestart import forever as run_forever
 from screener.settings import HERE, load_config
-from screener.xposts import MIN_RESULTS, Watcher, XApi, XError, secret
+import time
+from datetime import datetime, timezone
+
+from screener.xposts import MIN_RESULTS, Watcher, XApi, XError, secret, snowflake
 from screener.xposts_report import write_report
 
 log = logging.getLogger("xposts")
@@ -92,8 +99,43 @@ def do_test(watcher, handle, out=print):
         "(check the Usage page of your X console for the real amount).")
     headers = watcher.api.cost_headers()
     out("Credit or usage information sent by X: " + (str(headers) if headers else "none"))
-    out("Nothing was saved. When the cost looks right, turn on the regular checking "
-        "(deploy/LAUNCH_SERVER_SETUP.md, Part M).")
+    out("Nothing was saved. Next: the empty-check test (deploy/LAUNCH_SERVER_SETUP.md, Part M, "
+        "step M5), then the regular checking (step M6).")
+    return 0
+
+
+def do_empty_test(watcher, handle, times=3, out=print, sleep=time.sleep, clock=None):
+    """`times` requests for one account asking only for posts newer than its newest one: the
+    since_id is made from the current time, which is newer than any post already made, so the
+    answer is empty and no post is read. Saves nothing and changes no saved state."""
+    clock = clock or (lambda: datetime.now(timezone.utc))
+    handle = handle.lstrip("@")
+    user_id = watcher.accounts.get("ids", {}).get(handle.lower())
+    if not user_id:
+        out(f"@{handle} has no saved account ID: run --lookup first (or check the name).")
+        return 1
+    out(f"Empty-check test for @{handle} (account ID {user_id}): {times} request(s) for posts "
+        "newer than right now, so each should return 0 posts.")
+    returned = 0
+    for i in range(1, times + 1):
+        since = snowflake(clock())
+        try:
+            posts, meta = watcher.api.posts(user_id, MIN_RESULTS, since_id=since)
+        except XError as exc:
+            out(f"  request {i}: failed: {exc}")
+            return 1
+        returned += len(posts)
+        headers = watcher.api.cost_headers()
+        out(f"  request {i} at {clock():%H:%M:%S} UTC: {len(posts)} post(s) returned "
+            f"(X's count: {meta.get('result_count', len(posts))})"
+            + (f"; X reports: {headers}" if headers else ""))
+        if i < times:
+            sleep(2)
+    price = watcher.c.get("price_per_post_usd", 0.005)
+    out(f"Done: {times} request(s), {returned} post(s) returned. If empty checks are free, these "
+        f"cost $0.000 (posts returned x ${price:g} = ${returned * price:.3f}). Check the Usage "
+        "page of your X console (deploy/LAUNCH_SERVER_SETUP.md, Part M, step M5). Nothing was "
+        "saved.")
     return 0
 
 
@@ -117,6 +159,8 @@ def main(argv=None):
                         help="look up the handles' account IDs once (one paid request)")
     parser.add_argument("--test", metavar="HANDLE",
                         help="one paid request for this account's newest posts; saves no post")
+    parser.add_argument("--empty-test", metavar="HANDLE",
+                        help="3 requests that return no post, to see whether empty checks cost")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
     cfg = load_config()
@@ -125,11 +169,13 @@ def main(argv=None):
         return 0
     folder = data_folder(cfg)
     token = secret()
-    if args.lookup or args.test:
+    if args.lookup or args.test or args.empty_test:
         if not token:
             print("No X token found. See deploy/LAUNCH_SERVER_SETUP.md, Part M, step M2.")
             return 1
         watcher = make_watcher(cfg, folder, token)
+        if args.empty_test:
+            return do_empty_test(watcher, args.empty_test)
         return do_lookup(watcher) if args.lookup else do_test(watcher, args.test)
     watcher = make_watcher(cfg, folder, token)
     if not token:

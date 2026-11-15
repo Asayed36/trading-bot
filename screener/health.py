@@ -473,6 +473,14 @@ def add_xposts(add, folder, cfg, now):
         detail += f"; not found on X: {', '.join('@' + h for h in data['accounts_missing'])}"
     if today and data.get("limit_reached_today"):
         detail += "; the daily limit was reached: no more requests until 00:00 UTC"
+    if today and data.get("request_limit_reached_today"):
+        detail += "; the daily request limit was reached: no more requests until 00:00 UTC"
+    share = data.get("max_posts_per_account_per_day")
+    by_account = (data.get("posts_read_today_by_account") or {}) if today else {}
+    step = c.get("max_results", 5)
+    full = sorted(h for h, n in by_account.items() if share and n + step > share)
+    if full:
+        detail += f"; daily share used up: {', '.join('@' + h for h in full)}"
     if data.get("cost_headers"):
         detail += f"; X reports: {data['cost_headers']}"
     if saved:
