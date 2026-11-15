@@ -439,6 +439,50 @@ def _news_source_rows(add, label, cfg, runs_on, sources, now):
             add(f"{label}: {name}", *_news_source(src, s, now))
 
 
+def add_xposts(add, folder, cfg, now):
+    """One row: the X post watcher (xposts_bot.py, recording only), from its pushed
+    health.json: posts read today against the daily limit, the estimated cost today and this
+    month, the accounts watched, and any credit information X sent. A warning when the file is
+    older than [health] launch_stale_hours, when the last request failed, or when the token is
+    missing; information when a handle was not found or the daily limit was reached."""
+    name = "xposts: server"
+    c = cfg["xposts"]
+    data = _load(os.path.join(folder, c.get("folder", "xposts"), "health.json"))
+    if not data:
+        add(name, INFO, "not running yet (deploy/LAUNCH_SERVER_SETUP.md, Part M)")
+        return
+    saved = _utc(data.get("updated"))
+    late_after = timedelta(hours=cfg.get("health", {}).get("launch_stale_hours", 3))
+    problems = []
+    if saved is None or now - saved > late_after:
+        problems.append(f"nothing saved since {_at(saved, now) if saved else 'ever'} "
+                        f"(older than {late_after.total_seconds() / 3600:.0f} h)")
+    if not data.get("token"):
+        problems.append("no X token on the server (Part M, step M2)")
+    failed, ok = _utc(data.get("error_at")), _utc(data.get("last_ok"))
+    if failed and (ok is None or failed > ok):
+        problems.append(f"the last request failed: {data.get('last_error', '?')}")
+    today = saved is not None and saved.date() == now.date()
+    read = data.get("posts_read_today", 0) if today else 0
+    detail = (f"{read} of {data.get('max_posts_per_day', c['max_posts_per_day'])} posts read today"
+              f" ({data.get('requests_today', 0) if today else 0} request(s)); estimated cost "
+              f"${data.get('estimated_cost_today_usd', 0) if today else 0:.2f} today, "
+              f"${data.get('estimated_cost_month_usd', 0):.2f} this month (check the X console "
+              f"for the real amount); {len(data.get('accounts_watched') or [])} account(s) watched")
+    if data.get("accounts_missing"):
+        detail += f"; not found on X: {', '.join('@' + h for h in data['accounts_missing'])}"
+    if today and data.get("limit_reached_today"):
+        detail += "; the daily limit was reached: no more requests until 00:00 UTC"
+    if data.get("cost_headers"):
+        detail += f"; X reports: {data['cost_headers']}"
+    if saved:
+        detail += f"; saved {_at(saved, now)}"
+    if problems:
+        detail += " (" + "; ".join(problems) + ")"
+    add(name, WARN if problems else OK, detail.replace("|", "/"),
+        "xposts: " + "; ".join(problems) if problems else None)
+
+
 def add_news_listings(add, folder, cfg, now, github):
     """The news listings bot: its last good run (pushed health.json), runs
     and requests per hour over the last 24 h, and its last push; then a row
@@ -838,6 +882,8 @@ def health_lines(folder, cfg, now, github=None, found=None):
     # 9. The news listings bot on your server.
     if cfg.get("news_listings", {}).get("enabled") and cfg.get("news"):
         add_news_listings(add, folder, cfg, now, github)
+    if cfg.get("xposts", {}).get("enabled"):
+        add_xposts(add, folder, cfg, now)
 
     head = [f"### Health ({now:%Y-%m-%d %H:%M} UTC)", ""]
     if problems:

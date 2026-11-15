@@ -1696,3 +1696,36 @@ terms = ["ferrari"]
 name = "Binance"
 category = "brand"
 terms = ["binance"]
+
+# ---------------------------------------------------------------------
+# X POST WATCHER (added 2026-11-15): RECORDING ONLY, no trading. xposts_bot.py, run by the
+# xposts service on your server (deploy/LAUNCH_SERVER_SETUP.md, Part M); screener/xposts.py.
+# It reads each account's newest ORIGINAL posts (no replies, no reposts) from X's pay-per-use
+# API with your Bearer token, only those newer than the last one seen, and saves them in
+# data/xposts/posts-YYYY-MM-DD.csv. The token is never in this repository: systemd reads it from
+# /etc/trading-bot/x_bearer_token. Changing this section restarts the xposts service by itself.
+# ---------------------------------------------------------------------
+[xposts]
+enabled = true
+folder = "xposts"
+# Each account is asked about once every this many seconds.
+every_seconds = 120
+# HARD daily limit on posts read (UTC day): a request is made only while at least max_results
+# posts are left in it, so a bug cannot run up the bill. 60 posts x $0.005 = $0.30 a day at most.
+max_posts_per_day = 60
+# Posts asked for per request (X's smallest allowed number is 5).
+max_results = 5
+# For the health row's ESTIMATE only (X's listed pay-per-use prices, unverified here: check the
+# Usage page of your X console for the real amounts).
+price_per_post_usd = 0.005
+price_per_user_usd = 0.010
+# The report (data/xposts/report.md, measurement only): launches in this many minutes after
+# each post whose name or symbol matches a word of the post, over the last report_days days.
+report_window_minutes = 10
+report_days = 7
+min_word_letters = 3
+# The accounts (X handles without the @). Each one's account ID is looked up once and saved in
+# data/xposts/accounts.json; a handle X does not know is saved as missing and skipped.
+accounts = ["elonmusk", "realDonaldTrump", "MrBeast", "cz_binance", "VitalikButerin",
+            "aeyakovenko", "blknoiz06", "MustStopMurad", "saylor", "justinsuntron", "pumpdotfun",
+            "a1lon9"]

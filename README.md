@@ -447,6 +447,16 @@ everything after 60 minutes or at -25% (like liquid l6). The numbers are fixed i
 Settings: `[viral]` in `config.toml`; results in the daily comparison ("viral v1" and the
 "Viral flags" line).
 
+## The X post watcher (recording only, on your own server)
+
+`xposts_bot.py` (the `xposts` service) saves the newest original posts (no replies, no reposts)
+of the accounts in `[xposts]` every 2 minutes, only those newer than the last one seen, to
+`data/xposts/posts-YYYY-MM-DD.csv`. X's pay-per-use API charges per post read; the watcher
+stops for the day at 60 posts. The Bearer token lives only on the server, in
+`/etc/trading-bot/x_bearer_token`. `data/xposts/report.md` lists, for each post, the pump.fun
+launches in the next 10 minutes whose name or symbol matches a word of the post, with how their
+price moved (measurement only). Setup: `deploy/LAUNCH_SERVER_SETUP.md`, Part M.
+
 ## The "news (listings)" strategy (exchange listings every minute, on your own server)
 
 The news strategy for the exchange listings only, checked **every minute**

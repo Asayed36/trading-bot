@@ -747,3 +747,132 @@ GitHub.
   bias the data); their number is in `health.json` (`dropped_at_last_restart`).
 - `data/launch-record/state.json` (the copycat and creator ledger, about 30 MB after a week)
   stays on the server and is not pushed.
+
+---
+
+## Part M. The X post watcher (recording only)
+
+The watcher (`xposts_bot.py`, `screener/xposts.py`) reads the newest **original** posts (no
+replies, no reposts) of the accounts in `[xposts] accounts` (`config.toml`) every 2 minutes,
+only the posts newer than the last one it saw, and saves them in
+`data/xposts/posts-YYYY-MM-DD.csv`. It never trades and never posts. X charges your
+pay-per-use credits for each post read: the watcher stops for the day after **60 posts**
+(`max_posts_per_day`), which is at most about $0.30 a day at X's listed $0.005 a post. Each
+account's ID is looked up only once and saved in `data/xposts/accounts.json`.
+
+Your **Bearer Token** goes in one file on the server that only the administrator (root) can
+read: `/etc/trading-bot/x_bearer_token`. It is never in the bot's folder (which is pushed to
+GitHub), never in the logs and never in the health file. When the service starts, systemd
+hands a copy to this one service only.
+
+Do these steps in order. Each command goes on one line: copy it, paste it into the terminal
+window, press **Enter**, and compare what you see with the text after it.
+
+### M1. Connect to the server and get the new code
+
+1. On your own computer, open the terminal: on a Mac, press **Cmd + Space**, type
+   `Terminal`, press **Enter**; on Windows, click **Start**, type `PowerShell`, press
+   **Enter**.
+2. Type `ssh bot@YOUR_IP` (your server's address, as in Part B) and press **Enter**. Type
+   your key's passphrase if it asks (nothing shows while you type; that is normal) and press
+   **Enter**.
+   *You should see* a line ending in `bot@...:~$`. You are now on the server.
+3. Paste `sudo systemctl start launch-push` and press **Enter** (type your password for
+   `bot` if asked). *You should see* nothing; the prompt comes back after a few seconds.
+4. Paste `cd ~/trading-bot && git log -1 --oneline` and press **Enter**.
+   *You should see* one line with a short code and a message, for example
+   `Server paper results ...` or `Merge pull request ...`.
+5. Paste `ls xposts_bot.py deploy/xposts.service` and press **Enter**.
+   *You should see* `deploy/xposts.service  xposts_bot.py`. If it says *No such file*, the
+   new code is not there yet: wait 10 minutes and repeat steps 3 to 5.
+
+### M2. Put the token on the server (once)
+
+1. Paste this and press **Enter**:
+
+   ```
+   sudo install -d -m 700 -o root -g root /etc/trading-bot && sudo install -m 600 -o root -g root /dev/null /etc/trading-bot/x_bearer_token
+   ```
+
+   *You should see* nothing; the prompt comes back. (If `/etc/trading-bot` already exists
+   from Part J, that is fine: it is not changed.)
+2. Paste this and press **Enter**:
+
+   ```
+   read -rsp "Paste the X Bearer Token, then press Enter: " KEY; echo
+   ```
+
+   *You should see* `Paste the X Bearer Token, then press Enter:`.
+3. Open your password manager, copy the **Bearer Token** (only the token, not the API key or
+   the secret), click back into the terminal and paste it: on a Mac **Cmd + V**; in
+   PowerShell **right-click**. **Nothing appears** (it is hidden on purpose, and it is not
+   saved in the command history). Press **Enter** once.
+4. Paste this and press **Enter**:
+
+   ```
+   printf '%s' "$KEY" | sudo tee /etc/trading-bot/x_bearer_token >/dev/null; unset KEY; sudo stat -c '%U %a %s bytes' /etc/trading-bot/x_bearer_token
+   ```
+
+   *You should see* one line like `root 600 112 bytes`: `root`, `600`, and a size of about
+   100 bytes or more. If the size is `0 bytes`, the paste did not work: repeat steps 2 to 4.
+5. Close nothing yet. Never paste the token into a chat, an email, GitHub or a file in
+   `~/trading-bot`.
+
+### M3. Look up the accounts (one paid request, about $0.12)
+
+Paste this (it is one long line) and press **Enter**:
+
+```
+sudo systemd-run --quiet --pipe --wait -p User=bot -p WorkingDirectory=/home/bot/trading-bot -p LoadCredential=x_bearer_token:/etc/trading-bot/x_bearer_token /home/bot/trading-bot/.venv/bin/python xposts_bot.py --lookup
+```
+
+*You should see* `Looked up 12 handle(s) in one request:`, then one line per account, like
+`@elonmusk: found, account ID 44196397`, and a last line with the estimated cost. An account
+marked `NOT FOUND on X` is skipped from now on; send me its name. If you see
+`The lookup failed: X answered 401`, the token was not pasted correctly: repeat M2.
+
+### M4. One test request (about $0.025)
+
+Paste this and press **Enter**:
+
+```
+sudo systemd-run --quiet --pipe --wait -p User=bot -p WorkingDirectory=/home/bot/trading-bot -p LoadCredential=x_bearer_token:/etc/trading-bot/x_bearer_token /home/bot/trading-bot/.venv/bin/python xposts_bot.py --test elonmusk
+```
+
+*You should see* `One request for @elonmusk ...: 5 original post(s) returned`, up to five lines
+with a time, a post number and the start of each post, then `Estimated cost: 5 post(s) x $0.005
+= $0.025` and `Nothing was saved.`
+
+Then, on your own computer, open your X developer console in the browser, go to its **Usage**
+page and check what the lookup (M3) and this test really cost. Copy everything M3 and M4
+printed into our chat (it holds no token) with the amounts from the Usage page. **Only then**
+do M5.
+
+### M5. Turn on the regular checking
+
+Paste these one at a time, pressing **Enter** after each:
+
+```
+sudo cp ~/trading-bot/deploy/xposts.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now xposts
+systemctl status xposts --no-pager
+```
+
+*You should see*, after the last one, `Active: active (running)` in green. Then paste
+`journalctl -u xposts -n 5 --no-pager` and press **Enter**: *you should see*
+`X post watcher: 12 account(s) every 120 s, at most 60 posts a day`, and a new line every 2
+minutes like `12:04 0 new post(s); 0 of 60 read today`. The first round only notes the time:
+it never pays for posts from before the watcher started.
+
+Within about an hour the push sends `data/xposts/` to GitHub, and the daily comparison shows a
+row **xposts: server** with the posts read today and the estimated cost.
+
+- **Pause it:** `sudo systemctl stop xposts`. **Turn it off for good:**
+  `sudo systemctl disable --now xposts`.
+- **Change the token:** repeat M2 steps 2 to 4, then `sudo systemctl restart xposts`.
+- **Remove the token:** `sudo truncate -s 0 /etc/trading-bot/x_bearer_token` and
+  `sudo systemctl restart xposts`: the watcher then asks X nothing.
+- The report `data/xposts/report.md` (rewritten about once an hour) lists, for each post, the
+  pump.fun launches in the next 10 minutes whose name or symbol matches a word of the post,
+  with how their price moved. It is a measurement only.
