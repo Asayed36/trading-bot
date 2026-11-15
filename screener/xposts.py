@@ -55,6 +55,15 @@ def secret(name="x_bearer_token", env="X_BEARER_TOKEN"):
     return (os.environ.get(env) or "").strip() or None
 
 
+TWITTER_EPOCH_MS = 1288834974657
+
+
+def snowflake(when):
+    """The smallest X post id that can be made at `when` (X's ids start with their time):
+    asking for posts newer than this asks for posts after `when` only."""
+    return str((int(when.timestamp() * 1000) - TWITTER_EPOCH_MS) << 22)
+
+
 def iso(when):
     return when.astimezone(timezone.utc).strftime(ISO)
 
@@ -219,19 +228,39 @@ class Watcher:
         saved = []
         day = self._day(now)
         limit, per_request = self.c["max_posts_per_day"], self.c.get("max_results", MIN_RESULTS)
-        for handle in self.handles:
-            user_id = self.accounts.get("ids", {}).get(handle.lower())
+        per_account = self.c.get("max_posts_per_account_per_day")
+        max_requests = self.c.get("max_requests_per_day")
+        by_account = day.setdefault("by_account", {})
+        # The accounts in turn, starting one further each round, so the end of the list is not
+        # always the first to miss out when the overall limit runs short.
+        n = len(self.handles)
+        first = self.state.get("round", 0) % n if n else 0
+        self.state["round"] = self.state.get("round", 0) + 1
+        for handle in self.handles[first:] + self.handles[:first]:
+            key = handle.lower()
+            user_id = self.accounts.get("ids", {}).get(key)
             if not user_id:
                 continue
             if day["posts_read"] + per_request > limit:
                 self.state["limit_reached"] = now.strftime("%Y-%m-%d")
                 break
+            if max_requests is not None and day["requests"] >= max_requests:
+                self.state["request_limit_reached"] = now.strftime("%Y-%m-%d")
+                break
             a = self.state.setdefault("accounts", {}).setdefault(
-                handle.lower(), {"since_id": None, "watching_since": iso(now)})
+                key, {"since_id": None, "watching_since": iso(now)})
+            if per_account is not None and by_account.get(key, 0) + per_request > per_account:
+                # this account's share of today is used: skip it until tomorrow, and then
+                # start from that moment (the posts missed meanwhile are not paid for)
+                a["skip_backlog"] = True
+                continue
             start = datetime.strptime(a["watching_since"], ISO).replace(tzinfo=timezone.utc)
+            since = a.get("since_id")
+            if a.get("skip_backlog"):
+                since, start = None, now
             try:
-                posts, meta = self.api.posts(user_id, per_request, a.get("since_id"),
-                                             None if a.get("since_id") else start)
+                posts, meta = self.api.posts(user_id, per_request, since,
+                                             None if since else start)
             except XError as exc:
                 error = self._failed(now, exc, handle)
                 if exc.status in (401, 403, 429):
@@ -239,6 +268,8 @@ class Watcher:
                 continue
             day["requests"] += 1
             day["posts_read"] += len(posts)
+            by_account[key] = by_account.get(key, 0) + len(posts)
+            a.pop("skip_backlog", None)
             if meta.get("next_token"):                      # more than one page was new
                 a["maybe_missed"] = a.get("maybe_missed", 0) + 1
             newest = meta.get("newest_id") or max((p["id"] for p in posts), key=int, default=None)
@@ -288,6 +319,11 @@ class Watcher:
             "errors_today": day["errors"],
             "max_posts_per_day": self.c["max_posts_per_day"],
             "limit_reached_today": self.state.get("limit_reached") == now.strftime("%Y-%m-%d"),
+            "request_limit_reached_today":
+                self.state.get("request_limit_reached") == now.strftime("%Y-%m-%d"),
+            "max_posts_per_account_per_day": self.c.get("max_posts_per_account_per_day"),
+            "max_requests_per_day": self.c.get("max_requests_per_day"),
+            "posts_read_today_by_account": dict(day.get("by_account", {})),
             "estimated_cost_today_usd": round(cost(day), 4),
             "estimated_cost_month_usd": round(sum(cost(d) for d in in_month), 4),
             "maybe_missed": {h: a["maybe_missed"] for h, a in self.state.get("accounts", {}).items()

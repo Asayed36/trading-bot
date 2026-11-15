@@ -757,7 +757,9 @@ replies, no reposts) of the accounts in `[xposts] accounts` (`config.toml`) ever
 only the posts newer than the last one it saw, and saves them in
 `data/xposts/posts-YYYY-MM-DD.csv`. It never trades and never posts. X charges your
 pay-per-use credits for each post read: the watcher stops for the day after **60 posts**
-(`max_posts_per_day`), which is at most about $0.30 a day at X's listed $0.005 a post. Each
+(`max_posts_per_day`), which is at most about $0.30 a day at X's listed $0.005 a post, and
+reads at most **10 posts per account** a day (`max_posts_per_account_per_day`), so one busy
+account cannot use up the day for the others. Each
 account's ID is looked up only once and saved in `data/xposts/accounts.json`.
 
 Your **Bearer Token** goes in one file on the server that only the administrator (root) can
@@ -766,7 +768,41 @@ GitHub), never in the logs and never in the health file. When the service starts
 hands a copy to this one service only.
 
 Do these steps in order. Each command goes on one line: copy it, paste it into the terminal
-window, press **Enter**, and compare what you see with the text after it.
+window, press **Enter**, and compare what you see with the text after it. To connect to the
+server first, do steps 1 and 2 of M1.
+
+### Stop it now (any time, in about 10 seconds)
+
+If the Usage page of your X console shows the cost rising faster than you expect:
+
+1. Connect to the server (M1, steps 1 and 2).
+2. Paste `sudo systemctl stop xposts` and press **Enter**. *You should see* nothing; the
+   prompt comes back. From this moment no request is made.
+3. Paste `systemctl is-active xposts` and press **Enter**. *You should see* `inactive`.
+4. To keep it off even after the server restarts, paste `sudo systemctl disable xposts` and
+   press **Enter**. *You should see* a line starting with `Removed`.
+
+To start it again later: `sudo systemctl enable --now xposts`.
+
+As a second safety net, you can also lower your **spend cap** in the X console, or remove the
+token: `sudo truncate -s 0 /etc/trading-bot/x_bearer_token` then
+`sudo systemctl restart xposts` (the watcher then asks X nothing).
+
+### How much have we spent?
+
+- **The real amount** is only on X's side: open your X developer console in the browser and go
+  to its **Usage** page. It shows your credits and what was used. The watcher's own numbers
+  are estimates from X's listed prices.
+- **The watcher's estimate, on the server:** connect (M1, steps 1 and 2), then paste
+
+  ```
+  grep -E '"(posts_read_today|requests_today|estimated_cost_today_usd|estimated_cost_month_usd)"' ~/trading-bot/data/xposts/health.json
+  ```
+
+  and press **Enter**. *You should see* four lines, like `"posts_read_today": 7,` and
+  `"estimated_cost_month_usd": 0.155,`. If it says *No such file*, the watcher has not run yet.
+- **Without the server:** the daily comparison issue on GitHub has a row **xposts: server**
+  with the posts read today and the estimated cost (up to an hour old).
 
 ### M1. Connect to the server and get the new code
 
@@ -845,10 +881,36 @@ with a time, a post number and the start of each post, then `Estimated cost: 5 p
 
 Then, on your own computer, open your X developer console in the browser, go to its **Usage**
 page and check what the lookup (M3) and this test really cost. Copy everything M3 and M4
-printed into our chat (it holds no token) with the amounts from the Usage page. **Only then**
-do M5.
+printed into our chat (it holds no token) with the amounts from the Usage page.
 
-### M5. Turn on the regular checking
+### M5. Does an empty check cost anything? (3 requests, should cost $0)
+
+When the watcher runs, almost every check finds no new post. This test makes 3 such empty
+checks for one account (it asks for posts newer than right now, so X can only answer "none")
+and saves nothing.
+
+1. **Before**, on your own computer: open the **Usage** page of your X console and write down
+   two numbers: your **credit balance** (or the amount used), and the **number of posts read**
+   (it may be called *Posts read*, *Post reads* or *Resources*), if the page shows one.
+2. On the server, paste this (one long line) and press **Enter**:
+
+   ```
+   sudo systemd-run --quiet --pipe --wait -p User=bot -p WorkingDirectory=/home/bot/trading-bot -p LoadCredential=x_bearer_token:/etc/trading-bot/x_bearer_token /home/bot/trading-bot/.venv/bin/python xposts_bot.py --empty-test elonmusk
+   ```
+
+   *You should see* three lines `request 1 ...: 0 post(s) returned (X's count: 0)` (then 2 and
+   3), and `Done: 3 request(s), 0 post(s) returned.` If a line says `failed`, copy it to our
+   chat and stop here.
+3. **Wait 15 minutes** (the Usage page can lag behind), then reload the Usage page and compare
+   with the numbers from step 1.
+   - **Empty checks are free** when the credit balance and the posts-read number are **exactly
+     the same** as before.
+   - **Empty checks cost money** when the balance went down (for example by about $0.015 if
+     each empty request is charged like one post) or a request count went up by 3. Then **do
+     not do M6**: send me both numbers and I will change how often it checks first.
+4. Send me what you saw either way.
+
+### M6. Turn on the regular checking (only after M5 showed empty checks are free)
 
 Paste these one at a time, pressing **Enter** after each:
 

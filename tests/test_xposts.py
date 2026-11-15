@@ -141,7 +141,8 @@ class TokenTests(unittest.TestCase):
 
     def test_the_repository_holds_no_token(self):
         out = subprocess.run(["git", "grep", "-n", "-I", "-E",
-                              "AAAAAAAAAAAAAAAAAAAAA|Bearer [A-Za-z0-9%]{40,}"],
+                              "AAAAAAAAAAAAAAAAAAAAA|Bearer [A-Za-z0-9%]{40,}",
+                              "--", ".", ":!tests/test_xposts.py"],      # (not this pattern itself)
                              cwd=HERE, capture_output=True, text=True)
         self.assertEqual(out.stdout, "")
 
@@ -356,6 +357,112 @@ class WatcherTests(Base):
         self.assertAlmostEqual(h["estimated_cost_today_usd"], 2 * 0.005 + 12 * 0.010)
         self.assertEqual(h["cost_headers"], {"x-credits-remaining": "9.90"})
         self.assertEqual(h["requests_today"], 25)                     # 1 lookup + 2 x 12
+
+
+class AccountShareTests(Base):
+    def flood(self, n=50):
+        return {uid: [(str(int(uid) * 1000 + k), stamp(1), "post") for k in range(n)]
+                for uid in IDS.values()}
+
+    def busy_elon(self, fake, rounds, start=0, per_round=3):
+        """Elon posts `per_round` new posts before every round; the others post nothing."""
+        elon = IDS["elonmusk"]
+        w = self.watcher(fake)
+        n = 0
+        with contextlib.redirect_stdout(io.StringIO()):
+            for m in range(start, start + 2 * rounds, 2):
+                for _ in range(per_round):
+                    n += 1
+                    fake.posts.setdefault(elon, []).append((str(5000 + n), stamp(m), "elon"))
+                w.run_once(at(m))
+        return w
+
+    def test_one_busy_account_cannot_take_the_whole_day(self):
+        elon = IDS["elonmusk"]
+        fake = FakeX()
+        self.busy_elon(fake, rounds=30)
+        h = self.health()
+        self.assertLessEqual(h["posts_read_today_by_account"]["elonmusk"], 10)
+        self.assertEqual(h["posts_read_today_by_account"]["elonmusk"], 6)   # 3 + 3, then 6 + 5 > 10
+        self.assertEqual(h["posts_read_today"], 6)                    # the others still have room
+        self.assertFalse(h["limit_reached_today"])
+        elon_calls = [c for c in fake.timelines() if c[0].endswith(f"/{elon}/tweets")]
+        others = [c for c in fake.timelines() if not c[0].endswith(f"/{elon}/tweets")]
+        self.assertEqual(len(elon_calls), 2)                          # then skipped all day
+        self.assertEqual(len(others), 11 * 30)                        # every other account, every round
+
+    def test_the_overall_limit_still_caps_the_day(self):
+        fake = FakeX(posts=self.flood())
+        w = self.watcher(fake)
+        with contextlib.redirect_stdout(io.StringIO()):
+            for m in range(0, 60, 2):
+                w.run_once(at(m))
+        h = self.health()
+        self.assertEqual(h["posts_read_today"], 60)
+        self.assertTrue(all(n <= 10 for n in h["posts_read_today_by_account"].values()))
+
+    def test_the_accounts_take_turns_at_the_start_of_a_round(self):
+        fake = FakeX()
+        w = self.watcher(fake)
+        with contextlib.redirect_stdout(io.StringIO()):
+            w.run_once(at(0))
+            w.run_once(at(2))
+        firsts = [c[0] for c in fake.timelines()][::12]
+        self.assertNotEqual(firsts[0], firsts[1])
+
+    def test_after_its_share_an_account_restarts_from_the_new_day_without_the_backlog(self):
+        elon = IDS["elonmusk"]
+        fake = FakeX()
+        w = self.busy_elon(fake, rounds=5)
+        with contextlib.redirect_stdout(io.StringIO()):
+            w.run_once(at(12 * 60 + 2))                              # 00:02 the next day
+        next_day = [c for c in fake.timelines() if c[0].endswith(f"/{elon}/tweets")][-1]
+        self.assertEqual(next_day[1]["start_time"], "2027-01-16T00:02:00Z")
+        self.assertNotIn("since_id", next_day[1])
+        self.assertEqual(self.rows("2027-01-16"), [])                 # the backlog is not paid for
+
+    def test_the_request_limit(self):
+        cfg = copy.deepcopy(CFG)
+        cfg["xposts"]["max_requests_per_day"] = 15
+        fake = FakeX()
+        w = self.watcher(fake, cfg)
+        with contextlib.redirect_stdout(io.StringIO()):
+            for m in range(0, 10, 2):
+                w.run_once(at(m))
+        self.assertEqual(self.health()["requests_today"], 15)          # 1 lookup + 14 checks
+        self.assertTrue(self.health()["request_limit_reached_today"])
+
+
+class EmptyTestTests(Base):
+    def test_three_requests_that_can_only_be_empty_and_nothing_saved(self):
+        elon = IDS["elonmusk"]
+        fake = FakeX(posts={elon: [(xp.snowflake(at(-5)), stamp(-5), "newest post")]})
+        w = self.watcher(fake)
+        xposts_bot.do_lookup(w, lambda *a: None)
+        before = json.dumps(w.state, sort_keys=True)
+        out, sleeps = io.StringIO(), []
+        self.assertEqual(xposts_bot.do_empty_test(w, "elonmusk", 3, out.write, sleeps.append,
+                                                  clock=lambda: at(0)), 0)
+        calls = fake.timelines()
+        self.assertEqual(len(calls), 3)
+        self.assertTrue(all(int(c[1]["since_id"]) > int(xp.snowflake(at(-5))) for c in calls))
+        text = out.getvalue()
+        self.assertEqual(text.count(": 0 post(s) returned (X's count: 0)"), 3)
+        self.assertIn("Done: 3 request(s), 0 post(s) returned", text)
+        self.assertEqual(sleeps, [2, 2])
+        self.assertEqual(json.dumps(w.state, sort_keys=True), before)
+        self.assertEqual(self.rows(), [])
+
+    def test_the_snowflake_is_newer_than_any_post_before_it(self):
+        self.assertGreater(int(xp.snowflake(at(0))), int(xp.snowflake(at(-1))))
+        # a real id: 1 Jan 2025 00:00 UTC is about 1874... (X's ids start with their time)
+        self.assertTrue(xp.snowflake(datetime(2025, 1, 1, tzinfo=timezone.utc)).startswith("1874"))
+
+    def test_needs_a_saved_id(self):
+        out = io.StringIO()
+        self.assertEqual(xposts_bot.do_empty_test(self.watcher(FakeX()), "elonmusk", 3,
+                                                  out.write, lambda s: None), 1)
+        self.assertIn("run --lookup first", out.getvalue())
 
 
 class CommandTests(Base):
