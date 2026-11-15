@@ -1718,9 +1718,10 @@ max_posts_per_day = 60
 # overall limit above still decides the most a day costs. An account that reaches its share is
 # skipped until 00:00 UTC, and then starts from that moment (the posts it missed are not read).
 max_posts_per_account_per_day = 10
-# A safety limit on requests a day (each account once per round). 7200 = 10 accounts every 2
-# minutes all day: it only matters if X charges for empty checks (Part M, step M5).
-max_requests_per_day = 7200
+# A safety limit on requests a day (each account once per round). 12 accounts every 2 minutes
+# all day is 8640; 9000 leaves a small margin for restarts. Empty checks are counted as
+# requests but not charged (X console, 2026-11-15: 812 requests, 1 post read, balance unchanged).
+max_requests_per_day = 9000
 # Posts asked for per request (X's smallest allowed number is 5).
 max_results = 5
 # For the health row's ESTIMATE only (X's listed pay-per-use prices, unverified here: check the

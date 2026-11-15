@@ -763,7 +763,10 @@ class SetupTests(unittest.TestCase):
                                          "saylor", "justinsuntron", "Pumpfun", "a1lon9",
                                          "toly"])
         self.assertEqual((c["max_posts_per_account_per_day"], c["max_requests_per_day"]),
-                         (10, 7200))
+                         (10, 9000))
+        # every account, every round, all day, fits under the request limit
+        self.assertLessEqual(len(c["accounts"]) * 86400 // c["every_seconds"],
+                             c["max_requests_per_day"])
 
     def test_the_service_gets_the_token_from_a_root_only_file(self):
         with open(os.path.join(HERE, "deploy", "xposts.service")) as fh:
