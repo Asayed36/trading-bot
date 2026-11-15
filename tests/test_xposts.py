@@ -499,10 +499,44 @@ class AccountListChangeTests(Base):
             self.watcher(fake).run_once(at(0))
         asked = {c[0].rsplit("/", 2)[-2] for c in fake.timelines()}
         self.assertIn(IDS["pumpfun"], asked)
-        self.assertEqual(asked, set(IDS.values()))                    # the 11 in config, no other
+        self.assertEqual(asked, set(IDS.values()))                    # the ones in config, no other
         h = self.health()
         self.assertEqual(h["accounts_missing"], [])
-        self.assertEqual(len(h["accounts_watched"]), 11)
+        self.assertEqual(len(h["accounts_watched"]), N)
+
+
+class TolyAddedTests(Base):
+    """2026-11-15: "toly" added. After the hourly update the running watcher restarts (its
+    [xposts] section changed) and its first round looks up only "toly", once."""
+
+    def test_the_first_round_after_the_change_looks_up_only_toly(self):
+        os.makedirs(self.path(), exist_ok=True)
+        ids = {h: IDS[h] for h in IDS if h != "toly"}
+        with open(self.path("accounts.json"), "w") as fh:
+            json.dump({"ids": ids, "missing": ["aeyakovenko", "pumpdotfun"]}, fh)
+        fake = FakeX()
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.watcher(fake).run_once(at(0))
+            self.watcher(fake).run_once(at(2))                    # and not again after that
+        lookups = [c[1]["usernames"] for c in fake.calls if c[0].endswith("/users/by")]
+        self.assertEqual(lookups, ["toly"])
+        toly = [c for c in fake.timelines() if c[0].endswith(f"/{IDS['toly']}/tweets")]
+        self.assertEqual(toly[0][1]["start_time"], "2027-01-15T12:00:00Z")   # no old posts read
+        self.assertAlmostEqual(self.health()["estimated_cost_today_usd"], 0.010)
+
+    def test_a_config_change_to_xposts_restarts_the_watcher(self):
+        from screener.autorestart import CodeWatcher
+        with tempfile.TemporaryDirectory() as root:
+            path = os.path.join(root, "config.toml")
+            with open(path, "w") as fh:
+                fh.write('[xposts]\naccounts = ["elonmusk"]\n[files]\ndata_folder = "data"\n')
+            now = [0.0]
+            watch = CodeWatcher(root, xposts_bot.CONFIG_SECTIONS, files=[], clock=lambda: now[0])
+            with open(path, "w") as fh:
+                fh.write('[xposts]\naccounts = ["elonmusk", "toly"]\n[files]\ndata_folder = "data"\n')
+            self.assertIsNone(watch.changed())                      # settling
+            now[0] = 31
+            self.assertTrue(watch.changed())
 
 
 class CommandTests(Base):
@@ -726,7 +760,8 @@ class SetupTests(unittest.TestCase):
                          (120, 60, 5))
         self.assertEqual(c["accounts"], ["elonmusk", "realDonaldTrump", "MrBeast", "cz_binance",
                                          "VitalikButerin", "blknoiz06", "MustStopMurad",
-                                         "saylor", "justinsuntron", "Pumpfun", "a1lon9"])
+                                         "saylor", "justinsuntron", "Pumpfun", "a1lon9",
+                                         "toly"])
         self.assertEqual((c["max_posts_per_account_per_day"], c["max_requests_per_day"]),
                          (10, 7200))
 
