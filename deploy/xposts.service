@@ -1,0 +1,33 @@
+# Runs the X post watcher (xposts_bot.py) all the time and restarts it if it stops.
+# RECORDING ONLY: it reads posts from X's API with a read-only Bearer token; no trading.
+# Install: see deploy/LAUNCH_SERVER_SETUP.md, Part M.
+[Unit]
+Description=X post watcher (recording only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=bot
+WorkingDirectory=/home/bot/trading-bot
+ExecStart=/home/bot/trading-bot/.venv/bin/python xposts_bot.py
+Restart=always
+RestartSec=10
+# The X Bearer token, from a file only root can read. systemd hands it to this service alone
+# (in $CREDENTIALS_DIRECTORY, not in the environment, so it isn't passed on to other programs
+# or shown in "systemctl show").
+LoadCredential=x_bearer_token:/etc/trading-bot/x_bearer_token
+# Lock it down: it can only write to its data folder.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/bot/trading-bot/data
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryMax=200M
+
+[Install]
+WantedBy=multi-user.target

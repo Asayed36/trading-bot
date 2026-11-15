@@ -125,6 +125,14 @@ data/viral/*/*
 !data/viral/*/journal.csv
 !data/viral/*/positions.json
 !data/viral/*/entries.csv
+# The X post watcher pushes its posts, account IDs, health file and report; its state.json
+# (the last post seen per account) stays on the server. The token is never in data/.
+!data/xposts/
+data/xposts/*
+!data/xposts/posts-*.csv
+!data/xposts/accounts.json
+!data/xposts/health.json
+!data/xposts/report.md
 
 # The momentum strategy (run on your own server) pushes these; its state.json
 # (memory of recent launches) stays on the server.
