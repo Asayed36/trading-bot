@@ -111,16 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0x050f1f047e1753d3058519c50e522b1f80c9e1eb208eb1f10867adab67bb38c1": {
-      "pool": "0x050f1f047e1753d3058519c50e522b1f80c9e1eb208eb1f10867adab67bb38c1",
-      "dex": "pons-v2-dex",
-      "token": "0x1fa81ddaaac83240803b3f2d20595e40edc1a074",
-      "name": "TROYA",
-      "title": "Troya Agent",
-      "created": "2026-11-16T08:52:36Z",
-      "liquidity_usd": 14803.4041,
-      "market_cap_usd": 35444.66487
-    },
     "onchain:0x3bc9b7336b687ea3235c70dcee2e9cd729921045": {
       "pool": null,
       "dex": "pons-v2-dex",
@@ -131,14 +121,6 @@
     }
   },
   "checked": {
-    "0x050f1f047e1753d3058519c50e522b1f80c9e1eb208eb1f10867adab67bb38c1": {
-      "at": "2026-11-16T14:51:43.735201+00:00",
-      "passed": false,
-      "failed": [
-        "Market cap",
-        "Not down >50% in 24h"
-      ]
-    },
     "onchain:0x3bc9b7336b687ea3235c70dcee2e9cd729921045": {
       "at": "2026-11-16T14:11:35.307770+00:00",
       "passed": false,
@@ -149,11 +131,12 @@
   },
   "sources": {
     "geckoterminal": {
-      "calls": 2,
-      "errors": 0,
-      "rate_limited": 0,
+      "calls": 3,
+      "errors": 1,
+      "rate_limited": 1,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
       "ok": true,
-      "at": "2026-11-16T14:51:43.735201+00:00",
+      "at": "2026-11-16T15:01:28.805188+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -162,7 +145,7 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-11-16T14:51:43.735201+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "goplus": {
       "calls": 1,
@@ -177,7 +160,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-16T14:51:43.735201+00:00",
+      "at": "2026-11-16T15:01:28.805188+00:00",
       "used_this_run": true
     }
   },
@@ -749,7 +732,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-16T14:51:43.735201+00:00",
+    "at": "2026-11-16T15:01:28.805188+00:00",
     "hours": 24,
     "seen": {
       "0xa8ceeeb747fcf136947c35c5de6187ee90d6bfed": "2026-11-15T18:37:24.098000+00:00",
@@ -763,7 +746,7 @@
       "0xa06c6b3d518b1ed11cab00651bfabacbb20f5c4a",
       "0xa8ceeeb747fcf136947c35c5de6187ee90d6bfed"
     ],
-    "scanned_to": 115844644,
+    "scanned_to": 115850607,
     "complete": true
   },
   "issues_to_close": [],
@@ -771,11 +754,6 @@
     "0x3bc9b7336b687ea3235c70dcee2e9cd729921045": "2026-11-16T13:41:28.546166+00:00"
   },
   "gecko_hours": {
-    "2026-11-15 15:00": [
-      6,
-      0,
-      0
-    ],
     "2026-11-15 16:00": [
       6,
       1,
@@ -889,6 +867,11 @@
     "2026-11-16 14:00": [
       6,
       0,
+      0
+    ],
+    "2026-11-16 15:00": [
+      1,
+      1,
       0
     ]
   }
