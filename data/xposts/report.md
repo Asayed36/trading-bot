@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-16 15:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-16 16:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-51 post(s), 21 matching launch(es).
+53 post(s), 22 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -297,4 +297,16 @@ No matching launch in the next 10 minutes.
 > was fun brother congrats you crushed it 🫡 https://t.co/FTQNtejwye
 
 No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-16 15:59:41 UTC (post 2122358956609749430)
+> thank you! https://t.co/GjVode0GST
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-16 16:01:47 UTC (post 2122359484337062196)
+> Consistency is Power. Let’s make the World Ours.
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 45 s | POWER | Powercoin | power | price not recorded |  |  |  |  |
 
