@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-16 09:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-16 10:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-34 post(s), 17 matching launch(es).
+37 post(s), 18 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -198,4 +198,21 @@ No matching launch in the next 10 minutes.
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 118 s | BULL | snowbull | bull | price not recorded |  |  |  |  |
+
+## @justinsuntron 2026-11-16 09:37:52 UTC (post 2122262871396778209)
+> Another one off the board. Congrats to the team! https://t.co/wdwkVCdSwz
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 550 s | $GPT | GHOST PANIC TEAM | team | price not recorded |  |  |  |  |
+
+## @toly 2026-11-16 09:42:10 UTC (post 2122263951501107312)
+> 👑👑👑 https://t.co/8KRzPwzvF1
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-16 10:02:02 UTC (post 2122268951363440889)
+> Matt is just one capital raise away from beating 2019 Magnus in chess. https://t.co/IqNHDNHb2V
+
+No matching launch in the next 10 minutes.
 
