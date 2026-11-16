@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-16 13:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-16 14:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-47 post(s), 21 matching launch(es).
+48 post(s), 21 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -260,21 +260,26 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| BTCStrateg | strategy | +0%, no liq @1.7m | +8%, no liq @5.9m | +8%, no liq @15.3m | – | – | no |
+| BTCStrateg | strategy | +0%, no liq @1.7m | +8%, no liq @5.9m | +8%, no liq @15.3m | +8%, no liq @60.5m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 188 s | BTCStrateg | BTC Strategy | strategy | price not recorded |  |  |  |  |
+| 188 s | BTCStrateg | BTC Strategy | strategy | -49% | -45% | -45% | -45% | +105% (13 s) |
 
 ## @saylor 2026-11-16 13:05:44 UTC (post 2122315181241901328)
 > USD Duration is 3.4 yrs and STRC's BTC Credit tightened to 67 bps (-3 bps), assuming 10% BTC ARR, 40% BTC Vol, and a BTC price of $68,800. L
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 188 s | BTCStrateg | BTC Strategy | strategy | price not recorded |  |  |  |  |
+| 188 s | BTCStrateg | BTC Strategy | strategy | -49% | -45% | -45% | -45% | +105% (13 s) |
 
 ## @MustStopMurad 2026-11-16 13:38:19 UTC (post 2122323382217716193)
 > The better AI gets and the fewer job opportunities there are, the MORE heavily invested and MORE passionately will people work for their tok
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-16 14:08:40 UTC (post 2122331018145538077)
+> QQQ 终于来火币了 @HuobiGlobal https://t.co/b3x3nyxO5T
 
 No matching launch in the next 10 minutes.
 
