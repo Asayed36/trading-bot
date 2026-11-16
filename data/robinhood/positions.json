@@ -166,10 +166,11 @@
   "sources": {
     "geckoterminal": {
       "calls": 2,
-      "errors": 0,
-      "rate_limited": 0,
-      "ok": true,
-      "at": "2026-11-16T21:41:19.182987+00:00",
+      "errors": 2,
+      "rate_limited": 2,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
+      "ok": false,
+      "at": "2026-11-16T21:51:50.583497+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -193,7 +194,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-16T21:41:19.182987+00:00",
+      "at": "2026-11-16T21:51:50.583497+00:00",
       "used_this_run": true
     }
   },
@@ -203,16 +204,6 @@
     "0xf46c4cd49d1941404b0e054a808cd5646a9af52a73d6c8c59b0558f5b1d25824": "PASS|"
   },
   "launchpad_tokens": {
-    "0x608de3e89a6506b881125f67463623d7eb063fba": {
-      "dex": "pons-v2-dex",
-      "graduated": "2026-11-09T15:48:32.543200+00:00",
-      "symbol": "NOVASI",
-      "title": "Nova Intelligence",
-      "seen": "2026-11-09T15:51:06.763221+00:00",
-      "source": "chain",
-      "liquidity_usd": 18585.7,
-      "market_cap_usd": 47014.0
-    },
     "0x688d8c004af3c292330fea8af8a594adc8c3b0c8": {
       "dex": "pons-v2-dex",
       "graduated": "2026-11-09T17:15:44Z",
@@ -765,7 +756,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-16T21:41:19.182987+00:00",
+    "at": "2026-11-16T21:51:50.583497+00:00",
     "hours": 24,
     "seen": {
       "0xa06c6b3d518b1ed11cab00651bfabacbb20f5c4a": "2026-11-16T05:54:29.510000+00:00",
@@ -783,7 +774,7 @@
       "0xa06c6b3d518b1ed11cab00651bfabacbb20f5c4a",
       "0xcaeed5281bd1eeb26d5f8bd550bf5c3727ba6514"
     ],
-    "scanned_to": 116080365,
+    "scanned_to": 116086334,
     "complete": true
   },
   "issues_to_close": [],
@@ -907,9 +898,9 @@
       0
     ],
     "2026-11-16 21:00": [
-      5,
-      0,
-      0
+      6,
+      1,
+      1
     ]
   }
 }
