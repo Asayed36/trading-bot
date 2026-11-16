@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-16 19:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-16 20:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 64 post(s), 32 matching launch(es).
 
@@ -342,13 +342,13 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| MARKETS | prediction | +0%, no liq @1.3m | +0%, no liq @5.5m | -55%, no liq @15.0m | – | – | no |
-| UNDERDOG | underdog | +0%, no liq @1.2m | +4%, no liq @5.4m | +4%, no liq @16.0m | – | – | no |
-| UNDERDOG | underdog | missed | missed | missed | – | – | no |
+| MARKETS | prediction | +0%, no liq @1.3m | +0%, no liq @5.5m | -55%, no liq @15.0m | -55%, no liq @60.5m | – | no |
+| UNDERDOG | underdog | +0%, no liq @1.2m | +4%, no liq @5.4m | +4%, no liq @16.0m | -4%, no liq @60.4m | – | no |
+| UNDERDOG | underdog | missed | missed | missed | missed | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 64 s | MARKETS | Prediction Markets | prediction | price not recorded |  |  |  |  |
+| 64 s | MARKETS | Prediction Markets | prediction | +0% | +0% | +0% | +0% | +0% (0 s) |
 | 69 s | UNDERDOG | The Underdog | underdog | price not recorded |  |  |  |  |
 | 164 s | UNDERDOG | UNDERDOG | underdog | price not recorded |  |  |  |  |
 | 524 s | Traxdver | Trader in a world of KOLs | world | price not recorded |  |  |  |  |
@@ -358,14 +358,14 @@ post_match flags (DexScreener, recording only):
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 63 s | MARKETS | Prediction Markets | markets, prediction | price not recorded |  |  |  |  |
+| 63 s | MARKETS | Prediction Markets | markets, prediction | +0% | +0% | +0% | +0% | +0% (0 s) |
 
 ## @Pumpfun 2026-11-16 19:01:38 UTC (post 2122404744060928204)
 > What you can access and trade: - Sports &amp; eSports - World events - Crypto, including 5-minute up or down markets - Commodities like gold
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 62 s | MARKETS | Prediction Markets | markets | price not recorded |  |  |  |  |
+| 62 s | MARKETS | Prediction Markets | markets | +0% | +0% | +0% | +0% | +0% (0 s) |
 | 522 s | Traxdver | Trader in a world of KOLs | world | price not recorded |  |  |  |  |
 
 ## @Pumpfun 2026-11-16 19:01:39 UTC (post 2122404748574044368)
@@ -375,12 +375,12 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| Other | other | missed | missed | missed | – | – | no |
-| PI | prediction | missed | missed | missed | – | – | no |
+| Other | other | missed | missed | missed | missed | – | no |
+| PI | prediction | missed | missed | missed | missed | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 61 s | MARKETS | Prediction Markets | markets, prediction | price not recorded |  |  |  |  |
+| 61 s | MARKETS | Prediction Markets | markets, prediction | +0% | +0% | +0% | +0% | +0% (0 s) |
 | 338 s | Other | Other Cat | other | price not recorded |  |  |  |  |
 | 599 s | PI | Prediction Inu | prediction | price not recorded |  |  |  |  |
 
