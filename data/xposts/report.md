@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-16 20:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-16 21:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-64 post(s), 32 matching launch(es).
+65 post(s), 33 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -393,4 +393,11 @@ No matching launch in the next 10 minutes.
 > When we started building the Pumpfun app, the goal was simple: one app to access everything people want to trade onchain. To grow our market
 
 No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-16 21:20:42 UTC (post 2122439743862374558)
+> SPX6900 is Counter-culture in a World without Counter-culture. credit: @STPC_Pro https://t.co/RyCK3mI120
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 464 s | Trader | Trader in a world of KOLs | world | price not recorded |  |  |  |  |
 
