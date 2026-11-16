@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-15 23:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-16 00:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-21 post(s), 16 matching launch(es).
+23 post(s), 16 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -131,4 +131,14 @@ No matching launch in the next 10 minutes.
 |---|---|---|---|---|---|---|---|---|
 | 21 s | DIA | Diamond coin | diamond | price not recorded |  |  |  |  |
 | 56 s | Degen | Degen | degen | price not recorded |  |  |  |  |
+
+## @blknoiz06 2026-11-15 23:23:32 UTC (post 2122108269284229441)
+> never doom bros https://t.co/VCO8nFk6TW
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-15 23:27:19 UTC (post 2122109219855806886)
+> Starlink saves lives https://t.co/geX77GkNL1
+
+No matching launch in the next 10 minutes.
 
