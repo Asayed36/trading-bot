@@ -313,9 +313,30 @@ def viral_lines(folder, day):
         bought = sum(1 for r in subset if r.get("bought_utc"))
         return "; ".join(out) + f"; bought in all {bought}"
     today = [r for r in rows if (r.get("flagged_utc") or "").startswith(day)]
-    return [f"**Viral flags** (a token can be flagged both ways; a flag is checked for liquidity "
-            f"for its watch hours after it was flagged): {day}: {part(today)} | since the start: "
-            f"{part(rows)}", ""]
+    lines = [f"**Viral flags** (a token can be flagged both ways; a flag is checked for liquidity "
+             f"for its watch hours after it was flagged): {day}: {part(today)} | since the start: "
+             f"{part(rows)}", ""]
+    try:
+        with open(os.path.join(folder, "health.json")) as fh:
+            dropped = json.load(fh).get("post_match_dropped_by_day") or {}
+    except (OSError, ValueError):
+        dropped = {}
+
+    def matched(subset, drops):
+        mine = [r for r in subset if r.get("by_post_match") == "yes"]
+        reached = sum(1 for r in mine if r.get("reached_liquidity_utc"))
+        top = max((float(r["max_liquidity_usd"]) for r in mine if r.get("max_liquidity_usd")),
+                  default=None)
+        return (f"{len(mine)} flagged ({len({r.get('post_id') for r in mine})} post(s)), "
+                f"{reached} reached the liquidity, highest liquidity "
+                + (f"${top:,.0f}" if top is not None else "none seen")
+                + f"; {drops} dropped by the cap")
+    if any(r.get("by_post_match") == "yes" for r in rows) or dropped:
+        lines[-1:-1] = [f"**post_match flags** (recording only, never bought; launches whose name "
+                        f"or symbol matched a word of an X post within 10 minutes of it): {day}: "
+                        f"{matched(today, dropped.get(day, 0))} | since the start: "
+                        f"{matched(rows, sum(dropped.values()))}"]
+    return lines
 
 
 def closed_trades(folder):

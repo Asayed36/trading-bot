@@ -535,3 +535,260 @@ class SetupTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# ---------------------------------------------------------------------
+# post_match (recording only): launches matching an X post's words within 10 minutes of it
+# ---------------------------------------------------------------------
+
+def stamp(t):
+    return vr.iso(t)
+
+
+class PostMatchBase(Base):
+    def post(self, pid, posted, text, seen=None, account="elonmusk"):
+        """Save a post the way the X post watcher does (data/xposts/posts-YYYY-MM-DD.csv)."""
+        folder = os.path.join(self.d, "xposts")
+        os.makedirs(folder, exist_ok=True)
+        path = os.path.join(folder, f"posts-{vr.utc(posted):%Y-%m-%d}.csv")
+        new = not os.path.exists(path)
+        with open(path, "a", newline="") as fh:
+            w = csv.writer(fh)
+            if new:
+                w.writerow(["account", "post_id", "posted_utc", "seen_utc", "text"])
+            w.writerow([account, pid, stamp(posted), stamp(seen or posted + 120), text])
+
+    def pm_flags(self):
+        return {k: r for k, r in self.flags().items() if r["by_post_match"] == "yes"}
+
+
+class PostMatchFlagTests(PostMatchBase):
+    def test_a_launch_between_the_post_and_the_moment_it_was_seen_is_flagged(self):
+        v = self.viral()
+        v.on_launch("m1", "Grok Pup", "GPUP", T0 + 60)              # before the post was read
+        self.post("p1", T0, "Grok is coming", seen=T0 + 120)
+        self.assertEqual(v.read_posts(T0 + 130), 1)
+        v.save(T0 + 131)
+        f = self.pm_flags()["m1"]
+        self.assertEqual((f["post_id"], f["post_account"], f["matched_word"], f["post_posted_utc"],
+                          f["created_utc"]),
+                         ("p1", "elonmusk", "grok", stamp(T0), stamp(T0 + 60)))
+        self.assertEqual((f["by_watchlist"], f["by_name_burst"]), ("yes", "no"))  # Grok: a brand
+        self.assertEqual(f["watch_until_utc"], stamp(T0 + 130 + 24 * 3600))
+
+    def test_later_launches_in_the_window_match_and_others_do_not(self):
+        v = self.viral()
+        self.post("p1", T0, "Pepe frogs everywhere")
+        v.read_posts(T0 + 120)
+        v.on_launch("before", "Pepe Old", "POLD", T0 - 30)           # before the post
+        v.on_launch("inside", "Frogs United", "FRGU", T0 + 9 * MIN)   # in the 10 minutes
+        v.on_launch("after", "Pepe Late", "PLATE", T0 + 11 * MIN)     # after them
+        v.read_posts(T0 + 11 * MIN)                                   # the window closes
+        v.on_launch("later", "Pepe Again", "PAGN", T0 + 12 * MIN)
+        v.save(T0 + 13 * MIN)
+        self.assertEqual(set(self.pm_flags()), {"inside"})
+        self.assertEqual(self.pm_flags()["inside"]["matched_word"], "frogs")
+        self.assertEqual(v.open_posts, [])
+
+    def test_each_post_is_read_once(self):
+        v = self.viral()
+        self.post("p1", T0, "pepe")
+        self.assertEqual(v.read_posts(T0 + 60), 1)
+        self.assertEqual(v.read_posts(T0 + 120), 0)
+
+    def test_common_words_are_ignored_and_the_list_can_be_edited(self):
+        v = self.viral()
+        v.on_launch("m1", "The Greatest Team", "TEAM", T0 + 30)
+        v.on_launch("m2", "Big Read", "BIGR", T0 + 31)
+        self.post("p1", T0, "the greatest team ever, a big read")
+        v.read_posts(T0 + 60)
+        v.save(T0 + 61)
+        self.assertEqual(self.pm_flags(), {})
+        cfg = copy.deepcopy(CFG)
+        cfg["viral"]["post_match_ignore_words"] = [w for w in CFG["viral"]["post_match_ignore_words"]
+                                                   if w != "team"]
+        with tempfile.TemporaryDirectory() as d:
+            self.d = d
+            v = self.viral(cfg)
+            v.on_launch("m1", "The Greatest Team", "TEAM", T0 + 30)
+            self.post("p1", T0, "the greatest team ever")
+            v.read_posts(T0 + 60)
+            v.save(T0 + 61)
+            self.assertEqual(self.pm_flags()["m1"]["matched_word"], "team")
+
+    def test_at_most_20_flags_a_post_and_the_rest_are_counted(self):
+        v = self.viral()
+        self.post("p1", T0, "dogecoin forever")
+        v.read_posts(T0 + 10)
+        for i in range(25):
+            v.on_launch(f"d{i}", "Dogecoin Kid", f"DK{i}", T0 + 20 + i)
+        v.save(T0 + 60)
+        self.assertEqual(len(self.pm_flags()), 20)
+        with open(self.folder("health.json")) as fh:
+            health = json.load(fh)
+        self.assertEqual(health["last_hour"]["post_match_dropped"], 5)
+        self.assertEqual(health["post_match_dropped_by_day"], {"2027-01-15": 5})
+        self.assertEqual(health["last_hour"]["flags_post_match"], 20)
+
+    def test_a_post_too_old_for_the_launch_memory_is_skipped(self):
+        v = self.viral()
+        self.post("p1", T0 - 3600, "pepe")
+        self.assertEqual(v.read_posts(T0), 0)
+
+    def test_turned_off_nothing_is_read(self):
+        cfg = copy.deepcopy(CFG)
+        cfg["viral"]["post_match"] = False
+        v = self.viral(cfg)
+        self.post("p1", T0, "pepe")
+        v.on_launch("m1", "Pepe", "PEPE", T0 + 10)
+        self.assertEqual(v.read_posts(T0 + 60), 0)
+        v.save(T0 + 61)
+        self.assertEqual(self.pm_flags(), {})
+
+
+class PostMatchCheckTests(PostMatchBase):
+    def flagged(self, name="Pepe Frog", symbol="PFROG", launched=T0 + 30):
+        v = self.viral()
+        self.post("p1", T0, "pepe time")
+        v.read_posts(T0 + 5)
+        v.on_launch("m1", name, symbol, launched)
+        return v
+
+    def test_never_bought_even_with_enough_liquidity(self):
+        v = self.flagged()
+        v.apply([pair("m1", liquidity=500_000)], T0 + 120)
+        v.save(T0 + 121)
+        self.assertEqual(v.traders["v1"].open_positions, [])
+        f = self.pm_flags()["m1"]
+        self.assertEqual((f["max_liquidity_usd"], f["reached_liquidity_utc"] != "", f["bought_utc"]),
+                         ("500000", True, ""))
+
+    def test_a_watchlist_token_is_still_bought_and_still_measured(self):
+        v = self.flagged(name="Elon Pepe", symbol="EPEPE")             # watchlist and post_match
+        v.apply([pair("m1", liquidity=60_000, price="1.0")], T0 + 95)
+        self.assertEqual(len(v.traders["v1"].open_positions), 1)
+        v.apply([pair("m1", liquidity=70_000, price="1.2")], T0 + 30 + 5 * MIN + 10)
+        v.save(T0 + 400)
+        f = self.pm_flags()["m1"]
+        self.assertEqual((f["liquidity_1m_usd"], f["liquidity_5m_usd"]), ("60000", "70000"))
+
+    def test_checkpoints_from_the_launch_with_their_real_times(self):
+        v = self.flagged(launched=T0 + 30)
+        launch = T0 + 30
+        v.apply([pair("m1", liquidity=None, price="0.001")], launch + 50)   # before 1 minute
+        v.apply([pair("m1", liquidity=None, price="0.001")], launch + 70)   # 1 minute
+        v.apply([pair("m1", liquidity=12_000, price="0.002")], launch + 5 * MIN + 30)
+        v.apply([pair("m1", liquidity=None, price="0.002")], launch + 25 * MIN)  # 15 min: too late
+        v.apply([], launch + 60 * MIN + 10)                               # 60: no answer...
+        v.apply([pair("m1", liquidity=30_000, price="0.004")], launch + 61 * MIN)  # ...then one
+        v.save(launch + 62 * MIN)
+        f = self.pm_flags()["m1"]
+        self.assertEqual((f["price_1m_usd"], f["liquidity_1m_usd"], f["at_1m_utc"]),
+                         ("0.001", "", stamp(launch + 70)))
+        self.assertEqual((f["price_5m_usd"], f["liquidity_5m_usd"], f["at_5m_utc"]),
+                         ("0.002", "12000", stamp(launch + 5 * MIN + 30)))
+        self.assertEqual((f["price_15m_usd"], f["at_15m_utc"]), ("", "missed"))
+        self.assertEqual((f["price_60m_usd"], f["liquidity_60m_usd"], f["at_60m_utc"]),
+                         ("0.004", "30000", stamp(launch + 61 * MIN)))
+        self.assertEqual((f["max_liquidity_usd"], f["reached_liquidity_utc"]), ("30000", ""))
+
+    def test_followed_for_24_hours(self):
+        v = self.flagged()
+        self.assertIn("m1", v.to_check(T0 + 23 * 3600))
+        self.assertNotIn("m1", v.to_check(T0 + 30 + 24 * 3600 + 60))
+
+    def test_only_the_four_checkpoints_are_allowed(self):
+        cfg = copy.deepcopy(CFG)
+        cfg["viral"]["post_match_checkpoints_minutes"] = [1, 2]
+        with self.assertRaises(ValueError):
+            vr.Viral(cfg, self.d, lambda: T0)
+
+
+class PostMatchRestartTests(PostMatchBase):
+    def test_an_open_post_and_recent_launches_survive_a_restart(self):
+        v = self.viral()
+        v.on_launch("early", "Pepe Early", "PEARLY", T0 + 10)        # before any post is read
+        self.post("p1", T0, "pepe")
+        v.read_posts(T0 + 20)
+        v.on_launch("m0", "Frog", "FROG", T0 + 25)
+        v.save(T0 + 30)
+        v.save_state(T0 + 30)
+        self.post("p2", T0 + 40, "frog")                             # saved while restarting
+        self.now[0] = T0 + 60
+        again = vr.Viral(CFG, self.d, lambda: self.now[0])
+        again.memory.since = T0 - 2 * DAY
+        self.assertEqual([p["id"] for p in again.open_posts], ["p1"])
+        again.read_posts(T0 + 70)                                     # p2 matches nothing earlier
+        again.on_launch("late", "Pepe Later", "PLATER", T0 + 120)    # p1's window is still open
+        again.on_launch("frog2", "Frog Two", "FROG2", T0 + 130)      # p2's window
+        again.save(T0 + 140)
+        flags = self.pm_flags()
+        self.assertEqual(flags["early"]["post_id"], "p1")
+        self.assertEqual(flags["late"]["post_id"], "p1")
+        self.assertEqual(flags["frog2"]["post_id"], "p2")
+        self.assertNotIn("m0", flags)                                 # FROG was before p2
+
+    def test_old_flag_files_without_the_new_columns_still_load(self):
+        os.makedirs(self.folder(), exist_ok=True)
+        old = [c for c in vr.FLAG_COLUMNS if c not in ("by_post_match", "post_id", "matched_word")
+               and not c[:3] in ("pri", "liq", "at_")][:17]
+        with open(self.folder("flags-2027-01-15.csv"), "w", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=old)
+            w.writeheader()
+            w.writerow({k: "" for k in old} | {"flagged_utc": stamp(T0), "token_address": "old",
+                                               "by_watchlist": "yes", "by_name_burst": "no",
+                                               "checks": "0",
+                                               "watch_until_utc": stamp(T0 + DAY)})
+        v = self.viral()
+        self.assertEqual(v.to_check(T0 + 60), ["old"])
+        v.apply([pair("old", liquidity=10)], T0 + 60)
+        v.save(T0 + 61)
+        self.assertEqual(self.flags()["old"]["by_post_match"], "")
+
+
+class PostMatchReportTests(PostMatchBase):
+    def make(self):
+        v = self.viral()
+        self.post("p1", T0, "pepe and dogecoin")
+        v.read_posts(T0 + 5)
+        v.on_launch("m1", "Pepe Frog", "PFROG", T0 + 30)
+        v.apply([pair("m1", liquidity=8_000, price="0.001")], T0 + 95)
+        v.apply([pair("m1", liquidity=60_000, price="0.0015")], T0 + 30 + 5 * MIN + 5)
+        for i in range(22):
+            v.on_launch(f"d{i}", "Dogecoin", f"DOGE{i}", T0 + 40 + i)
+        v.save(T0 + 600)
+
+    def test_the_daily_comparison_line(self):
+        from screener.compare import viral_lines
+        self.make()
+        text = "\n".join(viral_lines(self.folder(), "2027-01-15"))
+        self.assertIn("**post_match flags** (recording only, never bought", text)
+        # 1 PFROG + 22 Dogecoin launches matched one post: 20 flagged, 3 dropped by the cap
+        self.assertIn("2027-01-15: 20 flagged (1 post(s)), 1 reached the liquidity, highest "
+                      "liquidity $60,000; 3 dropped by the cap", text)
+
+    def test_the_hourly_x_report(self):
+        from screener import xposts_report as rep
+        self.make()
+        text = "\n".join(rep.build(self.d, CFG["xposts"], vr.utc(T0 + 3600)))
+        self.assertIn("post_match flags (DexScreener, recording only):", text)
+        self.assertIn("| PFROG | pepe | +0%, liq $8,000 @1.1m | +50%, liq $60,000 @5.1m | – | – | "
+                      "$60,000 | yes |", text)
+
+    def test_the_health_row(self):
+        from datetime import datetime, timezone
+        from screener.health import add_viral
+        self.make()
+        got = []
+        add_viral(lambda *a: got.append(a), self.d, CFG,
+                  datetime.fromtimestamp(T0 + 900, timezone.utc))
+        self.assertIn("20 by post_match (3 dropped by the cap)", got[0][2])
+
+    def test_the_settings(self):
+        c = CFG["viral"]
+        self.assertEqual((c["post_match"], c["post_match_window_minutes"],
+                          c["post_match_max_per_post"], c["post_match_watch_hours"],
+                          c["post_match_checkpoints_minutes"]), (True, 10, 20, 24, [1, 5, 15, 60]))
+        for w in ("team", "the", "greatest", "read", "new", "one", "big"):
+            self.assertIn(w, c["post_match_ignore_words"])
+        self.assertEqual([v["name"] for v in c["versions"]], ["v1"])  # v1 unchanged, alone

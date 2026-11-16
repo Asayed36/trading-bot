@@ -1476,6 +1476,29 @@ buy_amount_usd = 10
 buy_slippage_pct = 1.5
 round_trip_cost_pct = 3
 
+# POST_MATCH (added 2026-11-16, recording only: v1 never buys a token flagged only this way).
+# When the X post watcher (xposts_bot.py, [xposts]) has saved a post, the launches made from the
+# post's own time to post_match_window_minutes after it whose name or symbol matches a word of
+# the post are flagged (the matching of screener/xposts_report.py, without the words below), at
+# most post_match_max_per_post per post (the rest are counted as dropped). Each is followed on
+# DexScreener for post_match_watch_hours; its price and liquidity about 1, 5, 15 and 60 minutes
+# after the launch are kept with the real time they were read. No X request: the posts are read
+# from data/xposts/. Launches are remembered for post_match_memory_minutes, so a post the
+# watcher saw late still matches the launches since its own time.
+post_match = true
+post_match_window_minutes = 10
+post_match_max_per_post = 20
+post_match_watch_hours = 24
+post_match_memory_minutes = 30
+post_match_checkpoints_minutes = [1, 5, 15, 60]
+# Very common words a launch name may share with a post by chance: never matched. Edit freely
+# (lower case). Words under 3 letters, links and the report's own common words are never used.
+post_match_ignore_words = ["team", "the", "greatest", "read", "new", "one", "big", "best",
+                           "real", "true", "good", "great", "happy", "love", "life", "world",
+                           "money", "free", "first", "last", "next", "every", "day", "night",
+                           "today", "tomorrow", "year", "man", "woman", "baby", "king", "queen",
+                           "official", "live", "news", "time", "home", "game", "power", "future"]
+
 # v1: buys a flagged token at the first check where its liquidity is at least
 # min_liquidity_usd; exits like liquid l6: everything after 60 minutes, or at -25% from the
 # buy price. It keeps its start time in positions.json ("started_utc"); the daily comparison
