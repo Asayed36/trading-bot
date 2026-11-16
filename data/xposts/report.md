@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-16 07:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-16 08:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-33 post(s), 16 matching launch(es).
+34 post(s), 17 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -191,4 +191,11 @@ No matching launch in the next 10 minutes.
 > Call on this topic happening in 9 hours! https://t.co/VxtFW9LGhr
 
 No matching launch in the next 10 minutes.
+
+## @VitalikButerin 2026-11-16 07:42:17 UTC (post 2122233780371083553)
+> Over the past few weeks I've gone from thinking leanPCS is total bull to being a total bull. So let me explain some of these buzzwords in mo
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 118 s | BULL | snowbull | bull | price not recorded |  |  |  |  |
 
