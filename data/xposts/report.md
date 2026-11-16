@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-16 11:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-16 12:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-41 post(s), 18 matching launch(es).
+44 post(s), 19 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -233,6 +233,23 @@ No matching launch in the next 10 minutes.
 
 ## @justinsuntron 2026-11-16 11:03:34 UTC (post 2122284437442592924)
 > Qwen4-Max Is Now Live on https://t.co/Id9VsXTy4C — Enjoy an Exclusive 10% Off! https://t.co/x8wZf7KW94
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-16 11:05:41 UTC (post 2122284970949718155)
+> i still like the long-term privacy thesis and watching zcash:native for a deeper pullback, with $750 as a key level where historical resista
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 383 s | LI | Long Inu | long | price not recorded |  |  |  |  |
+
+## @MustStopMurad 2026-11-16 11:07:22 UTC (post 2122285391336046868)
+> Here’s the truth: Your only competition in Crypto is… You. Your impatience, your greed, your immature desire to make it as fast as possible…
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-16 11:25:59 UTC (post 2122290076780765659)
+> 👑👑👑 https://t.co/fUoQzsyYai
 
 No matching launch in the next 10 minutes.
 
