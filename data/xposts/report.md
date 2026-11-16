@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-16 10:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-16 11:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-37 post(s), 18 matching launch(es).
+41 post(s), 18 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -213,6 +213,26 @@ No matching launch in the next 10 minutes.
 
 ## @toly 2026-11-16 10:02:02 UTC (post 2122268951363440889)
 > Matt is just one capital raise away from beating 2019 Magnus in chess. https://t.co/IqNHDNHb2V
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-16 10:30:39 UTC (post 2122276153352446400)
+> 🤯🤯🤯 https://t.co/sOs6zugxV4
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-16 10:44:41 UTC (post 2122279686025679292)
+> 👑👑👑 https://t.co/S3ZZwcBTdy
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-16 10:57:25 UTC (post 2122282890704847055)
+> 👑👑👑 https://t.co/ujdCMt0hY6
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-16 11:03:34 UTC (post 2122284437442592924)
+> Qwen4-Max Is Now Live on https://t.co/Id9VsXTy4C — Enjoy an Exclusive 10% Off! https://t.co/x8wZf7KW94
 
 No matching launch in the next 10 minutes.
 
