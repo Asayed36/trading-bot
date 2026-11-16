@@ -447,6 +447,13 @@ everything after 60 minutes or at -25% (like liquid l6). The numbers are fixed i
 Settings: `[viral]` in `config.toml`; results in the daily comparison ("viral v1" and the
 "Viral flags" line).
 
+A third flag, **post_match** (recording only, never bought), uses the X post watcher's saved
+posts (no extra X request): launches from a post's own time to 10 minutes after it whose name
+or symbol matches a word of the post (minus `post_match_ignore_words`), at most 20 per post. Each
+is followed on DexScreener for 24 hours, with its price and liquidity about 1, 5, 15 and 60
+minutes after the launch (and the real time each was read). They appear in
+`data/xposts/report.md` and in the daily comparison as "post_match flags".
+
 ## The X post watcher (recording only, on your own server)
 
 `xposts_bot.py` (the `xposts` service) saves the newest original posts (no replies, no reposts)

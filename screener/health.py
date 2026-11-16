@@ -363,7 +363,9 @@ def add_viral(add, folder, cfg, now):
                        sorted((data.get("versions") or {}).items()))
     detail = (f"last hour: {h.get('launches', 0)} launch(es) recorded, "
               f"{h.get('flags_name_burst', 0)} flagged by name_burst, "
-              f"{h.get('flags_watchlist', 0)} by watchlist_match, {h.get('checks', 0)} check(s) "
+              f"{h.get('flags_watchlist', 0)} by watchlist_match, "
+              f"{h.get('flags_post_match', 0)} by post_match "
+              f"({h.get('post_match_dropped', 0)} dropped by the cap), {h.get('checks', 0)} check(s) "
               f"({h.get('check_errors', 0)} failed), {h.get('buys', 0)} buy(s); "
               f"{data.get('watched_now', 0)} token(s) watched now; {opened or 'no version'}")
     if not data.get("first_of_name_known"):

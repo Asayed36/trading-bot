@@ -162,6 +162,21 @@ def build(data_root, c, now=None, days=None):
             for r in _stream(path, keep):
                 if r.get("token_address") in needed:
                     priced[r["token_address"]] = r
+    # the viral recorder's post_match flags of these posts (DexScreener's price and liquidity
+    # at 1, 5, 15 and 60 minutes), from its flags files of the same days
+    ids = {p.get("post_id") for _, p, _ in posts}
+    flagged = {}
+    flag_days = set(wanted_days) | {(datetime.strptime(d, "%Y-%m-%d") + timedelta(days=1))
+                                    .strftime("%Y-%m-%d") for d in wanted_days}
+    flag_cols = ("by_post_match", "post_id", "symbol", "name", "matched_word", "created_utc",
+                 "max_liquidity_usd", "reached_liquidity_utc",
+                 *(f"{k}_{m}m{u}" for m in FLAG_MINUTES
+                   for k, u in (("price", "_usd"), ("liquidity", "_usd"), ("at", "_utc"))))
+    for day in sorted(flag_days):
+        path = os.path.join(data_root, "viral", f"flags-{day}.csv")
+        for r in _stream(path, flag_cols):
+            if r.get("by_post_match") == "yes" and r.get("post_id") in ids:
+                flagged.setdefault(r["post_id"], []).append(r)
     total = 0
     for i, (posted, p, _) in enumerate(posts):
         hits = sorted(found[i], key=lambda x: x[0])
@@ -169,6 +184,7 @@ def build(data_root, c, now=None, days=None):
         lines.append(f"## @{p.get('account')} {posted:%Y-%m-%d %H:%M:%S} UTC (post {p.get('post_id')})")
         lines.append(f"> {text}")
         lines.append("")
+        lines += _flag_lines(flagged.get(p.get("post_id")) or [])
         if not hits:
             lines += ["No matching launch in the next "
                       f"{window.total_seconds() / 60:g} minutes.", ""]
@@ -199,6 +215,43 @@ def build(data_root, c, now=None, days=None):
     lines.insert(4, f"{len(posts)} post(s), {total} matching launch(es).")
     lines.insert(5, "")
     return lines
+
+
+FLAG_MINUTES = (1, 5, 15, 60)
+
+
+def _flag_lines(rows):
+    """The post_match flags of one post: DexScreener's price (change from the first value read)
+    and liquidity at each checkpoint, with the minutes after the launch it was really read."""
+    if not rows:
+        return []
+    out = ["post_match flags (DexScreener, recording only):", "",
+           "| Symbol | Matched | " + " | ".join(f"{m} min" for m in FLAG_MINUTES)
+           + " | Highest liquidity | Reached $50,000 |",
+           "|---|---|" + "---|" * len(FLAG_MINUTES) + "---|---|"]
+    for r in sorted(rows, key=lambda r: r.get("created_utc") or ""):
+        created = _when(r.get("created_utc"))
+        base, cells = None, []
+        for m in FLAG_MINUTES:
+            at = r.get(f"at_{m}m_utc") or ""
+            price, liq = _num(r.get(f"price_{m}m_usd")), _num(r.get(f"liquidity_{m}m_usd"))
+            if at == "missed":
+                cells.append("missed")
+                continue
+            if not at or price is None:
+                cells.append("–")
+                continue
+            base = base or price
+            when = _when(at)
+            late = f" @{(when - created).total_seconds() / 60:.1f}m" if when and created else ""
+            cells.append(f"{(price / base - 1) * 100:+.0f}%, "
+                         + (f"liq ${liq:,.0f}" if liq is not None else "no liq") + late)
+        top = _num(r.get("max_liquidity_usd"))
+        out.append(f"| {(r.get('symbol') or '')[:16].replace('|', '/')} | "
+                   f"{r.get('matched_word') or ''} | " + " | ".join(cells)
+                   + f" | {'$' + format(top, ',.0f') if top is not None else '–'} | "
+                   + ("yes" if r.get("reached_liquidity_utc") else "no") + " |")
+    return out + [""]
 
 
 def write_report(data_root, c, now=None):

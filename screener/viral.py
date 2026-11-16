@@ -21,6 +21,15 @@ max_hold_minutes, or at -stop_loss_pct from the buy price, checked at every chec
 DexScreener answer. Costs: round_trip_cost_pct over the whole trade. The version keeps its start
 time in positions.json ("started_utc"); the daily comparison counts only trades after it.
 
+POST_MATCH (recording only, never bought; [viral] post_match_*): when the X post watcher
+(xposts_bot.py) has saved a post, the launches from the post's own time (posted_utc) to
+post_match_window_minutes (10) after it whose name or symbol matches a word of the post (the
+matching of screener/xposts_report.py, without the words in post_match_ignore_words) are
+flagged, at most post_match_max_per_post (20) per post (the rest are counted as dropped). Each
+is followed on DexScreener for post_match_watch_hours (24) like the other flags; its price and
+liquidity about 1, 5, 15 and 60 minutes after the launch are kept with the real time they were
+read. No X request is made: the posts are read from data/xposts/posts-YYYY-MM-DD.csv.
+
 FIXED RULES decided in advance: the numbers in [viral] are not tuned from results; a change is
 a new version.
 
@@ -52,7 +61,14 @@ FLAG_COLUMNS = ["flagged_utc", "token_address", "symbol", "name", "created_utc",
                 "by_watchlist", "watchlist_entry", "watchlist_category",
                 "by_name_burst", "name_burst_utc", "same_symbol_followers_30m",
                 "watch_until_utc", "checks", "max_liquidity_usd", "reached_liquidity_utc",
-                "bought_utc", "bought_by"]
+                "bought_utc", "bought_by",
+                # post_match (recording only): the X post a launch's name or symbol matched, and
+                # DexScreener's price and liquidity about 1, 5, 15 and 60 minutes after the
+                # launch, each with the real time it was read ("missed": no answer in time)
+                "by_post_match", "post_match_utc", "post_id", "post_account", "post_posted_utc",
+                "matched_word"] + [f"{kind}_{m}m{unit}" for m in (1, 5, 15, 60)
+                                   for kind, unit in (("price", "_usd"), ("liquidity", "_usd"),
+                                                      ("at", "_utc"))]
 ISO = "%Y-%m-%dT%H:%M:%SZ"
 HOURS_KEPT = 26
 STATE_SAVE_SECONDS = 600
@@ -224,7 +240,23 @@ class Viral:
             t.buying = not v.stopped
             t.state.setdefault("started_utc", started)     # kept for good: never back-filled
             self.traders[v.name] = t
+        # post_match: the launches of the last post_match_memory_minutes (a post seen late can
+        # still match the launches between its own time and now), the posts whose window is
+        # still open, the posts already read, and the flags dropped by the cap per day
+        self.recent_launches = deque()     # (t, mint, name, symbol)
+        self.open_posts = []
+        self.posts_done = {}               # post id -> posted (epoch)
+        self.dropped_by_day = {}
+        xc = cfg.get("xposts") or {}
+        self.posts_folder = os.path.join(data_folder, xc.get("folder", "xposts"))
+        self.min_word_letters = xc.get("min_word_letters", 3)
+        self.ignore_words = {w.casefold() for w in c.get("post_match_ignore_words", [])}
+        if set(c.get("post_match_checkpoints_minutes", (1, 5, 15, 60))) - {1, 5, 15, 60}:
+            raise ValueError("[viral] post_match_checkpoints_minutes: only 1, 5, 15 and 60 have "
+                             "columns in the flags files")
         self._load(now)
+        if self.c.get("post_match"):
+            self._seed_recent(now)
 
     # ---- persistence ---------------------------------------------------
 
@@ -234,12 +266,18 @@ class Viral:
     def _load(self, now):
         try:
             with open(self._path("state.json")) as fh:
-                self.memory.load(json.load(fh), now)
+                state = json.load(fh)
+            self.memory.load(state, now)
+            pm = state.get("post_match") or {}
+            self.open_posts = [dict(p) for p in pm.get("open") or []]
+            self.posts_done = {k: float(v) for k, v in (pm.get("done") or {}).items()}
         except (OSError, ValueError, TypeError, AttributeError):
             pass
         try:
             with open(self._path("health.json")) as fh:
-                self.hours = json.load(fh).get("hours") or {}
+                health = json.load(fh)
+            self.hours = health.get("hours") or {}
+            self.dropped_by_day = health.get("post_match_dropped_by_day") or {}
         except (OSError, ValueError, TypeError, AttributeError):
             self.hours = {}
         today = utc(now).date()
@@ -248,7 +286,8 @@ class Viral:
             try:
                 with open(self._path(f"flags-{day}.csv"), newline="") as fh:
                     for row in csv.DictReader(fh):
-                        self.flags[row["token_address"]] = dict(row)
+                        row = {k: row.get(k) or "" for k in FLAG_COLUMNS}   # (older files: fewer)
+                        self.flags[row["token_address"]] = row
             except OSError:
                 pass
 
@@ -276,8 +315,12 @@ class Viral:
         now = self.clock() if now is None else now
         self.memory.prune(now)
         path = self._path("state.json")
+        cutoff = now - 2 * 86400
+        self.posts_done = {k: v for k, v in self.posts_done.items() if v >= cutoff}
+        state = dict(self.memory.to_state(),
+                     post_match={"open": self.open_posts, "done": self.posts_done})
         with open(path + ".tmp", "w") as fh:
-            json.dump(self.memory.to_state(), fh, separators=(",", ":"))
+            json.dump(state, fh, separators=(",", ":"))
         os.replace(path + ".tmp", path)
         self.last_state_save = now
         # flags older than the watch window and the day before are no longer needed in memory
@@ -305,6 +348,8 @@ class Viral:
     def _write_health(self, now):
         for old in sorted(self.hours)[:-HOURS_KEPT]:
             del self.hours[old]
+        for old in sorted(self.dropped_by_day)[:-40]:
+            del self.dropped_by_day[old]
         last_hour = [v for k, v in self.hours.items()
                      if k >= utc(now - 3600).strftime("%Y-%m-%dT%H")]
         data = {
@@ -314,8 +359,12 @@ class Viral:
             "watched_now": len(self._watched(now)),
             "last_check_ok": iso(self.last_check_ok) if self.last_check_ok else None,
             "last_hour": {k: sum(h.get(k, 0) for h in last_hour)
-                          for k in ("launches", "flags_watchlist", "flags_name_burst", "checks",
-                                    "check_errors", "dexscreener", "buys")},
+                          for k in ("launches", "flags_watchlist", "flags_name_burst",
+                                    "flags_post_match", "post_match_dropped", "posts_matched",
+                                    "checks", "check_errors", "dexscreener", "buys")},
+            "post_match": bool(self.c.get("post_match")),
+            "post_match_open_posts": len(self.open_posts),
+            "post_match_dropped_by_day": self.dropped_by_day,
             "versions": {name: {"open": len(t.open_positions),
                                 "started_utc": t.state.get("started_utc")}
                          for name, t in self.traders.items()},
@@ -349,16 +398,110 @@ class Viral:
             if burst is not None:
                 self._flag(burst["mint"], burst["symbol"], burst["name"], burst["t"], t,
                            followers=burst["followers"])
+            if self.c.get("post_match"):
+                self.recent_launches.append((t, mint, name or "", symbol or ""))
+                for post in self.open_posts:
+                    self._match_post(post, t, mint, name, symbol, t)
         except Exception:
             log.exception("viral: launch %s not recorded", mint)
 
-    def _flag(self, mint, symbol, name, created, t, watchlist=None, followers=None):
+    # ---- post_match (recording only) -------------------------------------
+
+    def _seed_recent(self, now):
+        """After a restart: the launches of the last post_match_memory_minutes, from the
+        launch files this class writes (read one row at a time)."""
+        since = now - self.c["post_match_memory_minutes"] * 60
+        for day in sorted({utc(since).strftime("%Y-%m-%d"), utc(now).strftime("%Y-%m-%d")}):
+            try:
+                with open(self._path(f"launches-{day}.csv"), newline="") as fh:
+                    for r in csv.DictReader(fh):
+                        try:
+                            t = datetime.strptime(r["created_utc"], ISO).replace(
+                                tzinfo=timezone.utc).timestamp()
+                        except (KeyError, ValueError):
+                            continue
+                        if t >= since:
+                            self.recent_launches.append((t, r.get("token_address", ""),
+                                                         r.get("name", ""), r.get("symbol", "")))
+            except OSError:
+                pass
+
+    def post_words(self, text):
+        """The words of a post that can match a launch: screener/xposts_report.py's, without
+        post_match_ignore_words."""
+        from screener.xposts_report import post_words
+        return post_words(text, self.min_word_letters) - self.ignore_words
+
+    def read_posts(self, now):
+        """Read the X posts saved since the last look (no X request: the watcher's files) and
+        flag the launches already seen in their windows. Returns how many posts were new."""
+        if not self.c.get("post_match"):
+            return 0
+        window = self.c["post_match_window_minutes"] * 60
+        memory = self.c["post_match_memory_minutes"] * 60
+        new = 0
+        days = sorted({utc(now - 86400).strftime("%Y-%m-%d"), utc(now).strftime("%Y-%m-%d")})
+        for day in days:
+            try:
+                with open(os.path.join(self.posts_folder, f"posts-{day}.csv"), newline="") as fh:
+                    rows = list(csv.DictReader(fh))
+            except OSError:
+                continue
+            for p in rows:
+                pid = p.get("post_id")
+                if not pid or pid in self.posts_done:
+                    continue
+                try:
+                    posted = datetime.strptime(p["posted_utc"], ISO).replace(
+                        tzinfo=timezone.utc).timestamp()
+                except (KeyError, ValueError):
+                    continue
+                self.posts_done[pid] = posted
+                if posted + window < now - memory:
+                    continue                       # too old: its launches are not in memory
+                new += 1
+                self._count(now, "posts_matched")
+                post = {"id": pid, "account": p.get("account", ""), "posted": posted,
+                        "words": sorted(self.post_words(p.get("text"))), "flags": 0,
+                        "dropped": 0, "flagged": []}
+                for t, mint, name, symbol in list(self.recent_launches):
+                    self._match_post(post, t, mint, name, symbol, now)
+                if posted + window >= now:
+                    self.open_posts.append(post)   # later launches can still match it
+        # close the posts whose window has passed; forget launches older than the memory
+        self.open_posts = [p for p in self.open_posts if p["posted"] + window >= now]
+        while self.recent_launches and self.recent_launches[0][0] < now - memory:
+            self.recent_launches.popleft()
+        return new
+
+    def _match_post(self, post, t, mint, name, symbol, now):
+        """Flag this launch for this post when it was made in the post's window and its name or
+        symbol matches a word of the post (at most post_match_max_per_post flags a post)."""
+        window = self.c["post_match_window_minutes"] * 60
+        if not (post["posted"] <= t <= post["posted"] + window) or mint in post["flagged"]:
+            return
+        from screener.xposts_report import matches
+        hit = matches(symbol, name, set(post["words"]))
+        if not hit:
+            return
+        post["flagged"].append(mint)
+        if post["flags"] >= self.c["post_match_max_per_post"]:
+            post["dropped"] += 1
+            self._count(now, "post_match_dropped")
+            day = utc(now).strftime("%Y-%m-%d")
+            self.dropped_by_day[day] = self.dropped_by_day.get(day, 0) + 1
+            return
+        post["flags"] += 1
+        self._flag(mint, symbol, name, t, now, post=post, word=", ".join(sorted(hit)))
+
+    def _flag(self, mint, symbol, name, created, t, watchlist=None, followers=None, post=None,
+              word=None):
         row = self.flags.get(mint)
         if row is None:
             row = {k: "" for k in FLAG_COLUMNS}
             row.update(flagged_utc=iso(t), token_address=mint, symbol=(symbol or "")[:32],
                        name=(name or "").replace("\n", " ")[:64], created_utc=iso(created),
-                       by_watchlist="no", by_name_burst="no", checks="0",
+                       by_watchlist="no", by_name_burst="no", by_post_match="no", checks="0",
                        watch_until_utc=iso(t + self.c["watch_hours"] * 3600))
             self.flags[mint] = row
         if watchlist is not None and row["by_watchlist"] != "yes":
@@ -369,15 +512,24 @@ class Viral:
             row.update(by_name_burst="yes", name_burst_utc=iso(t),
                        same_symbol_followers_30m=str(followers))
             self._count(t, "flags_name_burst")
+        if post is not None and row.get("by_post_match") != "yes":
+            row.update(by_post_match="yes", post_match_utc=iso(t), post_id=post["id"],
+                       post_account=post["account"], post_posted_utc=iso(post["posted"]),
+                       matched_word=word or "")
+            until = iso(t + self.c["post_match_watch_hours"] * 3600)
+            if until > row["watch_until_utc"]:
+                row["watch_until_utc"] = until
+            self._count(t, "flags_post_match")
         self.dirty_days.add(row["flagged_utc"][:10])
 
     # ---- the checks (launch_record_bot.py: every check_every_seconds) ---
 
     def _watched(self, now):
-        """The flagged tokens still waiting for enough liquidity, newest first."""
+        """The flagged tokens still followed (not yet bought, or a post_match one still within
+        its 24 hours), newest first."""
         until = iso(now)
-        rows = [r for r in self.flags.values()
-                if not r["bought_utc"] and r["watch_until_utc"] > until]
+        rows = [r for r in self.flags.values() if r["watch_until_utc"] > until
+                and (not r["bought_utc"] or r.get("by_post_match") == "yes")]
         rows.sort(key=lambda r: r["flagged_utc"], reverse=True)
         return rows[:self.c["max_watched"]]
 
@@ -414,6 +566,8 @@ class Viral:
             pair = best_pair(pairs, mint, self.allowed_dexes)
             row["checks"] = str(int(row["checks"] or 0) + 1)
             self.dirty_days.add(row["flagged_utc"][:10])
+            if row.get("by_post_match") == "yes":
+                self._checkpoints(row, pair, now)
             if pair is None:
                 continue
             liquidity = pair_facts(pair, when)["liquidity_usd"]
@@ -426,6 +580,8 @@ class Viral:
                 continue
             if not row["reached_liquidity_utc"]:
                 row["reached_liquidity_utc"] = iso(now)
+            if row["by_watchlist"] != "yes" and row["by_name_burst"] != "yes":
+                continue                           # post_match alone is recorded, never bought
             got = Check(mint, row["symbol"], row["name"], pair, price)
             bought = [name for name, t in self.traders.items()
                       if t.buy(got, when=when, fetched_at=when)]
@@ -434,3 +590,30 @@ class Viral:
                 self._count(now, "buys", len(bought))
                 log.info("viral: BUY %s at $%.10g (liquidity $%.0f; %s)", row["symbol"], price,
                          liquidity, ", ".join(bought))
+
+    def _checkpoints(self, row, pair, now):
+        """post_match: the price and liquidity about 1, 5, 15 and 60 minutes after the launch,
+        each at the first check at or after it (with its real time), if that check comes within
+        max(2 minutes, 20%) of it; else "missed"."""
+        try:
+            created = datetime.strptime(row["created_utc"], ISO).replace(
+                tzinfo=timezone.utc).timestamp()
+        except ValueError:
+            return
+        for m in self.c.get("post_match_checkpoints_minutes", (1, 5, 15, 60)):
+            at = f"at_{m}m_utc"
+            if row.get(at):
+                continue
+            due, late = created + m * 60, created + m * 60 + max(120, m * 60 * 0.2)
+            if now < due:
+                break
+            if now > late:
+                row[at] = "missed"
+                continue
+            price = to_float((pair or {}).get("priceUsd"))
+            if pair is None or not price:
+                continue                           # no answer yet: try at the next check
+            liquidity = pair_facts(pair, utc(now))["liquidity_usd"]
+            row[f"price_{m}m_usd"] = f"{price:.10g}"
+            row[f"liquidity_{m}m_usd"] = "" if liquidity is None else f"{liquidity:.0f}"
+            row[at] = iso(now)

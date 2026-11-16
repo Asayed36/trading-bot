@@ -310,6 +310,7 @@ class RecordRunner:
         v = self.viral
         now = self.clock()
         try:
+            v.read_posts(now)                      # post_match: the X posts saved since (no X request)
             addresses = v.to_check(now)
             if addresses:
                 try:
