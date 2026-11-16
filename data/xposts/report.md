@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-16 18:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-16 19:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-58 post(s), 22 matching launch(es).
+64 post(s), 32 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -332,6 +332,65 @@ No matching launch in the next 10 minutes.
 
 ## @MustStopMurad 2026-11-16 18:39:37 UTC (post 2122399204530323781)
 > The thing about the crypto market is that it reprices assets very fast You are either there when the asset is unnoticed by the majority Or y
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-16 19:01:36 UTC (post 2122404736251077035)
+> Think the underdog takes it tonight? Back it. Think BTC dumps in the next 5 minutes? Back that too. Think gold breaks out this week? You get
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| MARKETS | prediction | +0%, no liq @1.3m | +0%, no liq @5.5m | -55%, no liq @15.0m | – | – | no |
+| UNDERDOG | underdog | +0%, no liq @1.2m | +4%, no liq @5.4m | +4%, no liq @16.0m | – | – | no |
+| UNDERDOG | underdog | missed | missed | missed | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 64 s | MARKETS | Prediction Markets | prediction | price not recorded |  |  |  |  |
+| 69 s | UNDERDOG | The Underdog | underdog | price not recorded |  |  |  |  |
+| 164 s | UNDERDOG | UNDERDOG | underdog | price not recorded |  |  |  |  |
+| 524 s | Traxdver | Trader in a world of KOLs | world | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-16 19:01:37 UTC (post 2122404740143399358)
+> The Pumpfun App is the FIRST EVER trading interface for prediction markets that pays you to trade. Callout rewards are supported from day 1,
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 63 s | MARKETS | Prediction Markets | markets, prediction | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-16 19:01:38 UTC (post 2122404744060928204)
+> What you can access and trade: - Sports &amp; eSports - World events - Crypto, including 5-minute up or down markets - Commodities like gold
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 62 s | MARKETS | Prediction Markets | markets | price not recorded |  |  |  |  |
+| 522 s | Traxdver | Trader in a world of KOLs | world | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-16 19:01:39 UTC (post 2122404748574044368)
+> Prediction markets via Pumpfun are provided by Polymarket and are not available to persons located in, or residents of, among others, the Un
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| Other | other | missed | missed | missed | – | – | no |
+| PI | prediction | missed | missed | missed | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 61 s | MARKETS | Prediction Markets | markets, prediction | price not recorded |  |  |  |  |
+| 338 s | Other | Other Cat | other | price not recorded |  |  |  |  |
+| 599 s | PI | Prediction Inu | prediction | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-16 19:01:41 UTC (post 2122404760590704693)
+> https://t.co/eCuaWjfJak
+
+No matching launch in the next 10 minutes.
+
+## @a1lon9 2026-11-16 19:07:49 UTC (post 2122406303872262264)
+> When we started building the Pumpfun app, the goal was simple: one app to access everything people want to trade onchain. To grow our market
 
 No matching launch in the next 10 minutes.
 
