@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-16 23:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-17 00:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-66 post(s), 33 matching launch(es).
+83 post(s), 42 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -330,6 +330,11 @@ No matching launch in the next 10 minutes.
 
 No matching launch in the next 10 minutes.
 
+## @justinsuntron 2026-11-16 18:23:58 UTC (post 2122395268394127371)
+> 中概股这么多年很差的最核心原因就是因为没有回购销毁，很多创始人的心态无非是把股市当作抽水机，看看美国同行走势与表现，美股的长牛核心地基还是靠基本面的改善来实现的。
+
+No matching launch in the next 10 minutes.
+
 ## @MustStopMurad 2026-11-16 18:39:37 UTC (post 2122399204530323781)
 > The thing about the crypto market is that it reprices assets very fast You are either there when the asset is unnoticed by the majority Or y
 
@@ -394,6 +399,35 @@ No matching launch in the next 10 minutes.
 
 No matching launch in the next 10 minutes.
 
+## @elonmusk 2026-11-16 19:16:22 UTC (post 2122408454325416322)
+> Catching a Starship from space https://t.co/okQTOiW1Hu
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 20 s | CATCHING | Catching | catching | price not recorded |  |  |  |  |
+| 109 s | CATCHING | Catching | catching | price not recorded |  |  |  |  |
+| 330 s | STR42 | Starship 42 | starship | price not recorded |  |  |  |  |
+
+## @elonmusk 2026-11-16 19:46:34 UTC (post 2122416056006324311)
+> Try Grok @Bot https://t.co/JJJ3EdgqlD
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-16 19:47:12 UTC (post 2122416213271921051)
+> 👑👑👑 https://t.co/fFubLp2eQk
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-16 19:53:30 UTC (post 2122417798299181103)
+> 👑👑👑 https://t.co/s3WdwQz4GG
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-16 19:55:22 UTC (post 2122418266543128617)
+> Ironically, a deeper understanding of cryptocurrency and sov than most of ct https://t.co/Ao5hHpQTFW
+
+No matching launch in the next 10 minutes.
+
 ## @MustStopMurad 2026-11-16 21:20:42 UTC (post 2122439743862374558)
 > SPX6900 is Counter-culture in a World without Counter-culture. credit: @STPC_Pro https://t.co/RyCK3mI120
 
@@ -401,8 +435,73 @@ No matching launch in the next 10 minutes.
 |---|---|---|---|---|---|---|---|---|
 | 464 s | Trader | Trader in a world of KOLs | world | -35% | -35% | -35% | -35% | +13% (6 s) |
 
+## @toly 2026-11-16 21:34:51 UTC (post 2122443303404871780)
+> By deadlift 1 rep max https://t.co/339mkROxrP
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-16 21:43:49 UTC (post 2122445561030922356)
+> 🐐🐐🐐 https://t.co/Bwig8ZUgZX
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-16 21:47:01 UTC (post 2122446366354096479)
+> As I was saying … Free Starlinks for FAA were offered to Sec Duffy, but he said they were not needed. As it turns out, they were. https://t.
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-16 22:16:33 UTC (post 2122453799935906240)
+> 2022: roaring crypto bull market into parabolic altcoin expansion -&gt; bubble pop -&gt; 3AC liquidation 2026: roaring AI bull market into p
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 497 s | Bull | The Black Bull | bull | +50% | -21% | +2% | +128% | +153% (1692 s) |
+| 517 s | Bull | The Black Bull | bull | price not recorded |  |  |  |  |
+
 ## @saylor 2026-11-16 22:37:33 UTC (post 2122459084599197886)
 > We’ve added USD Strength to the Strategy dashboard. At today’s rates, our USD assets can fund 3.4 years of interest and dividends. That’s 41
 
 No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-16 22:43:53 UTC (post 2122460677499482376)
+> wait what 😨 https://t.co/LQ2NQST8JM
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-16 23:05:04 UTC (post 2122466008292090214)
+> everybody is trying to become the everything app robinhood started with stocks and now is integrating prediction markets &amp; crypto polyma
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 99 s | Everything | The Everything Coin | everything | +0% | +0% | -19% | -19% | +0% (0 s) |
+
+## @elonmusk 2026-11-16 23:28:10 UTC (post 2122471820712660999)
+> Starlink https://t.co/FzEseJHSeA
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 23 s | STARLINK | Starlink at Sea | starlink | +1% | +1% | +1% | +1% | +1% (28 s) |
+| 52 s | STARLINK | STARLINK | starlink | price not recorded |  |  |  |  |
+
+## @elonmusk 2026-11-16 23:30:15 UTC (post 2122472344052531640)
+> View of Starship landing from the tower https://t.co/pF000kWbQw
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-16 23:41:39 UTC (post 2122475215489753104)
+> anthropic ipo
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-16 23:41:48 UTC (post 2122475250646692017)
+> nvidia earnings
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-17 00:24:41 UTC (post 2122486045916668376)
+> feels like a very important spot for crypto im ngl
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 600 s | SPOT | Very Important | important, spot | price not recorded |  |  |  |  |
 
