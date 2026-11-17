@@ -122,6 +122,20 @@ class Base(unittest.TestCase):
         return out
 
 
+# An X app-only Bearer token starts with many A's; a header holds "Bearer " and a long token.
+TOKEN_PATTERN = "AAAAAAAAAAAAAAAAAAAAA|Bearer [A-Za-z0-9%]{40,}"
+
+
+def token_hits(root):
+    """Lines of the files git tracks under `root` that look like an X token: everything except
+    data/ (recorded launches and posts, where a launch can be named "AAAA...", not code or
+    settings) and this file (which holds the pattern itself)."""
+    out = subprocess.run(["git", "grep", "-n", "-I", "-E", TOKEN_PATTERN, "--", ".",
+                          ":!data/", ":!tests/test_xposts.py"],
+                         cwd=root, capture_output=True, text=True)
+    return out.stdout
+
+
 class TokenTests(unittest.TestCase):
     def test_from_systemds_credential_file(self):
         with tempfile.TemporaryDirectory() as d:
@@ -141,11 +155,39 @@ class TokenTests(unittest.TestCase):
                 self.assertIsNone(xp.secret())
 
     def test_the_repository_holds_no_token(self):
-        out = subprocess.run(["git", "grep", "-n", "-I", "-E",
-                              "AAAAAAAAAAAAAAAAAAAAA|Bearer [A-Za-z0-9%]{40,}",
-                              "--", ".", ":!tests/test_xposts.py"],      # (not this pattern itself)
-                             cwd=HERE, capture_output=True, text=True)
-        self.assertEqual(out.stdout, "")
+        self.assertEqual(token_hits(HERE), "")
+
+    def git_repo(self, files):
+        """A throwaway git repository with these files added (git grep searches added files)."""
+        root = tempfile.mkdtemp()
+        self.addCleanup(lambda: subprocess.run(["rm", "-rf", root]))
+        subprocess.run(["git", "init", "-q", root], check=True)
+        for rel, text in files.items():
+            path = os.path.join(root, rel)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w") as fh:
+                fh.write(text)
+        subprocess.run(["git", "add", "-A"], cwd=root, check=True)
+        return root
+
+    def test_a_recorded_launch_named_with_many_as_in_a_data_file_is_not_a_token(self):
+        root = self.git_repo({
+            "data/viral/launches-2026-11-17.csv":
+                "created_utc,token_address,symbol,name\n2026-11-17T00:55:00Z,X,AAAA," + "A" * 32 + "\n",
+            "data/xposts/posts-2026-11-17.csv": "account,post_id,text\nx,1,Bearer " + "B" * 50 + "\n",
+            "screener/ok.py": "x = 1\n"})
+        self.assertEqual(token_hits(root), "")
+
+    def test_a_real_looking_token_in_code_or_settings_is_still_found(self):
+        fake = "A" * 25 + "%2Fabc" + "x" * 40
+        for rel, text in (("config.toml", f'token = "{fake}"\n'),
+                          ("screener/leak.py", f'HEADERS = {{"Authorization": "Bearer {"z" * 45}"}}\n'),
+                          ("deploy/x.env", f"X_BEARER_TOKEN={fake}\n"),
+                          ("tests/other_test.py", f"TOKEN = '{fake}'\n")):
+            with self.subTest(rel=rel):
+                hits = token_hits(self.git_repo({rel: text, "data/a.csv": "A" * 32 + "\n"}))
+                self.assertIn(rel, hits)
+                self.assertNotIn("data/a.csv", hits)
 
 
 class ApiTests(Base):
