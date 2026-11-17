@@ -50,13 +50,18 @@ EXTRA = ["DOGE", "SHIB", "PEPE", "BONK", "WIF", "FLOKI", "PENGU", "TRUMP", "BOME
 STABLE = {"U", "RWUSD", "USDC", "FDUSD", "TUSD", "USDP", "DAI", "BUSD", "USDE", "USD1", "PYUSD", "USDS",
           "RLUSD", "FRAX", "LUSD", "GUSD", "USDD", "XUSD", "BFUSD", "USDB", "AEUR", "EUR", "EURI",
           "GBP", "AUD", "BRL", "TRY", "SUSD", "UST", "USTC", "USDJ", "PAX", "EURC", "EUROC"}
-LEVERAGED = re.compile(r"(UP|DOWN|BULL|BEAR)$")
+# Binance's leveraged tokens: a coin's name followed by UP, DOWN, BULL or BEAR (BTCUP, ETHDOWN).
+# Not every name ending in UP: JUP and SYRUP are coins.
+LEVERAGED_OF = {"BTC", "ETH", "BNB", "XRP", "ADA", "DOT", "LINK", "TRX", "EOS", "XTZ", "LTC",
+                "FIL", "SXP", "YFI", "SUSHI", "AAVE", "UNI", "1INCH", "XLM", "BCH"}
+LEVERAGED = re.compile(r"^(" + "|".join(sorted(LEVERAGED_OF, key=len, reverse=True))
+                       + r")(UP|DOWN|BULL|BEAR)$")
 # Binance's tokenized stocks and stock funds (not crypto coins; several are 3x leveraged funds),
 # and wrapped Bitcoin (Bitcoin itself). Left out and named in the summary. A new tokenized stock
 # must be added here by hand.
 TOKENIZED = {"AVGOB", "BNCB", "CRCLB", "DRAMB", "GOOGLB", "INTCB", "KORUB", "MSTRB", "MUB",
              "NBISB", "NVDAB", "QQQB", "SKHYB", "SNDKB", "SNXXB", "SOXLB", "SOXSB", "SPCXB",
-             "SPYB", "TQQQB", "TSLAB", "BMNRB"}
+             "SPYB", "TQQQB", "TSLAB", "BMNRB", "AMDB", "COINB", "MRVLB", "INTWB"}
 WRAPPED_BTC = {"WBTC", "BTCB"}
 # A coin whose daily close never leaves this band around $1 is a dollar stablecoin (left out,
 # whatever its name: U and RWUSD were not in the list above).
@@ -89,7 +94,7 @@ def wanted(base):
     """False for stablecoins, fiat, leveraged tokens, tokenized stocks and funds, and BTC
     itself (wrapped included)."""
     return (base not in STABLE and base != "BTC" and base not in WRAPPED_BTC
-            and base not in TOKENIZED and not LEVERAGED.search(base))
+            and base not in TOKENIZED and not LEVERAGED.match(base))
 
 
 def pegged(closes):
@@ -386,6 +391,10 @@ def refresh(days=365, top=100, workers=8, out=print, cache=None):
     listed = {base_of(s): v for s, v in vols.items() if v is not None}
     coins = choose(listed, top)
     not_listed = [b for b in EXTRA if b not in listed]
+    maybe_stock = [b for b in coins if b.endswith("B") and b not in ("BNB", "SHIB", "ARB")]
+    if maybe_stock:
+        out("CHECK: these names end in B like Binance's tokenized stocks; if one is a stock or a "
+            f"fund, add it to TOKENIZED and run again: {', '.join(maybe_stock)}")
     out(f"{len(listed)} listed on {last}; measuring {len(coins)} coins + BTC"
         + (f" (not listed on Binance spot now: {', '.join(not_listed)})" if not_listed else "")
         + "...")

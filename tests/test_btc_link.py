@@ -122,8 +122,8 @@ class CoinChoiceTests(unittest.TestCase):
         for base in ("USDC", "FDUSD", "TUSD", "USDP", "DAI", "EUR", "BTCUP", "ETHDOWN",
                      "XRPBULL", "BNBBEAR", "BTC"):
             self.assertFalse(bl.wanted(base), base)
-        for base in ("ETH", "PAXG", "PEPE", "UP" + "X"):
-            self.assertTrue(bl.wanted(base), base)
+        for base in ("ETH", "PAXG", "PEPE", "UP" + "X", "JUP", "SYRUP", "CUP"):
+            self.assertTrue(bl.wanted(base), base)                    # coins that end in UP
 
     def test_tokenized_stocks_and_wrapped_bitcoin_are_left_out(self):
         for base in ("NVDAB", "TSLAB", "SPYB", "QQQB", "TQQQB", "SOXLB", "SOXSB", "WBTC"):
@@ -218,7 +218,7 @@ class OutputTests(unittest.TestCase):
         self.assertIn("days down more than 3% it rose on", named[0])
         self.assertIn("survivorship bias", md)
         self.assertIn("by their price staying at $1: NEWUSD", md)
-        self.assertIn("tokenized stocks and stock funds (AVGOB", md)
+        self.assertIn("tokenized stocks and stock funds (AMDB, AVGOB", md)
         self.assertNotIn("| NEWUSD |", md)
         self.assertIn("results look better than reality", md)
         self.assertIn("Refresh: `python lab/btc_link.py`", md)
