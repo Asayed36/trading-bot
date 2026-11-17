@@ -139,6 +139,13 @@
       "failed": [
         "Market cap"
       ]
+    },
+    "0x9fe79f5726a87aa2758f14ba929e6fe4277a7718d6862aa039d61974c0542355": {
+      "at": "2026-11-17T20:11:39.666667+00:00",
+      "passed": false,
+      "failed": [
+        "Top 10 holders"
+      ]
     }
   },
   "sources": {
@@ -147,36 +154,37 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-17T20:01:23.876572+00:00",
+      "at": "2026-11-17T20:11:39.666667+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 2,
+      "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-17T19:31:35.344031+00:00",
-      "used_this_run": false
+      "at": "2026-11-17T20:11:39.666667+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-17T01:01:25.218130+00:00",
-      "used_this_run": false
+      "at": "2026-11-17T20:11:39.666667+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 8,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-17T20:01:23.876572+00:00",
+      "at": "2026-11-17T20:11:39.666667+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x67d3f53386c92850be8a0bd4d174acaf97316850a216fb5b38d7f72711021042": "FAIL|Market cap: $23,999 (need $25,000+)"
+    "0x67d3f53386c92850be8a0bd4d174acaf97316850a216fb5b38d7f72711021042": "FAIL|Market cap: $23,999 (need $25,000+)",
+    "0x9fe79f5726a87aa2758f14ba929e6fe4277a7718d6862aa039d61974c0542355": "FAIL|Top 10 holders: 35.0% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
     "0x8e04549484d0612be8373a0263b11928a5f7681f": {
@@ -311,7 +319,7 @@
       "graduated": "2026-11-12T06:46:47Z",
       "symbol": "TURBO",
       "title": "Turbo on Robinhood",
-      "seen": "2026-11-17T20:01:23.876572+00:00",
+      "seen": "2026-11-17T20:11:39.666667+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 4626.3105,
       "market_cap_usd": 4627.905084
@@ -410,7 +418,7 @@
       "graduated": "2026-11-13T14:55:41Z",
       "symbol": "RoboTaxi",
       "title": "RoboTaxi",
-      "seen": "2026-11-17T20:01:23.876572+00:00",
+      "seen": "2026-11-17T20:11:39.666667+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 4547.3644,
       "market_cap_usd": 4635.019319
@@ -519,7 +527,7 @@
       "graduated": "2026-11-14T20:35:44Z",
       "symbol": "mihao",
       "title": "ni hao cat",
-      "seen": "2026-11-17T20:01:23.876572+00:00",
+      "seen": "2026-11-17T20:11:39.666667+00:00",
       "source": "geckoterminal",
       "market_cap_usd": 4868.927009
     },
@@ -673,7 +681,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-17T20:01:23.876572+00:00",
+    "at": "2026-11-17T20:11:39.666667+00:00",
     "hours": 24,
     "seen": {
       "0xcaeed5281bd1eeb26d5f8bd550bf5c3727ba6514": "2026-11-16T20:16:40.583200+00:00",
@@ -689,7 +697,7 @@
       "0xebaa0ca1a9d178550fb2f9ca4099a292375a403a",
       "0xf1a947c6c7b8887ef6c09b8b088787b4d1ff8d0a"
     ],
-    "scanned_to": 116842663,
+    "scanned_to": 116848573,
     "complete": true
   },
   "issues_to_close": [],
@@ -814,7 +822,7 @@
       0
     ],
     "2026-11-17 20:00": [
-      1,
+      2,
       0,
       0
     ]
