@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-17 07:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-17 08:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-88 post(s), 42 matching launch(es).
+90 post(s), 42 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -527,6 +527,16 @@ No matching launch in the next 10 minutes.
 
 ## @justinsuntron 2026-11-17 03:51:27 UTC (post 2122538078057451585)
 > Excited to join "The Road to Binance Blockchain Week 2026" Livestream with @jessicasmw as we dive into the momentum shaping 2027. ⌛️ Nov 17,
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-17 08:20:33 UTC (post 2122605800636235927)
+> 我很尊重东哥，也尊重京东这些年走出的路。我前一条只是在说两种不同的企业增长模式，都有自己的前景。大家对我的批评我都收到了！虚心整改！东哥永远是我大哥！ https://t.co/PuqfdFQNjk
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-17 08:22:00 UTC (post 2122606163896492121)
+> Building for the next 100 years. Post-quantum is part of it. https://t.co/VmYsr3jIzf
 
 No matching launch in the next 10 minutes.
 
