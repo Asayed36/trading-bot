@@ -218,7 +218,7 @@ class OutputTests(unittest.TestCase):
         self.assertIn("days down more than 3% it rose on", named[0])
         self.assertIn("survivorship bias", md)
         self.assertIn("by their price staying at $1: NEWUSD", md)
-        self.assertIn("tokenized stocks and stock funds (AMDB, AVGOB", md)
+        self.assertIn("tokenized stocks and stock funds (AMDB, AVGOB, BMNRB, BNCB, CBRSB", md)
         self.assertNotIn("| NEWUSD |", md)
         self.assertIn("results look better than reality", md)
         self.assertIn("Refresh: `python lab/btc_link.py`", md)

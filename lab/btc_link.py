@@ -61,7 +61,8 @@ LEVERAGED = re.compile(r"^(" + "|".join(sorted(LEVERAGED_OF, key=len, reverse=Tr
 # must be added here by hand.
 TOKENIZED = {"AVGOB", "BNCB", "CRCLB", "DRAMB", "GOOGLB", "INTCB", "KORUB", "MSTRB", "MUB",
              "NBISB", "NVDAB", "QQQB", "SKHYB", "SNDKB", "SNXXB", "SOXLB", "SOXSB", "SPCXB",
-             "SPYB", "TQQQB", "TSLAB", "BMNRB", "AMDB", "COINB", "MRVLB", "INTWB"}
+             "SPYB", "TQQQB", "TSLAB", "BMNRB", "AMDB", "COINB", "MRVLB", "INTWB",
+             "CBRSB"}
 WRAPPED_BTC = {"WBTC", "BTCB"}
 # A coin whose daily close never leaves this band around $1 is a dollar stablecoin (left out,
 # whatever its name: U and RWUSD were not in the list above).
