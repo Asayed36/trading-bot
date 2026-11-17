@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-17 19:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-17 20:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-104 post(s), 57 matching launch(es).
+105 post(s), 57 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -596,7 +596,7 @@ post_match flags (DexScreener, recording only):
 | BASEINU | base | +0%, no liq @1.2m | +0%, no liq @5.3m | +0%, no liq @15.7m | +0%, no liq @60.2m | – | no |
 | BASEINU | base | +0%, no liq @2.0m | +0%, no liq @5.1m | +0%, no liq @15.4m | -0%, no liq @61.0m | – | no |
 | BASE | base | +0%, no liq @1.1m | +0%, no liq @5.3m | -19%, no liq @15.6m | -19%, no liq @60.1m | – | no |
-| BASEINU | base | +0%, no liq @1.9m | +0%, no liq @5.0m | +0%, no liq @15.3m | – | – | no |
+| BASEINU | base | +0%, no liq @1.9m | +0%, no liq @5.0m | +0%, no liq @15.3m | +0%, no liq @60.9m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
@@ -635,6 +635,11 @@ No matching launch in the next 10 minutes.
 
 ## @saylor 2026-11-17 18:38:36 UTC (post 2122761335834624196)
 > At this rate, everyone will be smart enough to buy Bitcoin. https://t.co/iFzaN6KLMS
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-17 20:33:12 UTC (post 2122790179543110037)
+> How I feel after buying more SPX6900 https://t.co/FAY0QxsxZa
 
 No matching launch in the next 10 minutes.
 
