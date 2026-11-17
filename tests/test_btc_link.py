@@ -125,6 +125,20 @@ class CoinChoiceTests(unittest.TestCase):
         for base in ("ETH", "PAXG", "PEPE", "UP" + "X"):
             self.assertTrue(bl.wanted(base), base)
 
+    def test_tokenized_stocks_and_wrapped_bitcoin_are_left_out(self):
+        for base in ("NVDAB", "TSLAB", "SPYB", "QQQB", "TQQQB", "SOXLB", "SOXSB", "WBTC"):
+            self.assertFalse(bl.wanted(base), base)
+        vols = {"NVDAB": 9e9, "ETH": 1e9, "WBTC": 8e9}
+        self.assertEqual(bl.choose(vols, top=2, extra=[]), ["ETH"])
+
+    def test_a_coin_that_stays_at_one_dollar_is_a_stablecoin_whatever_its_name(self):
+        self.assertTrue(bl.pegged({"2026-01-01": 0.9995, "2026-01-02": 1.0008}))
+        self.assertFalse(bl.pegged({"2026-01-01": 0.99, "2026-01-02": 1.05}))
+        self.assertFalse(bl.pegged({"2026-01-01": 2.0}))
+        self.assertFalse(bl.pegged({}))
+        for base in ("U", "RWUSD"):
+            self.assertFalse(bl.wanted(base))
+
     def test_memecoins_are_marked(self):
         for base in ("DOGE", "SHIB", "PEPE", "BONK", "WIF", "FLOKI", "PENGU", "TRUMP", "BOME",
                      "NEIRO", "PNUT", "MEME", "TURBO"):
@@ -144,6 +158,8 @@ class OutputTests(unittest.TestCase):
             series[f"C{i:02d}"] = series_from([k * r + (1 - k) * rnd.gauss(0, 0.02) for r in br])
         series["PEPE"] = series_from([-r for r in br])                 # a memecoin, anti-BTC
         series["NEW"] = series_from(br[300:], start=START + timedelta(days=300))
+        rnd2 = random.Random(5)                                         # a new $1 coin
+        series["NEWUSD"] = series_from([rnd2.gauss(0, 0.0003) for _ in br], first_close=1.0)
         self.rows = bl.build(series, {"PEPE": 5e6}, "2025-11-17", "2026-11-16", self.tmp.name)
 
     def read(self, name):
@@ -179,6 +195,9 @@ class OutputTests(unittest.TestCase):
         self.assertIn("**PEPE** (memecoin): 90-day correlation -1.00", named[0])
         self.assertIn("days down more than 3% it rose on", named[0])
         self.assertIn("survivorship bias", md)
+        self.assertIn("by their price staying at $1: NEWUSD", md)
+        self.assertIn("tokenized stocks and stock funds (AVGOB", md)
+        self.assertNotIn("| NEWUSD |", md)
         self.assertIn("results look better than reality", md)
         self.assertIn("Refresh: `python lab/btc_link.py`", md)
 

@@ -9,7 +9,8 @@ not touched). It writes lab/results/btc_link.csv and lab/results/btc_link.md.
 Data: Binance spot daily candles from data.binance.vision (Binance's public daily and monthly
 files; data-api.binance.vision is tried first and used where it answers). The coins: the top
 --top Binance spot USDT pairs by the last full UTC day's quote volume (the daily files have no
-live 24-hour ticker), plus EXTRA when listed; no stablecoins, fiat or leveraged tokens. A pair
+live 24-hour ticker), plus EXTRA when listed; no stablecoins (by name, or a price that never
+leaves $0.98-1.02), fiat, leveraged tokens, wrapped Bitcoin or tokenized stocks and funds. A pair
 counts as listed when it has a daily file for the last full day.
 
 Per coin, against BTC (daily close-to-close returns on the days both have):
@@ -46,10 +47,20 @@ EXTRA = ["DOGE", "SHIB", "PEPE", "BONK", "WIF", "FLOKI", "PENGU", "TRUMP", "BOME
          "PNUT", "MEME", "TURBO", "QNT", "HBAR", "KAVA", "ARB", "ZRO", "KAITO", "JUP", "ICP",
          "TON", "TRX", "XLM", "NEAR", "ATOM", "ONDO", "PAXG"]
 # Stablecoins and fiat (never measured).
-STABLE = {"USDC", "FDUSD", "TUSD", "USDP", "DAI", "BUSD", "USDE", "USD1", "PYUSD", "USDS",
+STABLE = {"U", "RWUSD", "USDC", "FDUSD", "TUSD", "USDP", "DAI", "BUSD", "USDE", "USD1", "PYUSD", "USDS",
           "RLUSD", "FRAX", "LUSD", "GUSD", "USDD", "XUSD", "BFUSD", "USDB", "AEUR", "EUR", "EURI",
           "GBP", "AUD", "BRL", "TRY", "SUSD", "UST", "USTC", "USDJ", "PAX", "EURC", "EUROC"}
 LEVERAGED = re.compile(r"(UP|DOWN|BULL|BEAR)$")
+# Binance's tokenized stocks and stock funds (not crypto coins; several are 3x leveraged funds),
+# and wrapped Bitcoin (Bitcoin itself). Left out and named in the summary. A new tokenized stock
+# must be added here by hand.
+TOKENIZED = {"AVGOB", "BNCB", "CRCLB", "DRAMB", "GOOGLB", "INTCB", "KORUB", "MSTRB", "MUB",
+             "NBISB", "NVDAB", "QQQB", "SKHYB", "SNDKB", "SNXXB", "SOXLB", "SOXSB", "SPCXB",
+             "SPYB", "TQQQB", "TSLAB"}
+WRAPPED_BTC = {"WBTC", "BTCB"}
+# A coin whose daily close never leaves this band around $1 is a dollar stablecoin (left out,
+# whatever its name: U and RWUSD were not in the list above).
+PEG_BAND = (0.98, 1.02)
 # Memecoins, from a fixed list (marked in the results; a memecoin missing here is not marked).
 MEMECOINS = {"DOGE", "SHIB", "PEPE", "BONK", "WIF", "FLOKI", "PENGU", "TRUMP", "BOME", "NEIRO",
              "PNUT", "MEME", "TURBO", "1000SATS", "1MBABYDOGE", "PEOPLE", "DOGS", "ACT",
@@ -74,8 +85,15 @@ def base_of(symbol):
 
 
 def wanted(base):
-    """False for stablecoins, fiat, leveraged tokens and BTC itself."""
-    return base not in STABLE and base != "BTC" and not LEVERAGED.search(base)
+    """False for stablecoins, fiat, leveraged tokens, tokenized stocks and funds, and BTC
+    itself (wrapped included)."""
+    return (base not in STABLE and base != "BTC" and base not in WRAPPED_BTC
+            and base not in TOKENIZED and not LEVERAGED.search(base))
+
+
+def pegged(closes):
+    """True for a dollar stablecoin: every close inside PEG_BAND."""
+    return bool(closes) and all(PEG_BAND[0] <= c <= PEG_BAND[1] for c in closes.values())
 
 
 def choose(volumes, top, extra=EXTRA):
@@ -220,6 +238,13 @@ def summary_lines(rows, first, last, btc):
                      f"1-year {_num(r.get('corr_1y'))}; {worst}.")
     lines += [
         "",
+        "**Left out:** stablecoins and fiat (" + ", ".join(sorted(STABLE)[:8]) + " and others"
+        + (f"; by their price staying at $1: {', '.join(btc['left_out_pegged'])}"
+           if btc.get("left_out_pegged") else "")
+        + "), leveraged tokens, wrapped Bitcoin (" + ", ".join(sorted(WRAPPED_BTC)) + "), and "
+        f"Binance's tokenized stocks and stock funds ({', '.join(sorted(TOKENIZED))}): they "
+        "follow the stock market, not crypto, and several are 3x leveraged funds.",
+        "",
         "**Read with care.** Only coins still listed today are measured: coins that died or were "
         "delisted are missing (survivorship bias), so the results look better than reality. A "
         "low correlation is not a hedge: a coin can fall on its own, and many of these fell far "
@@ -262,9 +287,12 @@ def build(series, volumes_usdt, first, last, out_dir=RESULTS):
     """series: {base: {day: close}} including "BTC"; volumes_usdt: {base: average daily volume}.
     Writes the two files and returns the rows."""
     btc = series["BTC"]
-    rows = []
+    rows, pegs = [], []
     for base, closes in series.items():
         if base == "BTC" or not closes:
+            continue
+        if pegged(closes):
+            pegs.append(base)
             continue
         r = measure(closes, btc)
         r.update(coin=base, symbol=f"{base}USDT", memecoin=base in MEMECOINS,
@@ -280,6 +308,7 @@ def build(series, volumes_usdt, first, last, out_dir=RESULTS):
                 "up_days": sum(1 for v in br.values() if v > BIG_MOVE_PCT / 100)}
     os.makedirs(out_dir, exist_ok=True)
     write_csv(ordered, os.path.join(out_dir, "btc_link.csv"))
+    btc_info["left_out_pegged"] = sorted(pegs)
     write_md(ordered, os.path.join(out_dir, "btc_link.md"), first, last, btc_info)
     return ordered
 
@@ -324,7 +353,7 @@ def day_volume(http, symbol, day):
     return float(rows[0][7]) if rows else None
 
 
-def refresh(days=365, top=100, workers=8, out=print):
+def refresh(days=365, top=100, workers=8, out=print, cache=None):
     import requests
     from screener.trend import BinanceDaily, FetchError
     http = requests.Session()
@@ -346,11 +375,19 @@ def refresh(days=365, top=100, workers=8, out=print):
     fetcher = BinanceDaily(http=http)
 
     def candles(base):
+        path = os.path.join(cache, f"{base}-{first}-{last}.csv") if cache else None
+        if path and os.path.exists(path):
+            with open(path, newline="") as fh:
+                return base, [(r[0], *map(float, r[1:])) for r in csv.reader(fh)], None
         try:
             rows, _, _ = fetcher.candles(f"{base}USDT", first, last)
         except FetchError as exc:
             out(f"  {base}: no candles ({exc})")
             return base, [], None
+        if path:
+            os.makedirs(cache, exist_ok=True)
+            with open(path, "w", newline="") as fh:
+                csv.writer(fh).writerows(rows)
         return base, rows, None
     with ThreadPoolExecutor(workers) as pool:
         got = list(pool.map(candles, ["BTC"] + coins))
@@ -365,8 +402,10 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--days", type=int, default=365)
     parser.add_argument("--top", type=int, default=100)
+    parser.add_argument("--cache", help="keep the downloaded candles in this folder and reuse "
+                                        "them (for a quick second run)")
     args = parser.parse_args(argv)
-    refresh(args.days, args.top)
+    refresh(args.days, args.top, cache=args.cache)
     return 0
 
 
