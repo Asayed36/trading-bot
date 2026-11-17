@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-17 18:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-17 19:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-104 post(s), 54 matching launch(es).
+104 post(s), 57 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -592,17 +592,19 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| BASE | base | +0%, no liq @1.5m | – | – | – | – | no |
-| BASEINU | base | +0%, no liq @1.2m | – | – | – | – | no |
-| BASEINU | base | – | – | – | – | – | no |
-| BASE | base | – | – | – | – | – | no |
+| BASE | base | +0%, no liq @1.5m | +7%, no liq @5.6m | -8%, no liq @16.0m | -8%, no liq @60.5m | – | no |
+| BASEINU | base | +0%, no liq @1.2m | +0%, no liq @5.3m | +0%, no liq @15.7m | +0%, no liq @60.2m | – | no |
+| BASEINU | base | +0%, no liq @2.0m | +0%, no liq @5.1m | +0%, no liq @15.4m | -0%, no liq @61.0m | – | no |
+| BASE | base | +0%, no liq @1.1m | +0%, no liq @5.3m | -19%, no liq @15.6m | -19%, no liq @60.1m | – | no |
+| BASEINU | base | +0%, no liq @1.9m | +0%, no liq @5.0m | +0%, no liq @15.3m | – | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 324 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
 | 342 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
 | 356 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
-| 408 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
+| 408 s | BASE | BasedBaldBrianIAmGayBlueInu | base | +0% | +0% | +0% | -14% | +247% (3 s) |
+| 424 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
 
 ## @Pumpfun 2026-11-17 18:32:17 UTC (post 2122759745883009055)
 > How boosted Callout Rewards for tokens on Base work 1. Open the Pumpfun app 2. Pick a token on Base 3. Post your callout 4. Rewards follow o
@@ -612,7 +614,8 @@ post_match flags (DexScreener, recording only):
 | 322 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
 | 340 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
 | 354 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
-| 406 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
+| 406 s | BASE | BasedBaldBrianIAmGayBlueInu | base | +0% | +0% | +0% | -14% | +247% (3 s) |
+| 422 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
 
 ## @Pumpfun 2026-11-17 18:32:19 UTC (post 2122759757769613363)
 > https://t.co/E2nEbBStD2
@@ -627,7 +630,8 @@ No matching launch in the next 10 minutes.
 | 203 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
 | 221 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
 | 235 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
-| 287 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
+| 287 s | BASE | BasedBaldBrianIAmGayBlueInu | base | +0% | +0% | +0% | -14% | +247% (3 s) |
+| 303 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
 
 ## @saylor 2026-11-17 18:38:36 UTC (post 2122761335834624196)
 > At this rate, everyone will be smart enough to buy Bitcoin. https://t.co/iFzaN6KLMS
