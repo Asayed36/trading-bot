@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-17 12:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-17 13:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-94 post(s), 42 matching launch(es).
+97 post(s), 42 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -557,6 +557,21 @@ No matching launch in the next 10 minutes.
 
 ## @MustStopMurad 2026-11-17 12:07:27 UTC (post 2122662903383781540)
 > Value will flow to loyalty Value will flow to persistence Value will flow to trust
+
+No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-17 12:55:25 UTC (post 2122674971151577363)
+> 这两张假照片在过去两天流传得很广。 为什么黑子会用这么明显的假图片呢？因为他们想筛选和针对那些没有独立思考能力的人们。 如果你看不出来这图片是假的，建议你远离社交媒体。 （没有交易所会用微信做内部沟通。） https://t.co/esIzxouXYj
+
+No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-17 13:10:11 UTC (post 2122678690014220614)
+> Banks are bringing Bitcoin to their clients. Wells Fargo’s two brokerages reported 42 million shares of BlackRock’s Bitcoin ETF at the end o
+
+No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-17 13:38:42 UTC (post 2122685864421843248)
+> Banks are bringing Bitcoin to their clients. Wells Fargo reported 49.58 million shares of BlackRock’s Bitcoin ETF as of September 30, up 103
 
 No matching launch in the next 10 minutes.
 
