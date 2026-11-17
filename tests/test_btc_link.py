@@ -139,6 +139,28 @@ class CoinChoiceTests(unittest.TestCase):
         for base in ("U", "RWUSD"):
             self.assertFalse(bl.wanted(base))
 
+    def test_a_failed_download_is_tried_again_and_only_404_means_not_listed(self):
+        class Resp:
+            def __init__(self, code, content=b""):
+                self.status_code, self.content = code, content
+
+        import io as _io, zipfile as _zip
+        buf = _io.BytesIO()
+        with _zip.ZipFile(buf, "w") as zf:
+            zf.writestr("x.csv", "1763337600000,1,1,1,1,10,0,12345.5,0,0,0,0\n")
+        answers = [Resp(503), Resp(200, buf.getvalue())]
+
+        class Http:
+            def get(self, *a, **k):
+                return answers.pop(0)
+        self.assertEqual(bl.day_volume(Http(), "JUPUSDT", "2026-11-16", sleep=lambda s: None),
+                         12345.5)
+        answers[:] = [Resp(404)]
+        self.assertIsNone(bl.day_volume(Http(), "TONUSDT", "2026-11-16", sleep=lambda s: None))
+        answers[:] = [Resp(500), Resp(500), Resp(500)]
+        with self.assertRaises(RuntimeError):
+            bl.day_volume(Http(), "X", "2026-11-16", sleep=lambda s: None)
+
     def test_memecoins_are_marked(self):
         for base in ("DOGE", "SHIB", "PEPE", "BONK", "WIF", "FLOKI", "PENGU", "TRUMP", "BOME",
                      "NEIRO", "PNUT", "MEME", "TURBO"):

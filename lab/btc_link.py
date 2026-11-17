@@ -56,7 +56,7 @@ LEVERAGED = re.compile(r"(UP|DOWN|BULL|BEAR)$")
 # must be added here by hand.
 TOKENIZED = {"AVGOB", "BNCB", "CRCLB", "DRAMB", "GOOGLB", "INTCB", "KORUB", "MSTRB", "MUB",
              "NBISB", "NVDAB", "QQQB", "SKHYB", "SNDKB", "SNXXB", "SOXLB", "SOXSB", "SPCXB",
-             "SPYB", "TQQQB", "TSLAB"}
+             "SPYB", "TQQQB", "TSLAB", "BMNRB"}
 WRAPPED_BTC = {"WBTC", "BTCB"}
 # A coin whose daily close never leaves this band around $1 is a dollar stablecoin (left out,
 # whatever its name: U and RWUSD were not in the list above).
@@ -65,7 +65,8 @@ PEG_BAND = (0.98, 1.02)
 MEMECOINS = {"DOGE", "SHIB", "PEPE", "BONK", "WIF", "FLOKI", "PENGU", "TRUMP", "BOME", "NEIRO",
              "PNUT", "MEME", "TURBO", "1000SATS", "1MBABYDOGE", "PEOPLE", "DOGS", "ACT",
              "1000CHEEMS", "1000CAT", "BROCCOLI714", "MUBARAK", "TUT", "NOT", "HIPPO", "MOODENG",
-             "POPCAT", "SPX", "FARTCOIN", "GOAT", "PUMP", "BANANAS31", "WLFI", "PNUTS", "CHEEMS"}
+             "POPCAT", "SPX", "FARTCOIN", "GOAT", "PUMP", "BANANAS31", "WLFI", "PNUTS", "CHEEMS",
+             "牛来"}
 MIN_FULL_DAYS = 120
 RECENT_DAYS = 90
 BIG_MOVE_PCT = 3.0
@@ -342,11 +343,24 @@ def list_usdt_symbols(http):
     return symbols
 
 
-def day_volume(http, symbol, day):
-    """The quote volume of one day's file, or None when there is no file (not listed)."""
-    resp = http.get(DAILY_FILE.format(symbol=symbol, day=day), timeout=30)
-    if resp.status_code != 200:
-        return None
+def day_volume(http, symbol, day, tries=3, sleep=None):
+    """The quote volume of one day's file, or None when there is no file (404: not listed). Any
+    other failure is tried again (a pair is never left out because one download failed), then
+    raised."""
+    import time
+    sleep = sleep or time.sleep
+    for attempt in range(tries):
+        try:
+            resp = http.get(DAILY_FILE.format(symbol=symbol, day=day), timeout=30)
+        except Exception:
+            resp = None
+        if resp is not None and resp.status_code == 404:
+            return None
+        if resp is not None and resp.status_code == 200:
+            break
+        if attempt == tries - 1:
+            raise RuntimeError(f"{symbol} {day}: no answer after {tries} tries")
+        sleep(2 * (attempt + 1))
     with zipfile.ZipFile(io.BytesIO(resp.content)) as zf:
         text = zf.read(zf.namelist()[0]).decode()
     rows = [r for r in csv.reader(io.StringIO(text)) if r and r[0].isdigit()]
@@ -371,7 +385,10 @@ def refresh(days=365, top=100, workers=8, out=print, cache=None):
                                           symbols)))
     listed = {base_of(s): v for s, v in vols.items() if v is not None}
     coins = choose(listed, top)
-    out(f"{len(listed)} listed on {last}; measuring {len(coins)} coins + BTC...")
+    not_listed = [b for b in EXTRA if b not in listed]
+    out(f"{len(listed)} listed on {last}; measuring {len(coins)} coins + BTC"
+        + (f" (not listed on Binance spot now: {', '.join(not_listed)})" if not_listed else "")
+        + "...")
     fetcher = BinanceDaily(http=http)
 
     def candles(base):
