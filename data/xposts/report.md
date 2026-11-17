@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-17 17:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-17 18:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-99 post(s), 42 matching launch(es).
+104 post(s), 54 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -582,6 +582,55 @@ No matching launch in the next 10 minutes.
 
 ## @MustStopMurad 2026-11-17 16:26:49 UTC (post 2122728172961595540)
 > Most won't make it not because they are dumb. But because they are impatient. The biggest opportunity is right in front of you. All you have
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-17 18:32:15 UTC (post 2122759741097361759)
+> Pumpfun x @base Callout Rewards for tokens on Base are getting up to $10,000 daily in boosted Callout Rewards, powered by Merkl, AND we're m
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| BASE | base | +0%, no liq @1.5m | – | – | – | – | no |
+| BASEINU | base | +0%, no liq @1.2m | – | – | – | – | no |
+| BASEINU | base | – | – | – | – | – | no |
+| BASE | base | – | – | – | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 324 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
+| 342 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
+| 356 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
+| 408 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-17 18:32:17 UTC (post 2122759745883009055)
+> How boosted Callout Rewards for tokens on Base work 1. Open the Pumpfun app 2. Pick a token on Base 3. Post your callout 4. Rewards follow o
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 322 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
+| 340 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
+| 354 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
+| 406 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-17 18:32:19 UTC (post 2122759757769613363)
+> https://t.co/E2nEbBStD2
+
+No matching launch in the next 10 minutes.
+
+## @a1lon9 2026-11-17 18:34:16 UTC (post 2122760248511635810)
+> Our vision is to make the Pumpfun app the most rewarding app on Earth. Since August we've paid $33,000,000 to nearly 55,000 callers on the P
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 203 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
+| 221 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
+| 235 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
+| 287 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
+
+## @saylor 2026-11-17 18:38:36 UTC (post 2122761335834624196)
+> At this rate, everyone will be smart enough to buy Bitcoin. https://t.co/iFzaN6KLMS
 
 No matching launch in the next 10 minutes.
 
