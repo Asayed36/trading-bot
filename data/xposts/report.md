@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 02:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 03:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-125 post(s), 66 matching launch(es).
+128 post(s), 66 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -741,7 +741,7 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| lsc | limbic, system | +0%, no liq @1.6m | -0%, no liq @5.7m | -0%, no liq @15.1m | – | – | no |
+| lsc | limbic, system | +0%, no liq @1.6m | -0%, no liq @5.7m | -0%, no liq @15.1m | -2%, no liq @60.6m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
@@ -764,6 +764,21 @@ No matching launch in the next 10 minutes.
 
 ## @blknoiz06 2026-11-18 02:22:40 UTC (post 2122878125625262334)
 > if they do this the same way they did micron earnings in june we are in for a world of hurt
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-18 02:46:00 UTC (post 2122883994509607314)
+> Good to see more regions exploring stablecoins. 🌐 https://t.co/GySaP4uK78
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-18 03:00:40 UTC (post 2122887688596418666)
+> this is nasty man
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-18 03:02:41 UTC (post 2122888193007894913)
+> which asset should i do a ta video for
 
 No matching launch in the next 10 minutes.
 
