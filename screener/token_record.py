@@ -22,7 +22,7 @@ Blank always means "not known / not saved", never zero.
 
 4. Since 2026-10-13, candidates.csv also has the market backdrop at the first
    check (screener/backdrop.py: Bitcoin's 1 h / 24 h change, Ethereum's and
-   Solana's 1 h change) and the launch time columns (LAUNCH_COLUMNS: when the
+   Solana's 1 h change; since 2026-11-18 also their last prices in USD) and the launch time columns (LAUNCH_COLUMNS: when the
    token's pool was created, not when we first saw it, with its hour and weekday,
    how long after creation we first checked, and the hour and weekday of that
    first check). Blank = not known.
@@ -71,8 +71,9 @@ CANDIDATE_COLUMNS = (
 # candidates.csv, appended after the checkpoint columns (2026-10-13).
 LAUNCH_COLUMNS = ["created_at_utc", "created_source", "created_hour_utc", "created_weekday",
                   "seen_delay_seconds", "seen_hour_utc", "seen_weekday"]
+# btc/eth/sol_price_usd: the last prices from the same Binance answer (2026-11-18)
 BACKDROP_COLUMNS = ["btc_change_1h_pct", "btc_change_24h_pct", "eth_change_1h_pct",
-                    "sol_change_1h_pct"]
+                    "sol_change_1h_pct", "btc_price_usd", "eth_price_usd", "sol_price_usd"]
 CANDIDATE_COLUMNS = CANDIDATE_COLUMNS + BACKDROP_COLUMNS + LAUNCH_COLUMNS
 ISO = "%Y-%m-%dT%H:%M:%SZ"
 

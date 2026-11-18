@@ -9,6 +9,7 @@ Sources:
     push from your server;
   - data/main-1min/health.json and the commits API: the main (1 min)
     strategy's last good run, its requests per hour, and its last push;
+  - data/market/health.json: the once-a-minute BTC/ETH/SOL price log;
   - the strategies' own files: convergence's tracked wallets and Helius
     pause, the news strategy's source status, the robinhood strategy's data
     sources (GeckoTerminal, DexScreener, GoPlus, the Robinhood Chain RPC).
@@ -493,6 +494,45 @@ def add_xposts(add, folder, cfg, now):
         "xposts: " + "; ".join(problems) if problems else None)
 
 
+def add_market_prices(add, folder, cfg, now):
+    """One row: the once-a-minute BTC/ETH/SOL price log (screener/market_prices.py, inside
+    launch-bot; recording only), from its pushed data/market/health.json: rows saved and
+    failed requests today and yesterday (UTC), and the last price saved. A warning when no
+    price was saved for longer than [health] launch_stale_hours."""
+    name = "market prices: server"
+    from screener.market_prices import FOLDER
+    data = _load(os.path.join(folder, FOLDER, "health.json"))
+    if not data:
+        add(name, INFO, "no prices pushed yet (it starts inside the launch-bot service after "
+            "the next hourly push)")
+        return
+    late_after = timedelta(hours=cfg.get("health", {}).get("launch_stale_hours", 3))
+    days = data.get("days") or {}
+    parts = []
+    for label, day in (("today", now), ("yesterday", now - timedelta(days=1))):
+        d = days.get(f"{day:%Y-%m-%d}") or {}
+        parts.append(f"{label} {d.get('rows', 0)} row(s), {d.get('failures', 0)} failed")
+    last = data.get("last_price") or {}
+    priced = _utc(last.get("time_utc", "").replace(" ", "T")) if last.get("time_utc") else None
+    if priced:
+        coins = ", ".join(f"{k[:3].upper()} ${float(last[k]):,.2f}" for k in
+                          ("btc_usd", "eth_usd", "sol_usd") if last.get(k))
+        parts.append(f"last price saved {_at(priced, now)}: {coins}")
+    else:
+        parts.append("no price saved yet")
+    if data.get("last_error"):
+        parts.append(f"last failure {data.get('error_at', '?')} UTC: {data['last_error'][:80]}")
+    problems = []
+    if priced is None or now - priced > late_after:
+        problems.append(f"no price saved since {_at(priced, now) if priced else 'ever'} "
+                        f"(older than {late_after.total_seconds() / 3600:.0f} h)")
+    detail = "; ".join(parts)
+    if problems:
+        detail += " (" + "; ".join(problems) + ")"
+    add(name, WARN if problems else OK, detail.replace("|", "/"),
+        "market prices: " + "; ".join(problems) if problems else None)
+
+
 def add_news_listings(add, folder, cfg, now, github):
     """The news listings bot: its last good run (pushed health.json), runs
     and requests per hour over the last 24 h, and its last push; then a row
@@ -894,6 +934,12 @@ def health_lines(folder, cfg, now, github=None, found=None):
         add_news_listings(add, folder, cfg, now, github)
     if cfg.get("xposts", {}).get("enabled"):
         add_xposts(add, folder, cfg, now)
+    # 10. The once-a-minute market price log (inside the launch-bot service).
+    if cfg.get("launch", {}).get("enabled"):
+        try:
+            add_market_prices(add, folder, cfg, now)
+        except (ValueError, TypeError, AttributeError, KeyError) as exc:
+            add("market prices: server", WARN, f"data/market/health.json unreadable: {exc}"[:160])
 
     head = [f"### Health ({now:%Y-%m-%d %H:%M} UTC)", ""]
     if problems:

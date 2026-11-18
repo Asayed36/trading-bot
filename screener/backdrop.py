@@ -6,10 +6,14 @@ here is read by any buy, sell, filter or exit.
     btc_change_24h_pct  Bitcoin's price change over the last 24 hours
     eth_change_1h_pct   Ethereum's price change over the last hour
     sol_change_1h_pct   Solana's price change over the last hour
+    btc_price_usd       Bitcoin's last price in USDT (lastPrice, same answer)
+    eth_price_usd       Ethereum's last price in USDT
+    sol_price_usd       Solana's last price in USDT
 
 Source: Binance's public market-data host data-api.binance.vision (the host
 screener/trend.py already uses), the rolling-window ticker /api/v3/ticker for
-BTCUSDT, ETHUSDT and SOLUSDT, priceChangePercent. No CoinGecko call, no key, no
+BTCUSDT, ETHUSDT and SOLUSDT, priceChangePercent (and, since 2026-11-18,
+lastPrice from the 1h answer: no extra request). No CoinGecko call, no key, no
 header, public GET only. Two requests fetch everything: one with windowSize=1h
 and one with windowSize=1d (a single request cannot mix the two windows).
 
@@ -35,7 +39,10 @@ CACHE_MINUTES = 15
 RETRY_SECONDS = 60
 TIMEOUT_SECONDS = 5
 
-COLUMNS = ["btc_change_1h_pct", "btc_change_24h_pct", "eth_change_1h_pct", "sol_change_1h_pct"]
+CHANGE_COLUMNS = ["btc_change_1h_pct", "btc_change_24h_pct", "eth_change_1h_pct",
+                  "sol_change_1h_pct"]
+PRICE_COLUMNS = ["btc_price_usd", "eth_price_usd", "sol_price_usd"]
+COLUMNS = CHANGE_COLUMNS + PRICE_COLUMNS
 # (window, symbol, column)
 FIELDS = [
     ("1h", "BTCUSDT", "btc_change_1h_pct"),
@@ -43,22 +50,36 @@ FIELDS = [
     ("1h", "ETHUSDT", "eth_change_1h_pct"),
     ("1h", "SOLUSDT", "sol_change_1h_pct"),
 ]
+# (window, symbol, column): the last price, read from the 1h answer
+PRICE_FIELDS = [
+    ("1h", "BTCUSDT", "btc_price_usd"),
+    ("1h", "ETHUSDT", "eth_price_usd"),
+    ("1h", "SOLUSDT", "sol_price_usd"),
+]
+
+
+def _finite(value):
+    try:
+        value = float(value)
+    except (TypeError, ValueError):
+        return None
+    return value if value == value and abs(value) != float("inf") else None
 
 
 def parse(window, tickers):
-    """{column: percent} for one window from Binance's ticker list (only the
-    values it gave)."""
+    """{column: value} for one window from Binance's ticker list (only the
+    values it gave): the percent changes, rounded to 2 decimals, and from the
+    1h answer the last prices, exactly as Binance gave them."""
     out = {}
     by_symbol = {t.get("symbol"): t for t in tickers if isinstance(t, dict)}
-    for win, symbol, column in FIELDS:
-        if win != window:
-            continue
-        try:
-            value = float((by_symbol.get(symbol) or {})["priceChangePercent"])
-        except (KeyError, TypeError, ValueError):
-            continue
-        if value == value and abs(value) != float("inf"):
-            out[column] = round(value, 2)
+    for fields, key, digits in ((FIELDS, "priceChangePercent", 2), (PRICE_FIELDS, "lastPrice", None)):
+        for win, symbol, column in fields:
+            if win != window:
+                continue
+            value = _finite((by_symbol.get(symbol) or {}).get(key))
+            if value is None or (digits is None and value <= 0):
+                continue
+            out[column] = round(value, digits) if digits is not None else value
     return out
 
 
