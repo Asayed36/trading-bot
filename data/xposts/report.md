@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 01:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 02:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-121 post(s), 65 matching launch(es).
+125 post(s), 66 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -722,7 +722,7 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| innit | going | missed | +0%, no liq @5.1m | +0%, no liq @15.4m | – | – | no |
+| innit | going | missed | +0%, no liq @5.1m | +0%, no liq @15.4m | +0%, no liq @60.0m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
@@ -736,6 +736,34 @@ post_match flags (DexScreener, recording only):
 
 ## @elonmusk 2026-11-18 01:36:43 UTC (post 2122866559425384674)
 > Super intelligence will hack your limbic system https://t.co/r0DDc4N87q
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| lsc | limbic, system | +0%, no liq @1.6m | -0%, no liq @5.7m | -0%, no liq @15.1m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 276 s | lsc | limbic system coin | limbic, system | price not recorded |  |  |  |  |
+
+## @elonmusk 2026-11-18 01:55:59 UTC (post 2122871410561593384)
+> True, Starship launches are incredibly exciting https://t.co/cDuzCHAXH2
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-18 01:59:08 UTC (post 2122872199623414175)
+> Grok @Bot can save you millions in corporate expenses! It will research every expenditure, evaluate its necessity and find better deals on t
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-18 02:22:18 UTC (post 2122878032222282095)
+> no way theyre nuking the nvda earnings pump omg
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-18 02:22:40 UTC (post 2122878125625262334)
+> if they do this the same way they did micron earnings in june we are in for a world of hurt
 
 No matching launch in the next 10 minutes.
 
