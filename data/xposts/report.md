@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 12:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 13:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-135 post(s), 72 matching launch(es).
+137 post(s), 72 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -829,6 +829,16 @@ No matching launch in the next 10 minutes.
 
 ## @MustStopMurad 2026-11-18 10:10:37 UTC (post 2122995888284922105)
 > After almost 14 years in Crypto, I can say that by far the most important thing that determines the success of any crypto asset is its commu
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-18 13:24:38 UTC (post 2123044712030294379)
+> Persistence is NECESSARY nut not SUFFICIENT. Belief is NECESSARY nut not SUFFICIENT. An epic Mission is NECESSARY nut not SUFFICIENT. Not gi
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-18 13:30:16 UTC (post 2123046132628471911)
+> Persistence is NECESSARY but not SUFFICIENT. Belief is NECESSARY but not SUFFICIENT. An epic Mission is NECESSARY but not SUFFICIENT. Not gi
 
 No matching launch in the next 10 minutes.
 
