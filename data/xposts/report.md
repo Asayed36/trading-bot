@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 08:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 09:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-132 post(s), 71 matching launch(es).
+134 post(s), 72 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -814,4 +814,16 @@ post_match flags (DexScreener, recording only):
 | 467 s | trench | trench life | life | price not recorded |  |  |  |  |
 | 496 s | LIFE | Life Before GTA6 | life | price not recorded |  |  |  |  |
 | 535 s | LIFE | Life Before GTA6 | life | price not recorded |  |  |  |  |
+
+## @justinsuntron 2026-11-18 08:52:57 UTC (post 2122976341012496884)
+> Real-world payments on TRON. 🔻 https://t.co/0WFh1A7R9K
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 114 s | WSOP© | The World Series of Poker© | world | price not recorded |  |  |  |  |
+
+## @justinsuntron 2026-11-18 09:39:35 UTC (post 2122988077589373050)
+> 字节一家公司等同于做空了整个恒科与中概，有点类似于1644 年前的明朝，清军入关前你做多任何明末势力最终都是错误的 https://t.co/3BNkEikRGH
+
+No matching launch in the next 10 minutes.
 
