@@ -150,6 +150,14 @@
       "created": "2026-11-18T01:50:51Z",
       "liquidity_usd": 26.3457,
       "market_cap_usd": 432918.8302
+    },
+    "onchain:0x524988ccc8d7a23566e2fffb24b1b07e5aa2f134": {
+      "pool": null,
+      "dex": "pons-v2-dex",
+      "token": "0x524988ccc8d7a23566e2fffb24b1b07e5aa2f134",
+      "name": "IDLEX",
+      "created": "2026-11-18T03:28:41.950400+00:00",
+      "source": "chain"
     }
   },
   "checked": {
@@ -185,10 +193,11 @@
   "sources": {
     "geckoterminal": {
       "calls": 2,
-      "errors": 0,
-      "rate_limited": 0,
-      "ok": true,
-      "at": "2026-11-18T03:21:29.296870+00:00",
+      "errors": 2,
+      "rate_limited": 2,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
+      "ok": false,
+      "at": "2026-11-18T03:31:31.713695+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -196,7 +205,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-18T03:21:29.296870+00:00",
+      "at": "2026-11-18T03:31:31.713695+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -212,7 +221,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-18T03:21:29.296870+00:00",
+      "at": "2026-11-18T03:31:31.713695+00:00",
       "used_this_run": true
     }
   },
@@ -744,28 +753,40 @@
       "source": "geckoterminal",
       "liquidity_usd": 26.261,
       "market_cap_usd": 432918.8302
+    },
+    "0x524988ccc8d7a23566e2fffb24b1b07e5aa2f134": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-11-18T03:28:41.950400+00:00",
+      "symbol": "IDLEX",
+      "title": "Idlex Network",
+      "seen": "2026-11-18T03:31:31.713695+00:00",
+      "source": "chain",
+      "liquidity_usd": 14447.8,
+      "market_cap_usd": 32171.0
     }
   },
   "graduations": {
-    "at": "2026-11-18T03:21:29.296870+00:00",
+    "at": "2026-11-18T03:31:31.713695+00:00",
     "hours": 24,
     "seen": {
       "0xf1a947c6c7b8887ef6c09b8b088787b4d1ff8d0a": "2026-11-17T18:58:52.616000+00:00",
       "0x5d992fa5b7da8efde5fd36d24e81097ed6ad4351": "2026-11-17T19:31:24.419600+00:00",
-      "0x78c1c2d4cd6207b6ff4e84362d314d1cd0830041": "2026-11-17T21:42:40.557900+00:00"
+      "0x78c1c2d4cd6207b6ff4e84362d314d1cd0830041": "2026-11-17T21:42:40.557900+00:00",
+      "0x524988ccc8d7a23566e2fffb24b1b07e5aa2f134": "2026-11-18T03:28:41.950400+00:00"
     },
     "tokens": [
+      "0x524988ccc8d7a23566e2fffb24b1b07e5aa2f134",
       "0x5d992fa5b7da8efde5fd36d24e81097ed6ad4351",
       "0x78c1c2d4cd6207b6ff4e84362d314d1cd0830041",
       "0xf1a947c6c7b8887ef6c09b8b088787b4d1ff8d0a"
     ],
-    "scanned_to": 117096727,
+    "scanned_to": 117102260,
     "complete": true
   },
   "issues_to_close": [],
   "onchain_lookups": {
-    "0xebaa0ca1a9d178550fb2f9ca4099a292375a403a": "2026-11-17T12:41:23.952839+00:00",
-    "0x5d992fa5b7da8efde5fd36d24e81097ed6ad4351": "2026-11-17T19:31:35.344031+00:00"
+    "0x5d992fa5b7da8efde5fd36d24e81097ed6ad4351": "2026-11-17T19:31:35.344031+00:00",
+    "0x524988ccc8d7a23566e2fffb24b1b07e5aa2f134": "2026-11-18T03:31:31.713695+00:00"
   },
   "gecko_hours": {
     "2026-11-16 18:00": [
@@ -884,9 +905,9 @@
       0
     ],
     "2026-11-18 03:00": [
-      3,
-      0,
-      0
+      4,
+      1,
+      1
     ]
   }
 }
