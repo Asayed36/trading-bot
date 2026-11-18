@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 21:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 22:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-148 post(s), 86 matching launch(es).
+149 post(s), 87 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -949,9 +949,22 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| CALLING | calling, start | +0%, no liq @1.2m | -0%, no liq @5.4m | -0%, no liq @15.8m | – | – | no |
+| CALLING | calling, start | +0%, no liq @1.2m | -0%, no liq @5.4m | -0%, no liq @15.8m | -0%, no liq @60.6m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 125 s | CALLING | Just start calling | calling, start | price not recorded |  |  |  |  |
+| 125 s | CALLING | Just start calling | calling, start | +0% | +0% | +0% | +0% | +0% (0 s) |
+
+## @cz_binance 2026-11-18 21:57:37 UTC (post 2123173810333421717)
+> Tokenized ANT will be live on @BNBCHAIN on Day 1 of its IPO, via bStocks, Ondo, and xStocks: https://t.co/X9Q3mzFygE
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| ANT | ant | +0%, no liq @1.5m | +0%, no liq @5.7m | +0%, no liq @15.0m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 76 s | ANT | ANTHROPIC OFFICIAL | ant | price not recorded |  |  |  |  |
 
