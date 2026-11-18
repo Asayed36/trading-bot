@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 09:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 10:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-134 post(s), 72 matching launch(es).
+135 post(s), 72 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -824,6 +824,11 @@ post_match flags (DexScreener, recording only):
 
 ## @justinsuntron 2026-11-18 09:39:35 UTC (post 2122988077589373050)
 > 字节一家公司等同于做空了整个恒科与中概，有点类似于1644 年前的明朝，清军入关前你做多任何明末势力最终都是错误的 https://t.co/3BNkEikRGH
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-18 10:10:37 UTC (post 2122995888284922105)
+> After almost 14 years in Crypto, I can say that by far the most important thing that determines the success of any crypto asset is its commu
 
 No matching launch in the next 10 minutes.
 
