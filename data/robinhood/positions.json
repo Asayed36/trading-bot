@@ -173,15 +173,23 @@
       "failed": [
         "Liquidity"
       ]
+    },
+    "0xaec1358ed0f1057b498209f75903c86885a2d046da76d53bfdf372bd11e6bf9d": {
+      "at": "2026-11-18T04:01:20.276930+00:00",
+      "passed": false,
+      "failed": [
+        "Top 10 holders"
+      ]
     }
   },
   "sources": {
     "geckoterminal": {
       "calls": 2,
-      "errors": 0,
-      "rate_limited": 0,
-      "ok": true,
-      "at": "2026-11-18T03:51:44.955853+00:00",
+      "errors": 2,
+      "rate_limited": 2,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
+      "ok": false,
+      "at": "2026-11-18T04:01:20.276930+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -189,31 +197,31 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-18T03:31:31.713695+00:00",
-      "used_this_run": false
+      "at": "2026-11-18T04:01:20.276930+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-18T02:41:40.574903+00:00",
-      "used_this_run": false
+      "at": "2026-11-18T04:01:20.276930+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 12,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-18T03:51:44.955853+00:00",
+      "at": "2026-11-18T04:01:20.276930+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0xb09d95f6b76f2b861dbad27d02293e7b17d8f473e3198f723c538e56467da01f": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls",
     "0xd6c9ec936f56227d51fbbfdbd17f418c3a364c17749c2c35762bf8c882c748d5": "FAIL|Liquidity: unknown (need $5,000+ on Pools.trade)",
     "0xc1627760b20064b0eab3dd3f11dad280520e12624fef20175a40867105ff7739": "FAIL|Liquidity: $34 (need $5,000+ on Pools.trade)",
-    "0xbd23b8df6fe5861b43cf07ba7da7a879a2647f1d9898465009c25ed675b2a1a8": "FAIL|Liquidity: $29 (need $5,000+ on Pools.trade)"
+    "0xbd23b8df6fe5861b43cf07ba7da7a879a2647f1d9898465009c25ed675b2a1a8": "FAIL|Liquidity: $29 (need $5,000+ on Pools.trade)",
+    "0xaec1358ed0f1057b498209f75903c86885a2d046da76d53bfdf372bd11e6bf9d": "FAIL|Top 10 holders: 30.2% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
     "0x839d6dea3de497ee5a8338410cb2865afa51141e": {
@@ -750,7 +758,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-18T03:51:44.955853+00:00",
+    "at": "2026-11-18T04:01:20.276930+00:00",
     "hours": 24,
     "seen": {
       "0xf1a947c6c7b8887ef6c09b8b088787b4d1ff8d0a": "2026-11-17T18:58:52.616000+00:00",
@@ -764,7 +772,7 @@
       "0x78c1c2d4cd6207b6ff4e84362d314d1cd0830041",
       "0xf1a947c6c7b8887ef6c09b8b088787b4d1ff8d0a"
     ],
-    "scanned_to": 117113293,
+    "scanned_to": 117118658,
     "complete": true
   },
   "issues_to_close": [],
@@ -773,11 +781,6 @@
     "0x524988ccc8d7a23566e2fffb24b1b07e5aa2f134": "2026-11-18T03:31:31.713695+00:00"
   },
   "gecko_hours": {
-    "2026-11-16 18:00": [
-      6,
-      0,
-      0
-    ],
     "2026-11-16 19:00": [
       5,
       0,
@@ -890,6 +893,11 @@
     ],
     "2026-11-18 03:00": [
       6,
+      1,
+      1
+    ],
+    "2026-11-18 04:00": [
+      1,
       1,
       1
     ]
