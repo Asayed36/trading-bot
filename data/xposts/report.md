@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 00:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 01:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-119 post(s), 58 matching launch(es).
+121 post(s), 65 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -712,6 +712,30 @@ No matching launch in the next 10 minutes.
 
 ## @toly 2026-11-18 00:31:39 UTC (post 2122850184627446023)
 > 🐐🐐🐐 https://t.co/sASPAEVpwL
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-18 01:06:20 UTC (post 2122858913791877613)
+> Going Live on the SPX6900 Into the Cognisphere Podcast https://t.co/fmu1IIYH5G
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| innit | going | missed | +0%, no liq @5.1m | +0%, no liq @15.4m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 313 s | YO | HIS LIVE, LETS HELP HIM | live | price not recorded |  |  |  |  |
+| 313 s | YO | HIS LIVE, LETS HELP HIM | live | price not recorded |  |  |  |  |
+| 316 s | YO | HIS LIVE, LETS HELP HIM | live | price not recorded |  |  |  |  |
+| 322 s | YO | HIS LIVE, LETS HELP HIM | live | price not recorded |  |  |  |  |
+| 323 s | YO | HIS LIVE, LETS HELP HIM | live | price not recorded |  |  |  |  |
+| 332 s | YO | HIS LIVE, LETS HELP HIM | live | price not recorded |  |  |  |  |
+| 461 s | innit | I'm going to miss GTA, innit? | going | price not recorded |  |  |  |  |
+
+## @elonmusk 2026-11-18 01:36:43 UTC (post 2122866559425384674)
+> Super intelligence will hack your limbic system https://t.co/r0DDc4N87q
 
 No matching launch in the next 10 minutes.
 
