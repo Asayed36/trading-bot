@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 18:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 19:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 147 post(s), 85 matching launch(es).
 
@@ -911,7 +911,7 @@ post_match flags (DexScreener, recording only):
 |---|---|---|---|---|---|---|---|
 | traders | traders | +0%, no liq @1.9m | +0%, no liq @5.1m | +0%, no liq @15.8m | +0%, no liq @60.2m | – | no |
 | TRADERS | traders | +0%, no liq @1.8m | +0%, no liq @6.0m | +0%, no liq @15.7m | +0%, no liq @60.1m | – | no |
-| traders | traders | missed | missed | missed | – | – | no |
+| traders | traders | missed | missed | missed | missed | – | no |
 | traders | traders | +0%, no liq @1.9m | -0%, no liq @5.1m | -1%, no liq @15.8m | -1%, no liq @60.2m | – | no |
 | TRADERS | traders | +0%, no liq @1.8m | +0%, no liq @6.0m | +0%, no liq @15.8m | +0%, no liq @60.0m | – | no |
 | traders | traders | +0%, no liq @1.6m | +0%, no liq @5.8m | -0%, no liq @15.6m | -0%, no liq @61.0m | – | no |
@@ -932,13 +932,13 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| BELIEVE | something | +0%, no liq @1.5m | +0%, no liq @5.7m | -1%, no liq @15.2m | – | – | no |
-| BELIEVE | something | +0%, no liq @1.8m | -1%, no liq @6.0m | -1%, no liq @15.5m | – | – | no |
-| BELIEVE | something | +0%, no liq @1.6m | +84%, liq $10,501 @5.8m | +562%, liq $21,121 @15.3m | – | $23,564 | no |
+| BELIEVE | something | +0%, no liq @1.5m | +0%, no liq @5.7m | -1%, no liq @15.2m | -1%, no liq @60.4m | – | no |
+| BELIEVE | something | +0%, no liq @1.8m | -1%, no liq @6.0m | -1%, no liq @15.5m | -1%, no liq @60.6m | – | no |
+| BELIEVE | something | +0%, no liq @1.6m | +84%, liq $10,501 @5.8m | +562%, liq $21,121 @15.3m | -89%, liq $1,632 @60.4m | $23,564 | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 30 s | BELIEVE | Believe in something | something | price not recorded |  |  |  |  |
-| 76 s | BELIEVE | Believe in something | something | price not recorded |  |  |  |  |
-| 151 s | BELIEVE | Believe in something | something | price not recorded |  |  |  |  |
+| 30 s | BELIEVE | Believe in something | something | -64% | -64% | -64% | -64% | +2% (6 s) |
+| 76 s | BELIEVE | Believe in something | something | +89% | -65% | -65% | -65% | +127% (32 s) |
+| 151 s | BELIEVE | Believe in something | something | +90% | +219% | +219% | +219% | +248% (150 s) |
 
