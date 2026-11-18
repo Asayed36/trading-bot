@@ -111,16 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0xaec1358ed0f1057b498209f75903c86885a2d046da76d53bfdf372bd11e6bf9d": {
-      "pool": "0xaec1358ed0f1057b498209f75903c86885a2d046da76d53bfdf372bd11e6bf9d",
-      "dex": "pons-v2-dex",
-      "token": "0x524988ccc8d7a23566e2fffb24b1b07e5aa2f134",
-      "name": "IDLEX",
-      "title": "Idlex Network",
-      "created": "2026-11-18T03:28:43Z",
-      "liquidity_usd": 16462.0305,
-      "market_cap_usd": 44662.7828
-    },
     "0x60307e39ddb4fa7c8758df67c9e23c649afe9b56b14a8493042f840c8b34d4a4": {
       "pool": "0x60307e39ddb4fa7c8758df67c9e23c649afe9b56b14a8493042f840c8b34d4a4",
       "dex": "pons-v2-dex",
@@ -140,19 +130,21 @@
       "created": "2026-11-18T09:01:38Z",
       "liquidity_usd": 12703.3573,
       "market_cap_usd": 33295.51843
+    },
+    "0x06182ee7df76358f0d8aed6df7f046b259d5ce2867d536a913fe19b7c943a454": {
+      "pool": "0x06182ee7df76358f0d8aed6df7f046b259d5ce2867d536a913fe19b7c943a454",
+      "dex": "uniswap-pools-trade",
+      "token": "0x98948fb9f2be78666e00adc31789c765537b9ef7",
+      "name": "IDRENT",
+      "title": "IDRENT",
+      "created": "2026-11-18T09:24:55Z",
+      "liquidity_usd": 7760.7844,
+      "market_cap_usd": 8462.76122
     }
   },
   "checked": {
-    "0xaec1358ed0f1057b498209f75903c86885a2d046da76d53bfdf372bd11e6bf9d": {
-      "at": "2026-11-18T09:21:28.724256+00:00",
-      "passed": false,
-      "failed": [
-        "Market cap",
-        "More buys than sells (1h)"
-      ]
-    },
     "0x60307e39ddb4fa7c8758df67c9e23c649afe9b56b14a8493042f840c8b34d4a4": {
-      "at": "2026-11-18T08:31:21.186140+00:00",
+      "at": "2026-11-18T09:31:25.825123+00:00",
       "passed": false,
       "failed": [
         "Liquidity"
@@ -165,7 +157,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-18T09:21:28.724256+00:00",
+      "at": "2026-11-18T09:31:25.825123+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -173,7 +165,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-18T09:21:28.724256+00:00",
+      "at": "2026-11-18T09:31:25.825123+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -189,13 +181,12 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-18T09:21:28.724256+00:00",
+      "at": "2026-11-18T09:31:25.825123+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0xaec1358ed0f1057b498209f75903c86885a2d046da76d53bfdf372bd11e6bf9d": "FAIL|Market cap: $22,586 (need $25,000+); More buys than sells (1h): 9 buys vs 13 sells",
-    "0x60307e39ddb4fa7c8758df67c9e23c649afe9b56b14a8493042f840c8b34d4a4": "FAIL|Liquidity: $8,623 (need $10,000+ on Pons)"
+    "0x60307e39ddb4fa7c8758df67c9e23c649afe9b56b14a8493042f840c8b34d4a4": "FAIL|Liquidity: $9,139 (need $10,000+ on Pons)"
   },
   "launchpad_tokens": {
     "0x839d6dea3de497ee5a8338410cb2865afa51141e": {
@@ -695,7 +686,7 @@
       "graduated": "2026-11-18T01:29:05Z",
       "symbol": "BOW",
       "title": "Longbow",
-      "seen": "2026-11-18T09:21:28.724256+00:00",
+      "seen": "2026-11-18T09:31:25.825123+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 0.0,
       "market_cap_usd": 3552741.092
@@ -715,9 +706,9 @@
       "graduated": "2026-11-18T01:50:51Z",
       "symbol": "GTA6",
       "title": "GTA VI",
-      "seen": "2026-11-18T09:21:28.724256+00:00",
+      "seen": "2026-11-18T09:31:25.825123+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 33.1043,
+      "liquidity_usd": 33.1197,
       "market_cap_usd": 609140.1194
     },
     "0x524988ccc8d7a23566e2fffb24b1b07e5aa2f134": {
@@ -749,10 +740,20 @@
       "source": "geckoterminal",
       "liquidity_usd": 12703.3573,
       "market_cap_usd": 33295.51843
+    },
+    "0x98948fb9f2be78666e00adc31789c765537b9ef7": {
+      "dex": "uniswap-pools-trade",
+      "graduated": "2026-11-18T09:24:55Z",
+      "symbol": "IDRENT",
+      "title": "IDRENT",
+      "seen": "2026-11-18T09:31:25.825123+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 7760.7844,
+      "market_cap_usd": 8462.76122
     }
   },
   "graduations": {
-    "at": "2026-11-18T09:21:28.724256+00:00",
+    "at": "2026-11-18T09:31:25.825123+00:00",
     "hours": 24,
     "seen": {
       "0xf1a947c6c7b8887ef6c09b8b088787b4d1ff8d0a": "2026-11-17T18:58:52.616000+00:00",
@@ -770,7 +771,7 @@
       "0xd36a4a5cedf7ebbd1df4a2f7b4b2e2f53805f1b8",
       "0xf1a947c6c7b8887ef6c09b8b088787b4d1ff8d0a"
     ],
-    "scanned_to": 117293586,
+    "scanned_to": 117298992,
     "complete": true
   },
   "issues_to_close": [],
@@ -895,7 +896,7 @@
       0
     ],
     "2026-11-18 09:00": [
-      3,
+      4,
       0,
       0
     ]
