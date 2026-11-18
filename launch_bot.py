@@ -18,6 +18,10 @@ While [launch] stopped = true and [launch_record] enabled = true it also runs th
 recorder (launch_record_bot.py, screener/launch_record.py): recording only, it never buys or
 sells; rows go to data/launch-record/ and are pushed like the other results.
 
+It also saves Bitcoin's, Ethereum's and Solana's prices once a minute to
+data/market/prices-YYYY-MM-DD.csv (screener/market_prices.py; recording only, nothing reads
+them for any buy, sell, filter or exit; one public Binance request a minute).
+
 PAPER TRADING ONLY. This program only READS public data. It never connects
 to a wallet, never uses a private key, never signs anything and never calls
 PumpPortal's trading API. The only messages it ever sends to PumpPortal are
@@ -41,6 +45,7 @@ from screener.autorestart import CodeWatcher, restart_message
 from screener.backdrop import MarketBackdrop
 from screener.jupiter import JupiterOrganic
 from screener.launch import LaunchEngine, sol_price, token_prices
+from screener.market_prices import FOLDER as MARKET_FOLDER, MarketPriceLog
 from screener.settings import HERE, load_config
 from launch_record_bot import RecordRunner
 
@@ -66,8 +71,9 @@ def request(method, keys=None):
 class Runner:
     ORGANIC_POLL_SECONDS = 2     # how often to look for launches due a Jupiter reading
 
-    def __init__(self, cfg, data_folder, watcher=None):
+    def __init__(self, cfg, data_folder, watcher=None, price_log=None):
         self.cfg = cfg
+        self.price_log = price_log   # MarketPriceLog: BTC/ETH/SOL once a minute (recording only)
         self.watcher = watcher   # CodeWatcher: restart when the push brings new code
         self.restarting = None
         self.engine = LaunchEngine(cfg, data_folder)
@@ -186,6 +192,20 @@ class Runner:
             except asyncio.TimeoutError:
                 pass
 
+    async def market_prices(self):
+        """Once a minute, at the start of the minute: BTC, ETH and SOL prices saved to
+        data/market/ (one request; recording only, a failure only leaves the row blank)."""
+        while self.price_log is not None and not self.stop.is_set():
+            try:
+                await asyncio.wait_for(self.stop.wait(), 60 - time.time() % 60 + 0.5)
+                return
+            except asyncio.TimeoutError:
+                pass
+            try:
+                await asyncio.to_thread(self.price_log.record)
+            except Exception as exc:     # never reaches the bot
+                log.info("market prices skipped: %s", str(exc)[:120])
+
     async def watch_code(self):
         """Every CODE_CHECK_SECONDS: if the hourly push changed the bot's
         code, stop (everything is saved below) so systemd restarts it."""
@@ -212,7 +232,8 @@ class Runner:
                 pass
         tasks = [asyncio.create_task(x)
                  for x in (self.feed(), self.clock(), self.prices(), self.organic(),
-                           self.watch_code(), *(self.record.tasks() if self.record else ()))]
+                           self.watch_code(), self.market_prices(),
+                           *(self.record.tasks() if self.record else ()))]
         await self.stop.wait()
         if self.ws is not None:
             await self.ws.close()
@@ -291,7 +312,8 @@ def main(argv=None):
     watcher = CodeWatcher(HERE, CONFIG_SECTIONS)
     log.info("watching %d code file(s) and config.toml %s for updates",
              len(watcher.files), ", ".join(f"[{s}]" for s in CONFIG_SECTIONS))
-    asyncio.run(Runner(cfg, folder, watcher).main())
+    price_log = MarketPriceLog(os.path.join(folder, MARKET_FOLDER))
+    asyncio.run(Runner(cfg, folder, watcher, price_log=price_log).main())
     return 0
 
 
