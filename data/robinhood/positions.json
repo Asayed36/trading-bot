@@ -132,10 +132,11 @@
   "sources": {
     "geckoterminal": {
       "calls": 2,
-      "errors": 0,
-      "rate_limited": 0,
-      "ok": true,
-      "at": "2026-11-18T19:21:11.116029+00:00",
+      "errors": 2,
+      "rate_limited": 2,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
+      "ok": false,
+      "at": "2026-11-18T19:31:38.602804+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -144,7 +145,7 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-11-18T19:21:11.116029+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "goplus": {
       "calls": 1,
@@ -159,7 +160,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-18T19:21:11.116029+00:00",
+      "at": "2026-11-18T19:31:38.602804+00:00",
       "used_this_run": true
     }
   },
@@ -742,10 +743,9 @@
     }
   },
   "graduations": {
-    "at": "2026-11-18T19:21:11.116029+00:00",
+    "at": "2026-11-18T19:31:38.602804+00:00",
     "hours": 24,
     "seen": {
-      "0x5d992fa5b7da8efde5fd36d24e81097ed6ad4351": "2026-11-17T19:31:24.419600+00:00",
       "0x78c1c2d4cd6207b6ff4e84362d314d1cd0830041": "2026-11-17T21:42:40.557900+00:00",
       "0x524988ccc8d7a23566e2fffb24b1b07e5aa2f134": "2026-11-18T03:28:41.950400+00:00",
       "0x3f81538ed2641ef9234e5ad09e3c1a2d38ac8918": "2026-11-18T07:54:25.994400+00:00",
@@ -756,11 +756,10 @@
       "0x00a1f2056608025f695fd7768a50430ca2bb5f1e",
       "0x3f81538ed2641ef9234e5ad09e3c1a2d38ac8918",
       "0x524988ccc8d7a23566e2fffb24b1b07e5aa2f134",
-      "0x5d992fa5b7da8efde5fd36d24e81097ed6ad4351",
       "0x78c1c2d4cd6207b6ff4e84362d314d1cd0830041",
       "0xd36a4a5cedf7ebbd1df4a2f7b4b2e2f53805f1b8"
     ],
-    "scanned_to": 117638959,
+    "scanned_to": 117645072,
     "complete": true
   },
   "issues_to_close": [],
@@ -886,9 +885,9 @@
       0
     ],
     "2026-11-18 19:00": [
-      3,
-      0,
-      0
+      4,
+      1,
+      1
     ]
   }
 }
