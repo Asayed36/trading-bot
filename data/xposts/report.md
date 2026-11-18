@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 17:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 18:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-146 post(s), 82 matching launch(es).
+147 post(s), 85 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -854,11 +854,11 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| $BBH | before | +0%, no liq @1.1m | -69%, no liq @5.5m | -69%, no liq @15.9m | – | – | no |
+| $BBH | before | +0%, no liq @1.1m | -69%, no liq @5.5m | -69%, no liq @15.9m | -69%, no liq @60.6m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 350 s | $BBH | Bros before hos | before | price not recorded |  |  |  |  |
+| 350 s | $BBH | Bros before hos | before | -58% | -88% | -88% | -88% | +73% (27 s) |
 
 ## @MrBeast 2026-11-18 17:13:17 UTC (post 2123102254031135211)
 > GTA 5 vs GTA 6 me https://t.co/AeJabVmcgE
@@ -867,15 +867,15 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| GTA | gta | +0%, no liq @2.0m | +0%, no liq @5.1m | +0%, no liq @15.7m | – | – | no |
-| GTA | gta | +0%, no liq @1.8m | +0%, no liq @6.0m | +0%, no liq @15.6m | – | – | no |
-| GTA | gta | +0%, no liq @1.7m | +0%, no liq @5.9m | -14%, no liq @15.4m | – | – | no |
+| GTA | gta | +0%, no liq @2.0m | +0%, no liq @5.1m | +0%, no liq @15.7m | +0%, no liq @60.3m | – | no |
+| GTA | gta | +0%, no liq @1.8m | +0%, no liq @6.0m | +0%, no liq @15.6m | +0%, no liq @60.1m | – | no |
+| GTA | gta | +0%, no liq @1.7m | +0%, no liq @5.9m | -14%, no liq @15.4m | -15%, no liq @60.0m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 448 s | GTA | Gigantic Tits & Ass | gta | price not recorded |  |  |  |  |
-| 585 s | GTA | Grand thick ass | gta | price not recorded |  |  |  |  |
-| 593 s | GTA | Vice City Lookouts | gta | price not recorded |  |  |  |  |
+| 585 s | GTA | Grand thick ass | gta | +263% | +263% | +263% | +263% | +263% (10 s) |
+| 593 s | GTA | Vice City Lookouts | gta | +0% | +0% | -12% | -12% | +1% (419 s) |
 
 ## @Pumpfun 2026-11-18 17:22:10 UTC (post 2123104489297326560)
 > The Pumpfun app &amp; web has every tool a pro perps trader needs: - 300+ Hyperliquid markets - Limit, TWAP, scale and trailing stop orders 
@@ -909,19 +909,36 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| traders | traders | +0%, no liq @1.9m | +0%, no liq @5.1m | – | – | – | no |
-| TRADERS | traders | +0%, no liq @1.8m | +0%, no liq @6.0m | – | – | – | no |
-| traders | traders | missed | missed | – | – | – | no |
-| traders | traders | +0%, no liq @1.9m | -0%, no liq @5.1m | – | – | – | no |
-| TRADERS | traders | +0%, no liq @1.8m | +0%, no liq @6.0m | – | – | – | no |
-| traders | traders | +0%, no liq @1.6m | +0%, no liq @5.8m | – | – | – | no |
+| traders | traders | +0%, no liq @1.9m | +0%, no liq @5.1m | +0%, no liq @15.8m | +0%, no liq @60.2m | – | no |
+| TRADERS | traders | +0%, no liq @1.8m | +0%, no liq @6.0m | +0%, no liq @15.7m | +0%, no liq @60.1m | – | no |
+| traders | traders | missed | missed | missed | – | – | no |
+| traders | traders | +0%, no liq @1.9m | -0%, no liq @5.1m | -1%, no liq @15.8m | -1%, no liq @60.2m | – | no |
+| TRADERS | traders | +0%, no liq @1.8m | +0%, no liq @6.0m | +0%, no liq @15.8m | +0%, no liq @60.0m | – | no |
+| traders | traders | +0%, no liq @1.6m | +0%, no liq @5.8m | -0%, no liq @15.6m | -0%, no liq @61.0m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 21 s | traders | May the best traders win | best, traders | price not recorded |  |  |  |  |
 | 28 s | TRADERS | May the best traders win | best, traders | price not recorded |  |  |  |  |
 | 30 s | traders | May the best traders win | best, traders | price not recorded |  |  |  |  |
-| 85 s | traders | May the traders win | traders | price not recorded |  |  |  |  |
+| 85 s | traders | May the traders win | traders | +84% | -67% | -69% | -69% | +145% (83 s) |
 | 219 s | TRADERS | Traders | traders | price not recorded |  |  |  |  |
-| 228 s | traders | May the traders win | traders | price not recorded |  |  |  |  |
+| 228 s | traders | May the traders win | traders | -67% | -68% | -68% | -68% | +12% (5 s) |
+
+## @MustStopMurad 2026-11-18 17:47:28 UTC (post 2123110858276618599)
+> Something biblical is coming. Mark my words.
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| BELIEVE | something | +0%, no liq @1.5m | +0%, no liq @5.7m | -1%, no liq @15.2m | – | – | no |
+| BELIEVE | something | +0%, no liq @1.8m | -1%, no liq @6.0m | -1%, no liq @15.5m | – | – | no |
+| BELIEVE | something | +0%, no liq @1.6m | +84%, liq $10,501 @5.8m | +562%, liq $21,121 @15.3m | – | $23,564 | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 30 s | BELIEVE | Believe in something | something | price not recorded |  |  |  |  |
+| 76 s | BELIEVE | Believe in something | something | price not recorded |  |  |  |  |
+| 151 s | BELIEVE | Believe in something | something | price not recorded |  |  |  |  |
 
