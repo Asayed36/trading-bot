@@ -20,8 +20,13 @@ Per coin, against BTC (daily close-to-close returns on the days both have):
   btc_up_days ...        on days BTC rose more than 3%: the same
   total_change_pct, max_drawdown_pct   over the period
   days, avg_daily_volume_usdt          (base volume x close)
-Coins with less than MIN_FULL_DAYS (120) days: the 1-year figures (everything but the 90-day
-ones, the days and the volume) are left blank.
+  low_1y, low_1y_date, from_low_1y_pct   the lowest daily low and how far the latest close is
+                                          above it (0%: closing at its 1-year low)
+  high_1y, from_high_1y_pct, days_since_low   the highest daily high, how far the latest close
+                                          is below it, and the days since the low
+Coins with less than MIN_FULL_DAYS (120) days: the 1-year correlation figures (everything but
+the 90-day ones, the days and the volume) are left blank. The low and high use the days a coin
+has; with fewer than 365 they are marked partial_year.
 """
 
 import argparse
@@ -80,7 +85,11 @@ COLUMNS = ["rank", "coin", "symbol", "memecoin", "days", "first_day", "last_day"
            "avg_daily_volume_usdt", "corr_1y", "corr_90d", "beta_1y", "beta_90d",
            "btc_down_days", "coin_rose_on_btc_down_days", "avg_move_on_btc_down_days_pct",
            "btc_up_days", "coin_rose_on_btc_up_days", "avg_move_on_btc_up_days_pct",
-           "total_change_pct", "max_drawdown_pct", "short_history"]
+           "total_change_pct", "max_drawdown_pct", "short_history",
+           # distance from the period's extremes (daily lows and highs; a coin with fewer days
+           # than the period uses the days it has: partial_year)
+           "latest_close", "low_1y", "low_1y_date", "from_low_1y_pct", "high_1y", "high_1y_date",
+           "from_high_1y_pct", "days_since_low", "partial_year"]
 
 
 # ---------------------------------------------------------------------
@@ -146,6 +155,28 @@ def max_drawdown(closes):
         peak = c if peak is None else max(peak, c)
         worst = min(worst, c / peak - 1)
     return worst
+
+
+def extremes(closes, highs_lows=None, full_days=365):
+    """The period's lowest daily low and highest daily high, and where the latest close stands.
+    highs_lows: {day: (high, low)}; without it the closes are used."""
+    if not closes:
+        return {}
+    days = sorted(closes)
+    hl = {d: (highs_lows or {}).get(d) or (closes[d], closes[d]) for d in days}
+    low = min(hl[d][1] for d in days)
+    high = max(hl[d][0] for d in days)
+    low_day = max(d for d in days if hl[d][1] == low)        # the latest day at the low
+    high_day = max(d for d in days if hl[d][0] == high)
+    latest = closes[days[-1]]
+    return {
+        "latest_close": latest, "low_1y": low, "low_1y_date": low_day,
+        "from_low_1y_pct": (latest / low - 1) * 100 if low > 0 else None,
+        "high_1y": high, "high_1y_date": high_day,
+        "from_high_1y_pct": (latest / high - 1) * 100 if high > 0 else None,
+        "days_since_low": (date.fromisoformat(days[-1]) - date.fromisoformat(low_day)).days,
+        "partial_year": len(days) < full_days,
+    }
 
 
 def measure(coin_closes, btc_closes, recent=RECENT_DAYS, big=BIG_MOVE_PCT,
@@ -284,15 +315,52 @@ def write_md(rows, path, first, last, btc):
                      f"{_num(r.get('beta_1y'))} | {down} | {up} | "
                      f"{_pct(r.get('total_change_pct'), 0)} | {_pct(r.get('max_drawdown_pct'), 0)} | "
                      + (f"${vol / 1e6:,.1f}M" if vol else "–") + " |")
+    lines += low_lines(rows)
     lines += ["", f"Refresh: `python lab/btc_link.py` (writes lab/results/btc_link.csv and this "
               "file)."]
     with open(path, "w") as fh:
         fh.write("\n".join(lines) + "\n")
 
 
-def build(series, volumes_usdt, first, last, out_dir=RESULTS):
-    """series: {base: {day: close}} including "BTC"; volumes_usdt: {base: average daily volume}.
-    Writes the two files and returns the rows."""
+def _price(v):
+    return "–" if v is None else f"{v:.6g}"
+
+
+def _low_table(rows):
+    out = ["| # | Coin | Meme | Latest close | 1-year low (date) | Above the low | From the "
+           "1-year high | Days since the low | Corr 90d | Avg volume/day |",
+           "|---|---|---|---|---|---|---|---|---|---|"]
+    for i, r in enumerate(rows, 1):
+        coin = r["coin"] + (f" ({r['days']} days)" if r.get("partial_year") else "")
+        vol = r.get("avg_daily_volume_usdt")
+        out.append(f"| {i} | {coin} | {'yes' if r['memecoin'] else ''} | "
+                   f"{_price(r.get('latest_close'))} | {_price(r.get('low_1y'))} "
+                   f"({r.get('low_1y_date') or '–'}) | {_pct(r.get('from_low_1y_pct'))} | "
+                   f"{_pct(r.get('from_high_1y_pct'), 0)} | {r.get('days_since_low', '–')} | "
+                   f"{_num(r.get('corr_90d'))} | " + (f"${vol / 1e6:,.1f}M" if vol else "–") + " |")
+    return out
+
+
+def low_lines(rows, closest=20):
+    """The section "Closest to their 1-year low": the `closest` coins by how far the latest
+    close is above the period's lowest daily low (lowest first), then every memecoin."""
+    known = sorted((r for r in rows if r.get("from_low_1y_pct") is not None),
+                   key=lambda r: (r["from_low_1y_pct"], r["coin"]))
+    memes = [r for r in known if r["memecoin"]]
+    return ["", "## Closest to their 1-year low", "",
+            "How far each coin's latest daily close is above its lowest daily low of the period "
+            "(0% = closing at its 1-year low), and below its highest daily high. A coin with "
+            "fewer than 365 days uses the days it has (marked with its day count). Being near a "
+            "low is not a reason to buy: a falling coin can keep falling.", "",
+            f"**The {min(closest, len(known))} closest:**", "",
+            *_low_table(known[:closest]), "", "**Every memecoin:**", "",
+            *(_low_table(memes) if memes else ["None measured."])]
+
+
+def build(series, volumes_usdt, first, last, out_dir=RESULTS, highs_lows=None):
+    """series: {base: {day: close}} including "BTC"; volumes_usdt: {base: average daily volume};
+    highs_lows: {base: {day: (high, low)}} (else the closes are used). Writes the two files and
+    returns the rows."""
     btc = series["BTC"]
     rows, pegs = [], []
     for base, closes in series.items():
@@ -302,6 +370,7 @@ def build(series, volumes_usdt, first, last, out_dir=RESULTS):
             pegs.append(base)
             continue
         r = measure(closes, btc)
+        r.update(extremes(closes, (highs_lows or {}).get(base)))
         r.update(coin=base, symbol=f"{base}USDT", memecoin=base in MEMECOINS,
                  avg_daily_volume_usdt=volumes_usdt.get(base))
         rows.append(r)
@@ -373,6 +442,38 @@ def day_volume(http, symbol, day, tries=3, sleep=None):
     return float(rows[0][7]) if rows else None
 
 
+def cached(cache, base):
+    """{day: (day, open, high, low, close, volume)} from the cache: the coin's own file and the
+    files of earlier runs (named COIN-FIRST-LAST.csv)."""
+    import glob
+    have = {}
+    paths = sorted(glob.glob(os.path.join(cache, f"{base}-*.csv")))
+    paths += [os.path.join(cache, f"{base}.csv")]
+    for path in paths:
+        try:
+            with open(path, newline="") as fh:
+                for r in csv.reader(fh):
+                    if r and len(r) >= 6:
+                        have[r[0]] = (r[0], *map(float, r[1:6]))
+        except OSError:
+            pass
+    return have
+
+
+def missing_ranges(have, first, last):
+    """The (first, last) date ranges to download: the days before and after what the cache
+    holds (a gap inside it is not looked for again: a pair can miss a day)."""
+    if not have:
+        return [(first, last)]
+    lo, hi = date.fromisoformat(min(have)), date.fromisoformat(max(have))
+    out = []
+    if first < lo:
+        out.append((first, lo - timedelta(days=1)))
+    if hi < last:
+        out.append((hi + timedelta(days=1), last))
+    return out
+
+
 def refresh(days=365, top=100, workers=8, out=print, cache=None):
     import requests
     from screener.trend import BinanceDaily, FetchError
@@ -402,25 +503,30 @@ def refresh(days=365, top=100, workers=8, out=print, cache=None):
     fetcher = BinanceDaily(http=http)
 
     def candles(base):
-        path = os.path.join(cache, f"{base}-{first}-{last}.csv") if cache else None
-        if path and os.path.exists(path):
-            with open(path, newline="") as fh:
-                return base, [(r[0], *map(float, r[1:])) for r in csv.reader(fh)], None
-        try:
-            rows, _, _ = fetcher.candles(f"{base}USDT", first, last)
-        except FetchError as exc:
-            out(f"  {base}: no candles ({exc})")
-            return base, [], None
-        if path:
+        have = cached(cache, base) if cache else {}
+        missing = missing_ranges(have, first, last)
+        for a, b in missing:
+            try:
+                rows, _, _ = fetcher.candles(f"{base}USDT", a, b)
+            except FetchError as exc:
+                if not have:
+                    out(f"  {base}: no candles ({exc})")
+                    return base, [], None
+                continue                           # keep what the cache has
+            for r in rows:
+                have[r[0]] = tuple(r)
+        if cache and missing and have:
             os.makedirs(cache, exist_ok=True)
-            with open(path, "w", newline="") as fh:
-                csv.writer(fh).writerows(rows)
+            with open(os.path.join(cache, f"{base}.csv"), "w", newline="") as fh:
+                csv.writer(fh).writerows(have[d] for d in sorted(have))
+        rows = [have[d] for d in sorted(have) if first.isoformat() <= d <= last.isoformat()]
         return base, rows, None
     with ThreadPoolExecutor(workers) as pool:
         got = list(pool.map(candles, ["BTC"] + coins))
     series = {b: {r[0]: r[4] for r in rows} for b, rows, _ in got}
+    highs_lows = {b: {r[0]: (r[2], r[3]) for r in rows} for b, rows, _ in got}
     volumes = {b: statistics.fmean(r[5] * r[4] for r in rows) for b, rows, _ in got if rows}
-    rows = build(series, volumes, first.isoformat(), last.isoformat())
+    rows = build(series, volumes, first.isoformat(), last.isoformat(), highs_lows=highs_lows)
     out(f"Wrote {os.path.join(RESULTS, 'btc_link.csv')} and btc_link.md ({len(rows)} coins).")
     return rows
 
@@ -430,7 +536,7 @@ def main(argv=None):
     parser.add_argument("--days", type=int, default=365)
     parser.add_argument("--top", type=int, default=100)
     parser.add_argument("--cache", help="keep the downloaded candles in this folder and reuse "
-                                        "them (for a quick second run)")
+                                        "them: a later run downloads only the new days")
     args = parser.parse_args(argv)
     refresh(args.days, args.top, cache=args.cache)
     return 0
