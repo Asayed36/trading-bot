@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 05:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 06:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-131 post(s), 66 matching launch(es).
+132 post(s), 71 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -796,4 +796,22 @@ No matching launch in the next 10 minutes.
 > 会越来越高的 https://t.co/1KIMFGYC7g
 
 No matching launch in the next 10 minutes.
+
+## @VitalikButerin 2026-11-18 05:51:14 UTC (post 2122930611027611873)
+> One benefit of younger generations investing more in stonks and other digital things instead of housing is that it reduces perverse incentiv
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| STONKS | stonks | missed | missed | missed | – | – | no |
+| SLOP | digital | missed | missed | missed | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 24 s | STONKS | STONKS | stonks | price not recorded |  |  |  |  |
+| 191 s | SLOP | Digital Slop | digital | price not recorded |  |  |  |  |
+| 467 s | trench | trench life | life | price not recorded |  |  |  |  |
+| 496 s | LIFE | Life Before GTA6 | life | price not recorded |  |  |  |  |
+| 535 s | LIFE | Life Before GTA6 | life | price not recorded |  |  |  |  |
 
