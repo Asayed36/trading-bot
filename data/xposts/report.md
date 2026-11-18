@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 14:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 15:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-137 post(s), 72 matching launch(es).
+138 post(s), 72 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -839,6 +839,11 @@ No matching launch in the next 10 minutes.
 
 ## @MustStopMurad 2026-11-18 13:30:16 UTC (post 2123046132628471911)
 > Persistence is NECESSARY but not SUFFICIENT. Belief is NECESSARY but not SUFFICIENT. An epic Mission is NECESSARY but not SUFFICIENT. Not gi
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-18 15:31:41 UTC (post 2123076685977501731)
+> The SPX6900 community is collecting up all the holder, consistent and long-term believer types. And that’s the only type of participant that
 
 No matching launch in the next 10 minutes.
 
