@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-17 23:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 00:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-106 post(s), 57 matching launch(es).
+119 post(s), 58 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -585,6 +585,16 @@ No matching launch in the next 10 minutes.
 
 No matching launch in the next 10 minutes.
 
+## @elonmusk 2026-11-17 16:46:55 UTC (post 2122733232894468308)
+> Advanced solid state transformers at scale from Tesla https://t.co/gIE2FGJqrK
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-17 17:44:06 UTC (post 2122747622662222010)
+> Starlink saves lives https://t.co/j21iGhH6DS
+
+No matching launch in the next 10 minutes.
+
 ## @Pumpfun 2026-11-17 18:32:15 UTC (post 2122759741097361759)
 > Pumpfun x @base Callout Rewards for tokens on Base are getting up to $10,000 daily in boosted Callout Rewards, powered by Merkl, AND we're m
 
@@ -643,8 +653,65 @@ No matching launch in the next 10 minutes.
 
 No matching launch in the next 10 minutes.
 
+## @toly 2026-11-17 21:19:04 UTC (post 2122801718161440970)
+> 👑👑👑 https://t.co/yXzEFxUgh3
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-17 21:20:10 UTC (post 2122801998995067159)
+> 💀💀💀 https://t.co/ayEmGQOpVi
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-17 21:29:11 UTC (post 2122804266066936019)
+> Top 3 App Store founder https://t.co/60ASqgJIaA
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-17 21:29:44 UTC (post 2122804405095502064)
+> 🐐🐐🐐 https://t.co/nFCdS3gqZp
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-17 21:55:02 UTC (post 2122810772967575759)
+> 🤦‍♂️ https://t.co/DLC14CvtLT
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-17 22:06:33 UTC (post 2122813671814345159)
+> :( https://t.co/h5TVDKIoGc
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-17 22:08:28 UTC (post 2122814152024690958)
+> trading crypto to capture nvda earnings volatility is what i imagine riding the short bus to school felt like
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 166 s | NVDA | Nigger Viagra Dick Anus | nvda | price not recorded |  |  |  |  |
+
 ## @cz_binance 2026-11-17 23:11:48 UTC (post 2122830089276756302)
 > Zach is really good. https://t.co/KZMmykBjRx
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-17 23:19:06 UTC (post 2122831927275323564)
+> Nelson is rolling in his crypt. https://t.co/riLfrX87qV
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-18 00:31:09 UTC (post 2122850058076889524)
+> 👑👑👑 https://t.co/reQlWwKPKB
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-18 00:31:22 UTC (post 2122850115752784158)
+> 🐐🐐🐐 https://t.co/scYkzOP4TV
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-18 00:31:39 UTC (post 2122850184627446023)
+> 🐐🐐🐐 https://t.co/sASPAEVpwL
 
 No matching launch in the next 10 minutes.
 
