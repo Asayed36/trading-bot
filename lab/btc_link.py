@@ -67,7 +67,7 @@ LEVERAGED = re.compile(r"^(" + "|".join(sorted(LEVERAGED_OF, key=len, reverse=Tr
 TOKENIZED = {"AVGOB", "BNCB", "CRCLB", "DRAMB", "GOOGLB", "INTCB", "KORUB", "MSTRB", "MUB",
              "NBISB", "NVDAB", "QQQB", "SKHYB", "SNDKB", "SNXXB", "SOXLB", "SOXSB", "SPCXB",
              "SPYB", "TQQQB", "TSLAB", "BMNRB", "AMDB", "COINB", "MRVLB", "INTWB",
-             "CBRSB"}
+             "CBRSB", "AAOIB", "LITEB", "TSMB"}
 WRAPPED_BTC = {"WBTC", "BTCB"}
 # A coin whose daily close never leaves this band around $1 is a dollar stablecoin (left out,
 # whatever its name: U and RWUSD were not in the list above).
@@ -224,12 +224,16 @@ def _fmt(v, digits=3):
     return str(v)
 
 
+PRICE_COLUMNS = {"latest_close", "low_1y", "high_1y"}
+
+
 def write_csv(rows, path):
     with open(path, "w", newline="") as fh:
         w = csv.writer(fh)
         w.writerow(COLUMNS)
-        for r in rows:
-            w.writerow([_fmt(r.get(c)) for c in COLUMNS])
+        for r in rows:                     # prices keep 8 significant digits (SHIB is 0.000006)
+            w.writerow([f"{r[c]:.8g}" if c in PRICE_COLUMNS and r.get(c) is not None
+                        else _fmt(r.get(c)) for c in COLUMNS])
 
 
 def _pct(v, digits=1):

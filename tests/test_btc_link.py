@@ -218,7 +218,7 @@ class OutputTests(unittest.TestCase):
         self.assertIn("days down more than 3% it rose on", named[0])
         self.assertIn("survivorship bias", md)
         self.assertIn("by their price staying at $1: NEWUSD", md)
-        self.assertIn("tokenized stocks and stock funds (AMDB, AVGOB, BMNRB, BNCB, CBRSB", md)
+        self.assertIn("tokenized stocks and stock funds (AAOIB, AMDB, AVGOB, BMNRB, BNCB, CBRSB", md)
         self.assertNotIn("| NEWUSD |", md)
         self.assertIn("results look better than reality", md)
         self.assertIn("Refresh: `python lab/btc_link.py`", md)
@@ -343,6 +343,13 @@ class LowSectionTests(unittest.TestCase):
         for col in ("latest_close", "low_1y", "low_1y_date", "from_low_1y_pct", "high_1y",
                     "from_high_1y_pct", "days_since_low", "partial_year"):
             self.assertIn(col, rows["PEPE"])
+        self.assertEqual(rows["PEPE"]["low_1y"], "2")
+        with tempfile.TemporaryDirectory() as d:                       # a tiny price keeps its digits
+            bl.write_csv([{"coin": "SHIB", "latest_close": 0.0000061234567, "low_1y": 5.9e-06}],
+                         os.path.join(d, "x.csv"))
+            with open(os.path.join(d, "x.csv"), newline="") as fh:
+                shib = next(csv.DictReader(fh))
+            self.assertEqual((shib["latest_close"], shib["low_1y"]), ("6.1234567e-06", "5.9e-06"))
         self.assertEqual((rows["PEPE"]["from_low_1y_pct"], rows["PEPE"]["days_since_low"],
                           rows["BONK"]["partial_year"], rows["BONK"]["from_low_1y_pct"]),
                          ("50.000", "362", "yes", "0.000"))
