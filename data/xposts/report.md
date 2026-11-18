@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 16:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 17:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-138 post(s), 72 matching launch(es).
+146 post(s), 82 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -846,4 +846,82 @@ No matching launch in the next 10 minutes.
 > The SPX6900 community is collecting up all the holder, consistent and long-term believer types. And that’s the only type of participant that
 
 No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-18 16:58:51 UTC (post 2123098624204710141)
+> Seller exhaustion will come long before Saylor exhaustion.
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| $BBH | before | +0%, no liq @1.1m | -69%, no liq @5.5m | -69%, no liq @15.9m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 350 s | $BBH | Bros before hos | before | price not recorded |  |  |  |  |
+
+## @MrBeast 2026-11-18 17:13:17 UTC (post 2123102254031135211)
+> GTA 5 vs GTA 6 me https://t.co/AeJabVmcgE
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| GTA | gta | +0%, no liq @2.0m | +0%, no liq @5.1m | +0%, no liq @15.7m | – | – | no |
+| GTA | gta | +0%, no liq @1.8m | +0%, no liq @6.0m | +0%, no liq @15.6m | – | – | no |
+| GTA | gta | +0%, no liq @1.7m | +0%, no liq @5.9m | -14%, no liq @15.4m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 448 s | GTA | Gigantic Tits & Ass | gta | price not recorded |  |  |  |  |
+| 585 s | GTA | Grand thick ass | gta | price not recorded |  |  |  |  |
+| 593 s | GTA | Vice City Lookouts | gta | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-18 17:22:10 UTC (post 2123104489297326560)
+> The Pumpfun app &amp; web has every tool a pro perps trader needs: - 300+ Hyperliquid markets - Limit, TWAP, scale and trailing stop orders 
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-18 17:22:11 UTC (post 2123104493508481358)
+> What counts towards your PnL: - Your score is your realized PnL + your unrealized PnL, in USD - Realized PnL is net of fees, with funding in
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-18 17:22:12 UTC (post 2123104497841102959)
+> Leaderboard &amp; payouts: - The live leaderboard shows the top 100, and your rank card shows your own realized and unrealized PnL. Track it
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-18 17:22:13 UTC (post 2123104502370951181)
+> Who can trade Perps Hyperliquid is a third-party protocol, which https://t.co/CxsEJIFc8C does not operate. https://t.co/WWU97JhVgi is an app
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-18 17:22:16 UTC (post 2123104513812992053)
+> https://t.co/tOKeHIdR22
+
+No matching launch in the next 10 minutes.
+
+## @a1lon9 2026-11-18 17:27:53 UTC (post 2123105930166575280)
+> It's time to find out who the best onchain perps traders are! Since perps launched on the Pumpfun app, daily perps traders have grown over 1
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| traders | traders | +0%, no liq @1.9m | +0%, no liq @5.1m | – | – | – | no |
+| TRADERS | traders | +0%, no liq @1.8m | +0%, no liq @6.0m | – | – | – | no |
+| traders | traders | missed | missed | – | – | – | no |
+| traders | traders | +0%, no liq @1.9m | -0%, no liq @5.1m | – | – | – | no |
+| TRADERS | traders | +0%, no liq @1.8m | +0%, no liq @6.0m | – | – | – | no |
+| traders | traders | +0%, no liq @1.6m | +0%, no liq @5.8m | – | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 21 s | traders | May the best traders win | best, traders | price not recorded |  |  |  |  |
+| 28 s | TRADERS | May the best traders win | best, traders | price not recorded |  |  |  |  |
+| 30 s | traders | May the best traders win | best, traders | price not recorded |  |  |  |  |
+| 85 s | traders | May the traders win | traders | price not recorded |  |  |  |  |
+| 219 s | TRADERS | Traders | traders | price not recorded |  |  |  |  |
+| 228 s | traders | May the traders win | traders | price not recorded |  |  |  |  |
 
