@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 19:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 20:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-147 post(s), 85 matching launch(es).
+148 post(s), 85 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -941,4 +941,9 @@ post_match flags (DexScreener, recording only):
 | 30 s | BELIEVE | Believe in something | something | -64% | -64% | -64% | -64% | +2% (6 s) |
 | 76 s | BELIEVE | Believe in something | something | +89% | -65% | -65% | -65% | +127% (32 s) |
 | 151 s | BELIEVE | Believe in something | something | +90% | +219% | +219% | +219% | +248% (150 s) |
+
+## @a1lon9 2026-11-18 20:38:56 UTC (post 2123154008042852782)
+> Over the past month, 1,194 people made the equivalent of a PS5 from Callout Rewards. You could have called out coins on the Pumpfun app, pla
+
+No matching launch in the next 10 minutes.
 
