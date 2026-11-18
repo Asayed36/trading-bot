@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-18 04:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-18 05:40 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-128 post(s), 66 matching launch(es).
+131 post(s), 66 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -779,6 +779,21 @@ No matching launch in the next 10 minutes.
 
 ## @blknoiz06 2026-11-18 03:02:41 UTC (post 2122888193007894913)
 > which asset should i do a ta video for
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-18 04:55:00 UTC (post 2122916458212753422)
+> .@aave App now supports USDT on #TRON. 🔻 https://t.co/qzzO5aIOMz
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-18 05:00:16 UTC (post 2122917786897031443)
+> AI 是懂行的 https://t.co/EAnCoMG5Gb
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-18 05:00:51 UTC (post 2122917930291929262)
+> 会越来越高的 https://t.co/1KIMFGYC7g
 
 No matching launch in the next 10 minutes.
 
