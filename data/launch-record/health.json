@@ -1,19 +1,19 @@
 {
- "updated": "2026-11-19T06:09:33Z",
+ "updated": "2026-11-19T07:01:03Z",
  "feed_up": true,
  "endpoint": "api.mainnet-beta.solana.com",
- "last_message": "2026-11-19T06:09:32Z",
+ "last_message": "2026-11-19T07:01:03Z",
  "feed_silent_seconds": 0,
- "last_row": "2026-11-19T06:09:33Z",
- "last_row_ts": 1795068573.088684,
+ "last_row": "2026-11-19T07:01:03Z",
+ "last_row_ts": 1795071663.555384,
  "since_last_row_seconds": 0,
- "launches_seen_last_hour": 721,
- "in_flight": 721,
- "rows_written_today": 937,
- "rows_skipped_by_cap_today": 620,
+ "launches_seen_last_hour": 740,
+ "in_flight": 740,
+ "rows_written_today": 1076,
+ "rows_skipped_by_cap_today": 810,
  "max_rows_per_day": 4000,
- "feed_disconnects_today": 217,
- "gap_seconds_today": 412,
+ "feed_disconnects_today": 254,
+ "gap_seconds_today": 467,
  "started": "2026-11-18T23:04:25Z",
  "dropped_at_last_restart": 658,
  "days": {
@@ -192,37 +192,31 @@
    "dropped_at_restart": 658
   },
   "2026-11-19": {
-   "feed_disconnects": 217,
-   "gap_seconds": 412,
-   "launches_seen": 4117,
-   "finished": 3396,
-   "watched_60": 3396,
-   "buyers_qualified": 1506,
-   "watched_60_ge_1": 2617,
-   "watched_60_ge_2": 1870,
-   "watched_60_ge_3": 1506,
-   "watched_60_ge_4": 1238,
-   "watched_60_ge_5": 1057,
-   "qualified": 1522,
-   "nonsample_rows": 878,
-   "rows_written": 937,
-   "watched_60_ge_8": 690,
-   "watched_60_ge_10": 535,
-   "watched_60_ge_15": 338,
-   "watched_60_ge_20": 237,
-   "watched_60_ge_30": 151,
-   "sample": 59,
-   "watched_60_ge_50": 79,
-   "skipped_by_cap": 620
+   "feed_disconnects": 254,
+   "gap_seconds": 467,
+   "launches_seen": 4769,
+   "finished": 4029,
+   "watched_60": 4029,
+   "buyers_qualified": 1820,
+   "watched_60_ge_1": 3133,
+   "watched_60_ge_2": 2263,
+   "watched_60_ge_3": 1820,
+   "watched_60_ge_4": 1507,
+   "watched_60_ge_5": 1300,
+   "qualified": 1840,
+   "nonsample_rows": 1001,
+   "rows_written": 1076,
+   "watched_60_ge_8": 861,
+   "watched_60_ge_10": 683,
+   "watched_60_ge_15": 429,
+   "watched_60_ge_20": 290,
+   "watched_60_ge_30": 176,
+   "sample": 75,
+   "watched_60_ge_50": 91,
+   "skipped_by_cap": 810
   }
  },
  "feed_counts": {
-  "2026-11-18T06": {
-   "messages": 480631,
-   "undecoded": 57445,
-   "trades": 75942,
-   "creations": 659
-  },
   "2026-11-18T07": {
    "messages": 451703,
    "undecoded": 40014,
@@ -362,21 +356,27 @@
    "undecoded": 50536
   },
   "2026-11-19T06": {
-   "messages": 73486,
-   "trades": 10646,
-   "undecoded": 3977,
-   "creations": 98
+   "messages": 477971,
+   "trades": 71468,
+   "undecoded": 53318,
+   "creations": 740
+  },
+  "2026-11-19T07": {
+   "messages": 5055,
+   "trades": 1146,
+   "undecoded": 131,
+   "creations": 11
   }
  },
  "endpoints": {
   "api.mainnet-beta.solana.com": {
-   "attempts": 1177,
-   "successes": 1177,
-   "failures": 1176,
+   "attempts": 1183,
+   "successes": 1183,
+   "failures": 1182,
    "top_failure": "closed without a close frame (code 1006); we sent code 1002 (invalid status code)",
-   "top_failure_count": 1173,
-   "avg_connected_seconds": 72.3,
-   "ended_connections": 1177
+   "top_failure_count": 1179,
+   "avg_connected_seconds": 71.4,
+   "ended_connections": 1183
   }
  },
  "endpoint_hours": {
@@ -659,13 +659,24 @@
   },
   "2026-11-19T06": {
    "api.mainnet-beta.solana.com": {
-    "attempts": 7,
-    "successes": 7,
+    "attempts": 43,
+    "successes": 43,
     "failures": {
-     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 7
+     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 43
     },
-    "ended": 7,
-    "connected_seconds": 787.0172238349915
+    "ended": 43,
+    "connected_seconds": 3780.3544206619263
+   }
+  },
+  "2026-11-19T07": {
+   "api.mainnet-beta.solana.com": {
+    "attempts": 1,
+    "successes": 1,
+    "failures": {
+     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 1
+    },
+    "ended": 1,
+    "connected_seconds": 62.5697135925293
    }
   }
  }
