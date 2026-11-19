@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-19 19:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-19 20:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-196 post(s), 106 matching launch(es).
+196 post(s), 107 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -1262,16 +1262,23 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| GTA | gta | +0%, no liq @1.5m | – | – | – | – | no |
+| GTA | gta | +0%, no liq @1.5m | -8%, no liq @5.7m | -12%, no liq @15.3m | -12%, no liq @60.9m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 245 s | GTA | Gay Twink Autism | gta | price not recorded |  |  |  |  |
+| 245 s | GTA | Gay Twink Autism | gta | -55% | -55% | -67% | -67% | +25% (2 s) |
 
 ## @MrBeast 2026-11-19 19:00:11 UTC (post 2123491544648880404)
 > My first 100 hours in GTA 6 is now live on the gaming channel! Thank you Rockstar for trusting us with playing the game early, very grateful
 
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| GTA | gta | +0%, no liq @1.3m | +0%, no liq @5.5m | -2%, no liq @15.1m | – | – | no |
+
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 56 s | GTA | Gay Twink Autism | gta | price not recorded |  |  |  |  |
+| 56 s | GTA | Gay Twink Autism | gta | -55% | -55% | -67% | -67% | +25% (2 s) |
+| 449 s | GTA | Grand Token Avenue | gta | price not recorded |  |  |  |  |
 
