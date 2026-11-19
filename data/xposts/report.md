@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-19 14:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-19 15:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-177 post(s), 94 matching launch(es).
+179 post(s), 97 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -1119,4 +1119,26 @@ No matching launch in the next 10 minutes.
 > Every time you say SPX6900 will flip the stock market you increase the probability of it happening by another +0.00001%
 
 No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-19 14:17:57 UTC (post 2123420518967591217)
+> $STRC traded over $600M yesterday, the only one of 456 U.S.-listed income preferreds to do so this year. We intend to keep buying below $100
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-19 14:50:03 UTC (post 2123428598014967818)
+> santa rally.
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| SANTA | rally, santa | +0%, no liq @2.5m | -13%, no liq @5.7m | -13%, no liq @15.3m | – | – | no |
+| SANTA | rally, santa | +0%, no liq @2.5m | +0%, no liq @5.6m | -12%, no liq @15.2m | – | – | no |
+| SANTA | rally, santa | +0%, no liq @1.9m | -0%, no liq @5.0m | – | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 14 s | SANTA | Santa Rally | rally, santa | price not recorded |  |  |  |  |
+| 16 s | SANTA | Santa Rally | rally, santa | price not recorded |  |  |  |  |
+| 242 s | SANTA | Santa Rally | rally, santa | price not recorded |  |  |  |  |
 
