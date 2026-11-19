@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-19 18:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-19 19:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-193 post(s), 104 matching launch(es).
+196 post(s), 106 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -1159,7 +1159,7 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| BLOOMBERG | bloomberg | +0%, no liq @1.7m | -1%, no liq @5.9m | -1%, no liq @15.4m | – | – | no |
+| BLOOMBERG | bloomberg | +0%, no liq @1.7m | -1%, no liq @5.9m | -1%, no liq @15.4m | -1%, no liq @60.9m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
@@ -1172,10 +1172,10 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| CALLERS | callers | +0%, no liq @2.0m | -14%, no liq @5.2m | -15%, no liq @15.8m | – | – | no |
-| BELIEVE | believe | +0%, no liq @1.8m | -18%, no liq @6.0m | -18%, no liq @15.5m | – | – | no |
-| BELIEVE | believe | missed | missed | – | – | – | no |
-| Believe | believe | +0%, no liq @1.1m | -68%, no liq @5.3m | -68%, no liq @15.8m | – | – | no |
+| CALLERS | callers | +0%, no liq @2.0m | -14%, no liq @5.2m | -15%, no liq @15.8m | -16%, no liq @60.2m | – | no |
+| BELIEVE | believe | +0%, no liq @1.8m | -18%, no liq @6.0m | -18%, no liq @15.5m | -18%, no liq @60.9m | – | no |
+| BELIEVE | believe | missed | missed | missed | missed | – | no |
+| Believe | believe | +0%, no liq @1.1m | -68%, no liq @5.3m | -68%, no liq @15.8m | -68%, no liq @60.2m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
@@ -1191,7 +1191,7 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| HODL | hardcore, hodl | missed | missed | missed | – | – | no |
+| HODL | hardcore, hodl | missed | missed | missed | missed | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
@@ -1204,11 +1204,11 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| https | profit | +0%, no liq @1.6m | – | – | – | – | no |
+| https | profit | +0%, no liq @1.6m | +0%, no liq @5.8m | +0%, no liq @15.3m | +0%, no liq @60.7m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 79 s | https | Had To Take Profit Sir | profit | price not recorded |  |  |  |  |
+| 79 s | https | Had To Take Profit Sir | profit | +0% | -56% | -56% | -56% | +0% (1 s) |
 
 ## @Pumpfun 2026-11-19 17:59:32 UTC (post 2123476280083620238)
 > Learn more about the $1,000,000 Perps Open, starting 20 November, 16:00 UTC: https://t.co/83sZn8H6IE
@@ -1249,4 +1249,29 @@ No matching launch in the next 10 minutes.
 > https://t.co/BHzsPfz7om
 
 No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-19 18:10:24 UTC (post 2123479017785618463)
+> Inflation will follow 👇. Not financial advice, but might be good to hold assets with limited supply. https://t.co/NTD6qo2mtd
+
+No matching launch in the next 10 minutes.
+
+## @MrBeast 2026-11-19 18:57:02 UTC (post 2123490752504434960)
+> My first 100 hours in GTA 6 is now live on the gaming channel! We also are doing daily uploads now to celebrate GTA 6 Some of our best video
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| GTA | gta | +0%, no liq @1.5m | – | – | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 245 s | GTA | Gay Twink Autism | gta | price not recorded |  |  |  |  |
+
+## @MrBeast 2026-11-19 19:00:11 UTC (post 2123491544648880404)
+> My first 100 hours in GTA 6 is now live on the gaming channel! Thank you Rockstar for trusting us with playing the game early, very grateful
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 56 s | GTA | Gay Twink Autism | gta | price not recorded |  |  |  |  |
 
