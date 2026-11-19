@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-19 17:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-19 18:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-179 post(s), 97 matching launch(es).
+193 post(s), 104 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -1141,4 +1141,112 @@ post_match flags (DexScreener, recording only):
 | 14 s | SANTA | Santa Rally | rally, santa | price not recorded |  |  |  |  |
 | 16 s | SANTA | Santa Rally | rally, santa | price not recorded |  |  |  |  |
 | 242 s | SANTA | Santa Rally | rally, santa | price not recorded |  |  |  |  |
+
+## @cz_binance 2026-11-19 17:29:03 UTC (post 2123468610169675796)
+> Cancelling Netflix 🤣 https://t.co/qL32ISZl9E
+
+No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-19 17:29:27 UTC (post 2123468710245519732)
+> 😂 https://t.co/6cMBkz6Of8
+
+No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-19 17:32:28 UTC (post 2123469470027133011)
+> Bloomberg's report on Netflix. https://t.co/t5fq6iK3FN https://t.co/e9wuLPZcPv
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| BLOOMBERG | bloomberg | +0%, no liq @1.7m | -1%, no liq @5.9m | -1%, no liq @15.4m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 300 s | BLOOMBERG | Bloomberg | bloomberg | price not recorded |  |  |  |  |
+
+## @a1lon9 2026-11-19 17:43:09 UTC (post 2123472157720109194)
+> I firmly believe the best callers of the next cycle will be the ones who call the most runners with the highest accuracy - so I want to be V
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| CALLERS | callers | +0%, no liq @2.0m | -14%, no liq @5.2m | -15%, no liq @15.8m | – | – | no |
+| BELIEVE | believe | +0%, no liq @1.8m | -18%, no liq @6.0m | -18%, no liq @15.5m | – | – | no |
+| BELIEVE | believe | missed | missed | – | – | – | no |
+| Believe | believe | +0%, no liq @1.1m | -68%, no liq @5.3m | -68%, no liq @15.8m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 80 s | CALLERS | The Callers | callers | price not recorded |  |  |  |  |
+| 225 s | BELIEVE | Believe | believe | price not recorded |  |  |  |  |
+| 288 s | BELIEVE | Believe | believe | price not recorded |  |  |  |  |
+| 392 s | Believe | Believe | believe | price not recorded |  |  |  |  |
+
+## @MustStopMurad 2026-11-19 17:46:44 UTC (post 2123473061991034902)
+> AI Agents and Hyper-automation will cause a massive shift from Gambling to Believing. Short term Speculation -&gt; to Long-term HODL Value w
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| HODL | hardcore, hodl | missed | missed | missed | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 31 s | HODL | Hardcore HODL | hardcore, hodl | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-19 17:59:30 UTC (post 2123476275071521147)
+> Perps partial closes are now live on Pumpfun: take profit on part of a position and let the rest run Powered by Hyperliquid. https://t.co/xV
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| https | profit | +0%, no liq @1.6m | – | – | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 79 s | https | Had To Take Profit Sir | profit | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-19 17:59:32 UTC (post 2123476280083620238)
+> Learn more about the $1,000,000 Perps Open, starting 20 November, 16:00 UTC: https://t.co/83sZn8H6IE
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-19 17:59:33 UTC (post 2123476284512854458)
+> Who can trade Perps Hyperliquid is a third-party protocol, which https://t.co/CxsEJIFc8C does not operate. https://t.co/WWU97JhVgi is an app
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-19 17:59:36 UTC (post 2123476296466629051)
+> https://t.co/gTVMQk5ZUb
+
+No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-19 17:59:36 UTC (post 2123476300203807021)
+> Also, quite a number of Japanese banks reported data leaks recently. Many other banks probably just not reporting/admitting/knowing. There w
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-19 18:05:31 UTC (post 2123477787709432072)
+> Perps partial closes are live on Pumpfun: take profit on part of a position and let the rest run Powered by Hyperliquid https://t.co/z95gPUC
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-19 18:05:32 UTC (post 2123477792453263793)
+> Learn more about the $1,000,000 Perps Open, starting 20 November, 16:00 UTC: https://t.co/83sZn8H6IE
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-19 18:05:33 UTC (post 2123477797461172656)
+> Who can trade Perps Hyperliquid is a third-party protocol, which https://t.co/CxsEJIFc8C does not operate. https://t.co/WWU97JhVgi is an app
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-19 18:05:36 UTC (post 2123477809658220729)
+> https://t.co/BHzsPfz7om
+
+No matching launch in the next 10 minutes.
 
