@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-20 16:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-20 17:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-233 post(s), 142 matching launch(es).
+238 post(s), 142 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -1546,4 +1546,29 @@ post_match flags (DexScreener, recording only):
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 480 s | SA | Super Agents | agents | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-20 16:06:15 UTC (post 2123810162071019606)
+> The $1,000,000 Perps Open has officially begun! Traders on Pumpfun have 2 weeks to achieve the highest perps PnL to be in with a chance of w
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-20 16:06:16 UTC (post 2123810166768554352)
+> Learn more about the $1M Perps Open: https://t.co/0D9w5V8eyI
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-20 16:06:18 UTC (post 2123810171583693065)
+> Who can trade Perps Hyperliquid is a third-party protocol, which https://t.co/CxsEJIFc8C does not operate. https://t.co/WWU97JhVgi is an app
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-20 16:06:20 UTC (post 2123810182069407768)
+> https://t.co/zGb537JwBu
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-20 16:15:20 UTC (post 2123812446745907359)
+> The crypto communities that survive the next few months will go to Trillions.
+
+No matching launch in the next 10 minutes.
 
