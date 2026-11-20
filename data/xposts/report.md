@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-19 23:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-20 00:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-197 post(s), 107 matching launch(es).
+219 post(s), 125 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -1105,8 +1105,49 @@ No matching launch in the next 10 minutes.
 
 No matching launch in the next 10 minutes.
 
+## @justinsuntron 2026-11-19 05:49:55 UTC (post 2123292667471970764)
+> 币圈长江电力 https://t.co/0i1QLAHsVP
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-19 05:51:25 UTC (post 2123293044145545277)
+> 来火币都市感受一下！ https://t.co/zCAxxSPJg5
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-19 08:31:32 UTC (post 2123333341932052749)
+> Starlink started with a speech in Seattle https://t.co/y8QLexDwnu
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 55 s | OSCCYL | one speech can change your life | speech | price not recorded |  |  |  |  |
+| 64 s | OSCCYL | one speech can change your life | speech | price not recorded |  |  |  |  |
+| 114 s | SPEECH | one speech can change your life | speech | price not recorded |  |  |  |  |
+
 ## @MustStopMurad 2026-11-19 08:45:09 UTC (post 2123336765931139300)
 > To find the coin that will be the Biggest Household Name when we are in the middle of a Raging Bull Market… Find a community that acts as if
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-19 08:48:41 UTC (post 2123337655731826810)
+> Extend consciousness to the stars https://t.co/vRKCpiPqyV
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 152 s | CONSCIOUSN | the future of consciousness | consciousness | price not recorded |  |  |  |  |
+
+## @justinsuntron 2026-11-19 09:53:26 UTC (post 2123353948979691564)
+> 24/7 payments is the right goal. Stablecoins on TRON never sleeps. 🔻 https://t.co/GWKy0JCCc8
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-19 10:14:57 UTC (post 2123359363901616560)
+> TRON in Bangkok 🇹🇭 tron:native https://t.co/VTlcceFEEo
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-19 10:15:33 UTC (post 2123359517325062354)
+> AI 是懂行的！ https://t.co/5lAgpryMTZ
 
 No matching launch in the next 10 minutes.
 
@@ -1197,6 +1238,11 @@ post_match flags (DexScreener, recording only):
 |---|---|---|---|---|---|---|---|---|
 | 31 s | HODL | Hardcore HODL | hardcore, hodl | price not recorded |  |  |  |  |
 
+## @elonmusk 2026-11-19 17:56:17 UTC (post 2123475464043786417)
+> You can create an entire company made of Grok Bots! https://t.co/qLl5REpV2h
+
+No matching launch in the next 10 minutes.
+
 ## @Pumpfun 2026-11-19 17:59:30 UTC (post 2123476275071521147)
 > Perps partial closes are now live on Pumpfun: take profit on part of a position and let the rest run Powered by Hyperliquid. https://t.co/xV
 
@@ -1282,8 +1328,95 @@ post_match flags (DexScreener, recording only):
 | 56 s | GTA | Gay Twink Autism | gta | -55% | -55% | -67% | -67% | +25% (2 s) |
 | 449 s | GTA | Grand Token Avenue | gta | price not recorded |  |  |  |  |
 
+## @Pumpfun 2026-11-19 20:39:38 UTC (post 2123516572497256912)
+> Trading Anthropic tokenized stock on Solana or Base? Callout your trades via the Pumpfun app to be eligible for BOOSTED Callout Rewards! htt
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 268 s | Brian | CHECK PUMPFUN POST | pumpfun | price not recorded |  |  |  |  |
+| 339 s | A\ | Anthropic \Nu | anthropic | price not recorded |  |  |  |  |
+| 340 s | A\ | Anthropic \Nu | anthropic | price not recorded |  |  |  |  |
+| 394 s | A\ | Anthropic \nu | anthropic | price not recorded |  |  |  |  |
+| 467 s | GTA | Grand Theft Anthropic | anthropic | price not recorded |  |  |  |  |
+| 517 s | A\ | Anthropic \nu | anthropic | price not recorded |  |  |  |  |
+| 523 s | A\ | ANTHROPIC COIN | anthropic | price not recorded |  |  |  |  |
+| 575 s | GTA | Grand Theft Anthropic | anthropic | price not recorded |  |  |  |  |
+| 583 s | A\ | ANTHROPIC COIN | anthropic | price not recorded |  |  |  |  |
+| 585 s | A\ | Official Anthropic Coin | anthropic | price not recorded |  |  |  |  |
+| 598 s | A\ | Official Anthropic Coin | anthropic | price not recorded |  |  |  |  |
+
 ## @MustStopMurad 2026-11-19 20:57:52 UTC (post 2123521159119716587)
 > 2000s and 2010s were marked by the Internet and Bitcoin 2020s and 2030s will be marked by AI and SPX6900
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-19 21:52:47 UTC (post 2123534980479590620)
+> holy smokestacks https://t.co/oJzbIJMpGS
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-19 22:01:51 UTC (post 2123537260893319191)
+> Plasma is live on the Pumpfun app! Callout tokens on Plasma to be eligible for Callout Rewards &amp; trade seamlessly with no bridging requi
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 143 s | Plasma | Plasma | plasma | price not recorded |  |  |  |  |
+| 210 s | Plasma | Plasma Coin | plasma | price not recorded |  |  |  |  |
+
+## @blknoiz06 2026-11-19 22:08:22 UTC (post 2123538903244398812)
+> ❄️❄️❄️ https://t.co/2aAm08EjkH https://t.co/gVg0whx9GV
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-19 22:10:17 UTC (post 2123539385690046902)
+> bro smoked me but i didnt lie https://t.co/XEghNcFndN
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-19 22:24:40 UTC (post 2123543006569787506)
+> 🫳🎤 https://t.co/n7Sz1eK8tR
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-19 22:36:38 UTC (post 2123546017308217664)
+> London is an s-tier city, and I got to meet the man who had the 4th largest nuclear arsenal in his hands. https://t.co/GQoHDwSdsA
+
+No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-19 22:53:37 UTC (post 2123550289957658970)
+> Forbes: "Apparently, the most pressing unanswered question about the $8 billion FTX fraud is whether SBF ever really loved Caroline Ellison.
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 454 s | FNUT | Fraud Nut | fraud | price not recorded |  |  |  |  |
+
+## @a1lon9 2026-11-19 23:11:03 UTC (post 2123554677924958318)
+> We’re hiring two new roles for our marketing team at Baton Corporation, the development company behind Pumpfun: a Video Editor/Videographer 
+
+No matching launch in the next 10 minutes.
+
+## @a1lon9 2026-11-19 23:11:04 UTC (post 2123554681297437042)
+> Apply for the Videographer/Editor Role: https://t.co/JfIwpI9aZV Apply for the Social Media Manager role: https://t.co/YBIXvtfUZt
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-19 23:37:52 UTC (post 2123561424387768521)
+> 👑👑👑 https://t.co/unjACmeIoJ
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-19 23:39:08 UTC (post 2123561744119517315)
+> 6 weeks ago all indices were at all time highs
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-19 23:43:52 UTC (post 2123562934207230001)
+> 👑👑👑 https://t.co/TwRguhIWrB
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-19 23:47:57 UTC (post 2123563964068163853)
+> I think the opposition to the Netflix slop has united more crypto factions than even gensler. https://t.co/Az8TU8TLxg
 
 No matching launch in the next 10 minutes.
 
