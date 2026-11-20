@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-20 01:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-20 03:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-223 post(s), 125 matching launch(es).
+224 post(s), 125 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -1437,6 +1437,11 @@ No matching launch in the next 10 minutes.
 
 ## @blknoiz06 2026-11-20 00:54:39 UTC (post 2123580750293512514)
 > https://t.co/KwQdBJMiPv
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-20 02:29:44 UTC (post 2123604677149212884)
+> w/ context of Qs breaking down, gold breaking down, dollar immense strength into likely more fed hikes &amp; nvda continued weakness seems u
 
 No matching launch in the next 10 minutes.
 
