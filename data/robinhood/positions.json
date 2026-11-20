@@ -120,6 +120,16 @@
       "created": "2026-11-20T12:56:21Z",
       "liquidity_usd": 14039.5989,
       "market_cap_usd": 33029.7481
+    },
+    "0x3a59df3bd5870dee024ca508d8f89e46e3c47fdb024fc0d8f0c5cf3e5e6ef3a9": {
+      "pool": "0x3a59df3bd5870dee024ca508d8f89e46e3c47fdb024fc0d8f0c5cf3e5e6ef3a9",
+      "dex": "pons-v2-dex",
+      "token": "0xaa1f4de6b9f7cdf11fb8aa97ce163d35d731cdb1",
+      "name": "CORBEL",
+      "title": "Corbel Finance",
+      "created": "2026-11-20T17:12:05Z",
+      "liquidity_usd": 11810.0146,
+      "market_cap_usd": 24972.95381
     }
   },
   "checked": {
@@ -133,11 +143,12 @@
   },
   "sources": {
     "geckoterminal": {
-      "calls": 2,
-      "errors": 0,
-      "rate_limited": 0,
+      "calls": 3,
+      "errors": 1,
+      "rate_limited": 1,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
       "ok": true,
-      "at": "2026-11-20T17:11:37.694750+00:00",
+      "at": "2026-11-20T17:21:20.732391+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -161,7 +172,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-20T17:11:37.694750+00:00",
+      "at": "2026-11-20T17:21:20.732391+00:00",
       "used_this_run": true
     }
   },
@@ -561,7 +572,7 @@
       "graduated": "2026-11-19T02:20:50Z",
       "symbol": "ANT",
       "title": "Anthropic",
-      "seen": "2026-11-20T17:11:37.694750+00:00",
+      "seen": "2026-11-20T17:21:20.732391+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 4724.3808,
       "market_cap_usd": 4874.828414
@@ -601,7 +612,7 @@
       "graduated": "2026-11-19T06:09:03Z",
       "symbol": "can",
       "title": "Tokenization can",
-      "seen": "2026-11-20T17:11:37.694750+00:00",
+      "seen": "2026-11-20T17:21:20.732391+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 4323.344,
       "market_cap_usd": 4506.866599
@@ -681,7 +692,7 @@
       "graduated": "2026-11-20T07:13:24Z",
       "symbol": "NVDAc",
       "title": "NVDA Chain",
-      "seen": "2026-11-20T17:11:37.694750+00:00",
+      "seen": "2026-11-20T17:21:20.732391+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 4147.6032,
       "market_cap_usd": 4408.081764
@@ -691,7 +702,7 @@
       "graduated": "2026-11-20T07:58:05Z",
       "symbol": "CATMARIO",
       "title": "Cat Mario",
-      "seen": "2026-11-20T17:11:37.694750+00:00",
+      "seen": "2026-11-20T17:21:20.732391+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 4183.7365,
       "market_cap_usd": 4440.643386
@@ -715,26 +726,38 @@
       "source": "geckoterminal",
       "liquidity_usd": 14039.5989,
       "market_cap_usd": 33029.7481
+    },
+    "0xaa1f4de6b9f7cdf11fb8aa97ce163d35d731cdb1": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-11-20T17:12:05Z",
+      "symbol": "CORBEL",
+      "title": "Corbel Finance",
+      "seen": "2026-11-20T17:21:20.732391+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 11810.0146,
+      "market_cap_usd": 24972.95381
     }
   },
   "graduations": {
-    "at": "2026-11-20T17:11:37.694750+00:00",
+    "at": "2026-11-20T17:21:20.732391+00:00",
     "hours": 24,
     "seen": {
       "0xa25362061c4081b7913f276a629f020bf5baf29e": "2026-11-19T17:35:09.700000+00:00",
       "0x7d578ac588917519f339c70bdd991bf3aa9c0620": "2026-11-20T02:39:33.176600+00:00",
       "0xbe18c142a647eef88d2486b80ce579d98202b0ef": "2026-11-20T04:19:03.051500+00:00",
       "0x979a4772a4880804636e79475f9f54c186d12c3f": "2026-11-20T08:42:45.935000+00:00",
-      "0x8e75c1108190aa421c91865744fcdcd8b7df753e": "2026-11-20T12:56:22.089000+00:00"
+      "0x8e75c1108190aa421c91865744fcdcd8b7df753e": "2026-11-20T12:56:22.089000+00:00",
+      "0xaa1f4de6b9f7cdf11fb8aa97ce163d35d731cdb1": "2026-11-20T17:12:04.471200+00:00"
     },
     "tokens": [
       "0x7d578ac588917519f339c70bdd991bf3aa9c0620",
       "0x8e75c1108190aa421c91865744fcdcd8b7df753e",
       "0x979a4772a4880804636e79475f9f54c186d12c3f",
       "0xa25362061c4081b7913f276a629f020bf5baf29e",
+      "0xaa1f4de6b9f7cdf11fb8aa97ce163d35d731cdb1",
       "0xbe18c142a647eef88d2486b80ce579d98202b0ef"
     ],
-    "scanned_to": 119217219,
+    "scanned_to": 119223221,
     "complete": true
   },
   "issues_to_close": [],
@@ -858,8 +881,8 @@
       0
     ],
     "2026-11-20 17:00": [
-      2,
-      0,
+      3,
+      1,
       0
     ]
   }
