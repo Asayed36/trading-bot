@@ -122,14 +122,23 @@
       "market_cap_usd": 32066.61583
     }
   },
-  "checked": {},
+  "checked": {
+    "0x80aad9210a110113262291df2b39ef23d34ff10a5f0eca007690b9406008d08c": {
+      "at": "2026-11-20T03:11:21.279538+00:00",
+      "passed": false,
+      "failed": [
+        "Top 10 holders"
+      ]
+    }
+  },
   "sources": {
     "geckoterminal": {
       "calls": 2,
-      "errors": 0,
-      "rate_limited": 0,
-      "ok": true,
-      "at": "2026-11-20T03:01:18.480821+00:00",
+      "errors": 2,
+      "rate_limited": 2,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
+      "ok": false,
+      "at": "2026-11-20T03:11:21.279538+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -137,30 +146,28 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-19T22:31:26.941158+00:00",
-      "used_this_run": false
+      "at": "2026-11-20T03:11:21.279538+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-19T18:11:31.472596+00:00",
-      "used_this_run": false
+      "at": "2026-11-20T03:11:21.279538+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 9,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-20T03:01:18.480821+00:00",
+      "at": "2026-11-20T03:11:21.279538+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "onchain:0x5c275f84ae7b58f75e68709f60241bbac4a1ad52": "PASS|",
-    "0xf79cce043bd69c31b29e0483a7ecc70b8c2dc6ffa972ea3e0a6729b27871a7a5": "FAIL|Liquidity: $5,235 (need $10,000+ on Pons)",
-    "0x8fd2af82c423b2c8a4c65f7b44ed49060bfcb549a8466eb88f30c4957772d691": "FAIL|Liquidity: $3,301 (need $10,000+ on Pons)"
+    "0x80aad9210a110113262291df2b39ef23d34ff10a5f0eca007690b9406008d08c": "FAIL|Top 10 holders: 32.4% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
     "0x56f316047b358c0d3c04540ff47ff4373df48ec0": {
@@ -730,7 +737,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-20T03:01:18.480821+00:00",
+    "at": "2026-11-20T03:11:21.279538+00:00",
     "hours": 24,
     "seen": {
       "0x37215a52a7e7355c35017536d23358b602aea207": "2026-11-19T03:50:30.538000+00:00",
@@ -754,7 +761,7 @@
       "0xf1061131c89144e5369b7df7294a9ad7df8d2f58",
       "0xf1af20859735b19096f99ce4e8e66d174b9e7872"
     ],
-    "scanned_to": 118728377,
+    "scanned_to": 118734313,
     "complete": true
   },
   "issues_to_close": [],
@@ -878,9 +885,9 @@
       0
     ],
     "2026-11-20 03:00": [
+      2,
       1,
-      0,
-      0
+      1
     ]
   }
 }
