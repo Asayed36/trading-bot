@@ -21,6 +21,7 @@ from screener.compare import (MARKER, PASS_MARKER, actual_intervals, checklist,
                               trend_section, viral_lines)
 from screener.github_issues import GitHubError, GitHubIssues
 from screener.health import RUN_EVENTS, health_lines
+from screener.xmentions import comparison_line as mention_comparison
 from screener.paper_trader import now_utc
 
 LABEL = "daily-comparison"
@@ -203,6 +204,10 @@ def main():
                 strategies.append((v.get("label") or f"viral {v['name']}",
                                    os.path.join(folder, v["folder"]), vc["round_trip_cost_pct"]))
         extra += viral_lines(os.path.join(folder, vc.get("folder", "viral")), day)
+    if cfg.get("xposts", {}).get("enabled") and cfg["xposts"].get("mentions", True):
+        # The X post watcher's ticker mentions (your server, pushed hourly; recording only).
+        extra += mention_comparison(os.path.join(folder, cfg["xposts"].get("folder", "xposts")),
+                                    day)
     if cfg.get("convergence", {}).get("enabled"):
         extra += helius_lines(os.path.join(folder, "convergence"), day,
                               bool(cfg["convergence"].get("stopped")))

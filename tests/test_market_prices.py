@@ -345,7 +345,9 @@ class MinuteLogTests(unittest.TestCase):
     def test_recording_only_nothing_else_reads_the_prices(self):
         allowed = {"screener/backdrop.py", "screener/market_prices.py", "market_prices.py",
                    "launch_bot.py", "screener/health.py", "screener/token_record.py",
-                   "screener/paper_trader.py"}
+                   "screener/paper_trader.py",
+                   # the ticker mentions read BTC from the log (recording only: tests/test_xmentions.py)
+                   "screener/xmentions.py"}
         # (sol_usd alone is the launch strategy's own SOL price, unrelated)
         words = (r"btc_price_usd\|eth_price_usd\|sol_price_usd\|market_prices\|MarketPriceLog"
                  r"\|data/market\|MARKET_FOLDER\|prices-")

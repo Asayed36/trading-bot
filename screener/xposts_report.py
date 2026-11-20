@@ -10,6 +10,10 @@ Launches come from two files the launch recorder already writes:
                                      launch (the qualified launches and a 2% sample only)
 A matching launch that is only in the first file is listed with "price not recorded".
 
+It also has two sections at the top: "Ticker mentions" (screener/xmentions.py) and "Posts seen
+late" (per account, how many posts were saved more than late_minutes after they were posted, and
+why, from late-*.csv; and how many rounds each account was not asked, and why, from state.json).
+
 A word matches when it has at least min_word_letters (3) letters or digits, is not a common
 word (STOPWORDS), and equals the launch's normalized symbol, or (with 4 letters or more)
 one of the words of its name.
@@ -22,6 +26,8 @@ import os
 from datetime import datetime, timedelta, timezone
 
 from screener.viral import symbol_key, words
+from screener.xmentions import report_lines as mention_lines
+from screener.xposts import LATE_REASONS
 
 STOPWORDS = {
     "the", "and", "for", "you", "are", "but", "not", "all", "any", "can", "had", "her", "was",
@@ -115,6 +121,9 @@ def build(data_root, c, now=None, days=None):
         "sample); a match is not a cause.",
         "",
     ]
+    lines += mention_lines(folder, now, days)
+    lines += late_lines(folder, c, now, days)
+    lines += ["## Posts and the launches after them", ""]
     posts = []
     for p in _rows(os.path.join(folder, "posts-*.csv")):
         if (p.get("posted_utc") or "")[:10] < cutoff:
@@ -218,6 +227,65 @@ def build(data_root, c, now=None, days=None):
 
 
 FLAG_MINUTES = (1, 5, 15, 60)
+NOT_RECORDED = "not recorded"
+
+
+def late_lines(folder, c, now, days=7):
+    """Per account, the last `days` days: posts saved, how many more than late_minutes after
+    they were posted and why (late-*.csv; a post saved before the reasons were recorded is "not
+    recorded"), and the rounds the account was not asked and why (state.json, on the server)."""
+    import json
+    limit = c.get("late_minutes", 3)
+    cutoff = f"{now - timedelta(days=days):%Y-%m-%d}"
+    reasons = {}
+    for r in _rows(os.path.join(folder, "late-*.csv")):
+        reasons[(r.get("account", "").lower(), r.get("post_id"))] = r.get("reason") or "other"
+    saved, late = {}, {}
+    for p in _rows(os.path.join(folder, "posts-*.csv")):
+        if (p.get("seen_utc") or "")[:10] < cutoff:
+            continue
+        key = (p.get("account") or "").lower()
+        saved[key] = saved.get(key, 0) + 1
+        posted, seen = _when(p.get("posted_utc")), _when(p.get("seen_utc"))
+        if posted is None or seen is None or (seen - posted).total_seconds() / 60 <= limit:
+            continue
+        why = reasons.get((key, p.get("post_id")), NOT_RECORDED)
+        late.setdefault(key, {})[why] = late.setdefault(key, {}).get(why, 0) + 1
+    try:
+        with open(os.path.join(folder, "state.json")) as fh:
+            state_days = json.load(fh).get("days") or {}
+    except (OSError, ValueError, AttributeError):
+        state_days = {}
+    skipped = {}
+    for day, d in state_days.items():
+        if day < cutoff or not isinstance(d, dict):
+            continue
+        for key, by in (d.get("skipped") or {}).items():
+            for why, n in by.items():
+                skipped.setdefault(key, {})[why] = skipped.setdefault(key, {}).get(why, 0) + n
+    lines = ["## Posts seen late", "",
+             f"The last {days} days: per account, the posts saved more than {limit:g} minutes "
+             "after they were posted, and why; and the rounds (one every "
+             f"{c.get('every_seconds', 120)} s) it was not asked, and why. An account skipped "
+             "for the per-account limit starts again from that moment the next day: the posts "
+             "it made meanwhile are not read at all, so they are not in the late count. "
+             f"'{NOT_RECORDED}': saved before the reasons were recorded (2026-11-20).", ""]
+    accounts = sorted(set(saved) | set(late) | set(skipped))
+    if not accounts:
+        return lines + ["No posts saved yet.", ""]
+    order = list(LATE_REASONS) + [NOT_RECORDED]
+
+    def spell(by):
+        return ", ".join(f"{by[k]} {k}" for k in order + sorted(set(by) - set(order))
+                         if by.get(k)) or "–"
+    lines += ["| Account | Posts saved | Seen late | Why late | Rounds not asked (why) |",
+              "|---|---|---|---|---|"]
+    for key in accounts:
+        mine = late.get(key, {})
+        lines.append(f"| @{key} | {saved.get(key, 0)} | {sum(mine.values())} | {spell(mine)} | "
+                     + (f"{sum(skipped.get(key, {}).values())}: {spell(skipped[key])}"
+                        if skipped.get(key) else "–") + " |")
+    return lines + [""]
 
 
 def _flag_lines(rows):

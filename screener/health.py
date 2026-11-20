@@ -486,6 +486,14 @@ def add_xposts(add, folder, cfg, now):
         detail += f"; daily share used up: {', '.join('@' + h for h in full)}"
     if data.get("cost_headers"):
         detail += f"; X reports: {data['cost_headers']}"
+    if c.get("mentions", True):
+        m = _load(os.path.join(folder, c.get("folder", "xposts"), "mentions_health.json")) or {}
+        d = (m.get("days") or {}).get(f"{now:%Y-%m-%d}") or {}
+        detail += (f"; ticker mentions today: {d.get('mentions', 0)} in "
+                   f"{d.get('posts_with_mentions', 0)} post(s), {d.get('identified', 0)} "
+                   f"identified, {d.get('requests', 0)} DexScreener request(s)"
+                   + (f" ({d['errors']} failed)" if d.get("errors") else "")
+                   + f", {m.get('following_now', 0)} followed now")
     if saved:
         detail += f"; saved {_at(saved, now)}"
     if problems:

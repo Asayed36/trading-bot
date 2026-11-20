@@ -17,6 +17,10 @@ read: deploy/LAUNCH_SERVER_SETUP.md, Part M), or from the X_BEARER_TOKEN environ
 for a test by hand. It is never printed, logged or saved. deploy/push_results.sh pushes
 data/xposts/ (the posts, the account IDs, the health file and the report) once an hour; the
 bot restarts itself when that push brings new code it uses.
+
+It also records the ticker mentions in the saved posts (screener/xmentions.py: cashtags and token
+addresses, each looked up once on DexScreener and followed for 24 hours). Recording only: no X
+request is made for it, nothing is bought or sold.
 """
 
 import argparse
@@ -28,8 +32,12 @@ import sys
 from screener.autorestart import CodeWatcher
 from screener.autorestart import forever as run_forever
 from screener.settings import HERE, load_config
+import threading
 import time
 from datetime import datetime, timezone
+
+from screener.api import PublicApi
+from screener.xmentions import Mentions
 
 from screener.xposts import MIN_RESULTS, Watcher, XApi, XError, secret, snowflake
 from screener.xposts_report import write_report
@@ -139,12 +147,31 @@ def do_empty_test(watcher, handle, times=3, out=print, sleep=time.sleep, clock=N
     return 0
 
 
+def make_mentions(cfg, folder):
+    """The ticker-mention recorder, or None when [xposts] mentions = false. DexScreener lookups
+    are tried once each (no retry inside a request: a failed one is tried at the next check)."""
+    if not cfg["xposts"].get("mentions", True):
+        return None
+    return Mentions(cfg, folder, PublicApi(timeout=10, dexscreener_attempts=1))
+
+
+def mention_checks(mentions, every, stop, sleep=time.sleep):
+    """The mentions' lookups and checkpoints every `every` seconds, beside the X rounds (the
+    5-minute checkpoint has only a 2-minute tolerance). Never stops the watcher."""
+    while not stop():
+        mentions.tick()
+        sleep(every)
+
+
 class Bot:
-    def __init__(self, watcher, folder):
+    def __init__(self, watcher, folder, mentions=None):
         self.watcher, self.folder, self.runs = watcher, folder, 0
+        self.mentions = mentions
 
     def run_once(self, now, out):
-        self.watcher.run_once(now, out)
+        saved = self.watcher.run_once(now, out)
+        if self.mentions is not None and saved:
+            self.mentions.add_posts(saved, now)
         self.runs += 1
         if self.runs % REPORT_EVERY_RUNS == 1:
             try:
@@ -200,8 +227,13 @@ def main(argv=None):
     every = cfg["xposts"]["every_seconds"]
     print(f"X post watcher: {len(watcher.handles)} account(s) every {every} s, at most "
           f"{cfg['xposts']['max_posts_per_day']} posts a day", flush=True)
+    mentions = make_mentions(cfg, folder)
+    if mentions is not None:
+        threading.Thread(target=mention_checks, daemon=True, name="mentions",
+                         args=(mentions, cfg["xposts"].get("mentions_check_seconds", 20),
+                               lambda: bool(stopping))).start()
     watch = CodeWatcher(HERE, CONFIG_SECTIONS)
-    if run_forever(Guarded(watcher, folder), every, out=lambda s: print(s, flush=True),
+    if run_forever(Guarded(watcher, folder, mentions), every, out=lambda s: print(s, flush=True),
                    stop=lambda: bool(stopping), watcher=watch, logger=log):
         log.info("stopped; systemd starts the new code in about 10 s")
     return 0
