@@ -149,10 +149,17 @@
       "failed": []
     },
     "0xd909a0bfc9cca69a7dad3a01cc235a8f79e7e07f1f9b3e8b3434015d9c0a8836": {
-      "at": "2026-11-20T22:01:19.515116+00:00",
+      "at": "2026-11-20T23:01:21.171299+00:00",
       "passed": false,
       "failed": [
-        "Holders"
+        "More buys than sells (1h)"
+      ]
+    },
+    "0x28a911b63d82dce1eef90f8575954f75bd6a3c3a4c9519690108800cd2550cad": {
+      "at": "2026-11-20T23:01:21.171299+00:00",
+      "passed": false,
+      "failed": [
+        "Liquidity"
       ]
     }
   },
@@ -162,7 +169,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-20T22:51:24.294719+00:00",
+      "at": "2026-11-20T23:01:21.171299+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -170,8 +177,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-20T22:01:19.515116+00:00",
-      "used_this_run": false
+      "at": "2026-11-20T23:01:21.171299+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -186,25 +193,16 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-20T22:51:24.294719+00:00",
+      "at": "2026-11-20T23:01:21.171299+00:00",
       "used_this_run": true
     }
   },
   "logged": {
     "0x3a59df3bd5870dee024ca508d8f89e46e3c47fdb024fc0d8f0c5cf3e5e6ef3a9": "PASS|",
-    "0xd909a0bfc9cca69a7dad3a01cc235a8f79e7e07f1f9b3e8b3434015d9c0a8836": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls"
+    "0xd909a0bfc9cca69a7dad3a01cc235a8f79e7e07f1f9b3e8b3434015d9c0a8836": "FAIL|More buys than sells (1h): 67 buys vs 111 sells",
+    "0x28a911b63d82dce1eef90f8575954f75bd6a3c3a4c9519690108800cd2550cad": "FAIL|Liquidity: $3,182 (need $10,000+ on Pons)"
   },
   "launchpad_tokens": {
-    "0xa78557b829215d36c88303ce2f34448dda9b46fa": {
-      "dex": "pons-v2-dex",
-      "graduated": "2026-11-13T16:58:37Z",
-      "symbol": "EGL",
-      "title": "Egglo",
-      "seen": "2026-11-13T17:01:27.640895+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 13691.3057,
-      "market_cap_usd": 29399.97403
-    },
     "0x064daa91588f660335d80375d38ba5700512c084": {
       "dex": "uniswap-pools-trade",
       "graduated": "2026-11-13T19:31:02Z",
@@ -576,9 +574,9 @@
       "graduated": "2026-11-19T02:20:50Z",
       "symbol": "ANT",
       "title": "Anthropic",
-      "seen": "2026-11-20T22:51:24.294719+00:00",
+      "seen": "2026-11-20T23:01:21.171299+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 4647.7752,
+      "liquidity_usd": 4639.2098,
       "market_cap_usd": 4540.711387
     },
     "0x4adcab769129938289e8fb39b07d19eb88dea721": {
@@ -696,9 +694,9 @@
       "graduated": "2026-11-20T07:13:24Z",
       "symbol": "NVDAc",
       "title": "NVDA Chain",
-      "seen": "2026-11-20T22:51:24.294719+00:00",
+      "seen": "2026-11-20T23:01:21.171299+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 4091.5668,
+      "liquidity_usd": 4089.7486,
       "market_cap_usd": 4408.081764
     },
     "0x97a0ff3164c2c2196c90878a86cf58fe9e9a1ba4": {
@@ -706,9 +704,9 @@
       "graduated": "2026-11-20T07:58:05Z",
       "symbol": "CATMARIO",
       "title": "Cat Mario",
-      "seen": "2026-11-20T22:51:24.294719+00:00",
+      "seen": "2026-11-20T23:01:21.171299+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 4127.2119,
+      "liquidity_usd": 4125.3778,
       "market_cap_usd": 4440.643386
     },
     "0x979a4772a4880804636e79475f9f54c186d12c3f": {
@@ -763,7 +761,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-20T22:51:24.294719+00:00",
+    "at": "2026-11-20T23:01:21.171299+00:00",
     "hours": 24,
     "seen": {
       "0x7d578ac588917519f339c70bdd991bf3aa9c0620": "2026-11-20T02:39:33.176600+00:00",
@@ -783,7 +781,7 @@
       "0xbd1d57140eb22c2a34bc1ee055f7b6119cbf6c17",
       "0xbe18c142a647eef88d2486b80ce579d98202b0ef"
     ],
-    "scanned_to": 119418057,
+    "scanned_to": 119423686,
     "complete": true
   },
   "issues_to_close": [],
@@ -791,11 +789,6 @@
     "0x5c275f84ae7b58f75e68709f60241bbac4a1ad52": "2026-11-19T16:41:27.131833+00:00"
   },
   "gecko_hours": {
-    "2026-11-19 23:00": [
-      6,
-      0,
-      0
-    ],
     "2026-11-20 00:00": [
       6,
       0,
@@ -910,6 +903,11 @@
       6,
       1,
       1
+    ],
+    "2026-11-20 23:00": [
+      1,
+      0,
+      0
     ]
   }
 }
