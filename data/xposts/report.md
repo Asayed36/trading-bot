@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-20 14:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-20 15:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-232 post(s), 141 matching launch(es).
+233 post(s), 142 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -1525,12 +1525,25 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| TRUMP | bull | +0%, no liq @1.1m | -0%, no liq @5.4m | -0%, no liq @15.1m | – | – | no |
-| TRUMP | bull | +0%, no liq @1.8m | -0%, no liq @5.0m | -0%, no liq @15.8m | – | – | no |
+| TRUMP | bull | +0%, no liq @1.1m | -0%, no liq @5.4m | -0%, no liq @15.1m | +0%, no liq @60.1m | – | no |
+| TRUMP | bull | +0%, no liq @1.8m | -0%, no liq @5.0m | -0%, no liq @15.8m | -0%, no liq @60.7m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 231 s | TRUMP | The Crypto Bull | bull | price not recorded |  |  |  |  |
-| 382 s | TRUMP | The Crypto Bull | bull | price not recorded |  |  |  |  |
+| 231 s | TRUMP | The Crypto Bull | bull | +159% | +160% | -67% | -67% | +182% (64 s) |
+| 382 s | TRUMP | The Crypto Bull | bull | -8% | -8% | -8% | -8% | +13% (42 s) |
 | 600 s | BEARMKT | Bear Market | market | price not recorded |  |  |  |  |
+
+## @saylor 2026-11-20 14:13:03 UTC (post 2123781672705360055)
+> Bitcoin is the foundation of everything we do at Strategy. It gives people, companies and agents everywhere the power to hold, move and prog
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| SA | agents | +0%, no liq @1.2m | -47%, no liq @5.5m | -47%, no liq @15.1m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 480 s | SA | Super Agents | agents | price not recorded |  |  |  |  |
 
