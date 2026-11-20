@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-20 19:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-20 20:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-239 post(s), 142 matching launch(es).
+241 post(s), 144 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -1576,4 +1576,24 @@ No matching launch in the next 10 minutes.
 > Remember why you ₿ought. https://t.co/UxYdpFJutx
 
 No matching launch in the next 10 minutes.
+
+## @a1lon9 2026-11-20 19:28:04 UTC (post 2123860949979320368)
+> Why is Pumpfun running a perps competition in this market? Over 27% of the traders who signed up for the $1M Perps Open had never traded per
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-20 19:29:53 UTC (post 2123861406655357176)
+> SPX6900 will be the first ever memecoin to reach a market capitalization of a Trillion Dollars. Mark my words.
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| SPX6900 | spx6900 | missed | missed | missed | – | – | no |
+| MAPLE | market | +0%, no liq @1.7m | +0%, no liq @6.0m | +0%, no liq @15.7m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 10 s | SPX6900 | SPX6900 | spx6900 | price not recorded |  |  |  |  |
+| 520 s | MAPLE | maple market | market | price not recorded |  |  |  |  |
 
