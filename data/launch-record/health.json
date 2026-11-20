@@ -1,19 +1,19 @@
 {
- "updated": "2026-11-20T10:00:07Z",
+ "updated": "2026-11-20T11:00:16Z",
  "feed_up": true,
  "endpoint": "api.mainnet-beta.solana.com",
- "last_message": "2026-11-20T10:00:07Z",
+ "last_message": "2026-11-20T11:00:16Z",
  "feed_silent_seconds": 0,
- "last_row": "2026-11-20T10:00:07Z",
- "last_row_ts": 1795168807.6598215,
+ "last_row": "2026-11-20T11:00:16Z",
+ "last_row_ts": 1795172416.0271003,
  "since_last_row_seconds": 0,
- "launches_seen_last_hour": 773,
- "in_flight": 773,
- "rows_written_today": 1423,
- "rows_skipped_by_cap_today": 427,
+ "launches_seen_last_hour": 1182,
+ "in_flight": 1182,
+ "rows_written_today": 1750,
+ "rows_skipped_by_cap_today": 595,
  "max_rows_per_day": 4000,
- "feed_disconnects_today": 681,
- "gap_seconds_today": 1178,
+ "feed_disconnects_today": 687,
+ "gap_seconds_today": 1189,
  "started": "2026-11-20T08:56:48Z",
  "dropped_at_last_restart": 1283,
  "days": {
@@ -191,38 +191,32 @@
    "skipped_by_cap": 4309
   },
   "2026-11-20": {
-   "launches_seen": 5649,
-   "gap_seconds": 1178,
-   "feed_disconnects": 681,
-   "finished": 3589,
-   "watched_60": 3589,
-   "buyers_qualified": 1813,
-   "watched_60_ge_1": 2806,
-   "watched_60_ge_2": 2197,
-   "watched_60_ge_3": 1813,
-   "qualified": 1815,
-   "sample": 71,
-   "watched_60_ge_4": 1501,
-   "watched_60_ge_5": 1267,
-   "watched_60_ge_8": 856,
-   "watched_60_ge_10": 710,
-   "watched_60_ge_15": 489,
-   "nonsample_rows": 1352,
-   "watched_60_ge_20": 358,
-   "watched_60_ge_30": 204,
-   "watched_60_ge_50": 95,
-   "rows_written": 1423,
-   "skipped_by_cap": 427,
+   "launches_seen": 6834,
+   "gap_seconds": 1189,
+   "feed_disconnects": 687,
+   "finished": 4365,
+   "watched_60": 4365,
+   "buyers_qualified": 2304,
+   "watched_60_ge_1": 3467,
+   "watched_60_ge_2": 2763,
+   "watched_60_ge_3": 2304,
+   "qualified": 2307,
+   "sample": 81,
+   "watched_60_ge_4": 1937,
+   "watched_60_ge_5": 1650,
+   "watched_60_ge_8": 1129,
+   "watched_60_ge_10": 930,
+   "watched_60_ge_15": 640,
+   "nonsample_rows": 1669,
+   "watched_60_ge_20": 473,
+   "watched_60_ge_30": 278,
+   "watched_60_ge_50": 140,
+   "rows_written": 1750,
+   "skipped_by_cap": 595,
    "dropped_at_restart": 1283
   }
  },
  "feed_counts": {
-  "2026-11-19T10": {
-   "messages": 444484,
-   "trades": 107344,
-   "undecoded": 64053,
-   "creations": 1115
-  },
   "2026-11-19T11": {
    "messages": 407668,
    "trades": 107774,
@@ -362,21 +356,27 @@
    "creations": 770
   },
   "2026-11-20T10": {
-   "messages": 664,
-   "trades": 340,
-   "undecoded": 8,
+   "messages": 455953,
+   "trades": 131596,
+   "undecoded": 31741,
+   "creations": 1185
+  },
+  "2026-11-20T11": {
+   "messages": 1670,
+   "trades": 289,
+   "undecoded": 3,
    "creations": 3
   }
  },
  "endpoints": {
   "api.mainnet-beta.solana.com": {
-   "attempts": 933,
-   "successes": 931,
-   "failures": 933,
+   "attempts": 921,
+   "successes": 919,
+   "failures": 921,
    "top_failure": "closed without a close frame (code 1006); we sent code 1002 (invalid status code)",
-   "top_failure_count": 926,
-   "avg_connected_seconds": 75.0,
-   "ended_connections": 931
+   "top_failure_count": 914,
+   "avg_connected_seconds": 75.3,
+   "ended_connections": 919
   },
   "solana-rpc.publicnode.com": {
    "attempts": 479,
@@ -389,18 +389,6 @@
   }
  },
  "endpoint_hours": {
-  "2026-11-19T08": {
-   "api.mainnet-beta.solana.com": {
-    "attempts": 14,
-    "successes": 14,
-    "failures": {
-     "ConnectionError: no message for 15 s": 2,
-     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 12
-    },
-    "ended": 14,
-    "connected_seconds": 3548.3424999713898
-   }
-  },
   "2026-11-19T09": {
    "api.mainnet-beta.solana.com": {
     "attempts": 15,
@@ -719,6 +707,17 @@
     },
     "ended": 14,
     "connected_seconds": 3545.983829021454
+   }
+  },
+  "2026-11-20T10": {
+   "api.mainnet-beta.solana.com": {
+    "attempts": 6,
+    "successes": 6,
+    "failures": {
+     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 6
+    },
+    "ended": 6,
+    "connected_seconds": 2766.941841840744
    }
   }
  }
