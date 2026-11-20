@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-20 13:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-20 14:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-231 post(s), 138 matching launch(es).
+232 post(s), 141 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -1517,4 +1517,20 @@ No matching launch in the next 10 minutes.
 > Yes https://t.co/NAk6Emsump
 
 No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-20 13:15:11 UTC (post 2123767110606176532)
+> To find the coin that will be the Biggest Household Name when we are in the middle of a Raging Bull Market… Find a community that acts as if
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| TRUMP | bull | +0%, no liq @1.1m | -0%, no liq @5.4m | -0%, no liq @15.1m | – | – | no |
+| TRUMP | bull | +0%, no liq @1.8m | -0%, no liq @5.0m | -0%, no liq @15.8m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 231 s | TRUMP | The Crypto Bull | bull | price not recorded |  |  |  |  |
+| 382 s | TRUMP | The Crypto Bull | bull | price not recorded |  |  |  |  |
+| 600 s | BEARMKT | Bear Market | market | price not recorded |  |  |  |  |
 
