@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-20 10:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-20 11:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-226 post(s), 125 matching launch(es).
+228 post(s), 136 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -1452,6 +1452,44 @@ No matching launch in the next 10 minutes.
 
 ## @elonmusk 2026-11-20 08:29:54 UTC (post 2123695317375992288)
 > This is not AI 😂 https://t.co/7QlYzcVszJ
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-20 10:34:05 UTC (post 2123726569206415815)
+> Tesla’s AI, running on our little AI4 computer, can now reach Torment II in Diablo
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| AI4 | ai4 | +0%, no liq @2.5m | +0%, no liq @5.7m | +0%, no liq @15.3m | – | – | no |
+| TI | tesla | +0%, no liq @2.4m | -32%, no liq @5.5m | -34%, no liq @15.2m | – | – | no |
+| TI | tesla | missed | missed | missed | – | – | no |
+| TI | tesla | +0%, no liq @2.2m | +0%, no liq @5.4m | -8%, no liq @15.0m | – | – | no |
+| TAI | tesla | +0%, no liq @1.9m | -12%, no liq @5.0m | -24%, no liq @15.7m | – | – | no |
+| AI4 | ai4 | +0%, no liq @1.8m | -7%, no liq @5.0m | -7%, no liq @15.7m | – | – | no |
+| TAI | tesla | missed | missed | missed | – | – | no |
+| TSI | tesla | +0%, no liq @1.4m | -4%, no liq @5.6m | -4%, no liq @15.2m | – | – | no |
+| TI | tesla | +0%, no liq @1.9m | +0%, no liq @5.1m | +0%, no liq @15.7m | – | – | no |
+| Diablo | diablo | +0%, no liq @1.4m | +0%, no liq @5.7m | +0%, no liq @15.2m | – | – | no |
+| Diablo | diablo | +0%, no liq @1.2m | -27%, no liq @5.5m | -27%, no liq @15.0m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 14 s | AI4 | AI4 | ai4 | price not recorded |  |  |  |  |
+| 22 s | TI | Tesla Inu | tesla | price not recorded |  |  |  |  |
+| 25 s | TI | Tesla Inu | tesla | price not recorded |  |  |  |  |
+| 32 s | TI | Tesla Inu | tesla | price not recorded |  |  |  |  |
+| 52 s | TAI | Tesla Artificial Inu | tesla | price not recorded |  |  |  |  |
+| 53 s | AI4 | AI4 | ai4 | price not recorded |  |  |  |  |
+| 56 s | TAI | Tesla Artificial Inu | tesla | price not recorded |  |  |  |  |
+| 82 s | TSI | Tesla Super Inu | tesla | price not recorded |  |  |  |  |
+| 180 s | TI | Tesla Inu | tesla | price not recorded |  |  |  |  |
+| 270 s | Diablo | Diablo | diablo | price not recorded |  |  |  |  |
+| 348 s | Diablo | Diablo | diablo | price not recorded |  |  |  |  |
+
+## @cz_binance 2026-11-20 10:38:34 UTC (post 2123727696673026236)
+> There are forces spreading negative narratives, with massive amounts of funding behind it. https://t.co/Ymy4sA0cJd
 
 No matching launch in the next 10 minutes.
 
