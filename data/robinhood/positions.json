@@ -137,15 +137,23 @@
       "at": "2026-11-20T21:11:47.821876+00:00",
       "passed": true,
       "failed": []
+    },
+    "0xd909a0bfc9cca69a7dad3a01cc235a8f79e7e07f1f9b3e8b3434015d9c0a8836": {
+      "at": "2026-11-20T22:01:19.515116+00:00",
+      "passed": false,
+      "failed": [
+        "Holders"
+      ]
     }
   },
   "sources": {
     "geckoterminal": {
-      "calls": 2,
-      "errors": 0,
-      "rate_limited": 0,
+      "calls": 3,
+      "errors": 2,
+      "rate_limited": 2,
+      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
       "ok": true,
-      "at": "2026-11-20T21:51:43.413531+00:00",
+      "at": "2026-11-20T22:01:19.515116+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -153,28 +161,29 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-20T21:11:47.821876+00:00",
-      "used_this_run": false
+      "at": "2026-11-20T22:01:19.515116+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-20T21:11:47.821876+00:00",
-      "used_this_run": false
+      "at": "2026-11-20T22:01:19.515116+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 18,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-20T21:51:43.413531+00:00",
+      "at": "2026-11-20T22:01:19.515116+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x3a59df3bd5870dee024ca508d8f89e46e3c47fdb024fc0d8f0c5cf3e5e6ef3a9": "PASS|"
+    "0x3a59df3bd5870dee024ca508d8f89e46e3c47fdb024fc0d8f0c5cf3e5e6ef3a9": "PASS|",
+    "0xd909a0bfc9cca69a7dad3a01cc235a8f79e7e07f1f9b3e8b3434015d9c0a8836": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls"
   },
   "launchpad_tokens": {
     "0xa78557b829215d36c88303ce2f34448dda9b46fa": {
@@ -558,10 +567,10 @@
       "graduated": "2026-11-19T02:20:50Z",
       "symbol": "ANT",
       "title": "Anthropic",
-      "seen": "2026-11-20T21:51:43.413531+00:00",
+      "seen": "2026-11-20T22:01:19.515116+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 4672.0448,
-      "market_cap_usd": 4574.21131
+      "liquidity_usd": 4626.0608,
+      "market_cap_usd": 4540.711387
     },
     "0x4adcab769129938289e8fb39b07d19eb88dea721": {
       "dex": "pons-v2-dex",
@@ -678,9 +687,9 @@
       "graduated": "2026-11-20T07:13:24Z",
       "symbol": "NVDAc",
       "title": "NVDA Chain",
-      "seen": "2026-11-20T21:51:43.413531+00:00",
+      "seen": "2026-11-20T22:01:19.515116+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 4061.1117,
+      "liquidity_usd": 4082.501,
       "market_cap_usd": 4408.081764
     },
     "0x97a0ff3164c2c2196c90878a86cf58fe9e9a1ba4": {
@@ -688,9 +697,9 @@
       "graduated": "2026-11-20T07:58:05Z",
       "symbol": "CATMARIO",
       "title": "Cat Mario",
-      "seen": "2026-11-20T21:51:43.413531+00:00",
+      "seen": "2026-11-20T22:01:19.515116+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 4096.4914,
+      "liquidity_usd": 4118.0671,
       "market_cap_usd": 4440.643386
     },
     "0x979a4772a4880804636e79475f9f54c186d12c3f": {
@@ -735,7 +744,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-20T21:51:43.413531+00:00",
+    "at": "2026-11-20T22:01:19.515116+00:00",
     "hours": 24,
     "seen": {
       "0x7d578ac588917519f339c70bdd991bf3aa9c0620": "2026-11-20T02:39:33.176600+00:00",
@@ -753,7 +762,7 @@
       "0xaa1f4de6b9f7cdf11fb8aa97ce163d35d731cdb1",
       "0xbe18c142a647eef88d2486b80ce579d98202b0ef"
     ],
-    "scanned_to": 119383831,
+    "scanned_to": 119389628,
     "complete": true
   },
   "issues_to_close": [],
@@ -761,11 +770,6 @@
     "0x5c275f84ae7b58f75e68709f60241bbac4a1ad52": "2026-11-19T16:41:27.131833+00:00"
   },
   "gecko_hours": {
-    "2026-11-19 22:00": [
-      5,
-      0,
-      0
-    ],
     "2026-11-19 23:00": [
       6,
       0,
@@ -880,6 +884,11 @@
       6,
       0,
       0
+    ],
+    "2026-11-20 22:00": [
+      1,
+      1,
+      1
     ]
   }
 }
