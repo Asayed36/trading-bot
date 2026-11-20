@@ -124,7 +124,7 @@
   },
   "checked": {
     "0x80aad9210a110113262291df2b39ef23d34ff10a5f0eca007690b9406008d08c": {
-      "at": "2026-11-20T03:11:21.279538+00:00",
+      "at": "2026-11-20T04:11:22.450306+00:00",
       "passed": false,
       "failed": [
         "Top 10 holders"
@@ -133,12 +133,11 @@
   },
   "sources": {
     "geckoterminal": {
-      "calls": 3,
-      "errors": 1,
-      "rate_limited": 1,
-      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
+      "calls": 2,
+      "errors": 0,
+      "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-20T04:01:47.864935+00:00",
+      "at": "2026-11-20T04:11:22.450306+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -146,28 +145,29 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-20T03:11:21.279538+00:00",
-      "used_this_run": false
+      "at": "2026-11-20T04:11:22.450306+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-20T03:11:21.279538+00:00",
-      "used_this_run": false
+      "at": "2026-11-20T04:11:22.450306+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
-      "errors": 0,
-      "rate_limited": 0,
+      "calls": 15,
+      "errors": 4,
+      "rate_limited": 1,
+      "error": "Robinhood Chain RPC said 'too many requests' (HTTP 429)",
       "ok": true,
-      "at": "2026-11-20T04:01:47.864935+00:00",
+      "at": "2026-11-20T04:11:22.450306+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x80aad9210a110113262291df2b39ef23d34ff10a5f0eca007690b9406008d08c": "FAIL|Top 10 holders: 32.4% (need under 30%; pools, launchpad and burn addresses left out)"
+    "0x80aad9210a110113262291df2b39ef23d34ff10a5f0eca007690b9406008d08c": "FAIL|Top 10 holders: 31.7% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
     "0x343bf46f6a699db731b408de391123cf5c6276b3": {
@@ -581,7 +581,7 @@
       "graduated": "2026-11-18T12:57:23Z",
       "symbol": "ARCH",
       "title": "Archivum",
-      "seen": "2026-11-20T04:01:47.864935+00:00",
+      "seen": "2026-11-20T04:11:22.450306+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 4459.1177,
       "market_cap_usd": 4591.69734
@@ -621,7 +621,7 @@
       "graduated": "2026-11-19T02:20:50Z",
       "symbol": "ANT",
       "title": "Anthropic",
-      "seen": "2026-11-20T04:01:47.864935+00:00",
+      "seen": "2026-11-20T04:11:22.450306+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 4977.7213,
       "market_cap_usd": 4916.575285
@@ -661,7 +661,7 @@
       "graduated": "2026-11-19T06:09:03Z",
       "symbol": "can",
       "title": "Tokenization can",
-      "seen": "2026-11-20T04:01:47.864935+00:00",
+      "seen": "2026-11-20T04:11:22.450306+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 4623.0803,
       "market_cap_usd": 6201.087742
@@ -728,7 +728,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-20T04:01:47.864935+00:00",
+    "at": "2026-11-20T04:11:22.450306+00:00",
     "hours": 24,
     "seen": {
       "0x4eb9ade7369a51762f913b8f96812b4ad5bd1bef": "2026-11-19T11:42:23.017200+00:00",
@@ -746,7 +746,7 @@
       "0xf1061131c89144e5369b7df7294a9ad7df8d2f58",
       "0xf1af20859735b19096f99ce4e8e66d174b9e7872"
     ],
-    "scanned_to": 118763455,
+    "scanned_to": 118768847,
     "complete": true
   },
   "issues_to_close": [],
@@ -870,7 +870,7 @@
       1
     ],
     "2026-11-20 04:00": [
-      1,
+      2,
       1,
       0
     ]
