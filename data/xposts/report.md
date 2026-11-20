@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-20 00:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-20 01:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-219 post(s), 125 matching launch(es).
+223 post(s), 125 matching launch(es).
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -1417,6 +1417,26 @@ No matching launch in the next 10 minutes.
 
 ## @toly 2026-11-19 23:47:57 UTC (post 2123563964068163853)
 > I think the opposition to the Netflix slop has united more crypto factions than even gensler. https://t.co/Az8TU8TLxg
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-20 00:34:59 UTC (post 2123575798489825742)
+> I think tradfi is not quoting nbbo if it’s not quoting solana https://t.co/e6hSokT2g4
+
+No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-20 00:42:48 UTC (post 2123577768914923974)
+> How do we decide when to buy Bitcoin and when to buy back $STRC? In Strategy’s Q3 2026 Investor Q&amp;A with @NatBrunell, @PhongLe and I ans
+
+No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-20 00:42:49 UTC (post 2123577772601696480)
+> You can also watch our full Q3 2026 Investor Q&amp;A on YouTube. https://t.co/P0Zs1V6wbv https://t.co/qbCk9j2iJ3
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-20 00:54:39 UTC (post 2123580750293512514)
+> https://t.co/KwQdBJMiPv
 
 No matching launch in the next 10 minutes.
 
