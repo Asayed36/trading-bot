@@ -92,6 +92,16 @@ class PublicApi:
             pairs.extend(self._get(f"{DEXSCREENER}/tokens/v1/solana/{chunk}") or [])
         return pairs
 
+    def pairs_on_chain(self, chain, addresses):
+        """Market data for tokens on any chain DexScreener knows ("solana", "ethereum", "bsc",
+        "base", ...): 30 tokens per request."""
+        pairs = []
+        addresses = list(addresses)
+        for i in range(0, len(addresses), 30):
+            chunk = ",".join(addresses[i:i + 30])
+            pairs.extend(self._get(f"{DEXSCREENER}/tokens/v1/{quote(chain)}/{chunk}") or [])
+        return pairs
+
     def search_pairs(self, query):
         """Every trading pair whose token name or symbol matches `query`."""
         found = self._get(f"{DEXSCREENER}/latest/dex/search?q={quote(query)}") or {}

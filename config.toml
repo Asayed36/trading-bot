@@ -1756,6 +1756,20 @@ price_per_user_usd = 0.010
 report_window_minutes = 10
 report_days = 7
 min_word_letters = 3
+# A post saved more than this many minutes after it was posted is listed in
+# data/xposts/late-YYYY-MM-DD.csv with why (a limit, X's error or pause, the watcher not running,
+# other), and counted per account in the report.
+late_minutes = 3
+# Ticker mentions (screener/xmentions.py, RECORDING ONLY, no X request): cashtags ($WIF, not
+# starting with a digit), Solana and EVM token addresses in the saved posts, at most
+# mentions_max_per_post a post, each looked up once on DexScreener (a failed lookup is tried
+# again for mentions_lookup_retry_minutes) and its price, liquidity, 24 h volume and market cap
+# read at the first check and about 5, 15 and 60 minutes and 24 hours after the post
+# (checked every mentions_check_seconds) into data/xposts/mentions-YYYY-MM-DD.csv.
+mentions = true
+mentions_max_per_post = 5
+mentions_lookup_retry_minutes = 10
+mentions_check_seconds = 20
 # The accounts (X handles without the @). Each one's account ID is looked up once and saved in
 # data/xposts/accounts.json; a handle X does not know is saved as missing and skipped.
 # (2026-11-15: "pumpdotfun" replaced by "Pumpfun"; "aeyakovenko" removed, X did not find it;

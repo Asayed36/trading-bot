@@ -28,6 +28,12 @@ log = logging.getLogger("xposts")
 
 API = "https://api.x.com/2"
 POST_COLUMNS = ["account", "post_id", "posted_utc", "seen_utc", "text"]
+# A post saved more than late_minutes (3) after it was posted is also listed in
+# late-YYYY-MM-DD.csv with why: the account was not asked in time because of a limit, X's error
+# or pause, the watcher was not running, or "other" (none of those: X's own delay, for example).
+LATE_COLUMNS = ["account", "post_id", "posted_utc", "seen_utc", "minutes_late", "reason"]
+LATE_REASONS = ("daily post limit", "daily request limit", "per-account limit",
+                "X error or pause", "watcher not running", "other")
 ISO = "%Y-%m-%dT%H:%M:%SZ"
 MIN_RESULTS = 5                   # X's smallest max_results for a user's posts
 
@@ -161,13 +167,68 @@ class Watcher:
         os.replace(tmp, self._path(name))
 
     def _save_posts(self, rows, now):
-        path = self._path(f"posts-{now:%Y-%m-%d}.csv")
+        self._save_rows(f"posts-{now:%Y-%m-%d}.csv", POST_COLUMNS, rows)
+
+    def _save_rows(self, name, columns, rows):
+        path = self._path(name)
         new = not os.path.exists(path)
         with open(path, "a", newline="") as fh:
             w = csv.writer(fh)
             if new:
-                w.writerow(POST_COLUMNS)
+                w.writerow(columns)
             w.writerows(rows)
+
+    # ---- why a post was seen late ----------------------------------------
+
+    def _hold(self, handles, reason, now):
+        """These accounts were not asked this round: remember why (the first reason since their
+        last request) and count the round, for the report."""
+        day = self._day(now)
+        skipped = day.setdefault("skipped", {})
+        for handle in handles:
+            key = handle.lower()
+            a = self.state.get("accounts", {}).get(key)
+            if a is None or key not in self.accounts.get("ids", {}):
+                continue
+            a.setdefault("held", reason)
+            mine = skipped.setdefault(key, {})
+            mine[reason] = mine.get(reason, 0) + 1
+
+    def _note_round(self, now):
+        self.state["previous_round"] = self.state.get("last_round")
+        self.state["last_round"] = iso(now)
+
+    def _watcher_was_down(self, now):
+        """When the round before this one was more than 3 rounds ago, the time in between
+        (start, end); else None."""
+        last = self.state.get("last_round")
+        try:
+            last = datetime.strptime(last, ISO).replace(tzinfo=timezone.utc) if last else None
+        except ValueError:
+            last = None
+        if last is None or now - last <= timedelta(seconds=3 * self.c.get("every_seconds", 120)):
+            return None
+        return last, now
+
+    def _late(self, posted, now, held, down):
+        """(minutes late, reason) for a post saved more than late_minutes after it was posted;
+        None when it was not late."""
+        when = None
+        try:
+            when = datetime.strptime(posted, ISO).replace(tzinfo=timezone.utc)
+        except (TypeError, ValueError):
+            return None
+        minutes = (now - when).total_seconds() / 60
+        if minutes <= self.c.get("late_minutes", 3):
+            return None
+        if held:
+            reason = held
+        elif down and when < down[1] and when >= down[0] - timedelta(
+                seconds=self.c.get("every_seconds", 120)):
+            reason = "watcher not running"
+        else:
+            reason = "other"
+        return f"{minutes:.1f}", reason
 
     def _day(self, now):
         key = now.strftime("%Y-%m-%d")
@@ -217,6 +278,9 @@ class Watcher:
             return []
         paused = self.state.get("paused_until")
         if paused and now < datetime.fromisoformat(paused):
+            self._hold(self.handles, "X error or pause", now)
+            self._note_round(now)
+            self._write("state.json", self.state)
             self._health(now, None, note=f"paused until {paused} (X said to wait)")
             return []
         error = None
@@ -236,16 +300,21 @@ class Watcher:
         n = len(self.handles)
         first = self.state.get("round", 0) % n if n else 0
         self.state["round"] = self.state.get("round", 0) + 1
-        for handle in self.handles[first:] + self.handles[:first]:
+        order = self.handles[first:] + self.handles[:first]
+        down = self._watcher_was_down(now)
+        late_rows = []
+        for i, handle in enumerate(order):
             key = handle.lower()
             user_id = self.accounts.get("ids", {}).get(key)
             if not user_id:
                 continue
             if day["posts_read"] + per_request > limit:
                 self.state["limit_reached"] = now.strftime("%Y-%m-%d")
+                self._hold(order[i:], "daily post limit", now)
                 break
             if max_requests is not None and day["requests"] >= max_requests:
                 self.state["request_limit_reached"] = now.strftime("%Y-%m-%d")
+                self._hold(order[i:], "daily request limit", now)
                 break
             a = self.state.setdefault("accounts", {}).setdefault(
                 key, {"since_id": None, "watching_since": iso(now)})
@@ -253,6 +322,7 @@ class Watcher:
                 # this account's share of today is used: skip it until tomorrow, and then
                 # start from that moment (the posts missed meanwhile are not paid for)
                 a["skip_backlog"] = True
+                self._hold([handle], "per-account limit", now)
                 continue
             start = datetime.strptime(a["watching_since"], ISO).replace(tzinfo=timezone.utc)
             since = a.get("since_id")
@@ -264,12 +334,15 @@ class Watcher:
             except XError as exc:
                 error = self._failed(now, exc, handle)
                 if exc.status in (401, 403, 429):
+                    self._hold(order[i:], "X error or pause", now)
                     break                                   # every account would fail too
+                self._hold([handle], "X error or pause", now)
                 continue
             day["requests"] += 1
             day["posts_read"] += len(posts)
             by_account[key] = by_account.get(key, 0) + len(posts)
             a.pop("skip_backlog", None)
+            held = a.pop("held", None)
             if meta.get("next_token"):                      # more than one page was new
                 a["maybe_missed"] = a.get("maybe_missed", 0) + 1
             newest = meta.get("newest_id") or max((p["id"] for p in posts), key=int, default=None)
@@ -278,8 +351,14 @@ class Watcher:
             for p in sorted(posts, key=lambda p: int(p["id"])):
                 posted = (p.get("created_at") or "").replace(".000Z", "Z")
                 saved.append([handle, p["id"], posted, iso(now), p.get("text", "")])
+                late = self._late(posted, now, held, down)
+                if late:
+                    late_rows.append([handle, p["id"], posted, iso(now), *late])
         if saved:
             self._save_posts(saved, now)
+        if late_rows:
+            self._save_rows(f"late-{now:%Y-%m-%d}.csv", LATE_COLUMNS, late_rows)
+        self._note_round(now)
         self._write("state.json", self.state)
         self._health(now, error)
         out(f"{now:%H:%M} {len(saved)} new post(s); {day['posts_read']} of {limit} read today"
