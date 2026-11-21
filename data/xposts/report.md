@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-21 11:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-21 12:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 274 post(s), 158 matching launch(es).
 
@@ -17,15 +17,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | – |
-| @blknoiz06 | 42 | 21 | 21 not recorded | 251: 251 per-account limit |
+| @blknoiz06 | 42 | 21 | 21 not recorded | 281: 281 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 42 | 22 | 22 not recorded | 135: 135 per-account limit |
-| @justinsuntron | 35 | 15 | 15 not recorded | 165: 165 per-account limit |
+| @elonmusk | 42 | 22 | 22 not recorded | 165: 165 per-account limit |
+| @justinsuntron | 35 | 15 | 15 not recorded | 195: 195 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 30 | 1 | 1 not recorded | – |
 | @pumpfun | 31 | 6 | 6 not recorded | – |
 | @saylor | 17 | 0 | – | – |
-| @toly | 44 | 25 | 25 not recorded | 327: 327 per-account limit |
+| @toly | 44 | 25 | 25 not recorded | 357: 357 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1822,7 +1822,7 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| BAH | hold | missed | missed | missed | – | – | no |
+| BAH | hold | missed | missed | missed | missed | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
