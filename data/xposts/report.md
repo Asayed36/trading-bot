@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-21 15:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-21 16:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-276 post(s), 158 matching launch(es).
+279 post(s), 161 matching launch(es).
 
 ## Ticker mentions
 
@@ -27,15 +27,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | – |
-| @blknoiz06 | 42 | 21 | 21 not recorded | 371: 371 per-account limit |
+| @blknoiz06 | 42 | 21 | 21 not recorded | 401: 401 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 42 | 22 | 22 not recorded | 255: 255 per-account limit |
-| @justinsuntron | 35 | 15 | 15 not recorded | 285: 285 per-account limit |
+| @elonmusk | 42 | 22 | 22 not recorded | 285: 285 per-account limit |
+| @justinsuntron | 35 | 15 | 15 not recorded | 315: 315 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 31 | 1 | 1 not recorded | – |
-| @pumpfun | 31 | 6 | 6 not recorded | – |
+| @pumpfun | 34 | 6 | 6 not recorded | 13: 13 per-account limit |
 | @saylor | 18 | 0 | – | – |
-| @toly | 44 | 25 | 25 not recorded | 447: 447 per-account limit |
+| @toly | 44 | 25 | 25 not recorded | 477: 477 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1847,4 +1847,31 @@ No matching launch in the next 10 minutes.
 > Being in Crypto and on Crypto Twitter in 2027 and NOT being a part of such an EARLY stage of SPX6900 will eventually be a HUGE regret for th
 
 No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-21 15:38:53 UTC (post 2124165661417250819)
+> Over $1,000,000,000 in perps volume has been traded on the Pumpfun app! Get involved with the $1M Perps Open trading competition, live now 👇
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| OPEN | open, perps | +0%, no liq @1.6m | +0%, no liq @6.0m | +0%, no liq @15.7m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 6 s | OPEN | $1M Perps Open | open, perps | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-21 15:38:54 UTC (post 2124165667288961325)
+> Learn more about the $1M Perps Open, ends December 4: https://t.co/tGpBD9tuvN
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 5 s | OPEN | $1M Perps Open | open, perps | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-21 15:38:56 UTC (post 2124165673102270971)
+> Who can trade Perps Hyperliquid is a third-party protocol, which https://t.co/CxsEJIEEj4 does not operate. https://t.co/WWU97JhnqK is an app
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 3 s | OPEN | $1M Perps Open | perps | price not recorded |  |  |  |  |
 
