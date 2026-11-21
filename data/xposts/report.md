@@ -1,8 +1,34 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-20 23:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-21 01:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-241 post(s), 144 matching launch(es).
+267 post(s), 155 matching launch(es).
+
+## Ticker mentions
+
+Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EVM addresses in the saved posts (at most 5 a post), each looked up once on DexScreener. Changes are from the price at the first check (not the post's own time); BTC is over the same real times, from the once-a-minute price log. "large": BTC, ETH, SOL, BNB, XRP, DOGE or above $5 billion. A handful of mentions says nothing yet; a mention is not a cause.
+
+No ticker mentions recorded yet.
+
+## Posts seen late
+
+The last 7 days: per account, the posts saved more than 3 minutes after they were posted, and why; and the rounds (one every 120 s) it was not asked, and why. An account skipped for the per-account limit starts again from that moment the next day: the posts it made meanwhile are not read at all, so they are not in the late count. 'not recorded': saved before the reasons were recorded (2026-11-20).
+
+| Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
+|---|---|---|---|---|
+| @a1lon9 | 9 | 0 | – | – |
+| @blknoiz06 | 39 | 21 | 21 not recorded | – |
+| @cz_binance | 16 | 1 | 1 not recorded | – |
+| @elonmusk | 41 | 22 | 22 not recorded | – |
+| @justinsuntron | 34 | 15 | 15 not recorded | – |
+| @mrbeast | 3 | 0 | – | – |
+| @muststopmurad | 28 | 1 | 1 not recorded | – |
+| @pumpfun | 31 | 6 | 6 not recorded | – |
+| @saylor | 17 | 0 | – | – |
+| @toly | 44 | 25 | 25 not recorded | 27: 27 per-account limit |
+| @vitalikbuterin | 5 | 0 | – | – |
+
+## Posts and the launches after them
 
 ## @saylor 2026-11-15 13:37:46 UTC (post 2121960852643545184)
 > This dip could use a little orange. https://t.co/b0LzB94RAP
@@ -1518,6 +1544,16 @@ No matching launch in the next 10 minutes.
 
 No matching launch in the next 10 minutes.
 
+## @justinsuntron 2026-11-20 12:11:31 UTC (post 2123751089707376971)
+> 网上爆料一眼假，建议可以多关注下薄肌，黄毛，孙学理论，提升自我修养。
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-20 12:22:57 UTC (post 2123753964378439839)
+> 大红果时代的第一颗大结果！ https://t.co/uN28PvP6Q6
+
+No matching launch in the next 10 minutes.
+
 ## @MustStopMurad 2026-11-20 13:15:11 UTC (post 2123767110606176532)
 > To find the coin that will be the Biggest Household Name when we are in the middle of a Raging Bull Market… Find a community that acts as if
 
@@ -1547,6 +1583,16 @@ post_match flags (DexScreener, recording only):
 |---|---|---|---|---|---|---|---|---|
 | 480 s | SA | Super Agents | agents | price not recorded |  |  |  |  |
 
+## @justinsuntron 2026-11-20 15:35:24 UTC (post 2123802396686168289)
+> 交易美股来火币！ https://t.co/U5Trov8XP9
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-20 15:39:04 UTC (post 2123803318476808632)
+> TRX，人称小JST 😂 https://t.co/c9FtzkGi2w
+
+No matching launch in the next 10 minutes.
+
 ## @Pumpfun 2026-11-20 16:06:15 UTC (post 2123810162071019606)
 > The $1,000,000 Perps Open has officially begun! Traders on Pumpfun have 2 weeks to achieve the highest perps PnL to be in with a chance of w
 
@@ -1567,6 +1613,11 @@ No matching launch in the next 10 minutes.
 
 No matching launch in the next 10 minutes.
 
+## @justinsuntron 2026-11-20 16:11:19 UTC (post 2123811434320871659)
+> Riemann Hypothesis has been solved. @JustinSunPrize https://t.co/NErQ9ASUXT
+
+No matching launch in the next 10 minutes.
+
 ## @MustStopMurad 2026-11-20 16:15:20 UTC (post 2123812446745907359)
 > The crypto communities that survive the next few months will go to Trillions.
 
@@ -1576,6 +1627,63 @@ No matching launch in the next 10 minutes.
 > Remember why you ₿ought. https://t.co/UxYdpFJutx
 
 No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-20 17:17:07 UTC (post 2123827993382687217)
+> Made with Grok @Bot https://t.co/b1rXfw9h4K
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-20 18:15:34 UTC (post 2123842705767977412)
+> Cross margin and Pro mode are live on Pumpfun! - Cross margin: every position shares your full balance as margin - Add or remove margin on o
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-20 18:15:35 UTC (post 2123842710591402027)
+> The $1,000,000 Perps Open is live. Learn more: https://t.co/0D9w5V8eyI
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-20 18:15:37 UTC (post 2123842715381281104)
+> Who can trade Perps Hyperliquid is a third-party protocol, which https://t.co/CxsEJIFc8C does not operate. https://t.co/WWU97JhVgi is an app
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-20 18:15:39 UTC (post 2123842727301484663)
+> https://t.co/jWtq7KeAHv
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-20 18:28:08 UTC (post 2123845867526574261)
+> I was just thinking that (for myself) stupidity doesn’t count unless I’m also really obstinate about it
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 91 s | OI | Obstinate Inu | obstinate | price not recorded |  |  |  |  |
+
+## @elonmusk 2026-11-20 18:30:35 UTC (post 2123846481488789866)
+> Haven’t read it, but probably mostly (80% or so) accurate https://t.co/C4XWSywt7B
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-20 18:34:02 UTC (post 2123847352582897719)
+> This is where the smart people are https://t.co/9PRyK3Sx3i
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 29 s | SI | Smart Inu | smart | price not recorded |  |  |  |  |
+| 55 s | SI | Smart Inu | smart | price not recorded |  |  |  |  |
+| 105 s | Smartlon | Smart Elon | smart | +16% | -62% | -62% | -62% | +110% (95 s) |
+
+## @elonmusk 2026-11-20 18:55:08 UTC (post 2123852660688494744)
+> Hear me out: “Singularity dot Com”, a dating site for digital superintelligences …
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 73 s | SINGULARITY | Singularity.com | singularity | price not recorded |  |  |  |  |
+| 104 s | Single SI | Singularity.com | singularity | price not recorded |  |  |  |  |
+| 160 s | Singularity | Singularity.com | singularity | price not recorded |  |  |  |  |
+| 529 s | SING | Singularity | singularity | +0% | +0% | +0% | +0% | +0% (2 s) |
+| 536 s | Singular | SINGULARITY.COM | singularity | price not recorded |  |  |  |  |
 
 ## @a1lon9 2026-11-20 19:28:04 UTC (post 2123860949979320368)
 > Why is Pumpfun running a perps competition in this market? Over 27% of the traders who signed up for the $1M Perps Open had never traded per
@@ -1596,4 +1704,74 @@ post_match flags (DexScreener, recording only):
 |---|---|---|---|---|---|---|---|---|
 | 10 s | SPX6900 | SPX6900 | spx6900 | price not recorded |  |  |  |  |
 | 520 s | MAPLE | maple market | market | price not recorded |  |  |  |  |
+
+## @blknoiz06 2026-11-20 20:44:42 UTC (post 2123880234303062051)
+> equities are trading like there's going to be war escalation this weekend or something its just straight down, ive seen crypto do this a lot
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-20 22:34:47 UTC (post 2123907939966861741)
+> stay patient but remain ready to respond to new information https://t.co/TjGwXdVCD6
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-20 23:08:56 UTC (post 2123916530664841351)
+> 🐜🐜🐜 https://t.co/ZCrVhy384n
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-20 23:10:33 UTC (post 2123916941501022208)
+> gmihao brother we will weather the storm together https://t.co/lsFcKFPIA3 https://t.co/eiz2mafjSB
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-20 23:10:53 UTC (post 2123917021452837258)
+> Proof of History has never been solved. Just saying.
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-20 23:13:27 UTC (post 2123917670148096323)
+> 👑👑👑 https://t.co/2JZABd8LJz
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-20 23:13:30 UTC (post 2123917682906951870)
+> bro dis shit deadass look like a shitcoin chart https://t.co/a8WdONkoFY
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 309 s | BOTSHIT | Bot Shit | shit | price not recorded |  |  |  |  |
+
+## @toly 2026-11-20 23:15:40 UTC (post 2123918228347134029)
+> 😭😭😭 https://t.co/28DbXsMNJK
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-20 23:17:48 UTC (post 2123918764794380309)
+> 🐐🐐🐐 https://t.co/QS5YZOubIp
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-20 23:33:42 UTC (post 2123922764361023733)
+> what we buyin chat
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| WHAT | buyin | missed | missed | missed | +0%, no liq @60.8m | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 266 s | WHAT | What we buyin | buyin | price not recorded |  |  |  |  |
+
+## @cz_binance 2026-11-20 23:50:33 UTC (post 2123927005863563713)
+> Wow, this is insane, and complete BS. I guess this is how they control "public perception"? https://t.co/rJvAhFlmmP
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-21 00:11:23 UTC (post 2123932250308039087)
+> 😭😭😭 https://t.co/gshO7b337l
+
+No matching launch in the next 10 minutes.
 
