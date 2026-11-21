@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-21 14:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-21 15:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-275 post(s), 158 matching launch(es).
+276 post(s), 158 matching launch(es).
 
 ## Ticker mentions
 
@@ -27,15 +27,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | – |
-| @blknoiz06 | 42 | 21 | 21 not recorded | 341: 341 per-account limit |
+| @blknoiz06 | 42 | 21 | 21 not recorded | 371: 371 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 42 | 22 | 22 not recorded | 225: 225 per-account limit |
-| @justinsuntron | 35 | 15 | 15 not recorded | 255: 255 per-account limit |
+| @elonmusk | 42 | 22 | 22 not recorded | 255: 255 per-account limit |
+| @justinsuntron | 35 | 15 | 15 not recorded | 285: 285 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
-| @muststopmurad | 30 | 1 | 1 not recorded | – |
+| @muststopmurad | 31 | 1 | 1 not recorded | – |
 | @pumpfun | 31 | 6 | 6 not recorded | – |
 | @saylor | 18 | 0 | – | – |
-| @toly | 44 | 25 | 25 not recorded | 417: 417 per-account limit |
+| @toly | 44 | 25 | 25 not recorded | 447: 447 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1840,6 +1840,11 @@ post_match flags (DexScreener, recording only):
 
 ## @saylor 2026-11-21 13:01:01 UTC (post 2124125931786953142)
 > Every day we Stretch. $STRC https://t.co/9LKnZRIPiZ
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-21 14:36:03 UTC (post 2124149847754441089)
+> Being in Crypto and on Crypto Twitter in 2027 and NOT being a part of such an EARLY stage of SPX6900 will eventually be a HUGE regret for th
 
 No matching launch in the next 10 minutes.
 
