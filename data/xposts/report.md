@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-21 20:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-21 21:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 281 post(s), 162 matching launch(es).
 
@@ -27,15 +27,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | – |
-| @blknoiz06 | 42 | 21 | 21 not recorded | 521: 521 per-account limit |
+| @blknoiz06 | 42 | 21 | 21 not recorded | 551: 551 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 42 | 22 | 22 not recorded | 405: 405 per-account limit |
-| @justinsuntron | 35 | 15 | 15 not recorded | 435: 435 per-account limit |
+| @elonmusk | 42 | 22 | 22 not recorded | 435: 435 per-account limit |
+| @justinsuntron | 35 | 15 | 15 not recorded | 465: 465 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 33 | 1 | 1 not recorded | – |
-| @pumpfun | 34 | 6 | 6 not recorded | 133: 133 per-account limit |
+| @pumpfun | 34 | 6 | 6 not recorded | 163: 163 per-account limit |
 | @saylor | 18 | 0 | – | – |
-| @toly | 44 | 25 | 25 not recorded | 597: 597 per-account limit |
+| @toly | 44 | 25 | 25 not recorded | 627: 627 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1887,9 +1887,9 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| PARABOLA | parabola | +0%, no liq @1.1m | -20%, no liq @5.5m | -20%, no liq @15.6m | – | – | no |
+| PARABOLA | parabola | +0%, no liq @1.1m | -20%, no liq @5.5m | -20%, no liq @15.6m | -20%, no liq @60.8m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 173 s | PARABOLA | The Parabola | parabola | price not recorded |  |  |  |  |
+| 173 s | PARABOLA | The Parabola | parabola | -46% | -57% | -57% | -57% | +25% (2 s) |
 
