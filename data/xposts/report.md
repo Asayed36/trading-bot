@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-21 06:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-21 07:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-272 post(s), 157 matching launch(es).
+273 post(s), 157 matching launch(es).
 
 ## Ticker mentions
 
@@ -17,15 +17,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | – |
-| @blknoiz06 | 42 | 21 | 21 not recorded | 101: 101 per-account limit |
+| @blknoiz06 | 42 | 21 | 21 not recorded | 131: 131 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 41 | 22 | 22 not recorded | – |
-| @justinsuntron | 35 | 15 | 15 not recorded | 15: 15 per-account limit |
+| @elonmusk | 42 | 22 | 22 not recorded | 15: 15 per-account limit |
+| @justinsuntron | 35 | 15 | 15 not recorded | 45: 45 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 29 | 1 | 1 not recorded | – |
 | @pumpfun | 31 | 6 | 6 not recorded | – |
 | @saylor | 17 | 0 | – | – |
-| @toly | 44 | 25 | 25 not recorded | 177: 177 per-account limit |
+| @toly | 44 | 25 | 25 not recorded | 207: 207 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1807,6 +1807,11 @@ post_match flags (DexScreener, recording only):
 
 ## @justinsuntron 2026-11-21 05:35:00 UTC (post 2124013687556165828)
 > 对于近期梦女针对我的持续骚扰和不实信息，通过恶意炒作获取流量，我此前没有过多回应，是希望保留善意，避免占用公共讨论的空间。 但善意和克制，也需要得到基本的尊重。
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-21 06:34:43 UTC (post 2124028719190749681)
+> Playing GTA VI with Telepathy https://t.co/Q8fQUHjaWb
 
 No matching launch in the next 10 minutes.
 
