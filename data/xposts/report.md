@@ -1,14 +1,24 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-21 12:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-21 13:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-274 post(s), 158 matching launch(es).
+275 post(s), 158 matching launch(es).
 
 ## Ticker mentions
 
 Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EVM addresses in the saved posts (at most 5 a post), each looked up once on DexScreener. Changes are from the price at the first check (not the post's own time); BTC is over the same real times, from the once-a-minute price log. "large": BTC, ETH, SOL, BNB, XRP, DOGE or above $5 billion. A handful of mentions says nothing yet; a mention is not a cause.
 
-No ticker mentions recorded yet.
+1 mention(s) in 1 post(s): 1 identified.
+
+| Account | Coins | Mentions | 5m coin avg / median (n) | 5m BTC avg / median | 15m coin avg / median (n) | 15m BTC avg / median | 60m coin avg / median (n) | 60m BTC avg / median |
+|---|---|---|---|---|---|---|---|---|
+| @saylor | small | 1 | – | – | – | – | – | – |
+
+Latest mentions (newest first; candidates = different tokens with that symbol in DexScreener's search answer, so more than 1 means the ticker is ambiguous):
+
+| Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2026-11-21 13:01 | @saylor | $STRC | STRC (base) | 2 | no | 1.2 min | – | – | – | – | – |
 
 ## Posts seen late
 
@@ -17,15 +27,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | – |
-| @blknoiz06 | 42 | 21 | 21 not recorded | 281: 281 per-account limit |
+| @blknoiz06 | 42 | 21 | 21 not recorded | 311: 311 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 42 | 22 | 22 not recorded | 165: 165 per-account limit |
-| @justinsuntron | 35 | 15 | 15 not recorded | 195: 195 per-account limit |
+| @elonmusk | 42 | 22 | 22 not recorded | 195: 195 per-account limit |
+| @justinsuntron | 35 | 15 | 15 not recorded | 225: 225 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 30 | 1 | 1 not recorded | – |
 | @pumpfun | 31 | 6 | 6 not recorded | – |
-| @saylor | 17 | 0 | – | – |
-| @toly | 44 | 25 | 25 not recorded | 357: 357 per-account limit |
+| @saylor | 18 | 0 | – | – |
+| @toly | 44 | 25 | 25 not recorded | 387: 387 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1827,4 +1837,9 @@ post_match flags (DexScreener, recording only):
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 25 s | BAH | Buy And Hold | hold | price not recorded |  |  |  |  |
+
+## @saylor 2026-11-21 13:01:01 UTC (post 2124125931786953142)
+> Every day we Stretch. $STRC https://t.co/9LKnZRIPiZ
+
+No matching launch in the next 10 minutes.
 
