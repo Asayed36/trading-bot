@@ -137,6 +137,13 @@
       "failed": [
         "More buys than sells (1h)"
       ]
+    },
+    "0xc146f9bd6ef5216ef604176441d965ecb380bef07b3a0f3e34c2884969db1ba2": {
+      "at": "2026-11-21T21:31:21.691571+00:00",
+      "passed": false,
+      "failed": [
+        "Top 10 holders"
+      ]
     }
   },
   "sources": {
@@ -145,7 +152,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-21T21:21:24.844446+00:00",
+      "at": "2026-11-21T21:31:21.691571+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -153,28 +160,29 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-21T21:01:20.366786+00:00",
-      "used_this_run": false
+      "at": "2026-11-21T21:31:21.691571+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-21T18:41:42.868424+00:00",
-      "used_this_run": false
+      "at": "2026-11-21T21:31:21.691571+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 8,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-21T21:21:24.844446+00:00",
+      "at": "2026-11-21T21:31:21.691571+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "onchain:0x902a2c40e7cb4d71cfdc3d364dcbc57ed6136b4c": "FAIL|More buys than sells (1h): 2 buys vs 3 sells"
+    "onchain:0x902a2c40e7cb4d71cfdc3d364dcbc57ed6136b4c": "FAIL|More buys than sells (1h): 2 buys vs 3 sells",
+    "0xc146f9bd6ef5216ef604176441d965ecb380bef07b3a0f3e34c2884969db1ba2": "FAIL|Top 10 holders: 40.7% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
     "0x15c5dfb7f9589445ae10023882378e6aa84635d2": {
@@ -479,9 +487,9 @@
       "graduated": "2026-11-19T02:20:50Z",
       "symbol": "ANT",
       "title": "Anthropic",
-      "seen": "2026-11-21T21:21:24.844446+00:00",
+      "seen": "2026-11-21T21:31:21.691571+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 4835.6564,
+      "liquidity_usd": 4838.9046,
       "market_cap_usd": 4743.838656
     },
     "0x4adcab769129938289e8fb39b07d19eb88dea721": {
@@ -695,10 +703,9 @@
     }
   },
   "graduations": {
-    "at": "2026-11-21T21:21:24.844446+00:00",
+    "at": "2026-11-21T21:31:21.691571+00:00",
     "hours": 24,
     "seen": {
-      "0x3ed7e776d6b6a87d486a369c24b340dc7266e31d": "2026-11-20T21:26:32.962400+00:00",
       "0xbd1d57140eb22c2a34bc1ee055f7b6119cbf6c17": "2026-11-20T22:22:07.176300+00:00",
       "0x2f91580ea6824212b26637014c756284cb7594df": "2026-11-21T03:57:21.644800+00:00",
       "0x902a2c40e7cb4d71cfdc3d364dcbc57ed6136b4c": "2026-11-21T15:57:09.455200+00:00",
@@ -707,11 +714,10 @@
     "tokens": [
       "0x1640d5b6cfbddabbde8ae2401f7d4ec5a2026951",
       "0x2f91580ea6824212b26637014c756284cb7594df",
-      "0x3ed7e776d6b6a87d486a369c24b340dc7266e31d",
       "0x902a2c40e7cb4d71cfdc3d364dcbc57ed6136b4c",
       "0xbd1d57140eb22c2a34bc1ee055f7b6119cbf6c17"
     ],
-    "scanned_to": 120163619,
+    "scanned_to": 120168685,
     "complete": true
   },
   "issues_to_close": [],
@@ -835,7 +841,7 @@
       0
     ],
     "2026-11-21 21:00": [
-      3,
+      4,
       0,
       0
     ]
