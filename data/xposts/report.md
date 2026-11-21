@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-21 18:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-21 19:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 280 post(s), 161 matching launch(es).
 
@@ -27,15 +27,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | – |
-| @blknoiz06 | 42 | 21 | 21 not recorded | 461: 461 per-account limit |
+| @blknoiz06 | 42 | 21 | 21 not recorded | 491: 491 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 42 | 22 | 22 not recorded | 345: 345 per-account limit |
-| @justinsuntron | 35 | 15 | 15 not recorded | 375: 375 per-account limit |
+| @elonmusk | 42 | 22 | 22 not recorded | 375: 375 per-account limit |
+| @justinsuntron | 35 | 15 | 15 not recorded | 405: 405 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 32 | 1 | 1 not recorded | – |
-| @pumpfun | 34 | 6 | 6 not recorded | 73: 73 per-account limit |
+| @pumpfun | 34 | 6 | 6 not recorded | 103: 103 per-account limit |
 | @saylor | 18 | 0 | – | – |
-| @toly | 44 | 25 | 25 not recorded | 537: 537 per-account limit |
+| @toly | 44 | 25 | 25 not recorded | 567: 567 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
