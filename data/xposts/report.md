@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-21 04:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-21 05:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 271 post(s), 157 matching launch(es).
 
@@ -17,7 +17,7 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | – |
-| @blknoiz06 | 42 | 21 | 21 not recorded | 41: 41 per-account limit |
+| @blknoiz06 | 42 | 21 | 21 not recorded | 71: 71 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
 | @elonmusk | 41 | 22 | 22 not recorded | – |
 | @justinsuntron | 34 | 15 | 15 not recorded | – |
@@ -25,7 +25,7 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @muststopmurad | 29 | 1 | 1 not recorded | – |
 | @pumpfun | 31 | 6 | 6 not recorded | – |
 | @saylor | 17 | 0 | – | – |
-| @toly | 44 | 25 | 25 not recorded | 117: 117 per-account limit |
+| @toly | 44 | 25 | 25 not recorded | 147: 147 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
