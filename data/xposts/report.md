@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-21 16:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-21 17:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-279 post(s), 161 matching launch(es).
+280 post(s), 161 matching launch(es).
 
 ## Ticker mentions
 
@@ -27,15 +27,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | – |
-| @blknoiz06 | 42 | 21 | 21 not recorded | 401: 401 per-account limit |
+| @blknoiz06 | 42 | 21 | 21 not recorded | 431: 431 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 42 | 22 | 22 not recorded | 285: 285 per-account limit |
-| @justinsuntron | 35 | 15 | 15 not recorded | 315: 315 per-account limit |
+| @elonmusk | 42 | 22 | 22 not recorded | 315: 315 per-account limit |
+| @justinsuntron | 35 | 15 | 15 not recorded | 345: 345 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
-| @muststopmurad | 31 | 1 | 1 not recorded | – |
-| @pumpfun | 34 | 6 | 6 not recorded | 13: 13 per-account limit |
+| @muststopmurad | 32 | 1 | 1 not recorded | – |
+| @pumpfun | 34 | 6 | 6 not recorded | 43: 43 per-account limit |
 | @saylor | 18 | 0 | – | – |
-| @toly | 44 | 25 | 25 not recorded | 477: 477 per-account limit |
+| @toly | 44 | 25 | 25 not recorded | 507: 507 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1855,7 +1855,7 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| OPEN | open, perps | +0%, no liq @1.6m | +0%, no liq @6.0m | +0%, no liq @15.7m | – | – | no |
+| OPEN | open, perps | +0%, no liq @1.6m | +0%, no liq @6.0m | +0%, no liq @15.7m | +0%, no liq @60.8m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
@@ -1874,4 +1874,9 @@ post_match flags (DexScreener, recording only):
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 3 s | OPEN | $1M Perps Open | perps | price not recorded |  |  |  |  |
+
+## @MustStopMurad 2026-11-21 16:45:50 UTC (post 2124182508271018258)
+> The AGI buildout is the "Hail Mary Play" of the entire Hyper-Financialized and Under-Industrialized Western Civilization An all or nothing p
+
+No matching launch in the next 10 minutes.
 
