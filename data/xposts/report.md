@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-22 15:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-22 16:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 313 post(s), 194 matching launch(es).
 
@@ -30,15 +30,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 986: 986 per-account limit |
+| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 1016: 1016 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 967: 967 per-account limit |
-| @justinsuntron | 41 | 17 | 2 other, 15 not recorded | 823: 823 per-account limit |
+| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 997: 997 per-account limit |
+| @justinsuntron | 41 | 17 | 2 other, 15 not recorded | 853: 853 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
 | @muststopmurad | 36 | 1 | 1 not recorded | – |
 | @pumpfun | 37 | 9 | 3 other, 6 not recorded | 250: 249 per-account limit, 1 X error or pause |
 | @saylor | 19 | 0 | – | – |
-| @toly | 50 | 30 | 5 other, 25 not recorded | 1143: 1143 per-account limit |
+| @toly | 50 | 30 | 5 other, 25 not recorded | 1173: 1173 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2105,5 +2105,5 @@ No matching launch in the next 10 minutes.
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 203 s | MCAT MONEY | Moon Cat MONEY | money | price not recorded |  |  |  |  |
+| 203 s | MCAT MONEY | Moon Cat MONEY | money | -83% | -99% | -99% | -99% | +42% (7 s) |
 
