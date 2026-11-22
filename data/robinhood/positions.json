@@ -122,14 +122,22 @@
       "market_cap_usd": 35819.1227
     }
   },
-  "checked": {},
+  "checked": {
+    "0x14b27aaf5d38a4d3abcba7ce4055106cdc74aee52b95e678adf5fdc9cf6fc2f0": {
+      "at": "2026-11-22T19:11:46.095733+00:00",
+      "passed": false,
+      "failed": [
+        "Holders"
+      ]
+    }
+  },
   "sources": {
     "geckoterminal": {
       "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-22T19:01:23.511318+00:00",
+      "at": "2026-11-22T19:11:46.095733+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -137,28 +145,28 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-22T01:51:21.060835+00:00",
-      "used_this_run": false
+      "at": "2026-11-22T19:11:46.095733+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-22T01:51:21.060835+00:00",
-      "used_this_run": false
+      "at": "2026-11-22T19:11:46.095733+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 17,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-22T19:01:23.511318+00:00",
+      "at": "2026-11-22T19:11:46.095733+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0xc146f9bd6ef5216ef604176441d965ecb380bef07b3a0f3e34c2884969db1ba2": "FAIL|Top 10 holders: 39.4% (need under 30%; pools, launchpad and burn addresses left out)"
+    "0x14b27aaf5d38a4d3abcba7ce4055106cdc74aee52b95e678adf5fdc9cf6fc2f0": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls"
   },
   "launchpad_tokens": {
     "0x3e4587b12ac365407b5c5d788941eaebcfc18a1e": {
@@ -404,7 +412,7 @@
       "graduated": "2026-11-19T02:20:50Z",
       "symbol": "ANT",
       "title": "Anthropic",
-      "seen": "2026-11-22T19:01:23.511318+00:00",
+      "seen": "2026-11-22T19:11:46.095733+00:00",
       "source": "geckoterminal",
       "liquidity_usd": 4827.0063,
       "market_cap_usd": 4731.283331
@@ -630,7 +638,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-22T19:01:23.511318+00:00",
+    "at": "2026-11-22T19:11:46.095733+00:00",
     "hours": 24,
     "seen": {
       "0x1640d5b6cfbddabbde8ae2401f7d4ec5a2026951": "2026-11-21T20:53:52.640900+00:00",
@@ -640,7 +648,7 @@
       "0x1640d5b6cfbddabbde8ae2401f7d4ec5a2026951",
       "0x3b6e95b2ed4976f54cdf551468d9c8f1e132e9a4"
     ],
-    "scanned_to": 120834690,
+    "scanned_to": 120840212,
     "complete": true
   },
   "issues_to_close": [],
@@ -764,7 +772,7 @@
       0
     ],
     "2026-11-22 19:00": [
-      1,
+      2,
       0,
       0
     ]
