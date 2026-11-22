@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-22 21:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-22 22:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 319 post(s), 196 matching launch(es).
 
@@ -19,8 +19,8 @@ Latest mentions (newest first; candidates = different tokens with that symbol in
 
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2026-11-21 21:45 | @blknoiz06 | $SOL | SOL (solana) | 23 | yes | 136.6 min | – | missed | missed | missed | – |
-| 2026-11-21 21:45 | @blknoiz06 | $BTC | BTC (solana) | 29 | yes | 136.6 min | – | missed | missed | missed | – |
+| 2026-11-21 21:45 | @blknoiz06 | $SOL | SOL (solana) | 23 | yes | 136.6 min | – | missed | missed | missed | +0.0% |
+| 2026-11-21 21:45 | @blknoiz06 | $BTC | BTC (solana) | 29 | yes | 136.6 min | – | missed | missed | missed | +0.0% |
 | 2026-11-21 13:01 | @saylor | $STRC | STRC (base) | 2 | no | 1.2 min | – | +0.0% | +0.0% | +4.8% | +5.3% |
 
 ## Posts seen late
@@ -30,15 +30,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 1166: 1166 per-account limit |
+| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 1196: 1196 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 1147: 1147 per-account limit |
-| @justinsuntron | 41 | 17 | 2 other, 15 not recorded | 1003: 1003 per-account limit |
+| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 1177: 1177 per-account limit |
+| @justinsuntron | 41 | 17 | 2 other, 15 not recorded | 1033: 1033 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
 | @muststopmurad | 38 | 1 | 1 not recorded | – |
-| @pumpfun | 40 | 9 | 3 other, 6 not recorded | 293: 292 per-account limit, 1 X error or pause |
+| @pumpfun | 40 | 9 | 3 other, 6 not recorded | 323: 322 per-account limit, 1 X error or pause |
 | @saylor | 20 | 0 | – | – |
-| @toly | 50 | 30 | 5 other, 25 not recorded | 1323: 1323 per-account limit |
+| @toly | 50 | 30 | 5 other, 25 not recorded | 1353: 1353 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
