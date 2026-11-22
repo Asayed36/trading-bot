@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-22 19:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-22 20:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-315 post(s), 194 matching launch(es).
+319 post(s), 196 matching launch(es).
 
 ## Ticker mentions
 
@@ -30,15 +30,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 1106: 1106 per-account limit |
+| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 1136: 1136 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 1087: 1087 per-account limit |
-| @justinsuntron | 41 | 17 | 2 other, 15 not recorded | 943: 943 per-account limit |
+| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 1117: 1117 per-account limit |
+| @justinsuntron | 41 | 17 | 2 other, 15 not recorded | 973: 973 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
 | @muststopmurad | 38 | 1 | 1 not recorded | – |
-| @pumpfun | 37 | 9 | 3 other, 6 not recorded | 250: 249 per-account limit, 1 X error or pause |
-| @saylor | 19 | 0 | – | – |
-| @toly | 50 | 30 | 5 other, 25 not recorded | 1263: 1263 per-account limit |
+| @pumpfun | 40 | 9 | 3 other, 6 not recorded | 263: 262 per-account limit, 1 X error or pause |
+| @saylor | 20 | 0 | – | – |
+| @toly | 50 | 30 | 5 other, 25 not recorded | 1293: 1293 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2114,6 +2114,36 @@ No matching launch in the next 10 minutes.
 
 ## @MustStopMurad 2026-11-22 19:00:57 UTC (post 2124578901154218041)
 > https://t.co/pM5jna1tTp
+
+No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-22 19:09:34 UTC (post 2124581068053631407)
+> During the Bitcoin Standard Era, Digital Capital outperformed the Equity, Metallic, Real Estate, and Debt Capital benchmarks shown. https://
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-22 19:39:11 UTC (post 2124588521507962895)
+> MORE Perps upgrades on the Pumpfun app! - Social lines: see other traders entries, TP/SL and liquidations - Bubbles: see buys and sells from
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| CHART | chart | +0%, no liq @1.1m | +0%, no liq @5.3m | +0%, no liq @16.0m | – | – | no |
+| Bubbles | bubbles | +0%, no liq @1.0m | -5%, no liq @5.3m | -5%, no liq @15.9m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 44 s | CHART | Chart Trading | chart | price not recorded |  |  |  |  |
+| 47 s | Bubbles | Bubbles | bubbles | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-22 19:39:12 UTC (post 2124588526448853382)
+> The $1M Perps Open is live until Dec 4, 16:00 UTC. Join now: https://t.co/P2oCUKFWOO
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-22 19:39:13 UTC (post 2124588530928374045)
+> Who can trade Perps Hyperliquid is a third-party protocol, which https://t.co/CxsEJIFc8C does not operate. https://t.co/WWU97JhVgi is an app
 
 No matching launch in the next 10 minutes.
 
