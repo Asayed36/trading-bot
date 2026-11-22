@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-22 04:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-22 05:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 305 post(s), 193 matching launch(es).
 
@@ -30,15 +30,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | – |
-| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 656: 656 per-account limit |
+| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 686: 686 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 637: 637 per-account limit |
+| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 667: 667 per-account limit |
 | @justinsuntron | 37 | 17 | 2 other, 15 not recorded | 551: 551 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 34 | 1 | 1 not recorded | – |
 | @pumpfun | 37 | 9 | 3 other, 6 not recorded | 249: 249 per-account limit |
 | @saylor | 18 | 0 | – | – |
-| @toly | 50 | 30 | 5 other, 25 not recorded | 813: 813 per-account limit |
+| @toly | 50 | 30 | 5 other, 25 not recorded | 843: 843 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2057,11 +2057,11 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| wyd | wyd | +0%, no liq @1.1m | +0%, no liq @5.4m | -17%, no liq @15.1m | – | – | no |
-| wyd | wyd | +0%, no liq @1.1m | -1%, no liq @5.4m | -1%, no liq @15.1m | – | – | no |
+| wyd | wyd | +0%, no liq @1.1m | +0%, no liq @5.4m | -17%, no liq @15.1m | -17%, no liq @60.1m | – | no |
+| wyd | wyd | +0%, no liq @1.1m | -1%, no liq @5.4m | -1%, no liq @15.1m | -1%, no liq @60.1m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 70 s | wyd | wyd | wyd | price not recorded |  |  |  |  |
-| 71 s | wyd | wyd | wyd | price not recorded |  |  |  |  |
+| 71 s | wyd | wyd | wyd | +0% | -1% | -1% | -1% | +42% (0 s) |
 
