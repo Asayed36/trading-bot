@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-22 20:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-22 21:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 319 post(s), 196 matching launch(es).
 
@@ -30,15 +30,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 1136: 1136 per-account limit |
+| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 1166: 1166 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 1117: 1117 per-account limit |
-| @justinsuntron | 41 | 17 | 2 other, 15 not recorded | 973: 973 per-account limit |
+| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 1147: 1147 per-account limit |
+| @justinsuntron | 41 | 17 | 2 other, 15 not recorded | 1003: 1003 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
 | @muststopmurad | 38 | 1 | 1 not recorded | – |
-| @pumpfun | 40 | 9 | 3 other, 6 not recorded | 263: 262 per-account limit, 1 X error or pause |
+| @pumpfun | 40 | 9 | 3 other, 6 not recorded | 293: 292 per-account limit, 1 X error or pause |
 | @saylor | 20 | 0 | – | – |
-| @toly | 50 | 30 | 5 other, 25 not recorded | 1293: 1293 per-account limit |
+| @toly | 50 | 30 | 5 other, 25 not recorded | 1323: 1323 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2129,8 +2129,8 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| CHART | chart | +0%, no liq @1.1m | +0%, no liq @5.3m | +0%, no liq @16.0m | – | – | no |
-| Bubbles | bubbles | +0%, no liq @1.0m | -5%, no liq @5.3m | -5%, no liq @15.9m | – | – | no |
+| CHART | chart | +0%, no liq @1.1m | +0%, no liq @5.3m | +0%, no liq @16.0m | +0%, no liq @60.9m | – | no |
+| Bubbles | bubbles | +0%, no liq @1.0m | -5%, no liq @5.3m | -5%, no liq @15.9m | -5%, no liq @60.9m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
