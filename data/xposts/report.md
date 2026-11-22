@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-22 00:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-22 01:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-301 post(s), 191 matching launch(es).
+304 post(s), 191 matching launch(es).
 
 ## Ticker mentions
 
@@ -32,13 +32,13 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 9 | 0 | – | – |
 | @blknoiz06 | 47 | 26 | 5 other, 21 not recorded | 637: 637 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 47 | 27 | 5 other, 22 not recorded | 521: 521 per-account limit |
+| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 547: 547 per-account limit |
 | @justinsuntron | 37 | 17 | 2 other, 15 not recorded | 551: 551 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
-| @muststopmurad | 33 | 1 | 1 not recorded | – |
+| @muststopmurad | 34 | 1 | 1 not recorded | – |
 | @pumpfun | 37 | 9 | 3 other, 6 not recorded | 249: 249 per-account limit |
 | @saylor | 18 | 0 | – | – |
-| @toly | 49 | 30 | 5 other, 25 not recorded | 713: 713 per-account limit |
+| @toly | 50 | 30 | 5 other, 25 not recorded | 723: 723 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2032,6 +2032,21 @@ No matching launch in the next 10 minutes.
 
 ## @elonmusk 2026-11-21 23:16:03 UTC (post 2124280710747840889)
 > Give Grok @Bot your hardest tasks https://t.co/KEa57ff3ux
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-22 00:11:51 UTC (post 2124294755316310346)
+> Tesla FSD V15 is a banger release! Completely new architecture that deserves being called “super” intelligence, as it drives better than hum
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-22 00:45:26 UTC (post 2124303204079091790)
+> 👑👑👑 https://t.co/5WxTDIhXFB
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-22 01:02:20 UTC (post 2124307459695075399)
+> Why Tokenized Movements are the Future of Crypto Join our Spaces Tomorrow Sunday (Nov 22) 2pm EST / 7pm UTC Set your reminder below👇 https:/
 
 No matching launch in the next 10 minutes.
 
