@@ -1,23 +1,26 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-21 23:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-22 00:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-281 post(s), 162 matching launch(es).
+301 post(s), 191 matching launch(es).
 
 ## Ticker mentions
 
 Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EVM addresses in the saved posts (at most 5 a post), each looked up once on DexScreener. Changes are from the price at the first check (not the post's own time); BTC is over the same real times, from the once-a-minute price log. "large": BTC, ETH, SOL, BNB, XRP, DOGE or above $5 billion. A handful of mentions says nothing yet; a mention is not a cause.
 
-1 mention(s) in 1 post(s): 1 identified.
+3 mention(s) in 2 post(s): 3 identified.
 
 | Account | Coins | Mentions | 5m coin avg / median (n) | 5m BTC avg / median | 15m coin avg / median (n) | 15m BTC avg / median | 60m coin avg / median (n) | 60m BTC avg / median |
 |---|---|---|---|---|---|---|---|---|
+| @blknoiz06 | large | 2 | –, 2 missed | – | –, 2 missed | – | –, 2 missed | – |
 | @saylor | small | 1 | +0.00% / +0.00% (1) | +0.08% / +0.08% | +0.00% / +0.00% (1) | +0.56% / +0.56% | +4.80% / +4.80% (1) | +2.82% / +2.82% |
 
 Latest mentions (newest first; candidates = different tokens with that symbol in DexScreener's search answer, so more than 1 means the ticker is ambiguous):
 
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| 2026-11-21 21:45 | @blknoiz06 | $SOL | SOL (solana) | 23 | yes | 136.6 min | – | missed | missed | missed | – |
+| 2026-11-21 21:45 | @blknoiz06 | $BTC | BTC (solana) | 29 | yes | 136.6 min | – | missed | missed | missed | – |
 | 2026-11-21 13:01 | @saylor | $STRC | STRC (base) | 2 | no | 1.2 min | – | +0.0% | +0.0% | +4.8% | – |
 
 ## Posts seen late
@@ -27,15 +30,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | – |
-| @blknoiz06 | 42 | 21 | 21 not recorded | 611: 611 per-account limit |
+| @blknoiz06 | 47 | 26 | 5 other, 21 not recorded | 637: 637 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 42 | 22 | 22 not recorded | 495: 495 per-account limit |
-| @justinsuntron | 35 | 15 | 15 not recorded | 525: 525 per-account limit |
+| @elonmusk | 47 | 27 | 5 other, 22 not recorded | 521: 521 per-account limit |
+| @justinsuntron | 37 | 17 | 2 other, 15 not recorded | 551: 551 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 33 | 1 | 1 not recorded | – |
-| @pumpfun | 34 | 6 | 6 not recorded | 223: 223 per-account limit |
+| @pumpfun | 37 | 9 | 3 other, 6 not recorded | 249: 249 per-account limit |
 | @saylor | 18 | 0 | – | – |
-| @toly | 44 | 25 | 25 not recorded | 687: 687 per-account limit |
+| @toly | 49 | 30 | 5 other, 25 not recorded | 713: 713 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1825,6 +1828,16 @@ No matching launch in the next 10 minutes.
 
 No matching launch in the next 10 minutes.
 
+## @justinsuntron 2026-11-21 07:06:08 UTC (post 2124036622987710730)
+> $1M each. Proud to back great math. 🧮 https://t.co/sMIFCrcjsM
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-21 09:39:06 UTC (post 2124075117861085388)
+> 孙宇晨奖将为黎曼猜想的两项核心成果颁发 100 万美元奖励！ https://t.co/p3r6C6yhNH
+
+No matching launch in the next 10 minutes.
+
 ## @MustStopMurad 2026-11-21 10:38:18 UTC (post 2124090018725794035)
 > This is when all the generational wealth in Crypto is made. It’s just collected many years later. Buy and Hold.
 
@@ -1847,6 +1860,18 @@ No matching launch in the next 10 minutes.
 > Being in Crypto and on Crypto Twitter in 2027 and NOT being a part of such an EARLY stage of SPX6900 will eventually be a HUGE regret for th
 
 No matching launch in the next 10 minutes.
+
+## @toly 2026-11-21 14:45:56 UTC (post 2124152336612536558)
+> An nft collection for every 1 second clip of the “real show”. Each nft pays for the cycles needed to generate content. Whoever owns it can t
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 294 s | ape | ITS REAL BTW | real | price not recorded |  |  |  |  |
+| 296 s | ape | ITS REAL BTW | real | price not recorded |  |  |  |  |
+| 296 s | ape | ITS REAL BTW | real | price not recorded |  |  |  |  |
+| 336 s | ape | ITS REAL BTW | real | price not recorded |  |  |  |  |
+| 336 s | ape | ITS REAL BTW | real | price not recorded |  |  |  |  |
+| 336 s | ape | ITS REAL BTW | real | price not recorded |  |  |  |  |
 
 ## @Pumpfun 2026-11-21 15:38:53 UTC (post 2124165661417250819)
 > Over $1,000,000,000 in perps volume has been traded on the Pumpfun app! Get involved with the $1M Perps Open trading competition, live now 👇
@@ -1875,10 +1900,38 @@ post_match flags (DexScreener, recording only):
 |---|---|---|---|---|---|---|---|---|
 | 3 s | OPEN | $1M Perps Open | perps | price not recorded |  |  |  |  |
 
+## @toly 2026-11-21 16:22:17 UTC (post 2124176582931775909)
+> Breaking: Jensen Huang reportedly said, “orange you glad I didn’t say banana”.
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 2 s | ORANGE | orange | orange | price not recorded |  |  |  |  |
+| 4 s | banana | banana | banana | -0% | -0% | -0% | -0% | +79% (0 s) |
+| 47 s | ORANGE | orange | orange | price not recorded |  |  |  |  |
+| 81 s | banana | banana | banana | +0% | +203% | +203% | +203% | +223% (142 s) |
+| 479 s | JENBACK | Jensen Back Again | jensen | -9% | -9% | -24% | -24% | +10% (34 s) |
+
+## @toly 2026-11-21 16:23:36 UTC (post 2124176913719845135)
+> 👑👑👑 https://t.co/wxufKGWw5d
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-21 16:24:25 UTC (post 2124177120482251204)
+> 👑👑👑 https://t.co/8E6bQgCivn
+
+No matching launch in the next 10 minutes.
+
 ## @MustStopMurad 2026-11-21 16:45:50 UTC (post 2124182508271018258)
 > The AGI buildout is the "Hail Mary Play" of the entire Hyper-Financialized and Under-Industrialized Western Civilization An all or nothing p
 
 No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-21 18:19:48 UTC (post 2124206158848430270)
+> Mantle is live on the Pumpfun app Trade and callout tokens in the Mantle ecosystem to earn Callout Rewards Welcome to the Pumpfun app, @Mant
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 100 s | Mantle | Mantle | mantle | price not recorded |  |  |  |  |
 
 ## @MustStopMurad 2026-11-21 19:34:16 UTC (post 2124224897505177780)
 > The longer the Reaccumulation, the bigger the future Parabola.
@@ -1892,4 +1945,93 @@ post_match flags (DexScreener, recording only):
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 173 s | PARABOLA | The Parabola | parabola | -46% | -57% | -57% | -57% | +25% (2 s) |
+
+## @elonmusk 2026-11-21 20:26:59 UTC (post 2124238164512714925)
+> In FSD V15, the Tesla AI computer re-renders reality with chevrons in the sky for turns like a video game. You can tap any point on the real
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 180 s | GTA | Grand Tesla Auto | tesla | -45% | -45% | -45% | -45% | +0% (5 s) |
+
+## @elonmusk 2026-11-21 20:27:19 UTC (post 2124238249686159590)
+> It’s like GTA https://t.co/H2H9tjTStt
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 160 s | GTA | Grand Tesla Auto | gta | -45% | -45% | -45% | -45% | +0% (5 s) |
+| 176 s | GTA | Great Times Ahead | gta | +41% | +41% | -74% | -74% | +41% (22 s) |
+
+## @elonmusk 2026-11-21 20:40:31 UTC (post 2124241570451054609)
+> It’s high time we probed Uranus again! Much better images are needed (actually).
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 25 s | URANUSCOIN | Uranus Coin | uranus | price not recorded |  |  |  |  |
+| 123 s | URANUS | UranusCoin | uranus | price not recorded |  |  |  |  |
+| 173 s | UI | Uranus Inu | uranus | price not recorded |  |  |  |  |
+| 179 s | URANUS | URANUS | uranus | price not recorded |  |  |  |  |
+| 195 s | URANUS | UranusCoin | uranus | price not recorded |  |  |  |  |
+| 302 s | URANUS | URANUS | uranus | price not recorded |  |  |  |  |
+| 306 s | URANUS | Uranus | uranus | price not recorded |  |  |  |  |
+| 312 s | URANUS | URANUS | uranus | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-21 21:14:57 UTC (post 2124250234457063616)
+> New perps execution tools on the Pumpfun app! - TWAP: break big orders into small fills over time - Stack limit orders: multiple orders on o
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 292 s | TWAP | TWAP | twap | price not recorded |  |  |  |  |
+| 300 s | TWAP | TWAP | twap | price not recorded |  |  |  |  |
+
+## @Pumpfun 2026-11-21 21:14:58 UTC (post 2124250239934849163)
+> Who can trade Perps Hyperliquid is a third-party protocol, which https://t.co/CxsEJIFc8C does not operate. https://t.co/WWU97JhVgi is an app
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-21 21:45:33 UTC (post 2124257937887826364)
+> ex. $100k $BTC short on 10x leverage paid ~$7.8k &amp; profit from trade was ~$135k realized PNL $50k $SOL short on 20x leverage paid ~$6.4k
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 468 s | BTC | Big Three Coin | btc | price not recorded |  |  |  |  |
+
+## @toly 2026-11-21 21:50:32 UTC (post 2124259190764191984)
+> 👑👑👑 https://t.co/HRh8H2SQgn
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-21 22:24:49 UTC (post 2124267820049674564)
+> one of my best posts tbh https://t.co/4qWQgfeqJb
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-21 22:31:05 UTC (post 2124269396155682940)
+> think schoen is one of the best trenchers on this app, always very early to plays and one of the most active traders who is always sharing w
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-21 22:35:11 UTC (post 2124270426402836626)
+> This is real-time AI video generation (no gaming engine!) using just half of one AI4 TRIP accelerator. Let that sink in … https://t.co/ieASM
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 357 s | ACC | AI4 TRIP Accelerator | accelerator, trip | price not recorded |  |  |  |  |
+
+## @blknoiz06 2026-11-21 22:43:06 UTC (post 2124272421314113667)
+> https://t.co/0PcrroCra6
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-21 23:02:34 UTC (post 2124277317782450670)
+> long superintelligence long open source models long open financial networks https://t.co/SsA144Z7e2
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 23 s | S | Superintelligence | superintelligence | price not recorded |  |  |  |  |
+| 39 s | S | Superintelligence | superintelligence | price not recorded |  |  |  |  |
+
+## @elonmusk 2026-11-21 23:16:03 UTC (post 2124280710747840889)
+> Give Grok @Bot your hardest tasks https://t.co/KEa57ff3ux
+
+No matching launch in the next 10 minutes.
 
