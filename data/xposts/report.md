@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-22 05:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-22 06:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-305 post(s), 193 matching launch(es).
+309 post(s), 193 matching launch(es).
 
 ## Ticker mentions
 
@@ -30,15 +30,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | – |
-| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 686: 686 per-account limit |
+| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 716: 716 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 667: 667 per-account limit |
-| @justinsuntron | 37 | 17 | 2 other, 15 not recorded | 551: 551 per-account limit |
+| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 697: 697 per-account limit |
+| @justinsuntron | 41 | 17 | 2 other, 15 not recorded | 553: 553 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 34 | 1 | 1 not recorded | – |
 | @pumpfun | 37 | 9 | 3 other, 6 not recorded | 249: 249 per-account limit |
 | @saylor | 18 | 0 | – | – |
-| @toly | 50 | 30 | 5 other, 25 not recorded | 843: 843 per-account limit |
+| @toly | 50 | 30 | 5 other, 25 not recorded | 873: 873 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2064,4 +2064,24 @@ post_match flags (DexScreener, recording only):
 |---|---|---|---|---|---|---|---|---|
 | 70 s | wyd | wyd | wyd | price not recorded |  |  |  |  |
 | 71 s | wyd | wyd | wyd | +0% | -1% | -1% | -1% | +42% (0 s) |
+
+## @justinsuntron 2026-11-22 05:35:35 UTC (post 2124376223275180196)
+> 只是把自己的本分做好 https://t.co/FLcj2z2Dn5
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-22 05:56:38 UTC (post 2124381522845487520)
+> 我对于购买字节老股有兴趣，买 5% 以下，需要的可以找我。
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-22 05:58:24 UTC (post 2124381965877199186)
+> 减脂的时候，高糖高油高盐的食物要极力避开，一口不吃，就能夺回身体的主动权。 精神上也有"高糖高油高盐"，就是抖音、红果、游戏这些精加工的内容。把它们删掉，就能夺回注意力。 长期高糖高油高盐，身体垮了，一辈子一事无成。天天抖音、红果、游戏，注意力垮了，一辈子浑浑噩噩。
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-22 06:01:09 UTC (post 2124382659191447598)
+> @AlanShao111 可以认真研究一下人每天精神上服用大量高糖高油高盐产品，会对我们的身体造成多大损害的。
+
+No matching launch in the next 10 minutes.
 
