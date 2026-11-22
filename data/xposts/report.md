@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-22 12:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-22 13:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 311 post(s), 193 matching launch(es).
 
@@ -21,7 +21,7 @@ Latest mentions (newest first; candidates = different tokens with that symbol in
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 2026-11-21 21:45 | @blknoiz06 | $SOL | SOL (solana) | 23 | yes | 136.6 min | – | missed | missed | missed | – |
 | 2026-11-21 21:45 | @blknoiz06 | $BTC | BTC (solana) | 29 | yes | 136.6 min | – | missed | missed | missed | – |
-| 2026-11-21 13:01 | @saylor | $STRC | STRC (base) | 2 | no | 1.2 min | – | +0.0% | +0.0% | +4.8% | – |
+| 2026-11-21 13:01 | @saylor | $STRC | STRC (base) | 2 | no | 1.2 min | – | +0.0% | +0.0% | +4.8% | +5.3% |
 
 ## Posts seen late
 
@@ -30,15 +30,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | – |
-| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 896: 896 per-account limit |
+| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 926: 926 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 877: 877 per-account limit |
-| @justinsuntron | 41 | 17 | 2 other, 15 not recorded | 733: 733 per-account limit |
+| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 907: 907 per-account limit |
+| @justinsuntron | 41 | 17 | 2 other, 15 not recorded | 763: 763 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
 | @muststopmurad | 35 | 1 | 1 not recorded | – |
 | @pumpfun | 37 | 9 | 3 other, 6 not recorded | 249: 249 per-account limit |
 | @saylor | 18 | 0 | – | – |
-| @toly | 50 | 30 | 5 other, 25 not recorded | 1053: 1053 per-account limit |
+| @toly | 50 | 30 | 5 other, 25 not recorded | 1083: 1083 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
