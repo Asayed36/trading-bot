@@ -1,25 +1,26 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-23 16:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-23 18:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-332 post(s), 199 matching launch(es).
+334 post(s), 200 matching launch(es).
 
 ## Ticker mentions
 
 Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EVM addresses in the saved posts (at most 5 a post), each looked up once on DexScreener. Changes are from the price at the first check (not the post's own time); BTC is over the same real times, from the once-a-minute price log. "large": BTC, ETH, SOL, BNB, XRP, DOGE or above $5 billion. A handful of mentions says nothing yet; a mention is not a cause.
 
-6 mention(s) in 4 post(s): 6 identified.
+7 mention(s) in 5 post(s): 7 identified.
 
 | Account | Coins | Mentions | 5m coin avg / median (n) | 5m BTC avg / median | 15m coin avg / median (n) | 15m BTC avg / median | 60m coin avg / median (n) | 60m BTC avg / median |
 |---|---|---|---|---|---|---|---|---|
-| @saylor | large | 2 | +0.00% / +0.00% (2) | +0.14% / +0.14% | +0.00% / +0.00% (2) | +0.43% / +0.43% | +0.00% / +0.00% (1) | +3.38% / +3.38% |
-| @saylor | small | 4 | +0.01% / +0.00% (4) | +0.04% / +0.08% | +0.01% / +0.00% (4) | +0.07% / -0.03% | +1.92% / +1.56% (4) | +2.42% / +3.10% |
+| @saylor | large | 2 | +0.00% / +0.00% (2) | +0.14% / +0.14% | +0.00% / +0.00% (2) | +0.43% / +0.43% | +0.00% / +0.00% (2) | +1.51% / +1.51% |
+| @saylor | small | 5 | +0.01% / +0.00% (5) | -0.03% / +0.08% | +0.01% / +0.00% (5) | +0.04% / -0.03% | +1.54% / +0.50% (5) | +1.83% / +2.82% |
 
 Latest mentions (newest first; candidates = different tokens with that symbol in DexScreener's search answer, so more than 1 means the ticker is ambiguous):
 
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2026-11-23 15:09 | @saylor | $BTC | BTC (solana) | 28 | yes | 0.6 min | – | +0.0% | +0.0% | – | – |
+| 2026-11-23 17:02 | @saylor | $STRC | STRC (base) | 5 | no | 2.1 min | – | +0.0% | +0.0% | +0.0% | – |
+| 2026-11-23 15:09 | @saylor | $BTC | BTC (solana) | 28 | yes | 0.6 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-23 13:02 | @saylor | $STRC | STRC (base) | 4 | no | 1.9 min | – | +0.0% | +0.0% | +0.5% | – |
 | 2026-11-23 13:02 | @saylor | $MSTR | MSTR (robinhood) | 9 | no | 1.9 min | -0.7% | +0.2% | +0.2% | +2.6% | – |
 | 2026-11-23 13:02 | @saylor | $BTC | BTC (solana) | 28 | yes | 1.9 min | – | +0.0% | +0.0% | +0.0% | – |
@@ -33,16 +34,16 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 8 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 50 | 31 | 10 other, 21 not recorded | 1731: 1731 per-account limit |
+| @blknoiz06 | 50 | 31 | 10 other, 21 not recorded | 1791: 1791 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 48 | 32 | 10 other, 22 not recorded | 1675: 1675 per-account limit |
+| @elonmusk | 48 | 32 | 10 other, 22 not recorded | 1735: 1735 per-account limit |
 | @justinsuntron | 46 | 19 | 4 other, 15 not recorded | 1089: 1089 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
-| @muststopmurad | 39 | 1 | 1 not recorded | 26: 26 per-account limit |
+| @muststopmurad | 40 | 1 | 1 not recorded | 26: 26 per-account limit |
 | @pumpfun | 40 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
-| @saylor | 24 | 0 | – | – |
-| @toly | 53 | 35 | 10 other, 25 not recorded | 1791: 1791 per-account limit |
+| @saylor | 25 | 0 | – | 31: 31 per-account limit |
+| @toly | 53 | 35 | 10 other, 25 not recorded | 1851: 1851 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2242,8 +2243,8 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| Btc | btc | +0%, no liq @1.3m | +0%, no liq @5.6m | +0%, no liq @15.2m | – | – | no |
-| Btc | btc | +0%, no liq @1.2m | +0%, no liq @5.5m | +0%, no liq @15.2m | – | – | no |
+| Btc | btc | +0%, no liq @1.3m | +0%, no liq @5.6m | +0%, no liq @15.2m | +0%, no liq @60.4m | – | no |
+| Btc | btc | +0%, no liq @1.2m | +0%, no liq @5.5m | +0%, no liq @15.2m | +0%, no liq @60.3m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
@@ -2252,6 +2253,24 @@ post_match flags (DexScreener, recording only):
 
 ## @cz_binance 2026-11-23 16:05:27 UTC (post 2124897123296481428)
 > Glad to see @JensenHuang back. 👏 https://t.co/WrUjvmEyVi
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-23 16:32:25 UTC (post 2124903908086800672)
+> People always underestimate how quickly the markets can turn. Especially the Crypto market. You blink and it will have begun. That’s why HOD
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| JacketMarkets | markets | +0%, no liq @1.3m | +0%, no liq @5.6m | -32%, no liq @15.5m | -32%, no liq @60.0m | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 460 s | JacketMarkets | Jacket Markets | markets | -6% | -19% | -41% | -41% | +5% (1 s) |
+
+## @saylor 2026-11-23 17:02:03 UTC (post 2124911367786295660)
+> Over the past 13 weeks, our $STRC buybacks and related capital markets activity have reduced our Annual Int + Div by $296M and added $1.81B 
 
 No matching launch in the next 10 minutes.
 
