@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-23 03:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-23 04:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-320 post(s), 192 matching launch(es).
+322 post(s), 192 matching launch(es).
 
 ## Ticker mentions
 
@@ -28,15 +28,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 8 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 50 | 31 | 10 other, 21 not recorded | 1341: 1341 per-account limit |
+| @blknoiz06 | 50 | 31 | 10 other, 21 not recorded | 1371: 1371 per-account limit |
 | @cz_binance | 15 | 1 | 1 not recorded | – |
-| @elonmusk | 48 | 32 | 10 other, 22 not recorded | 1285: 1285 per-account limit |
+| @elonmusk | 48 | 32 | 10 other, 22 not recorded | 1315: 1315 per-account limit |
 | @justinsuntron | 43 | 19 | 4 other, 15 not recorded | 1089: 1089 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
 | @muststopmurad | 37 | 1 | 1 not recorded | 26: 26 per-account limit |
 | @pumpfun | 40 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @saylor | 20 | 0 | – | – |
-| @toly | 51 | 35 | 10 other, 25 not recorded | 1409: 1409 per-account limit |
+| @toly | 53 | 35 | 10 other, 25 not recorded | 1431: 1431 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2140,7 +2140,7 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| GC | candle, green | +0%, no liq @1.7m | +0%, no liq @6.0m | +0%, no liq @15.5m | – | – | no |
+| GC | candle, green | +0%, no liq @1.7m | +0%, no liq @6.0m | +0%, no liq @15.5m | +0%, no liq @60.6m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
@@ -2148,6 +2148,16 @@ post_match flags (DexScreener, recording only):
 
 ## @cz_binance 2026-11-23 02:56:56 UTC (post 2124698685116383430)
 > Used Grok Bot to clean up inactive and abusive accounts I follow. Ask it to keep constructive criticism. Not sure how well it worked. "AI di
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-23 03:19:51 UTC (post 2124704453341446570)
+> 🐐🐐🐐 https://t.co/iAe3Qu48xN
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-23 03:21:17 UTC (post 2124704814894612647)
+> 🧠🧠🧠 https://t.co/FtZpFvAzj3
 
 No matching launch in the next 10 minutes.
 
