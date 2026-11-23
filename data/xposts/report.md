@@ -1,26 +1,24 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-22 22:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-22 23:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-319 post(s), 196 matching launch(es).
+321 post(s), 196 matching launch(es).
 
 ## Ticker mentions
 
 Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EVM addresses in the saved posts (at most 5 a post), each looked up once on DexScreener. Changes are from the price at the first check (not the post's own time); BTC is over the same real times, from the once-a-minute price log. "large": BTC, ETH, SOL, BNB, XRP, DOGE or above $5 billion. A handful of mentions says nothing yet; a mention is not a cause.
 
-3 mention(s) in 2 post(s): 3 identified.
+2 mention(s) in 2 post(s): 2 identified.
 
 | Account | Coins | Mentions | 5m coin avg / median (n) | 5m BTC avg / median | 15m coin avg / median (n) | 15m BTC avg / median | 60m coin avg / median (n) | 60m BTC avg / median |
 |---|---|---|---|---|---|---|---|---|
-| @blknoiz06 | large | 2 | –, 2 missed | – | –, 2 missed | – | –, 2 missed | – |
-| @saylor | small | 1 | +0.00% / +0.00% (1) | +0.08% / +0.08% | +0.00% / +0.00% (1) | +0.56% / +0.56% | +4.80% / +4.80% (1) | +2.82% / +2.82% |
+| @saylor | small | 2 | -0.09% / -0.09% (2) | -0.01% / -0.01% | -0.09% / -0.09% (2) | +0.17% / +0.17% | +4.80% / +4.80% (1) | +2.82% / +2.82% |
 
 Latest mentions (newest first; candidates = different tokens with that symbol in DexScreener's search answer, so more than 1 means the ticker is ambiguous):
 
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2026-11-21 21:45 | @blknoiz06 | $SOL | SOL (solana) | 23 | yes | 136.6 min | – | missed | missed | missed | +0.0% |
-| 2026-11-21 21:45 | @blknoiz06 | $BTC | BTC (solana) | 29 | yes | 136.6 min | – | missed | missed | missed | +0.0% |
+| 2026-11-22 22:17 | @saylor | $MSTR | MSTR (robinhood) | 7 | no | 2.4 min | +0.1% | -0.2% | -0.2% | – | – |
 | 2026-11-21 13:01 | @saylor | $STRC | STRC (base) | 2 | no | 1.2 min | – | +0.0% | +0.0% | +4.8% | +5.3% |
 
 ## Posts seen late
@@ -30,15 +28,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 9 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 1196: 1196 per-account limit |
+| @blknoiz06 | 48 | 26 | 5 other, 21 not recorded | 1226: 1226 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 1177: 1177 per-account limit |
-| @justinsuntron | 41 | 17 | 2 other, 15 not recorded | 1033: 1033 per-account limit |
+| @elonmusk | 48 | 27 | 5 other, 22 not recorded | 1207: 1207 per-account limit |
+| @justinsuntron | 41 | 17 | 2 other, 15 not recorded | 1063: 1063 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
-| @muststopmurad | 38 | 1 | 1 not recorded | – |
-| @pumpfun | 40 | 9 | 3 other, 6 not recorded | 323: 322 per-account limit, 1 X error or pause |
-| @saylor | 20 | 0 | – | – |
-| @toly | 50 | 30 | 5 other, 25 not recorded | 1353: 1353 per-account limit |
+| @muststopmurad | 39 | 1 | 1 not recorded | – |
+| @pumpfun | 40 | 9 | 3 other, 6 not recorded | 353: 352 per-account limit, 1 X error or pause |
+| @saylor | 21 | 0 | – | – |
+| @toly | 50 | 30 | 5 other, 25 not recorded | 1383: 1383 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2144,6 +2142,16 @@ No matching launch in the next 10 minutes.
 
 ## @Pumpfun 2026-11-22 19:39:13 UTC (post 2124588530928374045)
 > Who can trade Perps Hyperliquid is a third-party protocol, which https://t.co/CxsEJIFc8C does not operate. https://t.co/WWU97JhVgi is an app
+
+No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-22 22:17:51 UTC (post 2124628454540759493)
+> Digital Equity builds on Digital Capital. During the Bitcoin Standard Era, $MSTR delivered 34% annualized returns, outperforming Bitcoin and
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-22 23:04:08 UTC (post 2124640102173593898)
+> SPX6900 is the next Bitcoin. It has a different shape, and a different flavor, but at its core, it is accomplishing the same thing — Wealth 
 
 No matching launch in the next 10 minutes.
 
