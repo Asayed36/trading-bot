@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-23 00:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-23 01:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-315 post(s), 191 matching launch(es).
+316 post(s), 191 matching launch(es).
 
 ## Ticker mentions
 
@@ -28,7 +28,7 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 8 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 49 | 31 | 10 other, 21 not recorded | 1252: 1252 per-account limit |
+| @blknoiz06 | 50 | 31 | 10 other, 21 not recorded | 1281: 1281 per-account limit |
 | @cz_binance | 13 | 1 | 1 not recorded | – |
 | @elonmusk | 47 | 32 | 10 other, 22 not recorded | 1233: 1233 per-account limit |
 | @justinsuntron | 43 | 19 | 4 other, 15 not recorded | 1089: 1089 per-account limit |
@@ -2115,6 +2115,11 @@ No matching launch in the next 10 minutes.
 
 ## @MustStopMurad 2026-11-22 23:04:08 UTC (post 2124640102173593898)
 > SPX6900 is the next Bitcoin. It has a different shape, and a different flavor, but at its core, it is accomplishing the same thing — Wealth 
+
+No matching launch in the next 10 minutes.
+
+## @blknoiz06 2026-11-23 00:06:59 UTC (post 2124655915680895186)
+> how we feeling lads
 
 No matching launch in the next 10 minutes.
 
