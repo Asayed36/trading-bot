@@ -122,14 +122,22 @@
       "market_cap_usd": 30069.28958
     }
   },
-  "checked": {},
+  "checked": {
+    "0xf6525075ac4df767559224bcc9a9031e7198e4444d3e9b49ab0655c9e9605ea3": {
+      "at": "2026-11-24T03:51:39.461428+00:00",
+      "passed": false,
+      "failed": [
+        "Top 10 holders"
+      ]
+    }
+  },
   "sources": {
     "geckoterminal": {
       "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-24T03:41:22.450798+00:00",
+      "at": "2026-11-24T03:51:39.461428+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -137,29 +145,28 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-23T22:01:26.456875+00:00",
-      "used_this_run": false
+      "at": "2026-11-24T03:51:39.461428+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-23T22:01:26.456875+00:00",
-      "used_this_run": false
+      "at": "2026-11-24T03:51:39.461428+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 9,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-24T03:41:22.450798+00:00",
+      "at": "2026-11-24T03:51:39.461428+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x89b5e43c45276684551b615a036e312e617cf662448b7d6c7a8ed7e23fb4fbc6": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls",
-    "0xc5f91080bdc7556f8afaeba5b29c5660acf9abb72f2b902ccba070274f20d445": "PASS|"
+    "0xf6525075ac4df767559224bcc9a9031e7198e4444d3e9b49ab0655c9e9605ea3": "FAIL|Top 10 holders: 33.5% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
     "0x89eb4e6d4d0d6012fbf7724315a579093054eb0a": {
@@ -643,7 +650,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-24T03:41:22.450798+00:00",
+    "at": "2026-11-24T03:51:39.461428+00:00",
     "hours": 24,
     "seen": {
       "0xf4516d3719e61c41ccb16ca79044d02b727bce84": "2026-11-23T12:39:01.783300+00:00",
@@ -659,7 +666,7 @@
       "0xe0ab3a7a32ef7bbd2a5142d88a73020164a4aa57",
       "0xf4516d3719e61c41ccb16ca79044d02b727bce84"
     ],
-    "scanned_to": 121934784,
+    "scanned_to": 121940223,
     "complete": true
   },
   "issues_to_close": [],
@@ -783,7 +790,7 @@
       0
     ],
     "2026-11-24 03:00": [
-      5,
+      6,
       0,
       0
     ]
