@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-24 05:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-24 07:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-299 post(s), 179 matching launch(es).
+301 post(s), 179 matching launch(es).
 
 ## Ticker mentions
 
@@ -36,16 +36,16 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 7 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 51 | 36 | 15 other, 21 not recorded | 2063: 2063 per-account limit |
+| @blknoiz06 | 51 | 36 | 15 other, 21 not recorded | 2123: 2123 per-account limit |
 | @cz_binance | 18 | 1 | 1 not recorded | – |
 | @elonmusk | 46 | 35 | 14 other, 21 not recorded | 1911: 1911 per-account limit |
-| @justinsuntron | 42 | 19 | 4 other, 15 not recorded | 1089: 1089 per-account limit |
+| @justinsuntron | 44 | 19 | 4 other, 15 not recorded | 1089: 1089 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
 | @muststopmurad | 36 | 1 | 1 not recorded | 26: 26 per-account limit |
 | @pumpfun | 36 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 20 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 53 | 40 | 15 other, 25 not recorded | 2176: 2176 per-account limit |
+| @toly | 53 | 40 | 15 other, 25 not recorded | 2236: 2236 per-account limit |
 | @vitalikbuterin | 2 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2050,6 +2050,16 @@ No matching launch in the next 10 minutes.
 
 ## @cz_binance 2026-11-24 04:40:28 UTC (post 2125087128606425372)
 > Even Laura Shin (who usually portraits me negatively) can't stand it anymore. 🤣🙏 https://t.co/6s7MwxLjxu
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-24 05:15:00 UTC (post 2125095818654892319)
+> Solve it. Prove it. Submit it. 👉 https://t.co/XltLa5foTY
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-24 06:57:41 UTC (post 2125121661313941844)
+> Users should always come first. You deserve a clear explanation and fair treatment. If similar restrictions can be resolved for users who in
 
 No matching launch in the next 10 minutes.
 
