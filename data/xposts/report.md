@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-23 22:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-23 23:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-335 post(s), 200 matching launch(es).
+336 post(s), 201 matching launch(es).
 
 ## Ticker mentions
 
@@ -24,7 +24,7 @@ Latest mentions (newest first; candidates = different tokens with that symbol in
 | 2026-11-23 13:02 | @saylor | $STRC | STRC (base) | 4 | no | 1.9 min | – | +0.0% | +0.0% | +0.5% | – |
 | 2026-11-23 13:02 | @saylor | $MSTR | MSTR (robinhood) | 9 | no | 1.9 min | -0.7% | +0.2% | +0.2% | +2.6% | – |
 | 2026-11-23 13:02 | @saylor | $BTC | BTC (solana) | 28 | yes | 1.9 min | – | +0.0% | +0.0% | +0.0% | – |
-| 2026-11-22 22:17 | @saylor | $MSTR | MSTR (robinhood) | 7 | no | 2.4 min | +0.1% | -0.2% | -0.2% | -0.2% | – |
+| 2026-11-22 22:17 | @saylor | $MSTR | MSTR (robinhood) | 7 | no | 2.4 min | +0.1% | -0.2% | -0.2% | -0.2% | +3.0% |
 | 2026-11-21 13:01 | @saylor | $STRC | STRC (base) | 2 | no | 1.2 min | – | +0.0% | +0.0% | +4.8% | +5.3% |
 
 ## Posts seen late
@@ -34,16 +34,16 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 8 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 50 | 31 | 10 other, 21 not recorded | 1911: 1911 per-account limit |
+| @blknoiz06 | 50 | 31 | 10 other, 21 not recorded | 1941: 1941 per-account limit |
 | @cz_binance | 16 | 1 | 1 not recorded | – |
-| @elonmusk | 48 | 32 | 10 other, 22 not recorded | 1855: 1855 per-account limit |
+| @elonmusk | 48 | 32 | 10 other, 22 not recorded | 1885: 1885 per-account limit |
 | @justinsuntron | 46 | 19 | 4 other, 15 not recorded | 1089: 1089 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
 | @muststopmurad | 41 | 1 | 1 not recorded | 26: 26 per-account limit |
-| @pumpfun | 40 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
+| @pumpfun | 41 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
-| @saylor | 25 | 0 | – | 151: 151 per-account limit |
-| @toly | 53 | 35 | 10 other, 25 not recorded | 1971: 1971 per-account limit |
+| @saylor | 25 | 0 | – | 181: 181 per-account limit |
+| @toly | 53 | 35 | 10 other, 25 not recorded | 2001: 2001 per-account limit |
 | @vitalikbuterin | 5 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2278,4 +2278,17 @@ No matching launch in the next 10 minutes.
 > In my 14 years in Crypto, I've only ever seen this kind of thing happen with one other asset - Bitcoin. Now it's happening with SPX6900 Don'
 
 No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-23 22:45:24 UTC (post 2124997775737946168)
+> Sui is live on the Pumpfun app Trade and callout tokens in the Sui ecosystem to earn Callout Rewards! Welcome to the Pumpfun app, @SuiNetwor
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| SUI | sui | missed | missed | – | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 144 s | SUI | SUI | sui | price not recorded |  |  |  |  |
 
