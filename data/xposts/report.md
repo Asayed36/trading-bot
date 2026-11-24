@@ -1,18 +1,19 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-24 13:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-24 15:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-306 post(s), 184 matching launch(es).
+310 post(s), 184 matching launch(es).
 
 ## Ticker mentions
 
 Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EVM addresses in the saved posts (at most 5 a post), each looked up once on DexScreener. Changes are from the price at the first check (not the post's own time); BTC is over the same real times, from the once-a-minute price log. "large": BTC, ETH, SOL, BNB, XRP, DOGE or above $5 billion. A handful of mentions says nothing yet; a mention is not a cause.
 
-8 mention(s) in 6 post(s): 8 identified.
+9 mention(s) in 7 post(s): 9 identified.
 
 | Account | Coins | Mentions | 5m coin avg / median (n) | 5m BTC avg / median | 15m coin avg / median (n) | 15m BTC avg / median | 60m coin avg / median (n) | 60m BTC avg / median |
 |---|---|---|---|---|---|---|---|---|
 | @blknoiz06 | small | 1 | –, 1 missed | – | –, 1 missed | – | –, 1 missed | – |
+| @cz_binance | small | 1 | +0.00% / +0.00% (1) | +0.07% / +0.07% | +0.00% / +0.00% (1) | +0.13% / +0.13% | +0.00% / +0.00% (1) | +0.81% / +0.81% |
 | @saylor | large | 2 | +0.00% / +0.00% (2) | +0.14% / +0.14% | +0.00% / +0.00% (2) | +0.43% / +0.43% | +0.00% / +0.00% (2) | +1.51% / +1.51% |
 | @saylor | small | 5 | +0.01% / +0.00% (5) | -0.03% / +0.08% | +0.01% / +0.00% (5) | +0.04% / -0.03% | +1.54% / +0.50% (5) | +1.83% / +2.82% |
 
@@ -20,6 +21,7 @@ Latest mentions (newest first; candidates = different tokens with that symbol in
 
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| 2026-11-24 13:31 | @cz_binance | $SPCX | SPCX (solana) | 13 | no | 0.7 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-23 19:36 | @blknoiz06 | $NVDA | NVDA (robinhood) | 7 | no | 265.4 min | -0.8% | missed | missed | missed | – |
 | 2026-11-23 17:02 | @saylor | $STRC | STRC (base) | 5 | no | 2.1 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-23 15:09 | @saylor | $BTC | BTC (solana) | 28 | yes | 0.6 min | – | +0.0% | +0.0% | +0.0% | – |
@@ -36,16 +38,16 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 7 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 51 | 36 | 15 other, 21 not recorded | 2303: 2303 per-account limit |
-| @cz_binance | 18 | 1 | 1 not recorded | – |
+| @blknoiz06 | 51 | 36 | 15 other, 21 not recorded | 2363: 2363 per-account limit |
+| @cz_binance | 20 | 1 | 1 not recorded | – |
 | @elonmusk | 47 | 35 | 14 other, 21 not recorded | 1911: 1911 per-account limit |
-| @justinsuntron | 46 | 19 | 4 other, 15 not recorded | 1122: 1122 per-account limit |
+| @justinsuntron | 46 | 19 | 4 other, 15 not recorded | 1182: 1182 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
-| @muststopmurad | 38 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
+| @muststopmurad | 39 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 36 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
-| @saylor | 20 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 53 | 40 | 15 other, 25 not recorded | 2416: 2416 per-account limit |
+| @saylor | 21 | 1 | 1 other | 207: 207 per-account limit |
+| @toly | 53 | 40 | 15 other, 25 not recorded | 2476: 2476 per-account limit |
 | @vitalikbuterin | 2 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2107,6 +2109,26 @@ No matching launch in the next 10 minutes.
 
 ## @MustStopMurad 2026-11-24 12:57:30 UTC (post 2125212213493596562)
 > https://t.co/VF8MRtbXSr
+
+No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-24 13:17:39 UTC (post 2125217281349472651)
+> 👇 This is from a guy who don't like me that much 😂, but definitely in-the-know. Wei was CFO of Binance who handled and pushed for the invest
+
+No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-24 13:31:32 UTC (post 2125220776316133514)
+> Woah... "You know that Binance’s $SPCX perpetual futures traded 1.957 billion USDT on November 23, but I bet you didn’t know that already ac
+
+No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-24 14:01:30 UTC (post 2125228316986646901)
+> Bitcoin is Digital Capital. CFTC staff now recognize that U.S. derivatives exchanges and clearinghouses can count Bitcoin toward their opera
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-24 15:01:48 UTC (post 2125243493446816171)
+> "Imagine someone told you about spx6900 in 2027” Will be the same as "Imagine someone told you about bitcoin in 2011” Mark my words.
 
 No matching launch in the next 10 minutes.
 
