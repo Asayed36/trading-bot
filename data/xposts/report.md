@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-24 10:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-24 11:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-302 post(s), 179 matching launch(es).
+304 post(s), 184 matching launch(es).
 
 ## Ticker mentions
 
@@ -36,16 +36,16 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 7 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 51 | 36 | 15 other, 21 not recorded | 2213: 2213 per-account limit |
+| @blknoiz06 | 51 | 36 | 15 other, 21 not recorded | 2243: 2243 per-account limit |
 | @cz_binance | 18 | 1 | 1 not recorded | – |
-| @elonmusk | 46 | 35 | 14 other, 21 not recorded | 1911: 1911 per-account limit |
+| @elonmusk | 47 | 35 | 14 other, 21 not recorded | 1911: 1911 per-account limit |
 | @justinsuntron | 45 | 19 | 4 other, 15 not recorded | 1089: 1089 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
-| @muststopmurad | 36 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
+| @muststopmurad | 37 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 36 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 20 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 53 | 40 | 15 other, 25 not recorded | 2326: 2326 per-account limit |
+| @toly | 53 | 40 | 15 other, 25 not recorded | 2356: 2356 per-account limit |
 | @vitalikbuterin | 2 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2067,4 +2067,36 @@ No matching launch in the next 10 minutes.
 > A walkthrough of TRC-6909 on TRON with OpenZeppelin. 🔻 https://t.co/oIVYpKsIqh
 
 No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-24 10:44:51 UTC (post 2125178828943184363)
+> Bullseye https://t.co/69ar1yur6u
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| Bullseye | bullseye | +0%, no liq @1.9m | +0%, no liq @5.1m | – | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 413 s | Bullseye | Bullseye | bullseye | price not recorded |  |  |  |  |
+
+## @MustStopMurad 2026-11-24 10:50:57 UTC (post 2125180366243917975)
+> Trust is the scarcest and the most valuable thing in the world. It takes many years to build. The crypto community that is successful at cul
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| Trust | trust | missed | missed | – | – | – | no |
+| TRUST | trust | +0%, no liq @1.2m | -17%, no liq @5.5m | – | – | – | no |
+| TRUST | trust | missed | missed | – | – | – | no |
+| TRUST | trust | missed | missed | – | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 9 s | Trust | Trust | trust | price not recorded |  |  |  |  |
+| 20 s | TRUST | trust coin | trust | price not recorded |  |  |  |  |
+| 22 s | TRUST | trust coin | trust | price not recorded |  |  |  |  |
+| 55 s | TRUST | trust coin | trust | price not recorded |  |  |  |  |
 
