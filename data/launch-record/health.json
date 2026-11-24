@@ -1,19 +1,19 @@
 {
- "updated": "2026-11-24T09:08:40Z",
+ "updated": "2026-11-24T10:00:39Z",
  "feed_up": true,
  "endpoint": "api.mainnet-beta.solana.com",
- "last_message": "2026-11-24T09:08:40Z",
+ "last_message": "2026-11-24T10:00:38Z",
  "feed_silent_seconds": 0,
- "last_row": "2026-11-24T09:08:40Z",
- "last_row_ts": 1795511320.9500635,
+ "last_row": "2026-11-24T10:00:39Z",
+ "last_row_ts": 1795514439.0694654,
  "since_last_row_seconds": 0,
- "launches_seen_last_hour": 594,
- "in_flight": 594,
- "rows_written_today": 1479,
- "rows_skipped_by_cap_today": 856,
+ "launches_seen_last_hour": 454,
+ "in_flight": 454,
+ "rows_written_today": 1590,
+ "rows_skipped_by_cap_today": 1072,
  "max_rows_per_day": 4000,
- "feed_disconnects_today": 263,
- "gap_seconds_today": 757,
+ "feed_disconnects_today": 297,
+ "gap_seconds_today": 822,
  "started": "2026-11-23T23:30:27Z",
  "dropped_at_last_restart": 515,
  "days": {
@@ -191,37 +191,31 @@
    "dropped_at_restart": 515
   },
   "2026-11-24": {
-   "launches_seen": 4811,
-   "feed_disconnects": 263,
-   "gap_seconds": 757,
-   "finished": 4202,
-   "watched_60": 4202,
-   "watched_60_ge_1": 3333,
-   "sample": 78,
-   "buyers_qualified": 2288,
-   "watched_60_ge_2": 2748,
-   "watched_60_ge_3": 2288,
-   "qualified": 2302,
-   "nonsample_rows": 1401,
-   "rows_written": 1479,
-   "watched_60_ge_4": 1936,
-   "watched_60_ge_5": 1657,
-   "watched_60_ge_8": 1138,
-   "watched_60_ge_10": 932,
-   "watched_60_ge_15": 653,
-   "watched_60_ge_20": 513,
-   "watched_60_ge_30": 348,
-   "watched_60_ge_50": 207,
-   "skipped_by_cap": 856
+   "launches_seen": 5216,
+   "feed_disconnects": 297,
+   "gap_seconds": 822,
+   "finished": 4747,
+   "watched_60": 4747,
+   "watched_60_ge_1": 3748,
+   "sample": 89,
+   "buyers_qualified": 2612,
+   "watched_60_ge_2": 3110,
+   "watched_60_ge_3": 2612,
+   "qualified": 2626,
+   "nonsample_rows": 1501,
+   "rows_written": 1590,
+   "watched_60_ge_4": 2218,
+   "watched_60_ge_5": 1903,
+   "watched_60_ge_8": 1326,
+   "watched_60_ge_10": 1091,
+   "watched_60_ge_15": 770,
+   "watched_60_ge_20": 594,
+   "watched_60_ge_30": 404,
+   "watched_60_ge_50": 246,
+   "skipped_by_cap": 1072
   }
  },
  "feed_counts": {
-  "2026-11-23T09": {
-   "messages": 446337,
-   "trades": 88182,
-   "creations": 745,
-   "undecoded": 18443
-  },
   "2026-11-23T10": {
    "messages": 425055,
    "trades": 97510,
@@ -349,21 +343,27 @@
    "creations": 653
   },
   "2026-11-24T09": {
-   "messages": 43397,
-   "trades": 4808,
-   "undecoded": 4068,
-   "creations": 52
+   "messages": 433086,
+   "trades": 50829,
+   "undecoded": 11523,
+   "creations": 453
+  },
+  "2026-11-24T10": {
+   "messages": 3825,
+   "trades": 298,
+   "creations": 4,
+   "undecoded": 5
   }
  },
  "endpoints": {
   "api.mainnet-beta.solana.com": {
-   "attempts": 684,
-   "successes": 683,
-   "failures": 683,
+   "attempts": 700,
+   "successes": 699,
+   "failures": 699,
    "top_failure": "closed without a close frame (code 1006); we sent code 1002 (invalid status code)",
-   "top_failure_count": 669,
-   "avg_connected_seconds": 102.9,
-   "ended_connections": 683
+   "top_failure_count": 685,
+   "avg_connected_seconds": 99.4,
+   "ended_connections": 699
   },
   "solana-rpc.publicnode.com": {
    "attempts": 809,
@@ -376,18 +376,6 @@
   }
  },
  "endpoint_hours": {
-  "2026-11-23T07": {
-   "api.mainnet-beta.solana.com": {
-    "attempts": 24,
-    "successes": 24,
-    "failures": {
-     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 23,
-     "ConnectionError: no message for 15 s": 1
-    },
-    "ended": 24,
-    "connected_seconds": 3257.357169151306
-   }
-  },
   "2026-11-23T08": {
    "api.mainnet-beta.solana.com": {
     "attempts": 26,
@@ -693,14 +681,14 @@
   },
   "2026-11-24T09": {
    "api.mainnet-beta.solana.com": {
-    "attempts": 11,
-    "successes": 11,
+    "attempts": 45,
+    "successes": 45,
     "failures": {
-     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 8,
+     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 42,
      "ConnectionError: no message for 15 s": 3
     },
-    "ended": 11,
-    "connected_seconds": 495.73483872413635
+    "ended": 45,
+    "connected_seconds": 3267.6967113018036
    }
   }
  }
