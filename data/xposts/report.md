@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-24 12:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-24 13:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-305 post(s), 184 matching launch(es).
+306 post(s), 184 matching launch(es).
 
 ## Ticker mentions
 
@@ -23,9 +23,9 @@ Latest mentions (newest first; candidates = different tokens with that symbol in
 | 2026-11-23 19:36 | @blknoiz06 | $NVDA | NVDA (robinhood) | 7 | no | 265.4 min | -0.8% | missed | missed | missed | – |
 | 2026-11-23 17:02 | @saylor | $STRC | STRC (base) | 5 | no | 2.1 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-23 15:09 | @saylor | $BTC | BTC (solana) | 28 | yes | 0.6 min | – | +0.0% | +0.0% | +0.0% | – |
-| 2026-11-23 13:02 | @saylor | $STRC | STRC (base) | 4 | no | 1.9 min | – | +0.0% | +0.0% | +0.5% | – |
-| 2026-11-23 13:02 | @saylor | $MSTR | MSTR (robinhood) | 9 | no | 1.9 min | -0.7% | +0.2% | +0.2% | +2.6% | – |
-| 2026-11-23 13:02 | @saylor | $BTC | BTC (solana) | 28 | yes | 1.9 min | – | +0.0% | +0.0% | +0.0% | – |
+| 2026-11-23 13:02 | @saylor | $STRC | STRC (base) | 4 | no | 1.9 min | – | +0.0% | +0.0% | +0.5% | +0.4% |
+| 2026-11-23 13:02 | @saylor | $MSTR | MSTR (robinhood) | 9 | no | 1.9 min | -0.7% | +0.2% | +0.2% | +2.6% | -2.6% |
+| 2026-11-23 13:02 | @saylor | $BTC | BTC (solana) | 28 | yes | 1.9 min | – | +0.0% | +0.0% | +0.0% | +0.0% |
 | 2026-11-22 22:17 | @saylor | $MSTR | MSTR (robinhood) | 7 | no | 2.4 min | +0.1% | -0.2% | -0.2% | -0.2% | +3.0% |
 | 2026-11-21 13:01 | @saylor | $STRC | STRC (base) | 2 | no | 1.2 min | – | +0.0% | +0.0% | +4.8% | +5.3% |
 
@@ -36,16 +36,16 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 7 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 51 | 36 | 15 other, 21 not recorded | 2273: 2273 per-account limit |
+| @blknoiz06 | 51 | 36 | 15 other, 21 not recorded | 2303: 2303 per-account limit |
 | @cz_binance | 18 | 1 | 1 not recorded | – |
 | @elonmusk | 47 | 35 | 14 other, 21 not recorded | 1911: 1911 per-account limit |
-| @justinsuntron | 46 | 19 | 4 other, 15 not recorded | 1092: 1092 per-account limit |
+| @justinsuntron | 46 | 19 | 4 other, 15 not recorded | 1122: 1122 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
-| @muststopmurad | 37 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
+| @muststopmurad | 38 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 36 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 20 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 53 | 40 | 15 other, 25 not recorded | 2386: 2386 per-account limit |
+| @toly | 53 | 40 | 15 other, 25 not recorded | 2416: 2416 per-account limit |
 | @vitalikbuterin | 2 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2102,6 +2102,11 @@ post_match flags (DexScreener, recording only):
 
 ## @justinsuntron 2026-11-24 11:58:11 UTC (post 2125197283977510996)
 > Feel free to mint your ETH and BTC to stablecoin via USDD protocol https://t.co/X3MAAXRcah
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-24 12:57:30 UTC (post 2125212213493596562)
+> https://t.co/VF8MRtbXSr
 
 No matching launch in the next 10 minutes.
 
