@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-24 15:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-24 16:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-310 post(s), 184 matching launch(es).
+311 post(s), 184 matching launch(es).
 
 ## Ticker mentions
 
@@ -24,7 +24,7 @@ Latest mentions (newest first; candidates = different tokens with that symbol in
 | 2026-11-24 13:31 | @cz_binance | $SPCX | SPCX (solana) | 13 | no | 0.7 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-23 19:36 | @blknoiz06 | $NVDA | NVDA (robinhood) | 7 | no | 265.4 min | -0.8% | missed | missed | missed | – |
 | 2026-11-23 17:02 | @saylor | $STRC | STRC (base) | 5 | no | 2.1 min | – | +0.0% | +0.0% | +0.0% | – |
-| 2026-11-23 15:09 | @saylor | $BTC | BTC (solana) | 28 | yes | 0.6 min | – | +0.0% | +0.0% | +0.0% | – |
+| 2026-11-23 15:09 | @saylor | $BTC | BTC (solana) | 28 | yes | 0.6 min | – | +0.0% | +0.0% | +0.0% | +0.0% |
 | 2026-11-23 13:02 | @saylor | $STRC | STRC (base) | 4 | no | 1.9 min | – | +0.0% | +0.0% | +0.5% | +0.4% |
 | 2026-11-23 13:02 | @saylor | $MSTR | MSTR (robinhood) | 9 | no | 1.9 min | -0.7% | +0.2% | +0.2% | +2.6% | -2.6% |
 | 2026-11-23 13:02 | @saylor | $BTC | BTC (solana) | 28 | yes | 1.9 min | – | +0.0% | +0.0% | +0.0% | +0.0% |
@@ -38,16 +38,16 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 7 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 51 | 36 | 15 other, 21 not recorded | 2363: 2363 per-account limit |
+| @blknoiz06 | 51 | 36 | 15 other, 21 not recorded | 2393: 2393 per-account limit |
 | @cz_binance | 20 | 1 | 1 not recorded | – |
 | @elonmusk | 47 | 35 | 14 other, 21 not recorded | 1911: 1911 per-account limit |
-| @justinsuntron | 46 | 19 | 4 other, 15 not recorded | 1182: 1182 per-account limit |
-| @mrbeast | 4 | 0 | – | – |
+| @justinsuntron | 46 | 19 | 4 other, 15 not recorded | 1212: 1212 per-account limit |
+| @mrbeast | 5 | 0 | – | – |
 | @muststopmurad | 39 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 36 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 21 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 53 | 40 | 15 other, 25 not recorded | 2476: 2476 per-account limit |
+| @toly | 53 | 40 | 15 other, 25 not recorded | 2506: 2506 per-account limit |
 | @vitalikbuterin | 2 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2129,6 +2129,11 @@ No matching launch in the next 10 minutes.
 
 ## @MustStopMurad 2026-11-24 15:01:48 UTC (post 2125243493446816171)
 > "Imagine someone told you about spx6900 in 2027” Will be the same as "Imagine someone told you about bitcoin in 2011” Mark my words.
+
+No matching launch in the next 10 minutes.
+
+## @MrBeast 2026-11-24 15:44:31 UTC (post 2125254243305087198)
+> I NEED the best Shorts creatives on the planet! Click the link, pick a few of my Shorts, and tell me on video what worked and what you'd cha
 
 No matching launch in the next 10 minutes.
 
