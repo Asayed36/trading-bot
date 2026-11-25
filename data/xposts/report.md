@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-25 21:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-25 22:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-312 post(s), 174 matching launch(es).
+313 post(s), 174 matching launch(es).
 
 ## Ticker mentions
 
@@ -44,14 +44,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 6 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 49 | 33 | 17 other, 16 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 20 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 30 | 14 other, 16 not recorded | 2403: 2403 per-account limit |
-| @justinsuntron | 47 | 21 | 7 other, 14 not recorded | 1705: 1705 per-account limit |
+| @elonmusk | 48 | 30 | 14 other, 16 not recorded | 2433: 2433 per-account limit |
+| @justinsuntron | 47 | 21 | 7 other, 14 not recorded | 1735: 1735 per-account limit |
 | @mrbeast | 6 | 0 | – | – |
-| @muststopmurad | 39 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
+| @muststopmurad | 40 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 22 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 51 | 40 | 20 other, 20 not recorded | 3270: 3270 per-account limit |
+| @toly | 51 | 40 | 20 other, 20 not recorded | 3300: 3300 per-account limit |
 | @vitalikbuterin | 1 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2128,6 +2128,11 @@ post_match flags (DexScreener, recording only):
 
 ## @MrBeast 2026-11-25 19:10:55 UTC (post 2125668575075811551)
 > If you want a look behind the curtain on how a MrBeast video is made, watch this https://t.co/CYcaRUPasX
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-25 21:12:04 UTC (post 2125699060392919192)
+> One day you will wake up and see SPX6900 all over the news, valued at several hundred billion dollars You will think that you are “late” Onl
 
 No matching launch in the next 10 minutes.
 
