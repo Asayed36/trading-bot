@@ -155,10 +155,10 @@
       "failed": []
     },
     "0x97883a330870c941eaaac99377f4783613a879c2617492338032b7e390e2ef83": {
-      "at": "2026-11-25T21:51:19.115800+00:00",
+      "at": "2026-11-25T22:51:20.960362+00:00",
       "passed": false,
       "failed": [
-        "More buys than sells (1h)"
+        "Top 10 holders"
       ]
     },
     "onchain:0x12a3f1a05d827007f17a43a250cce44868c4a263": {
@@ -175,7 +175,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-25T22:41:19.232297+00:00",
+      "at": "2026-11-25T22:51:20.960362+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -183,7 +183,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-25T22:41:19.232297+00:00",
+      "at": "2026-11-25T22:51:20.960362+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -191,34 +191,24 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-25T20:41:24.891589+00:00",
-      "used_this_run": false
+      "at": "2026-11-25T22:51:20.960362+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 10,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-25T22:41:19.232297+00:00",
+      "at": "2026-11-25T22:51:20.960362+00:00",
       "used_this_run": true
     }
   },
   "logged": {
     "0x5ce11f38a72b874968c6e0bc4e2cb04523487c33d77e066b0b32b1de73b41a3a": "PASS|",
-    "0x97883a330870c941eaaac99377f4783613a879c2617492338032b7e390e2ef83": "FAIL|More buys than sells (1h): 34 buys vs 37 sells",
+    "0x97883a330870c941eaaac99377f4783613a879c2617492338032b7e390e2ef83": "FAIL|Top 10 holders: 34.0% (need under 30%; pools, launchpad and burn addresses left out)",
     "onchain:0x12a3f1a05d827007f17a43a250cce44868c4a263": "FAIL|Market cap: $23,082 (need $25,000+)"
   },
   "launchpad_tokens": {
-    "0x00a1f2056608025f695fd7768a50430ca2bb5f1e": {
-      "dex": "pons-v2-dex",
-      "graduated": "2026-11-18T16:41:24.258500+00:00",
-      "symbol": "DCTY",
-      "title": "DacityCoin",
-      "seen": "2026-11-18T16:51:31.837651+00:00",
-      "source": "chain",
-      "liquidity_usd": 13824.68,
-      "market_cap_usd": 40163.0
-    },
     "0x2edd2762ec5a928f749380309eca0e33941b3e3e": {
       "dex": "pons-v2-dex",
       "graduated": "2026-11-19T00:43:55Z",
@@ -648,7 +638,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-25T22:41:19.232297+00:00",
+    "at": "2026-11-25T22:51:20.960362+00:00",
     "hours": 24,
     "seen": {
       "0x1f243c6638a6becd787f326b240227687a3835bc": "2026-11-25T05:26:39.038700+00:00",
@@ -668,7 +658,7 @@
       "0x9f564bbcc8ffac3781dfa0025759e54bd5991698",
       "0xc256e0fb1f93164b8e499746bba593a8e40a7eef"
     ],
-    "scanned_to": 123323576,
+    "scanned_to": 123327227,
     "complete": true
   },
   "issues_to_close": [],
@@ -794,7 +784,7 @@
       0
     ],
     "2026-11-25 22:00": [
-      5,
+      6,
       0,
       0
     ]
