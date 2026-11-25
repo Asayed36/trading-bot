@@ -137,6 +137,13 @@
       "at": "2026-11-25T18:11:24.245205+00:00",
       "passed": true,
       "failed": []
+    },
+    "0x97883a330870c941eaaac99377f4783613a879c2617492338032b7e390e2ef83": {
+      "at": "2026-11-25T19:31:30.910798+00:00",
+      "passed": false,
+      "failed": [
+        "Top 10 holders"
+      ]
     }
   },
   "sources": {
@@ -145,7 +152,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-25T19:21:19.871635+00:00",
+      "at": "2026-11-25T19:31:30.910798+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -153,28 +160,29 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-25T19:01:22.264153+00:00",
-      "used_this_run": false
+      "at": "2026-11-25T19:31:30.910798+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-25T18:11:24.245205+00:00",
-      "used_this_run": false
+      "at": "2026-11-25T19:31:30.910798+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 10,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-25T19:21:19.871635+00:00",
+      "at": "2026-11-25T19:31:30.910798+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x5ce11f38a72b874968c6e0bc4e2cb04523487c33d77e066b0b32b1de73b41a3a": "PASS|"
+    "0x5ce11f38a72b874968c6e0bc4e2cb04523487c33d77e066b0b32b1de73b41a3a": "PASS|",
+    "0x97883a330870c941eaaac99377f4783613a879c2617492338032b7e390e2ef83": "FAIL|Top 10 holders: 32.6% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
     "0x00a1f2056608025f695fd7768a50430ca2bb5f1e": {
@@ -596,7 +604,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-25T19:21:19.871635+00:00",
+    "at": "2026-11-25T19:31:30.910798+00:00",
     "hours": 24,
     "seen": {
       "0x8aeddd3e18c1adb72ec17b76617d2982c563e2d6": "2026-11-24T20:10:18.550000+00:00",
@@ -616,7 +624,7 @@
       "0x9f564bbcc8ffac3781dfa0025759e54bd5991698",
       "0xbc3b223fde2a8667d4874f81d56fcc0e9af3b259"
     ],
-    "scanned_to": 123247870,
+    "scanned_to": 123250815,
     "complete": true
   },
   "issues_to_close": [],
@@ -740,7 +748,7 @@
       0
     ],
     "2026-11-25 19:00": [
-      3,
+      4,
       0,
       0
     ]
