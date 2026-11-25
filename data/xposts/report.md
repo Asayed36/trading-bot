@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-24 22:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-24 23:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-316 post(s), 184 matching launch(es).
+317 post(s), 184 matching launch(es).
 
 ## Ticker mentions
 
@@ -15,13 +15,13 @@ Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EV
 | @blknoiz06 | small | 1 | –, 1 missed | – | –, 1 missed | – | –, 1 missed | – |
 | @cz_binance | small | 1 | +0.00% / +0.00% (1) | +0.07% / +0.07% | +0.00% / +0.00% (1) | +0.13% / +0.13% | +0.00% / +0.00% (1) | +0.81% / +0.81% |
 | @saylor | large | 2 | +0.00% / +0.00% (2) | +0.14% / +0.14% | +0.00% / +0.00% (2) | +0.43% / +0.43% | +0.00% / +0.00% (2) | +1.51% / +1.51% |
-| @saylor | small | 6 | +0.01% / +0.00% (6) | -0.03% / +0.02% | +0.01% / +0.00% (6) | +0.01% / -0.06% | +1.54% / +0.50% (5) | +1.83% / +2.82% |
+| @saylor | small | 6 | +0.01% / +0.00% (6) | -0.03% / +0.02% | +0.01% / +0.00% (6) | +0.01% / -0.06% | +1.28% / +0.25% (6) | +1.53% / +1.46% |
 
 Latest mentions (newest first; candidates = different tokens with that symbol in DexScreener's search answer, so more than 1 means the ticker is ambiguous):
 
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2026-11-24 21:31 | @saylor | $STRC | STRC (base) | 3 | no | 0.4 min | – | +0.0% | +0.0% | – | – |
+| 2026-11-24 21:31 | @saylor | $STRC | STRC (base) | 3 | no | 0.4 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-24 13:31 | @cz_binance | $SPCX | SPCX (solana) | 13 | no | 0.7 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-23 19:36 | @blknoiz06 | $NVDA | NVDA (robinhood) | 7 | no | 265.4 min | -0.8% | missed | missed | missed | -7.6% |
 | 2026-11-23 17:02 | @saylor | $STRC | STRC (base) | 5 | no | 2.1 min | – | +0.0% | +0.0% | +0.0% | -0.1% |
@@ -39,16 +39,16 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 7 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 51 | 36 | 15 other, 21 not recorded | 2573: 2573 per-account limit |
-| @cz_binance | 22 | 1 | 1 not recorded | 24: 24 per-account limit |
-| @elonmusk | 47 | 35 | 14 other, 21 not recorded | 1911: 1911 per-account limit |
-| @justinsuntron | 46 | 19 | 4 other, 15 not recorded | 1392: 1392 per-account limit |
+| @blknoiz06 | 51 | 36 | 15 other, 21 not recorded | 2603: 2603 per-account limit |
+| @cz_binance | 22 | 1 | 1 not recorded | 54: 54 per-account limit |
+| @elonmusk | 48 | 35 | 14 other, 21 not recorded | 1913: 1913 per-account limit |
+| @justinsuntron | 46 | 19 | 4 other, 15 not recorded | 1422: 1422 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
 | @muststopmurad | 41 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 36 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 22 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 53 | 40 | 15 other, 25 not recorded | 2686: 2686 per-account limit |
+| @toly | 53 | 40 | 15 other, 25 not recorded | 2716: 2716 per-account limit |
 | @vitalikbuterin | 2 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2160,6 +2160,11 @@ No matching launch in the next 10 minutes.
 
 ## @saylor 2026-11-24 21:31:49 UTC (post 2125341642756354145)
 > Stretch ($STRC) led this fixed-income comparison on risk-adjusted returns over the past year. Its Sharpe ratio was +0.57, while all seven ET
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-24 23:00:26 UTC (post 2125363942977597554)
+> Starlink https://t.co/wMW5Hy970K
 
 No matching launch in the next 10 minutes.
 
