@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-25 15:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-25 16:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-309 post(s), 173 matching launch(es).
+310 post(s), 173 matching launch(es).
 
 ## Ticker mentions
 
@@ -15,13 +15,13 @@ Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EV
 | @blknoiz06 | small | 1 | –, 1 missed | – | –, 1 missed | – | –, 1 missed | – |
 | @cz_binance | small | 1 | +0.00% / +0.00% (1) | +0.07% / +0.07% | +0.00% / +0.00% (1) | +0.13% / +0.13% | +0.00% / +0.00% (1) | +0.81% / +0.81% |
 | @saylor | large | 2 | +0.00% / +0.00% (2) | +0.14% / +0.14% | +0.00% / +0.00% (2) | +0.43% / +0.43% | +0.00% / +0.00% (2) | +1.51% / +1.51% |
-| @saylor | small | 9 | +0.01% / +0.00% (9) | +0.06% / +0.08% | +0.01% / +0.00% (8) | +0.01% / -0.04% | +0.96% / +0.00% (8) | +0.95% / +0.07% |
+| @saylor | small | 9 | +0.01% / +0.00% (9) | +0.06% / +0.08% | +0.01% / +0.00% (9) | +0.08% / -0.03% | +0.85% / +0.00% (9) | +0.97% / +0.11% |
 
 Latest mentions (newest first; candidates = different tokens with that symbol in DexScreener's search answer, so more than 1 means the ticker is ambiguous):
 
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2026-11-25 14:53 | @saylor | $STRC | STRC (base) | 3 | no | 1.1 min | – | +0.0% | – | – | – |
+| 2026-11-25 14:53 | @saylor | $STRC | STRC (base) | 3 | no | 1.1 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-25 12:57 | @saylor | $STRC | STRC (base) | 3 | no | 1.0 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-25 00:46 | @saylor | $STRC | STRC (base) | 3 | no | 1.8 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-24 21:31 | @saylor | $STRC | STRC (base) | 3 | no | 0.4 min | – | +0.0% | +0.0% | +0.0% | – |
@@ -44,14 +44,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 6 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 49 | 33 | 17 other, 16 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 20 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 30 | 14 other, 16 not recorded | 2223: 2223 per-account limit |
-| @justinsuntron | 47 | 21 | 7 other, 14 not recorded | 1525: 1525 per-account limit |
+| @elonmusk | 48 | 30 | 14 other, 16 not recorded | 2253: 2253 per-account limit |
+| @justinsuntron | 47 | 21 | 7 other, 14 not recorded | 1555: 1555 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
-| @muststopmurad | 37 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
+| @muststopmurad | 38 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 22 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 51 | 40 | 20 other, 20 not recorded | 3090: 3090 per-account limit |
+| @toly | 51 | 40 | 20 other, 20 not recorded | 3120: 3120 per-account limit |
 | @vitalikbuterin | 1 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2105,6 +2105,11 @@ No matching launch in the next 10 minutes.
 
 ## @saylor 2026-11-25 14:53:08 UTC (post 2125603699204497670)
 > Stretch ($STRC) returned 13.24% over the past year, beating all seven fixed-income ETFs in this comparison. The closest was Treasury bills a
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-25 15:59:20 UTC (post 2125620359101591990)
+> Which human is 135 IQ and which human is 115 IQ will not matter soon when all AI agents are 200+ IQ. Which ironically means that the “High I
 
 No matching launch in the next 10 minutes.
 
