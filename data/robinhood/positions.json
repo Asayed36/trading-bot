@@ -122,14 +122,22 @@
       "market_cap_usd": 37796.71423
     }
   },
-  "checked": {},
+  "checked": {
+    "0xfa8639235a1e5e83447a1debb8f334e6132be1f6fa3b32602fc15ea47e9366a3": {
+      "at": "2026-11-25T06:01:21.978765+00:00",
+      "passed": false,
+      "failed": [
+        "Holders"
+      ]
+    }
+  },
   "sources": {
     "geckoterminal": {
       "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-25T05:51:24.855393+00:00",
+      "at": "2026-11-25T06:01:21.978765+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -137,28 +145,28 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-25T02:41:12.587451+00:00",
-      "used_this_run": false
+      "at": "2026-11-25T06:01:21.978765+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-24T16:11:40.398069+00:00",
-      "used_this_run": false
+      "at": "2026-11-25T06:01:21.978765+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 17,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-25T05:51:24.855393+00:00",
+      "at": "2026-11-25T06:01:21.978765+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x08326b86f6a675612692d9b635a662ab6d5b3aa0722324d8b7875df5185387bc": "FAIL|Liquidity: $4,016 (need $10,000+ on Pons)"
+    "0xfa8639235a1e5e83447a1debb8f334e6132be1f6fa3b32602fc15ea47e9366a3": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls"
   },
   "launchpad_tokens": {
     "0x8d8a42d143a3e12697ac5cdde728b2f0d9a8febb": {
@@ -630,7 +638,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-25T05:51:24.855393+00:00",
+    "at": "2026-11-25T06:01:21.978765+00:00",
     "hours": 24,
     "seen": {
       "0xc84b411cae3b86eec20e9699256be7c43b17bd35": "2026-11-24T10:21:24.998700+00:00",
@@ -644,7 +652,7 @@
       "0xbc3b223fde2a8667d4874f81d56fcc0e9af3b259",
       "0xc84b411cae3b86eec20e9699256be7c43b17bd35"
     ],
-    "scanned_to": 122819885,
+    "scanned_to": 122825118,
     "complete": true
   },
   "issues_to_close": [],
@@ -652,11 +660,6 @@
     "0x5e900b41adaba86881a07c2e7f5f761e601f027c": "2026-11-22T20:01:22.892391+00:00"
   },
   "gecko_hours": {
-    "2026-11-24 06:00": [
-      6,
-      0,
-      0
-    ],
     "2026-11-24 07:00": [
       6,
       0,
@@ -769,6 +772,11 @@
     ],
     "2026-11-25 05:00": [
       6,
+      0,
+      0
+    ],
+    "2026-11-25 06:00": [
+      1,
       0,
       0
     ]
