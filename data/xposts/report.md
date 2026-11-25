@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-25 18:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-25 19:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-310 post(s), 173 matching launch(es).
+311 post(s), 174 matching launch(es).
 
 ## Ticker mentions
 
@@ -44,14 +44,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 6 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 49 | 33 | 17 other, 16 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 20 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 30 | 14 other, 16 not recorded | 2313: 2313 per-account limit |
-| @justinsuntron | 47 | 21 | 7 other, 14 not recorded | 1615: 1615 per-account limit |
+| @elonmusk | 48 | 30 | 14 other, 16 not recorded | 2343: 2343 per-account limit |
+| @justinsuntron | 47 | 21 | 7 other, 14 not recorded | 1645: 1645 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
-| @muststopmurad | 38 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
+| @muststopmurad | 39 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 22 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 51 | 40 | 20 other, 20 not recorded | 3180: 3180 per-account limit |
+| @toly | 51 | 40 | 20 other, 20 not recorded | 3210: 3210 per-account limit |
 | @vitalikbuterin | 1 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2112,4 +2112,17 @@ No matching launch in the next 10 minutes.
 > Which human is 135 IQ and which human is 115 IQ will not matter soon when all AI agents are 200+ IQ. Which ironically means that the “High I
 
 No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-25 18:26:14 UTC (post 2125657329597301130)
+> Every Finance, DeFi, CeFi, CeDeFi, CEX, DEX, Wallet and Social app is converging to the same exact design: "A Social Trading Platform with P
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| SI | social, trading | +0%, no liq @1.2m | +0%, no liq @5.3m | +0%, no liq @15.5m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 308 s | SI | Social Trading | social, trading | price not recorded |  |  |  |  |
 
