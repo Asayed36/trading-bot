@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-24 23:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-25 00:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-317 post(s), 184 matching launch(es).
+293 post(s), 173 matching launch(es).
 
 ## Ticker mentions
 
@@ -38,222 +38,20 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
-| @a1lon9 | 7 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 51 | 36 | 15 other, 21 not recorded | 2603: 2603 per-account limit |
-| @cz_binance | 22 | 1 | 1 not recorded | 54: 54 per-account limit |
-| @elonmusk | 48 | 35 | 14 other, 21 not recorded | 1913: 1913 per-account limit |
-| @justinsuntron | 46 | 19 | 4 other, 15 not recorded | 1422: 1422 per-account limit |
+| @a1lon9 | 6 | 0 | – | 1: 1 X error or pause |
+| @blknoiz06 | 47 | 33 | 17 other, 16 not recorded | 2629: 2629 per-account limit |
+| @cz_binance | 20 | 1 | 1 not recorded | 80: 80 per-account limit |
+| @elonmusk | 42 | 30 | 14 other, 16 not recorded | 1939: 1939 per-account limit |
+| @justinsuntron | 44 | 21 | 7 other, 14 not recorded | 1448: 1448 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
-| @muststopmurad | 41 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
-| @pumpfun | 36 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
+| @muststopmurad | 36 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
+| @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
-| @saylor | 22 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 53 | 40 | 15 other, 25 not recorded | 2716: 2716 per-account limit |
-| @vitalikbuterin | 2 | 0 | – | – |
+| @saylor | 19 | 1 | 1 other | 207: 207 per-account limit |
+| @toly | 50 | 40 | 20 other, 20 not recorded | 2742: 2742 per-account limit |
+| @vitalikbuterin | 1 | 0 | – | – |
 
 ## Posts and the launches after them
-
-## @blknoiz06 2026-11-17 00:24:41 UTC (post 2122486045916668376)
-> feels like a very important spot for crypto im ngl
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 600 s | SPOT | Very Important | important, spot | price not recorded |  |  |  |  |
-
-## @elonmusk 2026-11-17 01:04:50 UTC (post 2122496146538946784)
-> 💯😂 https://t.co/Vk6K1OAbql
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-17 02:28:22 UTC (post 2122517169040986399)
-> 🐐🐐🐐 https://t.co/xu1hIkW9LF
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-17 02:28:49 UTC (post 2122517284405023177)
-> 🐐🐐🐐 https://t.co/hr9CK2Cs3W
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-17 02:29:11 UTC (post 2122517376654836062)
-> 🐐🐐🐐 https://t.co/qpYyeWsjBO
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-17 03:51:27 UTC (post 2122538078057451585)
-> Excited to join "The Road to Binance Blockchain Week 2026" Livestream with @jessicasmw as we dive into the momentum shaping 2027. ⌛️ Nov 17,
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-17 08:20:33 UTC (post 2122605800636235927)
-> 我很尊重东哥，也尊重京东这些年走出的路。我前一条只是在说两种不同的企业增长模式，都有自己的前景。大家对我的批评我都收到了！虚心整改！东哥永远是我大哥！ https://t.co/PuqfdFQNjk
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-17 08:22:00 UTC (post 2122606163896492121)
-> Building for the next 100 years. Post-quantum is part of it. https://t.co/VmYsr3jIzf
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-17 10:00:39 UTC (post 2122630989776142722)
-> People who want to win today will fail. People who want to win a year from now will succeed.
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-17 10:22:29 UTC (post 2122636487552553311)
-> New work, public record. https://t.co/jPPXnGPJ3l
-
-No matching launch in the next 10 minutes.
-
-## @VitalikButerin 2026-11-17 10:43:53 UTC (post 2122641871394738467)
-> Canada is going through its own version of the Chat Control mess with the C-22 bill: https://t.co/bqdpOMdGRj Highly encourage fellow Canadia
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-17 12:07:27 UTC (post 2122662903383781540)
-> Value will flow to loyalty Value will flow to persistence Value will flow to trust
-
-No matching launch in the next 10 minutes.
-
-## @cz_binance 2026-11-17 12:55:25 UTC (post 2122674971151577363)
-> 这两张假照片在过去两天流传得很广。 为什么黑子会用这么明显的假图片呢？因为他们想筛选和针对那些没有独立思考能力的人们。 如果你看不出来这图片是假的，建议你远离社交媒体。 （没有交易所会用微信做内部沟通。） https://t.co/esIzxouXYj
-
-No matching launch in the next 10 minutes.
-
-## @saylor 2026-11-17 13:10:11 UTC (post 2122678690014220614)
-> Banks are bringing Bitcoin to their clients. Wells Fargo’s two brokerages reported 42 million shares of BlackRock’s Bitcoin ETF at the end o
-
-No matching launch in the next 10 minutes.
-
-## @saylor 2026-11-17 13:38:42 UTC (post 2122685864421843248)
-> Banks are bringing Bitcoin to their clients. Wells Fargo reported 49.58 million shares of BlackRock’s Bitcoin ETF as of September 30, up 103
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-17 14:24:27 UTC (post 2122697379203743874)
-> SPX6900 will become the biggest crypto asset in the World.
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-17 16:26:49 UTC (post 2122728172961595540)
-> Most won't make it not because they are dumb. But because they are impatient. The biggest opportunity is right in front of you. All you have
-
-No matching launch in the next 10 minutes.
-
-## @elonmusk 2026-11-17 16:46:55 UTC (post 2122733232894468308)
-> Advanced solid state transformers at scale from Tesla https://t.co/gIE2FGJqrK
-
-No matching launch in the next 10 minutes.
-
-## @elonmusk 2026-11-17 17:44:06 UTC (post 2122747622662222010)
-> Starlink saves lives https://t.co/j21iGhH6DS
-
-No matching launch in the next 10 minutes.
-
-## @Pumpfun 2026-11-17 18:32:15 UTC (post 2122759741097361759)
-> Pumpfun x @base Callout Rewards for tokens on Base are getting up to $10,000 daily in boosted Callout Rewards, powered by Merkl, AND we're m
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| BASE | base | +0%, no liq @1.5m | +7%, no liq @5.6m | -8%, no liq @16.0m | -8%, no liq @60.5m | – | no |
-| BASEINU | base | +0%, no liq @1.2m | +0%, no liq @5.3m | +0%, no liq @15.7m | +0%, no liq @60.2m | – | no |
-| BASEINU | base | +0%, no liq @2.0m | +0%, no liq @5.1m | +0%, no liq @15.4m | -0%, no liq @61.0m | – | no |
-| BASE | base | +0%, no liq @1.1m | +0%, no liq @5.3m | -19%, no liq @15.6m | -19%, no liq @60.1m | – | no |
-| BASEINU | base | +0%, no liq @1.9m | +0%, no liq @5.0m | +0%, no liq @15.3m | +0%, no liq @60.9m | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 324 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
-| 342 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
-| 356 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
-| 408 s | BASE | BasedBaldBrianIAmGayBlueInu | base | +0% | +0% | +0% | -14% | +247% (3 s) |
-| 424 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
-
-## @Pumpfun 2026-11-17 18:32:17 UTC (post 2122759745883009055)
-> How boosted Callout Rewards for tokens on Base work 1. Open the Pumpfun app 2. Pick a token on Base 3. Post your callout 4. Rewards follow o
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 322 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
-| 340 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
-| 354 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
-| 406 s | BASE | BasedBaldBrianIAmGayBlueInu | base | +0% | +0% | +0% | -14% | +247% (3 s) |
-| 422 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
-
-## @Pumpfun 2026-11-17 18:32:19 UTC (post 2122759757769613363)
-> https://t.co/E2nEbBStD2
-
-No matching launch in the next 10 minutes.
-
-## @a1lon9 2026-11-17 18:34:16 UTC (post 2122760248511635810)
-> Our vision is to make the Pumpfun app the most rewarding app on Earth. Since August we've paid $33,000,000 to nearly 55,000 callers on the P
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 203 s | BASE | BasedBaldBrianIAmGayBlueInu | base | price not recorded |  |  |  |  |
-| 221 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
-| 235 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
-| 287 s | BASE | BasedBaldBrianIAmGayBlueInu | base | +0% | +0% | +0% | -14% | +247% (3 s) |
-| 303 s | BASEINU | Base Inu | base | price not recorded |  |  |  |  |
-
-## @saylor 2026-11-17 18:38:36 UTC (post 2122761335834624196)
-> At this rate, everyone will be smart enough to buy Bitcoin. https://t.co/iFzaN6KLMS
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-17 20:33:12 UTC (post 2122790179543110037)
-> How I feel after buying more SPX6900 https://t.co/FAY0QxsxZa
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-17 21:19:04 UTC (post 2122801718161440970)
-> 👑👑👑 https://t.co/yXzEFxUgh3
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-17 21:20:10 UTC (post 2122801998995067159)
-> 💀💀💀 https://t.co/ayEmGQOpVi
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-17 21:29:11 UTC (post 2122804266066936019)
-> Top 3 App Store founder https://t.co/60ASqgJIaA
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-17 21:29:44 UTC (post 2122804405095502064)
-> 🐐🐐🐐 https://t.co/nFCdS3gqZp
-
-No matching launch in the next 10 minutes.
-
-## @elonmusk 2026-11-17 21:55:02 UTC (post 2122810772967575759)
-> 🤦‍♂️ https://t.co/DLC14CvtLT
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-17 22:06:33 UTC (post 2122813671814345159)
-> :( https://t.co/h5TVDKIoGc
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-17 22:08:28 UTC (post 2122814152024690958)
-> trading crypto to capture nvda earnings volatility is what i imagine riding the short bus to school felt like
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 166 s | NVDA | Nigger Viagra Dick Anus | nvda | price not recorded |  |  |  |  |
-
-## @cz_binance 2026-11-17 23:11:48 UTC (post 2122830089276756302)
-> Zach is really good. https://t.co/KZMmykBjRx
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-17 23:19:06 UTC (post 2122831927275323564)
-> Nelson is rolling in his crypt. https://t.co/riLfrX87qV
-
-No matching launch in the next 10 minutes.
 
 ## @toly 2026-11-18 00:31:09 UTC (post 2122850058076889524)
 > 👑👑👑 https://t.co/reQlWwKPKB
@@ -2046,6 +1844,11 @@ No matching launch in the next 10 minutes.
 
 No matching launch in the next 10 minutes.
 
+## @blknoiz06 2026-11-24 04:18:30 UTC (post 2125081599280582807)
+> lmfao https://t.co/BotoJK0g0U
+
+No matching launch in the next 10 minutes.
+
 ## @cz_binance 2026-11-24 04:34:23 UTC (post 2125085599388545151)
 > 🙏 https://t.co/lsFBz9JJH0
 
@@ -2103,6 +1906,15 @@ post_match flags (DexScreener, recording only):
 | 22 s | TRUST | trust coin | trust | price not recorded |  |  |  |  |
 | 55 s | TRUST | trust coin | trust | price not recorded |  |  |  |  |
 
+## @blknoiz06 2026-11-24 10:59:11 UTC (post 2125182437063790806)
+> pump wallet is hacked, trying to figure out how, believe its unauthorized access to my bullpen profile somehow which had the sol priv key im
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 292 s | ANSEM | he will make new wallet | wallet | price not recorded |  |  |  |  |
+| 293 s | ANSEM | he will make new wallet | wallet | price not recorded |  |  |  |  |
+| 294 s | ANSEM | he will make new wallet | wallet | price not recorded |  |  |  |  |
+
 ## @justinsuntron 2026-11-24 11:58:11 UTC (post 2125197283977510996)
 > Feel free to mint your ETH and BTC to stablecoin via USDD protocol https://t.co/X3MAAXRcah
 
@@ -2120,6 +1932,16 @@ No matching launch in the next 10 minutes.
 
 ## @cz_binance 2026-11-24 13:31:32 UTC (post 2125220776316133514)
 > Woah... "You know that Binance’s $SPCX perpetual futures traded 1.957 billion USDT on November 23, but I bet you didn’t know that already ac
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-24 13:38:50 UTC (post 2125222613006049647)
+> Stablecoins and #JustinSunPrize on the agenda with @ucblockchain. https://t.co/oaeSIqHJGE
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-24 13:41:52 UTC (post 2125223375438323902)
+> Looking forward to joining @StaniKulechov to talk about the future of finance. See you soon. 👋 https://t.co/pLkvjNW3ve
 
 No matching launch in the next 10 minutes.
 
@@ -2143,8 +1965,31 @@ No matching launch in the next 10 minutes.
 
 No matching launch in the next 10 minutes.
 
+## @justinsuntron 2026-11-24 17:11:11 UTC (post 2125276052964753727)
+> 巴菲特说的好，短期是选美赛，长期是称重机，TRX是最美的称重机😄 https://t.co/lCytqppjb7
+
+No matching launch in the next 10 minutes.
+
 ## @cz_binance 2026-11-24 18:08:17 UTC (post 2125290423304479017)
 > All detailed in my book, Freedom of Money.
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-24 19:30:35 UTC (post 2125311136182722704)
+> 👑👑👑 https://t.co/64V9mWpaGH
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-24 20:06:52 UTC (post 2125320263655125146)
+> Can’t prove it’s a super linear gap 🫳🎤
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 23 s | SLG | super linear gap | linear, super | price not recorded |  |  |  |  |
+| 159 s | HOLD | Super Hold Labs | super | -89% | -89% | -100% | -100% | +78% (11 s) |
+
+## @toly 2026-11-24 20:14:40 UTC (post 2125322230011982076)
+> This makes no sense NYT spy leaks are speculation. No actual doj indictment, let alone presumption of innocence. Nvidia is important to gdp 
 
 No matching launch in the next 10 minutes.
 
@@ -2153,6 +1998,13 @@ No matching launch in the next 10 minutes.
 
 No matching launch in the next 10 minutes.
 
+## @toly 2026-11-24 20:47:20 UTC (post 2125330450990383494)
+> Is there a perpetual market on embarrassment? https://t.co/wWicxv2fnY
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 62 s | embarrassment | embarrassment coin | embarrassment | +36% | +46% | +46% | +46% | +68% (69 s) |
+
 ## @cz_binance 2026-11-24 21:17:25 UTC (post 2125338022094983414)
 > My talk might be boring, but the venue is excellent. See you at the Louvre Abu Dhabi · December 3 and 4, 2026. https://t.co/fGI262dsc0
 
@@ -2160,6 +2012,11 @@ No matching launch in the next 10 minutes.
 
 ## @saylor 2026-11-24 21:31:49 UTC (post 2125341642756354145)
 > Stretch ($STRC) led this fixed-income comparison on risk-adjusted returns over the past year. Its Sharpe ratio was +0.57, while all seven ET
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-24 22:07:40 UTC (post 2125350667737071814)
+> Everyone fawning over neon 👇👇👇 https://t.co/6kPn9uuSTM
 
 No matching launch in the next 10 minutes.
 
