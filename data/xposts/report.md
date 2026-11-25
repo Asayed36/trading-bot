@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-25 02:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-25 03:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-297 post(s), 173 matching launch(es).
+298 post(s), 173 matching launch(es).
 
 ## Ticker mentions
 
@@ -42,7 +42,7 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 6 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 47 | 33 | 17 other, 16 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 20 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 45 | 30 | 14 other, 16 not recorded | 1939: 1939 per-account limit |
+| @elonmusk | 46 | 30 | 14 other, 16 not recorded | 1939: 1939 per-account limit |
 | @justinsuntron | 44 | 21 | 7 other, 14 not recorded | 1448: 1448 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
 | @muststopmurad | 36 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
@@ -2043,6 +2043,11 @@ No matching launch in the next 10 minutes.
 
 ## @saylor 2026-11-25 00:46:16 UTC (post 2125390580305846369)
 > Stretch ($STRC) led the asset benchmarks shown on risk-adjusted returns over the past year. Its Sharpe ratio was +0.57, ahead of the S&amp;P
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-25 02:08:07 UTC (post 2125411174993010839)
+> Interesting https://t.co/XRd4shsO4N
 
 No matching launch in the next 10 minutes.
 
