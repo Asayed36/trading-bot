@@ -111,16 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0xb959deb84954311c7154c3c92f1abd21e9cc5d6abd8b0ab6682ff3390d79c0d1": {
-      "pool": "0xb959deb84954311c7154c3c92f1abd21e9cc5d6abd8b0ab6682ff3390d79c0d1",
-      "dex": "pons-v2-dex",
-      "token": "0x2acfaedcb9e1e1f69cf50a7ea7bab5afa0868c19",
-      "name": "HYENA",
-      "title": "Huygena",
-      "created": "2026-11-26T10:39:39Z",
-      "liquidity_usd": 16336.5229697058,
-      "market_cap_usd": 34248.06266
-    },
     "0x6a6e2050d7e0e2da2b58c36044762711c76605f24e67d7e4d93fc4f04d479d7f": {
       "pool": "0x6a6e2050d7e0e2da2b58c36044762711c76605f24e67d7e4d93fc4f04d479d7f",
       "dex": "pons-v2-dex",
@@ -143,18 +133,12 @@
     }
   },
   "checked": {
-    "0xb959deb84954311c7154c3c92f1abd21e9cc5d6abd8b0ab6682ff3390d79c0d1": {
-      "at": "2026-11-26T16:31:31.227640+00:00",
-      "passed": false,
-      "failed": [
-        "Top 10 holders"
-      ]
-    },
     "0x6a6e2050d7e0e2da2b58c36044762711c76605f24e67d7e4d93fc4f04d479d7f": {
-      "at": "2026-11-26T15:41:23.049331+00:00",
+      "at": "2026-11-26T16:41:55.164650+00:00",
       "passed": false,
       "failed": [
-        "Market cap"
+        "Market cap",
+        "More buys than sells (1h)"
       ]
     },
     "0xb4b20bab61db1fd63a9ede9a58e2fd09f5f638d82c68ff182e519318db883545": {
@@ -171,7 +155,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T16:31:31.227640+00:00",
+      "at": "2026-11-26T16:41:55.164650+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -179,7 +163,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T16:31:31.227640+00:00",
+      "at": "2026-11-26T16:41:55.164650+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -188,20 +172,19 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-11-26T16:31:31.227640+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "rpc": {
-      "calls": 8,
+      "calls": 4,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T16:31:31.227640+00:00",
+      "at": "2026-11-26T16:41:55.164650+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0xb959deb84954311c7154c3c92f1abd21e9cc5d6abd8b0ab6682ff3390d79c0d1": "FAIL|Top 10 holders: 30.7% (need under 30%; pools, launchpad and burn addresses left out)",
-    "0x6a6e2050d7e0e2da2b58c36044762711c76605f24e67d7e4d93fc4f04d479d7f": "FAIL|Market cap: $24,468 (need $25,000+)",
+    "0x6a6e2050d7e0e2da2b58c36044762711c76605f24e67d7e4d93fc4f04d479d7f": "FAIL|Market cap: $24,351 (need $25,000+); More buys than sells (1h): 9 buys vs 13 sells",
     "0xb4b20bab61db1fd63a9ede9a58e2fd09f5f638d82c68ff182e519318db883545": "FAIL|Top 10 holders: 30.9% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
@@ -664,7 +647,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-26T16:31:31.227640+00:00",
+    "at": "2026-11-26T16:41:55.164650+00:00",
     "hours": 24,
     "seen": {
       "0x9f564bbcc8ffac3781dfa0025759e54bd5991698": "2026-11-25T17:36:20.464200+00:00",
@@ -696,7 +679,7 @@
       "0xc5d6c1d90c8a87a07e2670b99b1556e818803228",
       "0xd5ee65798eb4e0528cdf9b6c23b663d8a2276da0"
     ],
-    "scanned_to": 123657997,
+    "scanned_to": 123661628,
     "complete": true
   },
   "issues_to_close": [],
@@ -828,7 +811,7 @@
       0
     ],
     "2026-11-26 16:00": [
-      4,
+      5,
       0,
       0
     ]
