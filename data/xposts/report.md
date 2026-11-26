@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-25 22:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-25 23:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-313 post(s), 174 matching launch(es).
+319 post(s), 174 matching launch(es).
 
 ## Ticker mentions
 
@@ -41,17 +41,17 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
-| @a1lon9 | 6 | 0 | – | 1: 1 X error or pause |
+| @a1lon9 | 7 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 49 | 33 | 17 other, 16 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 20 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 30 | 14 other, 16 not recorded | 2433: 2433 per-account limit |
-| @justinsuntron | 47 | 21 | 7 other, 14 not recorded | 1735: 1735 per-account limit |
+| @elonmusk | 48 | 30 | 14 other, 16 not recorded | 2463: 2463 per-account limit |
+| @justinsuntron | 47 | 21 | 7 other, 14 not recorded | 1765: 1765 per-account limit |
 | @mrbeast | 6 | 0 | – | – |
 | @muststopmurad | 40 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
-| @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
+| @pumpfun | 38 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 22 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 51 | 40 | 20 other, 20 not recorded | 3300: 3300 per-account limit |
+| @toly | 51 | 40 | 20 other, 20 not recorded | 3330: 3330 per-account limit |
 | @vitalikbuterin | 1 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -2133,6 +2133,36 @@ No matching launch in the next 10 minutes.
 
 ## @MustStopMurad 2026-11-25 21:12:04 UTC (post 2125699060392919192)
 > One day you will wake up and see SPX6900 all over the news, valued at several hundred billion dollars You will think that you are “late” Onl
+
+No matching launch in the next 10 minutes.
+
+## @a1lon9 2026-11-25 22:30:46 UTC (post 2125718869058650591)
+> https://t.co/oAQHWDkJWU
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-25 22:32:38 UTC (post 2125719336228937841)
+> On December 4th, we’re rolling out a block0 fee on all Pumpfun launches. The first seconds after a coin launches decide whether it gets a fa
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-25 22:32:39 UTC (post 2125719341643776031)
+> How the block0 fee works: - Any buys or sells that occur in the same block as the coin creation transaction pays a flat % fee - Creators who
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-25 22:32:40 UTC (post 2125719345636733423)
+> Learn more: https://t.co/X4QZ2e5Lmz
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-25 22:32:41 UTC (post 2125719350179225821)
+> Follow our developer updates: https://t.co/gj6tl7uqbU
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-25 22:32:45 UTC (post 2125719366297854231)
+> https://t.co/sR4r3cVbgy
 
 No matching launch in the next 10 minutes.
 
