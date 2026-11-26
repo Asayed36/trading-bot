@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-26 00:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-26 01:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-275 post(s), 138 matching launch(es).
+276 post(s), 138 matching launch(es).
 
 ## Ticker mentions
 
@@ -51,7 +51,7 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 21 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 48 | 40 | 25 other, 15 not recorded | 3356: 3356 per-account limit |
+| @toly | 49 | 40 | 25 other, 15 not recorded | 3365: 3365 per-account limit |
 
 ## Posts and the launches after them
 
@@ -1827,6 +1827,11 @@ No matching launch in the next 10 minutes.
 
 ## @toly 2026-11-25 23:56:27 UTC (post 2125740430545617199)
 > BREAKING: BUG BOUNTY 69 rapidly strengthening pre singularity dollars are up for grabs to anyone that can exploit all the bugs lean-svm has 
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-26 00:47:06 UTC (post 2125753178054598974)
+> svm-lean reduced the percolator ix CUs by 10x compared to the vibe coded rust version 🤯🤯🤯
 
 No matching launch in the next 10 minutes.
 
