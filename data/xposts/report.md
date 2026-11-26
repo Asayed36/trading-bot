@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-26 20:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-26 21:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-298 post(s), 151 matching launch(es).
+300 post(s), 152 matching launch(es).
 
 ## Ticker mentions
 
@@ -43,17 +43,17 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
-| @a1lon9 | 5 | 0 | – | 1: 1 X error or pause |
+| @a1lon9 | 7 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 43 | 31 | 17 other, 14 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 21 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2858: 2858 per-account limit |
-| @justinsuntron | 47 | 22 | 8 other, 14 not recorded | 2038: 2038 per-account limit |
+| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2888: 2888 per-account limit |
+| @justinsuntron | 47 | 22 | 8 other, 14 not recorded | 2068: 2068 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
 | @muststopmurad | 39 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 34 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 24 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 25 other, 15 not recorded | 3933: 3933 per-account limit |
+| @toly | 49 | 40 | 25 other, 15 not recorded | 3963: 3963 per-account limit |
 | @vitalikbuterin | 3 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1998,10 +1998,10 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| CALLERS | callers | +0%, no liq @2.2m | – | – | – | – | no |
-| CALLERS | callers | +0%, no liq @2.2m | – | – | – | – | no |
-| CALLING | calling | +0%, no liq @2.2m | – | – | – | – | no |
-| CALLERS | callers | – | – | – | – | – | no |
+| CALLERS | callers | +0%, no liq @2.2m | -13%, no liq @5.4m | -13%, no liq @16.0m | -13%, no liq @60.2m | – | no |
+| CALLERS | callers | +0%, no liq @2.2m | -10%, no liq @5.3m | -10%, no liq @15.9m | -10%, no liq @60.2m | – | no |
+| CALLING | calling | +0%, no liq @2.2m | -5%, no liq @5.3m | -5%, no liq @15.9m | -5%, no liq @60.2m | – | no |
+| CALLERS | callers | missed | missed | missed | – | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
@@ -2009,4 +2009,22 @@ post_match flags (DexScreener, recording only):
 | 16 s | CALLING | Just Start Calling | calling | price not recorded |  |  |  |  |
 | 16 s | CALLERS | The Callers | callers | price not recorded |  |  |  |  |
 | 74 s | CALLERS | The Callers | callers | price not recorded |  |  |  |  |
+
+## @a1lon9 2026-11-26 20:28:01 UTC (post 2126050363178426504)
+> We’re hiring a Talent Manager (Creators &amp; Content) at Baton Corporation, the development company behind Pumpfun. We’re working with some
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| MCAT | manager, talent | +0%, no liq @1.4m | +1%, no liq @5.6m | -0%, no liq @15.0m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 362 s | MCAT | Talent Manager Cat | manager, talent | price not recorded |  |  |  |  |
+
+## @a1lon9 2026-11-26 20:28:01 UTC (post 2126050365481107931)
+> Apply here: https://t.co/WDqsvT6hRZ
+
+No matching launch in the next 10 minutes.
 
