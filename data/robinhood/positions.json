@@ -111,16 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0x4387c1583eea81a5dbfef659e063dd7c114d3d57b99b054690f9f63cf9bc1f27": {
-      "pool": "0x4387c1583eea81a5dbfef659e063dd7c114d3d57b99b054690f9f63cf9bc1f27",
-      "dex": "pons-v2-dex",
-      "token": "0xc256e0fb1f93164b8e499746bba593a8e40a7eef",
-      "name": "LENGO",
-      "title": "Lengo App",
-      "created": "2026-11-25T22:37:52Z",
-      "liquidity_usd": 15268.6907,
-      "market_cap_usd": 40085.05595
-    },
     "onchain:0xaecf9909e55f5e98b84a9a737db0238b87393e1a": {
       "pool": null,
       "dex": "pons-v2-dex",
@@ -148,14 +138,17 @@
       "created": "2026-11-26T02:57:18Z",
       "liquidity_usd": 14379.1941,
       "market_cap_usd": 35575.60084
+    },
+    "onchain:0x012d695b94377e0c7b9edee3d824259baa37cf3a": {
+      "pool": null,
+      "dex": "pons-v2-dex",
+      "token": "0x012d695b94377e0c7b9edee3d824259baa37cf3a",
+      "name": "SPARE",
+      "created": "2026-11-26T04:31:52.308100+00:00",
+      "source": "chain"
     }
   },
   "checked": {
-    "0x4387c1583eea81a5dbfef659e063dd7c114d3d57b99b054690f9f63cf9bc1f27": {
-      "at": "2026-11-26T01:31:16.018354+00:00",
-      "passed": true,
-      "failed": []
-    },
     "onchain:0xaecf9909e55f5e98b84a9a737db0238b87393e1a": {
       "at": "2026-11-26T03:51:17.184289+00:00",
       "passed": false,
@@ -164,14 +157,14 @@
       ]
     },
     "0x9446a862e1955b626eb755b19255b31712793ae0e94fba1f28b11ba17436da18": {
-      "at": "2026-11-26T03:31:25.051945+00:00",
+      "at": "2026-11-26T04:41:49.614373+00:00",
       "passed": false,
       "failed": [
         "Holders"
       ]
     },
     "0x25ad31f9afb68c9804b5d1993ccbe97a722c6de6c58d61872bea31b8488076d2": {
-      "at": "2026-11-26T03:31:25.051945+00:00",
+      "at": "2026-11-26T04:41:49.614373+00:00",
       "passed": false,
       "failed": [
         "Top 10 holders"
@@ -184,39 +177,38 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T04:31:12.047256+00:00",
+      "at": "2026-11-26T04:41:49.614373+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 1,
+      "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T03:51:17.184289+00:00",
-      "used_this_run": false
+      "at": "2026-11-26T04:41:49.614373+00:00",
+      "used_this_run": true
     },
     "goplus": {
-      "calls": 1,
+      "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T03:51:17.184289+00:00",
-      "used_this_run": false
+      "at": "2026-11-26T04:41:49.614373+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 21,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T04:31:12.047256+00:00",
+      "at": "2026-11-26T04:41:49.614373+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x4387c1583eea81a5dbfef659e063dd7c114d3d57b99b054690f9f63cf9bc1f27": "PASS|",
     "onchain:0xaecf9909e55f5e98b84a9a737db0238b87393e1a": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls",
     "0x9446a862e1955b626eb755b19255b31712793ae0e94fba1f28b11ba17436da18": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls",
-    "0x25ad31f9afb68c9804b5d1993ccbe97a722c6de6c58d61872bea31b8488076d2": "FAIL|Top 10 holders: 31.8% (need under 30%; pools, launchpad and burn addresses left out)"
+    "0x25ad31f9afb68c9804b5d1993ccbe97a722c6de6c58d61872bea31b8488076d2": "FAIL|Top 10 holders: 31.7% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
     "0x2edd2762ec5a928f749380309eca0e33941b3e3e": {
@@ -675,10 +667,20 @@
       "source": "geckoterminal",
       "liquidity_usd": 12266.7115,
       "market_cap_usd": 25877.59103
+    },
+    "0x012d695b94377e0c7b9edee3d824259baa37cf3a": {
+      "dex": "pons-v2-dex",
+      "graduated": "2026-11-26T04:31:52.308100+00:00",
+      "symbol": "SPARE",
+      "title": "SpareCycle",
+      "seen": "2026-11-26T04:41:49.614373+00:00",
+      "source": "chain",
+      "liquidity_usd": 13702.61,
+      "market_cap_usd": 31992.0
     }
   },
   "graduations": {
-    "at": "2026-11-26T04:31:12.047256+00:00",
+    "at": "2026-11-26T04:41:49.614373+00:00",
     "hours": 24,
     "seen": {
       "0x1f243c6638a6becd787f326b240227687a3835bc": "2026-11-25T05:26:39.038700+00:00",
@@ -690,9 +692,11 @@
       "0xc256e0fb1f93164b8e499746bba593a8e40a7eef": "2026-11-25T22:37:43.036800+00:00",
       "0xaecf9909e55f5e98b84a9a737db0238b87393e1a": "2026-11-26T00:02:18.387900+00:00",
       "0x8b1dd03f9c8c89293c7c27ed8fb0c67056459483": "2026-11-26T01:48:49.034000+00:00",
-      "0x33e8a3e73bfeb324a40164730c3659827f2cd3e8": "2026-11-26T02:57:19.640800+00:00"
+      "0x33e8a3e73bfeb324a40164730c3659827f2cd3e8": "2026-11-26T02:57:19.640800+00:00",
+      "0x012d695b94377e0c7b9edee3d824259baa37cf3a": "2026-11-26T04:31:52.308100+00:00"
     },
     "tokens": [
+      "0x012d695b94377e0c7b9edee3d824259baa37cf3a",
       "0x12a3f1a05d827007f17a43a250cce44868c4a263",
       "0x1f243c6638a6becd787f326b240227687a3835bc",
       "0x33e8a3e73bfeb324a40164730c3659827f2cd3e8",
@@ -704,7 +708,7 @@
       "0xaecf9909e55f5e98b84a9a737db0238b87393e1a",
       "0xc256e0fb1f93164b8e499746bba593a8e40a7eef"
     ],
-    "scanned_to": 123450850,
+    "scanned_to": 123454533,
     "complete": true
   },
   "issues_to_close": [],
@@ -714,7 +718,8 @@
     "0xc256e0fb1f93164b8e499746bba593a8e40a7eef": "2026-11-25T22:41:19.232297+00:00",
     "0xaecf9909e55f5e98b84a9a737db0238b87393e1a": "2026-11-26T00:11:25.580517+00:00",
     "0x8b1dd03f9c8c89293c7c27ed8fb0c67056459483": "2026-11-26T01:51:21.023764+00:00",
-    "0x33e8a3e73bfeb324a40164730c3659827f2cd3e8": "2026-11-26T03:01:36.799545+00:00"
+    "0x33e8a3e73bfeb324a40164730c3659827f2cd3e8": "2026-11-26T03:01:36.799545+00:00",
+    "0x012d695b94377e0c7b9edee3d824259baa37cf3a": "2026-11-26T04:41:49.614373+00:00"
   },
   "gecko_hours": {
     "2026-11-25 05:00": [
@@ -833,7 +838,7 @@
       1
     ],
     "2026-11-26 04:00": [
-      4,
+      5,
       0,
       0
     ]
