@@ -147,18 +147,20 @@
       "liquidity_usd": 15779.4783,
       "market_cap_usd": 46429.81025
     },
-    "onchain:0x33e8a3e73bfeb324a40164730c3659827f2cd3e8": {
-      "pool": null,
+    "0x25ad31f9afb68c9804b5d1993ccbe97a722c6de6c58d61872bea31b8488076d2": {
+      "pool": "0x25ad31f9afb68c9804b5d1993ccbe97a722c6de6c58d61872bea31b8488076d2",
       "dex": "pons-v2-dex",
       "token": "0x33e8a3e73bfeb324a40164730c3659827f2cd3e8",
       "name": "SCRPT",
-      "created": "2026-11-26T02:57:19.640800+00:00",
-      "source": "chain"
+      "title": "SCRAPT",
+      "created": "2026-11-26T02:57:18Z",
+      "liquidity_usd": 14379.1941,
+      "market_cap_usd": 35575.60084
     }
   },
   "checked": {
     "onchain:0x12a3f1a05d827007f17a43a250cce44868c4a263": {
-      "at": "2026-11-26T02:11:22.546255+00:00",
+      "at": "2026-11-26T03:11:40.932815+00:00",
       "passed": false,
       "failed": [
         "Market cap",
@@ -187,12 +189,11 @@
   },
   "sources": {
     "geckoterminal": {
-      "calls": 3,
-      "errors": 2,
-      "rate_limited": 2,
-      "error": "api.geckoterminal.com said 'too many requests' (HTTP 429)",
+      "calls": 2,
+      "errors": 0,
+      "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T03:01:36.799545+00:00",
+      "at": "2026-11-26T03:11:40.932815+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -200,7 +201,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T03:01:36.799545+00:00",
+      "at": "2026-11-26T03:11:40.932815+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -216,12 +217,12 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T03:01:36.799545+00:00",
+      "at": "2026-11-26T03:11:40.932815+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "onchain:0x12a3f1a05d827007f17a43a250cce44868c4a263": "FAIL|Market cap: $24,277 (need $25,000+); More buys than sells (1h): 7 buys vs 9 sells",
+    "onchain:0x12a3f1a05d827007f17a43a250cce44868c4a263": "FAIL|Market cap: $21,947 (need $25,000+); More buys than sells (1h): 8 buys vs 11 sells",
     "0x4387c1583eea81a5dbfef659e063dd7c114d3d57b99b054690f9f63cf9bc1f27": "PASS|",
     "onchain:0xaecf9909e55f5e98b84a9a737db0238b87393e1a": "FAIL|More buys than sells (1h): 12 buys vs 19 sells",
     "0x9446a862e1955b626eb755b19255b31712793ae0e94fba1f28b11ba17436da18": "FAIL|More buys than sells (1h): 228 buys vs 250 sells"
@@ -676,17 +677,17 @@
     },
     "0x33e8a3e73bfeb324a40164730c3659827f2cd3e8": {
       "dex": "pons-v2-dex",
-      "graduated": "2026-11-26T02:57:19.640800+00:00",
+      "graduated": "2026-11-26T02:57:18Z",
       "symbol": "SCRPT",
       "title": "SCRAPT",
-      "seen": "2026-11-26T03:01:36.799545+00:00",
-      "source": "chain",
-      "liquidity_usd": 14110.28,
-      "market_cap_usd": 34267.0
+      "seen": "2026-11-26T03:11:40.932815+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 14379.1941,
+      "market_cap_usd": 35575.60084
     }
   },
   "graduations": {
-    "at": "2026-11-26T03:01:36.799545+00:00",
+    "at": "2026-11-26T03:11:40.932815+00:00",
     "hours": 24,
     "seen": {
       "0x1f243c6638a6becd787f326b240227687a3835bc": "2026-11-25T05:26:39.038700+00:00",
@@ -712,7 +713,7 @@
       "0xaecf9909e55f5e98b84a9a737db0238b87393e1a",
       "0xc256e0fb1f93164b8e499746bba593a8e40a7eef"
     ],
-    "scanned_to": 123418677,
+    "scanned_to": 123422347,
     "complete": true
   },
   "issues_to_close": [],
@@ -841,7 +842,7 @@
       0
     ],
     "2026-11-26 03:00": [
-      1,
+      2,
       1,
       1
     ]
