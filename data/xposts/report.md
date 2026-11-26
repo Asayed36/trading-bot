@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-26 16:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-26 18:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-293 post(s), 147 matching launch(es).
+296 post(s), 147 matching launch(es).
 
 ## Ticker mentions
 
@@ -46,14 +46,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 5 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 43 | 31 | 17 other, 14 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 21 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2738: 2738 per-account limit |
-| @justinsuntron | 47 | 22 | 8 other, 14 not recorded | 1918: 1918 per-account limit |
+| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2798: 2798 per-account limit |
+| @justinsuntron | 47 | 22 | 8 other, 14 not recorded | 1978: 1978 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
-| @muststopmurad | 37 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
+| @muststopmurad | 38 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
-| @saylor | 22 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 25 other, 15 not recorded | 3813: 3813 per-account limit |
+| @saylor | 24 | 1 | 1 other | 207: 207 per-account limit |
+| @toly | 49 | 40 | 25 other, 15 not recorded | 3873: 3873 per-account limit |
 | @vitalikbuterin | 3 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1970,4 +1970,19 @@ No matching launch in the next 10 minutes.
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 178 s | trench | trench life | life | price not recorded |  |  |  |  |
+
+## @MustStopMurad 2026-11-26 16:05:04 UTC (post 2125984189044740452)
+> The coming Bull Run will be Glorious. But now is when that Glory is earned.
+
+No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-26 17:43:30 UTC (post 2126008963850518995)
+> Fix the Money, Fix the World https://t.co/oDMci9tM6D
+
+No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-26 17:44:38 UTC (post 2126009248190800326)
+> https://t.co/3ODgwVqibK
+
+No matching launch in the next 10 minutes.
 
