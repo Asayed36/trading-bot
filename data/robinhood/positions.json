@@ -139,14 +139,6 @@
       "liquidity_usd": 14379.1941,
       "market_cap_usd": 35575.60084
     },
-    "onchain:0x6f6a3a9b30f783ef9f9f8651e49b797b8c2aa117": {
-      "pool": null,
-      "dex": "pons-v2-dex",
-      "token": "0x6f6a3a9b30f783ef9f9f8651e49b797b8c2aa117",
-      "name": "FEM",
-      "created": "2026-11-26T04:44:52.994400+00:00",
-      "source": "chain"
-    },
     "onchain:0xc5d6c1d90c8a87a07e2670b99b1556e818803228": {
       "pool": null,
       "dex": "pons-v2-dex",
@@ -164,6 +156,16 @@
       "created": "2026-11-26T04:31:55Z",
       "liquidity_usd": 12525.1943,
       "market_cap_usd": 26929.49332
+    },
+    "0xee859438b9511a5f4182244c4bcfa1fbeaa3b78f5546442fc0551146fce5fd7b": {
+      "pool": "0xee859438b9511a5f4182244c4bcfa1fbeaa3b78f5546442fc0551146fce5fd7b",
+      "dex": "pons-v2-dex",
+      "token": "0x6f6a3a9b30f783ef9f9f8651e49b797b8c2aa117",
+      "name": "FEM",
+      "title": "Femeora",
+      "created": "2026-11-26T04:45:10Z",
+      "liquidity_usd": null,
+      "market_cap_usd": 24653.83216
     }
   },
   "checked": {
@@ -194,6 +196,20 @@
       "failed": [
         "Top 10 holders"
       ]
+    },
+    "0xee859438b9511a5f4182244c4bcfa1fbeaa3b78f5546442fc0551146fce5fd7b": {
+      "at": "2026-11-26T05:21:07.656692+00:00",
+      "passed": false,
+      "failed": [
+        "Market cap"
+      ]
+    },
+    "onchain:0xc5d6c1d90c8a87a07e2670b99b1556e818803228": {
+      "at": "2026-11-26T05:21:07.656692+00:00",
+      "passed": false,
+      "failed": [
+        "Holders"
+      ]
     }
   },
   "sources": {
@@ -202,7 +218,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T05:11:28.667665+00:00",
+      "at": "2026-11-26T05:21:07.656692+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -210,7 +226,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T05:11:28.667665+00:00",
+      "at": "2026-11-26T05:21:07.656692+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -218,15 +234,15 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T05:11:28.667665+00:00",
+      "at": "2026-11-26T05:21:07.656692+00:00",
       "used_this_run": true
     },
     "rpc": {
-      "calls": 14,
+      "calls": 13,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T05:11:28.667665+00:00",
+      "at": "2026-11-26T05:21:07.656692+00:00",
       "used_this_run": true
     }
   },
@@ -234,7 +250,9 @@
     "onchain:0xaecf9909e55f5e98b84a9a737db0238b87393e1a": "FAIL|More buys than sells (1h): 5 buys vs 8 sells",
     "0x9446a862e1955b626eb755b19255b31712793ae0e94fba1f28b11ba17436da18": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls",
     "0x25ad31f9afb68c9804b5d1993ccbe97a722c6de6c58d61872bea31b8488076d2": "FAIL|Top 10 holders: 31.7% (need under 30%; pools, launchpad and burn addresses left out)",
-    "0x6c779d26cc59abb9f22d348257ee013b66d2a5f0d9dcf1bb9fa9338874eab1bd": "FAIL|Top 10 holders: 34.9% (need under 30%; pools, launchpad and burn addresses left out)"
+    "0x6c779d26cc59abb9f22d348257ee013b66d2a5f0d9dcf1bb9fa9338874eab1bd": "FAIL|Top 10 holders: 34.9% (need under 30%; pools, launchpad and burn addresses left out)",
+    "0xee859438b9511a5f4182244c4bcfa1fbeaa3b78f5546442fc0551146fce5fd7b": "FAIL|Market cap: $24,564 (need $25,000+)",
+    "onchain:0xc5d6c1d90c8a87a07e2670b99b1556e818803228": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls"
   },
   "launchpad_tokens": {
     "0x2edd2762ec5a928f749380309eca0e33941b3e3e": {
@@ -719,14 +737,14 @@
       "graduated": "2026-11-26T04:44:52.994400+00:00",
       "symbol": "FEM",
       "title": "Femeora",
-      "seen": "2026-11-26T04:51:30.264336+00:00",
-      "source": "chain",
+      "seen": "2026-11-26T05:21:07.656692+00:00",
+      "source": "geckoterminal",
       "liquidity_usd": 12275.95,
-      "market_cap_usd": 25358.0
+      "market_cap_usd": 24653.83216
     }
   },
   "graduations": {
-    "at": "2026-11-26T05:11:28.667665+00:00",
+    "at": "2026-11-26T05:21:07.656692+00:00",
     "hours": 24,
     "seen": {
       "0x1f243c6638a6becd787f326b240227687a3835bc": "2026-11-25T05:26:39.038700+00:00",
@@ -758,7 +776,7 @@
       "0xc256e0fb1f93164b8e499746bba593a8e40a7eef",
       "0xc5d6c1d90c8a87a07e2670b99b1556e818803228"
     ],
-    "scanned_to": 123464885,
+    "scanned_to": 123468457,
     "complete": true
   },
   "issues_to_close": [],
@@ -890,7 +908,7 @@
       0
     ],
     "2026-11-26 05:00": [
-      2,
+      3,
       0,
       0
     ]
