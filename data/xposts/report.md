@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-26 02:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-26 04:05 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-276 post(s), 138 matching launch(es).
+278 post(s), 139 matching launch(es).
 
 ## Ticker mentions
 
@@ -23,8 +23,8 @@ Latest mentions (newest first; candidates = different tokens with that symbol in
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 2026-11-25 14:53 | @saylor | $STRC | STRC (base) | 3 | no | 1.1 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-25 12:57 | @saylor | $STRC | STRC (base) | 3 | no | 1.0 min | – | +0.0% | +0.0% | +0.0% | – |
-| 2026-11-25 00:46 | @saylor | $STRC | STRC (base) | 3 | no | 1.8 min | – | +0.0% | +0.0% | +0.0% | – |
-| 2026-11-24 21:31 | @saylor | $STRC | STRC (base) | 3 | no | 0.4 min | – | +0.0% | +0.0% | +0.0% | – |
+| 2026-11-25 00:46 | @saylor | $STRC | STRC (base) | 3 | no | 1.8 min | – | +0.0% | +0.0% | +0.0% | +1.4% |
+| 2026-11-24 21:31 | @saylor | $STRC | STRC (base) | 3 | no | 0.4 min | – | +0.0% | +0.0% | +0.0% | missed |
 | 2026-11-24 13:31 | @cz_binance | $SPCX | SPCX (solana) | 13 | no | 0.7 min | – | +0.0% | +0.0% | +0.0% | +0.0% |
 | 2026-11-23 19:36 | @blknoiz06 | $NVDA | NVDA (robinhood) | 7 | no | 265.4 min | -0.8% | missed | missed | missed | -7.6% |
 | 2026-11-23 17:02 | @saylor | $STRC | STRC (base) | 5 | no | 2.1 min | – | +0.0% | +0.0% | +0.0% | -0.1% |
@@ -43,15 +43,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 |---|---|---|---|---|
 | @a1lon9 | 5 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 43 | 31 | 17 other, 14 not recorded | 2629: 2629 per-account limit |
-| @cz_binance | 19 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 45 | 30 | 17 other, 13 not recorded | 2489: 2489 per-account limit |
+| @cz_binance | 20 | 1 | 1 not recorded | 80: 80 per-account limit |
+| @elonmusk | 46 | 30 | 17 other, 13 not recorded | 2489: 2489 per-account limit |
 | @justinsuntron | 42 | 22 | 8 other, 14 not recorded | 1791: 1791 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
 | @muststopmurad | 34 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 21 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 25 other, 15 not recorded | 3395: 3395 per-account limit |
+| @toly | 49 | 40 | 25 other, 15 not recorded | 3453: 3453 per-account limit |
 
 ## Posts and the launches after them
 
@@ -1834,4 +1834,22 @@ No matching launch in the next 10 minutes.
 > svm-lean reduced the percolator ix CUs by 10x compared to the vibe coded rust version 🤯🤯🤯
 
 No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-26 02:17:33 UTC (post 2125775937405137135)
+> If you use 1Password, recommend you to change ALL your passwords. It's a pain in the neck, but necessary. https://t.co/p5XpheMwVv
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-26 03:43:05 UTC (post 2125797463047258119)
+> Every child in America will receive two SpaceX shares, one from the company and one from me personally
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| ameri | america | +0%, no liq @1.9m | +420%, no liq @6.0m | – | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 525 s | ameri | america russiar | america | price not recorded |  |  |  |  |
 
