@@ -1,28 +1,30 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-26 12:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-26 14:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-290 post(s), 146 matching launch(es).
+293 post(s), 147 matching launch(es).
 
 ## Ticker mentions
 
 Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EVM addresses in the saved posts (at most 5 a post), each looked up once on DexScreener. Changes are from the price at the first check (not the post's own time); BTC is over the same real times, from the once-a-minute price log. "large": BTC, ETH, SOL, BNB, XRP, DOGE or above $5 billion. A handful of mentions says nothing yet; a mention is not a cause.
 
-13 mention(s) in 11 post(s): 13 identified.
+15 mention(s) in 12 post(s): 15 identified.
 
 | Account | Coins | Mentions | 5m coin avg / median (n) | 5m BTC avg / median | 15m coin avg / median (n) | 15m BTC avg / median | 60m coin avg / median (n) | 60m BTC avg / median |
 |---|---|---|---|---|---|---|---|---|
 | @blknoiz06 | small | 1 | –, 1 missed | – | –, 1 missed | – | –, 1 missed | – |
 | @cz_binance | small | 1 | +0.00% / +0.00% (1) | +0.07% / +0.07% | +0.00% / +0.00% (1) | +0.13% / +0.13% | +0.00% / +0.00% (1) | +0.81% / +0.81% |
 | @saylor | large | 2 | +0.00% / +0.00% (2) | +0.14% / +0.14% | +0.00% / +0.00% (2) | +0.43% / +0.43% | +0.00% / +0.00% (2) | +1.51% / +1.51% |
-| @saylor | small | 9 | +0.01% / +0.00% (9) | +0.06% / +0.08% | +0.01% / +0.00% (9) | +0.08% / -0.03% | +0.85% / +0.00% (9) | +0.97% / +0.11% |
+| @saylor | small | 11 | -0.02% / +0.00% (11) | +0.04% / -0.03% | -0.02% / +0.00% (11) | +0.07% / -0.03% | +0.85% / +0.00% (9) | +0.97% / +0.11% |
 
 Latest mentions (newest first; candidates = different tokens with that symbol in DexScreener's search answer, so more than 1 means the ticker is ambiguous):
 
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| 2026-11-26 13:15 | @saylor | $TSLA | TSLA (solana) | 5 | no | 1.2 min | +0.1% | +0.0% | +0.0% | – | – |
+| 2026-11-26 13:15 | @saylor | $MSTR | MSTR (robinhood) | 9 | no | 1.2 min | +0.1% | -0.2% | -0.2% | – | – |
 | 2026-11-25 14:53 | @saylor | $STRC | STRC (base) | 3 | no | 1.1 min | – | +0.0% | +0.0% | +0.0% | – |
-| 2026-11-25 12:57 | @saylor | $STRC | STRC (base) | 3 | no | 1.0 min | – | +0.0% | +0.0% | +0.0% | – |
+| 2026-11-25 12:57 | @saylor | $STRC | STRC (base) | 3 | no | 1.0 min | – | +0.0% | +0.0% | +0.0% | +1.4% |
 | 2026-11-25 00:46 | @saylor | $STRC | STRC (base) | 3 | no | 1.8 min | – | +0.0% | +0.0% | +0.0% | +1.4% |
 | 2026-11-24 21:31 | @saylor | $STRC | STRC (base) | 3 | no | 0.4 min | – | +0.0% | +0.0% | +0.0% | missed |
 | 2026-11-24 13:31 | @cz_binance | $SPCX | SPCX (solana) | 13 | no | 0.7 min | – | +0.0% | +0.0% | +0.0% | +0.0% |
@@ -43,15 +45,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 |---|---|---|---|---|
 | @a1lon9 | 5 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 43 | 31 | 17 other, 14 not recorded | 2629: 2629 per-account limit |
-| @cz_binance | 20 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2618: 2618 per-account limit |
-| @justinsuntron | 47 | 22 | 8 other, 14 not recorded | 1798: 1798 per-account limit |
+| @cz_binance | 21 | 1 | 1 not recorded | 80: 80 per-account limit |
+| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2678: 2678 per-account limit |
+| @justinsuntron | 47 | 22 | 8 other, 14 not recorded | 1858: 1858 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
-| @muststopmurad | 36 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
+| @muststopmurad | 37 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
-| @saylor | 21 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 25 other, 15 not recorded | 3693: 3693 per-account limit |
+| @saylor | 22 | 1 | 1 other | 207: 207 per-account limit |
+| @toly | 49 | 40 | 25 other, 15 not recorded | 3753: 3753 per-account limit |
 | @vitalikbuterin | 3 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1936,11 +1938,11 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| Parabolic | ascent, parabolic | +0%, no liq @1.6m | -0%, no liq @5.8m | -0%, no liq @15.0m | – | – | no |
+| Parabolic | ascent, parabolic | +0%, no liq @1.6m | -0%, no liq @5.8m | -0%, no liq @15.0m | -0%, no liq @60.4m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 64 s | Parabolic | Parabolic ascent | ascent, parabolic | price not recorded |  |  |  |  |
+| 64 s | Parabolic | Parabolic ascent | ascent, parabolic | +0% | -29% | -29% | -29% | +1% (0 s) |
 
 ## @justinsuntron 2026-11-26 11:30:01 UTC (post 2125914970835788118)
 > Good to see @allscaleio adding support for USDT on TRON. 🔻 https://t.co/oeGjEoxfmU
@@ -1951,4 +1953,21 @@ No matching launch in the next 10 minutes.
 > 看到小红书上有人质疑我的财富量级。就这么说吧：昨天我写代码做任务，敢让Claude Fable 5.2 Ultracode 跑了 11 个小时。 开的是 API，按量计费。
 
 No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-26 12:29:51 UTC (post 2125930030572437822)
+> Keep building! https://t.co/HyXXmgwOuv
+
+No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-26 13:15:03 UTC (post 2125941406128607460)
+> Relative to market cap, $MSTR had 4.4× the options open interest of Tesla, the leader among the Magnificent Seven. Open contracts on $MSTR r
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-26 13:50:01 UTC (post 2125950204452950505)
+> Those who accept that transforming their life takes years, have transformed their life the moment they accepted this. In the meantime, every
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 178 s | trench | trench life | life | price not recorded |  |  |  |  |
 
