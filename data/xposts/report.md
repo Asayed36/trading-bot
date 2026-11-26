@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-26 06:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-26 07:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-282 post(s), 139 matching launch(es).
+284 post(s), 142 matching launch(es).
 
 ## Ticker mentions
 
@@ -45,14 +45,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @blknoiz06 | 43 | 31 | 17 other, 14 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 20 | 1 | 1 not recorded | 80: 80 per-account limit |
 | @elonmusk | 47 | 30 | 17 other, 13 not recorded | 2489: 2489 per-account limit |
-| @justinsuntron | 43 | 22 | 8 other, 14 not recorded | 1791: 1791 per-account limit |
+| @justinsuntron | 44 | 22 | 8 other, 14 not recorded | 1791: 1791 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
 | @muststopmurad | 34 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 21 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 25 other, 15 not recorded | 3513: 3513 per-account limit |
-| @vitalikbuterin | 2 | 0 | – | – |
+| @toly | 49 | 40 | 25 other, 15 not recorded | 3543: 3543 per-account limit |
+| @vitalikbuterin | 3 | 0 | – | – |
 
 ## Posts and the launches after them
 
@@ -1871,6 +1871,34 @@ No matching launch in the next 10 minutes.
 
 ## @elonmusk 2026-11-26 06:01:08 UTC (post 2125832205301878841)
 > The share from SpaceX will be transferred next month. The share directly from me will be transferred when my lockup expires in June next yea
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| SPACEX | spacex | +0%, no liq @1.3m | -13%, no liq @5.4m | -13%, no liq @15.6m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 514 s | SPACEX | SpaceX Coin | spacex | price not recorded |  |  |  |  |
+
+## @VitalikButerin 2026-11-26 06:59:30 UTC (post 2125846895822328103)
+> Cleverness is knowing that the elevator close button (at least in the US) doesn't actually make the door close any faster. Wisdom is ignorin
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| WI | wisdom | missed | – | – | – | – | no |
+| WI | wisdom | missed | – | – | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 25 s | WI | wisdom inu | wisdom | price not recorded |  |  |  |  |
+| 41 s | WI | wisdom inu | wisdom | price not recorded |  |  |  |  |
+
+## @justinsuntron 2026-11-26 07:00:02 UTC (post 2125847026265149474)
+> Sunday on the Main Stage. See you in Bangkok. 🇹🇭 https://t.co/x5xI3Yo3xV
 
 No matching launch in the next 10 minutes.
 
