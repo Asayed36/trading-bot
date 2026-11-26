@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-26 08:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-26 09:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 286 post(s), 145 matching launch(es).
 
@@ -44,14 +44,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 5 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 43 | 31 | 17 other, 14 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 20 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2498: 2498 per-account limit |
+| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2528: 2528 per-account limit |
 | @justinsuntron | 44 | 22 | 8 other, 14 not recorded | 1791: 1791 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
 | @muststopmurad | 35 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 21 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 25 other, 15 not recorded | 3573: 3573 per-account limit |
+| @toly | 49 | 40 | 25 other, 15 not recorded | 3603: 3603 per-account limit |
 | @vitalikbuterin | 3 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1889,8 +1889,8 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| WI | wisdom | missed | missed | missed | – | – | no |
-| WI | wisdom | missed | missed | missed | – | – | no |
+| WI | wisdom | missed | missed | missed | missed | – | no |
+| WI | wisdom | missed | missed | missed | missed | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
@@ -1914,13 +1914,13 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| att | attention | +0%, no liq @2.0m | -18%, no liq @5.1m | – | – | – | no |
-| ANSEM69 | bull | +0%, no liq @1.9m | – | – | – | – | no |
-| ANSEM15 | bull | +0%, no liq @1.9m | – | – | – | – | no |
+| att | attention | +0%, no liq @2.0m | -18%, no liq @5.1m | -18%, no liq @15.6m | -18%, no liq @60.9m | – | no |
+| ANSEM69 | bull | +0%, no liq @1.9m | +0%, no liq @5.2m | +26%, no liq @15.5m | -1%, no liq @60.9m | – | no |
+| ANSEM15 | bull | +0%, no liq @1.9m | -1%, no liq @5.2m | -1%, no liq @15.5m | -13%, no liq @60.8m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
-| 195 s | att | attention | attention | price not recorded |  |  |  |  |
+| 195 s | att | attention | attention | -61% | -100% | -100% | -100% | +42% (1 s) |
 | 506 s | ANSEM69 | The Black Bull 69 | bull | price not recorded |  |  |  |  |
-| 509 s | ANSEM15 | The Black Bull 1.5 | bull | price not recorded |  |  |  |  |
+| 509 s | ANSEM15 | The Black Bull 1.5 | bull | +0% | +0% | +0% | -13% | +49% (1579 s) |
 
