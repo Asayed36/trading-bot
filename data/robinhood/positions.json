@@ -111,14 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "onchain:0x12a3f1a05d827007f17a43a250cce44868c4a263": {
-      "pool": null,
-      "dex": "pons-v2-dex",
-      "token": "0x12a3f1a05d827007f17a43a250cce44868c4a263",
-      "name": "OCULON",
-      "created": "2026-11-25T21:22:25.911600+00:00",
-      "source": "chain"
-    },
     "0x4387c1583eea81a5dbfef659e063dd7c114d3d57b99b054690f9f63cf9bc1f27": {
       "pool": "0x4387c1583eea81a5dbfef659e063dd7c114d3d57b99b054690f9f63cf9bc1f27",
       "dex": "pons-v2-dex",
@@ -159,14 +151,6 @@
     }
   },
   "checked": {
-    "onchain:0x12a3f1a05d827007f17a43a250cce44868c4a263": {
-      "at": "2026-11-26T03:11:40.932815+00:00",
-      "passed": false,
-      "failed": [
-        "Market cap",
-        "More buys than sells (1h)"
-      ]
-    },
     "0x4387c1583eea81a5dbfef659e063dd7c114d3d57b99b054690f9f63cf9bc1f27": {
       "at": "2026-11-26T01:31:16.018354+00:00",
       "passed": true,
@@ -180,10 +164,17 @@
       ]
     },
     "0x9446a862e1955b626eb755b19255b31712793ae0e94fba1f28b11ba17436da18": {
-      "at": "2026-11-26T02:21:41.291981+00:00",
+      "at": "2026-11-26T03:31:25.051945+00:00",
       "passed": false,
       "failed": [
-        "More buys than sells (1h)"
+        "Holders"
+      ]
+    },
+    "0x25ad31f9afb68c9804b5d1993ccbe97a722c6de6c58d61872bea31b8488076d2": {
+      "at": "2026-11-26T03:31:25.051945+00:00",
+      "passed": false,
+      "failed": [
+        "Top 10 holders"
       ]
     }
   },
@@ -193,7 +184,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T03:21:40.178481+00:00",
+      "at": "2026-11-26T03:31:25.051945+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -201,31 +192,31 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T03:11:40.932815+00:00",
-      "used_this_run": false
+      "at": "2026-11-26T03:31:25.051945+00:00",
+      "used_this_run": true
     },
     "goplus": {
-      "calls": 1,
+      "calls": 2,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T01:31:16.018354+00:00",
-      "used_this_run": false
+      "at": "2026-11-26T03:31:25.051945+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
+      "calls": 22,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T03:21:40.178481+00:00",
+      "at": "2026-11-26T03:31:25.051945+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "onchain:0x12a3f1a05d827007f17a43a250cce44868c4a263": "FAIL|Market cap: $21,947 (need $25,000+); More buys than sells (1h): 8 buys vs 11 sells",
     "0x4387c1583eea81a5dbfef659e063dd7c114d3d57b99b054690f9f63cf9bc1f27": "PASS|",
     "onchain:0xaecf9909e55f5e98b84a9a737db0238b87393e1a": "FAIL|More buys than sells (1h): 12 buys vs 19 sells",
-    "0x9446a862e1955b626eb755b19255b31712793ae0e94fba1f28b11ba17436da18": "FAIL|More buys than sells (1h): 228 buys vs 250 sells"
+    "0x9446a862e1955b626eb755b19255b31712793ae0e94fba1f28b11ba17436da18": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls",
+    "0x25ad31f9afb68c9804b5d1993ccbe97a722c6de6c58d61872bea31b8488076d2": "FAIL|Top 10 holders: 31.8% (need under 30%; pools, launchpad and burn addresses left out)"
   },
   "launchpad_tokens": {
     "0x2edd2762ec5a928f749380309eca0e33941b3e3e": {
@@ -687,7 +678,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-26T03:21:40.178481+00:00",
+    "at": "2026-11-26T03:31:25.051945+00:00",
     "hours": 24,
     "seen": {
       "0x1f243c6638a6becd787f326b240227687a3835bc": "2026-11-25T05:26:39.038700+00:00",
@@ -713,7 +704,7 @@
       "0xaecf9909e55f5e98b84a9a737db0238b87393e1a",
       "0xc256e0fb1f93164b8e499746bba593a8e40a7eef"
     ],
-    "scanned_to": 123426093,
+    "scanned_to": 123429636,
     "complete": true
   },
   "issues_to_close": [],
@@ -842,7 +833,7 @@
       0
     ],
     "2026-11-26 03:00": [
-      3,
+      4,
       1,
       1
     ]
