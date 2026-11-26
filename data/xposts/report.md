@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-25 23:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-26 00:06 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-319 post(s), 174 matching launch(es).
+275 post(s), 138 matching launch(es).
 
 ## Ticker mentions
 
@@ -41,400 +41,19 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
-| @a1lon9 | 7 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 49 | 33 | 17 other, 16 not recorded | 2629: 2629 per-account limit |
-| @cz_binance | 20 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 30 | 14 other, 16 not recorded | 2463: 2463 per-account limit |
-| @justinsuntron | 47 | 21 | 7 other, 14 not recorded | 1765: 1765 per-account limit |
-| @mrbeast | 6 | 0 | – | – |
-| @muststopmurad | 40 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
-| @pumpfun | 38 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
+| @a1lon9 | 5 | 0 | – | 1: 1 X error or pause |
+| @blknoiz06 | 43 | 31 | 17 other, 14 not recorded | 2629: 2629 per-account limit |
+| @cz_binance | 19 | 1 | 1 not recorded | 80: 80 per-account limit |
+| @elonmusk | 45 | 30 | 17 other, 13 not recorded | 2489: 2489 per-account limit |
+| @justinsuntron | 42 | 22 | 8 other, 14 not recorded | 1791: 1791 per-account limit |
+| @mrbeast | 5 | 0 | – | – |
+| @muststopmurad | 34 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
+| @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
-| @saylor | 22 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 51 | 40 | 20 other, 20 not recorded | 3330: 3330 per-account limit |
-| @vitalikbuterin | 1 | 0 | – | – |
+| @saylor | 21 | 1 | 1 other | 207: 207 per-account limit |
+| @toly | 48 | 40 | 25 other, 15 not recorded | 3356: 3356 per-account limit |
 
 ## Posts and the launches after them
-
-## @toly 2026-11-18 00:31:09 UTC (post 2122850058076889524)
-> 👑👑👑 https://t.co/reQlWwKPKB
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-18 00:31:22 UTC (post 2122850115752784158)
-> 🐐🐐🐐 https://t.co/scYkzOP4TV
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-18 00:31:39 UTC (post 2122850184627446023)
-> 🐐🐐🐐 https://t.co/sASPAEVpwL
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-18 01:06:20 UTC (post 2122858913791877613)
-> Going Live on the SPX6900 Into the Cognisphere Podcast https://t.co/fmu1IIYH5G
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| innit | going | missed | +0%, no liq @5.1m | +0%, no liq @15.4m | +0%, no liq @60.0m | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 313 s | YO | HIS LIVE, LETS HELP HIM | live | price not recorded |  |  |  |  |
-| 313 s | YO | HIS LIVE, LETS HELP HIM | live | price not recorded |  |  |  |  |
-| 316 s | YO | HIS LIVE, LETS HELP HIM | live | price not recorded |  |  |  |  |
-| 322 s | YO | HIS LIVE, LETS HELP HIM | live | price not recorded |  |  |  |  |
-| 323 s | YO | HIS LIVE, LETS HELP HIM | live | price not recorded |  |  |  |  |
-| 332 s | YO | HIS LIVE, LETS HELP HIM | live | price not recorded |  |  |  |  |
-| 461 s | innit | I'm going to miss GTA, innit? | going | price not recorded |  |  |  |  |
-
-## @elonmusk 2026-11-18 01:36:43 UTC (post 2122866559425384674)
-> Super intelligence will hack your limbic system https://t.co/r0DDc4N87q
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| lsc | limbic, system | +0%, no liq @1.6m | -0%, no liq @5.7m | -0%, no liq @15.1m | -2%, no liq @60.6m | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 276 s | lsc | limbic system coin | limbic, system | price not recorded |  |  |  |  |
-
-## @elonmusk 2026-11-18 01:55:59 UTC (post 2122871410561593384)
-> True, Starship launches are incredibly exciting https://t.co/cDuzCHAXH2
-
-No matching launch in the next 10 minutes.
-
-## @elonmusk 2026-11-18 01:59:08 UTC (post 2122872199623414175)
-> Grok @Bot can save you millions in corporate expenses! It will research every expenditure, evaluate its necessity and find better deals on t
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-18 02:22:18 UTC (post 2122878032222282095)
-> no way theyre nuking the nvda earnings pump omg
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-18 02:22:40 UTC (post 2122878125625262334)
-> if they do this the same way they did micron earnings in june we are in for a world of hurt
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-18 02:46:00 UTC (post 2122883994509607314)
-> Good to see more regions exploring stablecoins. 🌐 https://t.co/GySaP4uK78
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-18 03:00:40 UTC (post 2122887688596418666)
-> this is nasty man
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-18 03:02:41 UTC (post 2122888193007894913)
-> which asset should i do a ta video for
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-18 04:55:00 UTC (post 2122916458212753422)
-> .@aave App now supports USDT on #TRON. 🔻 https://t.co/qzzO5aIOMz
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-18 05:00:16 UTC (post 2122917786897031443)
-> AI 是懂行的 https://t.co/EAnCoMG5Gb
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-18 05:00:51 UTC (post 2122917930291929262)
-> 会越来越高的 https://t.co/1KIMFGYC7g
-
-No matching launch in the next 10 minutes.
-
-## @VitalikButerin 2026-11-18 05:51:14 UTC (post 2122930611027611873)
-> One benefit of younger generations investing more in stonks and other digital things instead of housing is that it reduces perverse incentiv
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| STONKS | stonks | missed | missed | missed | missed | – | no |
-| SLOP | digital | missed | missed | missed | missed | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 24 s | STONKS | STONKS | stonks | price not recorded |  |  |  |  |
-| 191 s | SLOP | Digital Slop | digital | price not recorded |  |  |  |  |
-| 467 s | trench | trench life | life | price not recorded |  |  |  |  |
-| 496 s | LIFE | Life Before GTA6 | life | price not recorded |  |  |  |  |
-| 535 s | LIFE | Life Before GTA6 | life | price not recorded |  |  |  |  |
-
-## @justinsuntron 2026-11-18 08:52:57 UTC (post 2122976341012496884)
-> Real-world payments on TRON. 🔻 https://t.co/0WFh1A7R9K
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 114 s | WSOP© | The World Series of Poker© | world | price not recorded |  |  |  |  |
-
-## @justinsuntron 2026-11-18 09:39:35 UTC (post 2122988077589373050)
-> 字节一家公司等同于做空了整个恒科与中概，有点类似于1644 年前的明朝，清军入关前你做多任何明末势力最终都是错误的 https://t.co/3BNkEikRGH
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-18 09:59:42 UTC (post 2122993139141185834)
-> 火币HTX美股零费率！交易美股来火币！ https://t.co/m6G2rAbZoP
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-18 10:10:37 UTC (post 2122995888284922105)
-> After almost 14 years in Crypto, I can say that by far the most important thing that determines the success of any crypto asset is its commu
-
-No matching launch in the next 10 minutes.
-
-## @elonmusk 2026-11-18 11:38:03 UTC (post 2123017891167785201)
-> Is the Thucydides Trap ever avoidable? I wish it were, but, inevitably, the most interesting outcome is the most likely.
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 233 s | TT | Thirst Trap | trap | +92% | +92% | +92% | +92% | +92% (49 s) |
-
-## @elonmusk 2026-11-18 11:48:25 UTC (post 2123020499680981231)
-> True https://t.co/WyyOxnaTUS
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-18 13:24:38 UTC (post 2123044712030294379)
-> Persistence is NECESSARY nut not SUFFICIENT. Belief is NECESSARY nut not SUFFICIENT. An epic Mission is NECESSARY nut not SUFFICIENT. Not gi
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-18 13:30:16 UTC (post 2123046132628471911)
-> Persistence is NECESSARY but not SUFFICIENT. Belief is NECESSARY but not SUFFICIENT. An epic Mission is NECESSARY but not SUFFICIENT. Not gi
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-18 13:42:01 UTC (post 2123049087503380810)
-> 📢 GPT-6.2 Astra &amp; GPT-6.2 Sol Are Now Live on https://t.co/Id9VsXTy4C https://t.co/BL2ivy95y4
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 231 s | GTALIVE | GTA LIVE | live | price not recorded |  |  |  |  |
-
-## @justinsuntron 2026-11-18 15:27:00 UTC (post 2123075506346328118)
-> Good to see @0xPolygon building on the TRON rails. https://t.co/XcNJpMu1Qs
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-18 15:31:41 UTC (post 2123076685977501731)
-> The SPX6900 community is collecting up all the holder, consistent and long-term believer types. And that’s the only type of participant that
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-18 15:36:44 UTC (post 2123077955006214441)
-> 一切才刚刚开始 $TRON https://t.co/mv4fGIeRaY
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-18 16:49:49 UTC (post 2123096349877174632)
-> 🐜🐜🐜 https://t.co/6KA6PmhSOa
-
-No matching launch in the next 10 minutes.
-
-## @saylor 2026-11-18 16:58:51 UTC (post 2123098624204710141)
-> Seller exhaustion will come long before Saylor exhaustion.
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| $BBH | before | +0%, no liq @1.1m | -69%, no liq @5.5m | -69%, no liq @15.9m | -69%, no liq @60.6m | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 350 s | $BBH | Bros before hos | before | -58% | -88% | -88% | -88% | +73% (27 s) |
-
-## @toly 2026-11-18 17:12:45 UTC (post 2123102118357995529)
-> This is my bitcoin 3.0; i hope solana has so much adoption that sol would be a part of this Kelley optimized portfolio https://t.co/EkAN5a6T
-
-No matching launch in the next 10 minutes.
-
-## @MrBeast 2026-11-18 17:13:17 UTC (post 2123102254031135211)
-> GTA 5 vs GTA 6 me https://t.co/AeJabVmcgE
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| GTA | gta | +0%, no liq @2.0m | +0%, no liq @5.1m | +0%, no liq @15.7m | +0%, no liq @60.3m | – | no |
-| GTA | gta | +0%, no liq @1.8m | +0%, no liq @6.0m | +0%, no liq @15.6m | +0%, no liq @60.1m | – | no |
-| GTA | gta | +0%, no liq @1.7m | +0%, no liq @5.9m | -14%, no liq @15.4m | -15%, no liq @60.0m | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 448 s | GTA | Gigantic Tits & Ass | gta | price not recorded |  |  |  |  |
-| 585 s | GTA | Grand thick ass | gta | +263% | +263% | +263% | +263% | +263% (10 s) |
-| 593 s | GTA | Vice City Lookouts | gta | +0% | +0% | -12% | -12% | +1% (419 s) |
-
-## @Pumpfun 2026-11-18 17:22:10 UTC (post 2123104489297326560)
-> The Pumpfun app &amp; web has every tool a pro perps trader needs: - 300+ Hyperliquid markets - Limit, TWAP, scale and trailing stop orders 
-
-No matching launch in the next 10 minutes.
-
-## @Pumpfun 2026-11-18 17:22:11 UTC (post 2123104493508481358)
-> What counts towards your PnL: - Your score is your realized PnL + your unrealized PnL, in USD - Realized PnL is net of fees, with funding in
-
-No matching launch in the next 10 minutes.
-
-## @Pumpfun 2026-11-18 17:22:12 UTC (post 2123104497841102959)
-> Leaderboard &amp; payouts: - The live leaderboard shows the top 100, and your rank card shows your own realized and unrealized PnL. Track it
-
-No matching launch in the next 10 minutes.
-
-## @Pumpfun 2026-11-18 17:22:13 UTC (post 2123104502370951181)
-> Who can trade Perps Hyperliquid is a third-party protocol, which https://t.co/CxsEJIFc8C does not operate. https://t.co/WWU97JhVgi is an app
-
-No matching launch in the next 10 minutes.
-
-## @Pumpfun 2026-11-18 17:22:16 UTC (post 2123104513812992053)
-> https://t.co/tOKeHIdR22
-
-No matching launch in the next 10 minutes.
-
-## @a1lon9 2026-11-18 17:27:53 UTC (post 2123105930166575280)
-> It's time to find out who the best onchain perps traders are! Since perps launched on the Pumpfun app, daily perps traders have grown over 1
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| traders | traders | +0%, no liq @1.9m | +0%, no liq @5.1m | +0%, no liq @15.8m | +0%, no liq @60.2m | – | no |
-| TRADERS | traders | +0%, no liq @1.8m | +0%, no liq @6.0m | +0%, no liq @15.7m | +0%, no liq @60.1m | – | no |
-| traders | traders | missed | missed | missed | missed | – | no |
-| traders | traders | +0%, no liq @1.9m | -0%, no liq @5.1m | -1%, no liq @15.8m | -1%, no liq @60.2m | – | no |
-| TRADERS | traders | +0%, no liq @1.8m | +0%, no liq @6.0m | +0%, no liq @15.8m | +0%, no liq @60.0m | – | no |
-| traders | traders | +0%, no liq @1.6m | +0%, no liq @5.8m | -0%, no liq @15.6m | -0%, no liq @61.0m | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 21 s | traders | May the best traders win | best, traders | price not recorded |  |  |  |  |
-| 28 s | TRADERS | May the best traders win | best, traders | price not recorded |  |  |  |  |
-| 30 s | traders | May the best traders win | best, traders | price not recorded |  |  |  |  |
-| 85 s | traders | May the traders win | traders | +84% | -67% | -69% | -69% | +145% (83 s) |
-| 219 s | TRADERS | Traders | traders | price not recorded |  |  |  |  |
-| 228 s | traders | May the traders win | traders | -67% | -68% | -68% | -68% | +12% (5 s) |
-
-## @toly 2026-11-18 17:45:29 UTC (post 2123110356331724968)
-> https://t.co/vP69I3TY8W https://t.co/bGVhhSIr2U
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-18 17:47:28 UTC (post 2123110858276618599)
-> Something biblical is coming. Mark my words.
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| BELIEVE | something | +0%, no liq @1.5m | +0%, no liq @5.7m | -1%, no liq @15.2m | -1%, no liq @60.4m | – | no |
-| BELIEVE | something | +0%, no liq @1.8m | -1%, no liq @6.0m | -1%, no liq @15.5m | -1%, no liq @60.6m | – | no |
-| BELIEVE | something | +0%, no liq @1.6m | +84%, liq $10,501 @5.8m | +562%, liq $21,121 @15.3m | -89%, liq $1,632 @60.4m | $23,564 | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 30 s | BELIEVE | Believe in something | something | -64% | -64% | -64% | -64% | +2% (6 s) |
-| 76 s | BELIEVE | Believe in something | something | +89% | -65% | -65% | -65% | +127% (32 s) |
-| 151 s | BELIEVE | Believe in something | something | +90% | +219% | +219% | +219% | +248% (150 s) |
-
-## @toly 2026-11-18 17:47:52 UTC (post 2123110955773235238)
-> Based https://t.co/h3Fp9zUKxT
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-18 17:54:40 UTC (post 2123112670278844720)
-> iight bros i fear we are approaching a do or die spot for the coins next few weeks
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-18 18:00:36 UTC (post 2123114160481337656)
-> we are here again, same level from the summer, 2021 previous all time highs, support level from most of 2024 range if we are at beginning of
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-18 18:05:14 UTC (post 2123115327248560334)
-> gmihao gamblers https://t.co/PyVZrNjsxy
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 60 s | gmihao gam | gmihao gamblers | gamblers, gmihao | price not recorded |  |  |  |  |
-
-## @blknoiz06 2026-11-18 18:05:57 UTC (post 2123115509545934939)
-> summoning all plumbers https://t.co/GfRNTt3m6t
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 85 s | PLUMBERS | the plumbers | plumbers | price not recorded |  |  |  |  |
-| 89 s | plumbers | summoning all plumbers | plumbers, summoning | price not recorded |  |  |  |  |
-
-## @blknoiz06 2026-11-18 18:06:30 UTC (post 2123115646473113905)
-> hey i think this one is good bros https://t.co/LbzaMVGHPU
-
-No matching launch in the next 10 minutes.
-
-## @a1lon9 2026-11-18 20:38:56 UTC (post 2123154008042852782)
-> Over the past month, 1,194 people made the equivalent of a PS5 from Callout Rewards. You could have called out coins on the Pumpfun app, pla
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| CALLING | calling, start | +0%, no liq @1.2m | -0%, no liq @5.4m | -0%, no liq @15.8m | -0%, no liq @60.6m | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 125 s | CALLING | Just start calling | calling, start | +0% | +0% | +0% | +0% | +0% (0 s) |
-
-## @elonmusk 2026-11-18 21:00:15 UTC (post 2123159371119280372)
-> We put a lot of thought into public safety https://t.co/HFinXIw3pq
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-18 21:09:38 UTC (post 2123161734479544382)
-> I love you all Look into SPX6900 Credit: @tradfinightmare @spiritualgold69 https://t.co/sxyI03bndm
-
-No matching launch in the next 10 minutes.
-
-## @elonmusk 2026-11-18 21:10:18 UTC (post 2123161902683746640)
-> Treat Grok @Bot like a really smart employee https://t.co/vxR4Hsx7Tv
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 265 s | BOT | ⛔️MAYHEM DONT BUY⛔️ | bot | -43% | -100% | -100% | -100% | +138% (0 s) |
-| 554 s | BOT | ⛔️MAYHEM DONT BUY⛔️ | bot | +277% | +277% | +277% | +277% | +277% (58 s) |
-
-## @elonmusk 2026-11-18 21:17:53 UTC (post 2123163808592265639)
-> Starlink saves lives https://t.co/8dhNQfrDnc
-
-No matching launch in the next 10 minutes.
-
-## @cz_binance 2026-11-18 21:57:37 UTC (post 2123173810333421717)
-> Tokenized ANT will be live on @BNBCHAIN on Day 1 of its IPO, via bStocks, Ondo, and xStocks: https://t.co/X9Q3mzFygE
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| ANT | ant | +0%, no liq @1.5m | +0%, no liq @5.7m | +0%, no liq @15.0m | +0%, no liq @60.9m | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 76 s | ANT | ANTHROPIC OFFICIAL | ant | price not recorded |  |  |  |  |
-
-## @toly 2026-11-18 23:54:02 UTC (post 2123203105303261522)
-> 👑👑👑 https://t.co/Ksy55gIWUW
-
-No matching launch in the next 10 minutes.
 
 ## @toly 2026-11-19 00:54:01 UTC (post 2123218201941250180)
 > 👑👑👑 https://t.co/mUY4n9huOC
@@ -2098,6 +1717,11 @@ No matching launch in the next 10 minutes.
 
 No matching launch in the next 10 minutes.
 
+## @justinsuntron 2026-11-25 12:33:02 UTC (post 2125568442250203359)
+> 我的豆包已经快一年没有打开了
+
+No matching launch in the next 10 minutes.
+
 ## @saylor 2026-11-25 12:57:21 UTC (post 2125574561735520444)
 > Stretch ($STRC) returned 13% over the past year, leading all six benchmarks shown. The S&amp;P 500 ETF gained 9%, while Bitcoin fell 32%. ht
 
@@ -2126,13 +1750,33 @@ post_match flags (DexScreener, recording only):
 |---|---|---|---|---|---|---|---|---|
 | 308 s | SI | Social Trading | social, trading | price not recorded |  |  |  |  |
 
+## @elonmusk 2026-11-25 19:07:42 UTC (post 2125667762324541673)
+> SpaceX Colossus 3 will greatly benefit the Arizona community https://t.co/l6KW6RkleF
+
+No matching launch in the next 10 minutes.
+
 ## @MrBeast 2026-11-25 19:10:55 UTC (post 2125668575075811551)
 > If you want a look behind the curtain on how a MrBeast video is made, watch this https://t.co/CYcaRUPasX
 
 No matching launch in the next 10 minutes.
 
+## @elonmusk 2026-11-25 19:12:53 UTC (post 2125669066388209784)
+> Interesting https://t.co/vywPrUlXEc
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-25 19:17:24 UTC (post 2125670205456257409)
+> Thanks Ron ❤️ My greatest privilege is being able to work with the incredibly talented people of SpaceX, Tesla, Neuralink and Boring Company
+
+No matching launch in the next 10 minutes.
+
 ## @MustStopMurad 2026-11-25 21:12:04 UTC (post 2125699060392919192)
 > One day you will wake up and see SPX6900 all over the news, valued at several hundred billion dollars You will think that you are “late” Onl
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-25 22:19:35 UTC (post 2125716053582078123)
+> Rust walked so lean could run
 
 No matching launch in the next 10 minutes.
 
@@ -2163,6 +1807,26 @@ No matching launch in the next 10 minutes.
 
 ## @Pumpfun 2026-11-25 22:32:45 UTC (post 2125719366297854231)
 > https://t.co/sR4r3cVbgy
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-25 22:55:12 UTC (post 2125725015098437732)
+> 👑👑👑 https://t.co/vKNCS4Nxwz
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-25 23:25:08 UTC (post 2125732548814987476)
+> 👑👑👑 https://t.co/PvfaaxcRfO
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-25 23:44:15 UTC (post 2125737358578618812)
+> 👑👑👑 https://t.co/qJWPGgOvyb
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-25 23:56:27 UTC (post 2125740430545617199)
+> BREAKING: BUG BOUNTY 69 rapidly strengthening pre singularity dollars are up for grabs to anyone that can exploit all the bugs lean-svm has 
 
 No matching launch in the next 10 minutes.
 
