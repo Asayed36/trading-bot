@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-26 18:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-26 19:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 296 post(s), 147 matching launch(es).
 
@@ -46,14 +46,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 5 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 43 | 31 | 17 other, 14 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 21 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2798: 2798 per-account limit |
-| @justinsuntron | 47 | 22 | 8 other, 14 not recorded | 1978: 1978 per-account limit |
+| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2828: 2828 per-account limit |
+| @justinsuntron | 47 | 22 | 8 other, 14 not recorded | 2008: 2008 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
 | @muststopmurad | 38 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 24 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 25 other, 15 not recorded | 3873: 3873 per-account limit |
+| @toly | 49 | 40 | 25 other, 15 not recorded | 3903: 3903 per-account limit |
 | @vitalikbuterin | 3 | 0 | – | – |
 
 ## Posts and the launches after them
