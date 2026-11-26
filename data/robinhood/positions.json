@@ -139,14 +139,6 @@
       "liquidity_usd": 14379.1941,
       "market_cap_usd": 35575.60084
     },
-    "onchain:0xc5d6c1d90c8a87a07e2670b99b1556e818803228": {
-      "pool": null,
-      "dex": "pons-v2-dex",
-      "token": "0xc5d6c1d90c8a87a07e2670b99b1556e818803228",
-      "name": "BELL",
-      "created": "2026-11-26T04:50:46.147200+00:00",
-      "source": "chain"
-    },
     "0x6c779d26cc59abb9f22d348257ee013b66d2a5f0d9dcf1bb9fa9338874eab1bd": {
       "pool": "0x6c779d26cc59abb9f22d348257ee013b66d2a5f0d9dcf1bb9fa9338874eab1bd",
       "dex": "pons-v2-dex",
@@ -166,6 +158,16 @@
       "created": "2026-11-26T04:45:10Z",
       "liquidity_usd": null,
       "market_cap_usd": 24653.83216
+    },
+    "0x5ea91bf1aa4734e1be506381dd9ee8f38c1f14156c8ca92fd1d303c2b4074005": {
+      "pool": "0x5ea91bf1aa4734e1be506381dd9ee8f38c1f14156c8ca92fd1d303c2b4074005",
+      "dex": "pons-v2-dex",
+      "token": "0xc5d6c1d90c8a87a07e2670b99b1556e818803228",
+      "name": "BELL",
+      "title": "BELL POOLS",
+      "created": "2026-11-26T04:50:46Z",
+      "liquidity_usd": 13615.4107,
+      "market_cap_usd": 31808.5047
     }
   },
   "checked": {
@@ -204,11 +206,11 @@
         "Market cap"
       ]
     },
-    "onchain:0xc5d6c1d90c8a87a07e2670b99b1556e818803228": {
-      "at": "2026-11-26T05:21:07.656692+00:00",
+    "0x5ea91bf1aa4734e1be506381dd9ee8f38c1f14156c8ca92fd1d303c2b4074005": {
+      "at": "2026-11-26T05:31:03.494688+00:00",
       "passed": false,
       "failed": [
-        "Holders"
+        "More buys than sells (1h)"
       ]
     }
   },
@@ -218,7 +220,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T05:21:07.656692+00:00",
+      "at": "2026-11-26T05:31:03.494688+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -226,7 +228,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T05:21:07.656692+00:00",
+      "at": "2026-11-26T05:31:03.494688+00:00",
       "used_this_run": true
     },
     "goplus": {
@@ -235,14 +237,14 @@
       "rate_limited": 0,
       "ok": true,
       "at": "2026-11-26T05:21:07.656692+00:00",
-      "used_this_run": true
+      "used_this_run": false
     },
     "rpc": {
-      "calls": 13,
+      "calls": 4,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-26T05:21:07.656692+00:00",
+      "at": "2026-11-26T05:31:03.494688+00:00",
       "used_this_run": true
     }
   },
@@ -252,7 +254,7 @@
     "0x25ad31f9afb68c9804b5d1993ccbe97a722c6de6c58d61872bea31b8488076d2": "FAIL|Top 10 holders: 31.7% (need under 30%; pools, launchpad and burn addresses left out)",
     "0x6c779d26cc59abb9f22d348257ee013b66d2a5f0d9dcf1bb9fa9338874eab1bd": "FAIL|Top 10 holders: 34.9% (need under 30%; pools, launchpad and burn addresses left out)",
     "0xee859438b9511a5f4182244c4bcfa1fbeaa3b78f5546442fc0551146fce5fd7b": "FAIL|Market cap: $24,564 (need $25,000+)",
-    "onchain:0xc5d6c1d90c8a87a07e2670b99b1556e818803228": "FAIL|Holders: unknown: couldn't read the token's whole history within 40 RPC calls"
+    "0x5ea91bf1aa4734e1be506381dd9ee8f38c1f14156c8ca92fd1d303c2b4074005": "FAIL|More buys than sells (1h): 29 buys vs 31 sells"
   },
   "launchpad_tokens": {
     "0x2edd2762ec5a928f749380309eca0e33941b3e3e": {
@@ -724,13 +726,13 @@
     },
     "0xc5d6c1d90c8a87a07e2670b99b1556e818803228": {
       "dex": "pons-v2-dex",
-      "graduated": "2026-11-26T04:50:46.147200+00:00",
+      "graduated": "2026-11-26T04:50:46Z",
       "symbol": "BELL",
       "title": "BELL POOLS",
-      "seen": "2026-11-26T04:51:30.264336+00:00",
-      "source": "chain",
-      "liquidity_usd": 13357.05,
-      "market_cap_usd": 30268.0
+      "seen": "2026-11-26T05:31:03.494688+00:00",
+      "source": "geckoterminal",
+      "liquidity_usd": 13615.4107,
+      "market_cap_usd": 31808.5047
     },
     "0x6f6a3a9b30f783ef9f9f8651e49b797b8c2aa117": {
       "dex": "pons-v2-dex",
@@ -744,10 +746,9 @@
     }
   },
   "graduations": {
-    "at": "2026-11-26T05:21:07.656692+00:00",
+    "at": "2026-11-26T05:31:03.494688+00:00",
     "hours": 24,
     "seen": {
-      "0x1f243c6638a6becd787f326b240227687a3835bc": "2026-11-25T05:26:39.038700+00:00",
       "0x6cb26c30326a4598489b34e4d2550d6455f16630": "2026-11-25T07:10:12.558000+00:00",
       "0x904ccdcee00a4f4596b1e92604c00274b75cb244": "2026-11-25T09:33:19.691000+00:00",
       "0x9f564bbcc8ffac3781dfa0025759e54bd5991698": "2026-11-25T17:36:20.464200+00:00",
@@ -764,7 +765,6 @@
     "tokens": [
       "0x012d695b94377e0c7b9edee3d824259baa37cf3a",
       "0x12a3f1a05d827007f17a43a250cce44868c4a263",
-      "0x1f243c6638a6becd787f326b240227687a3835bc",
       "0x33e8a3e73bfeb324a40164730c3659827f2cd3e8",
       "0x48447ce272824776c7f21d8741dba38ca1586475",
       "0x6cb26c30326a4598489b34e4d2550d6455f16630",
@@ -776,7 +776,7 @@
       "0xc256e0fb1f93164b8e499746bba593a8e40a7eef",
       "0xc5d6c1d90c8a87a07e2670b99b1556e818803228"
     ],
-    "scanned_to": 123468457,
+    "scanned_to": 123472490,
     "complete": true
   },
   "issues_to_close": [],
@@ -908,7 +908,7 @@
       0
     ],
     "2026-11-26 05:00": [
-      3,
+      4,
       0,
       0
     ]
