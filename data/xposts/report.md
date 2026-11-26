@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-26 11:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-26 12:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-287 post(s), 145 matching launch(es).
+290 post(s), 146 matching launch(es).
 
 ## Ticker mentions
 
@@ -44,14 +44,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 5 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 43 | 31 | 17 other, 14 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 20 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2588: 2588 per-account limit |
-| @justinsuntron | 45 | 22 | 8 other, 14 not recorded | 1791: 1791 per-account limit |
+| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2618: 2618 per-account limit |
+| @justinsuntron | 47 | 22 | 8 other, 14 not recorded | 1798: 1798 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
-| @muststopmurad | 35 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
+| @muststopmurad | 36 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 21 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 25 other, 15 not recorded | 3663: 3663 per-account limit |
+| @toly | 49 | 40 | 25 other, 15 not recorded | 3693: 3693 per-account limit |
 | @vitalikbuterin | 3 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1926,6 +1926,29 @@ post_match flags (DexScreener, recording only):
 
 ## @justinsuntron 2026-11-26 10:21:14 UTC (post 2125897661983375480)
 > Congratulations to Bennett Chow, Yuan Liao, Ziyang Qin, and Ayush Khaitan on the first MathDB award. A Lean formalization of the Poincaré co
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-26 11:07:46 UTC (post 2125909371401961865)
+> Flushes are not just needed, they are desirable. The more unbelievers we leave behind here, the more relentless the Parabolic Ascent later.
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| Parabolic | ascent, parabolic | +0%, no liq @1.6m | -0%, no liq @5.8m | -0%, no liq @15.0m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 64 s | Parabolic | Parabolic ascent | ascent, parabolic | price not recorded |  |  |  |  |
+
+## @justinsuntron 2026-11-26 11:30:01 UTC (post 2125914970835788118)
+> Good to see @allscaleio adding support for USDT on TRON. 🔻 https://t.co/oeGjEoxfmU
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-26 11:49:00 UTC (post 2125919748391334067)
+> 看到小红书上有人质疑我的财富量级。就这么说吧：昨天我写代码做任务，敢让Claude Fable 5.2 Ultracode 跑了 11 个小时。 开的是 API，按量计费。
 
 No matching launch in the next 10 minutes.
 
