@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-26 04:05 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-26 06:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-278 post(s), 139 matching launch(es).
+282 post(s), 139 matching launch(es).
 
 ## Ticker mentions
 
@@ -44,14 +44,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 5 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 43 | 31 | 17 other, 14 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 20 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 46 | 30 | 17 other, 13 not recorded | 2489: 2489 per-account limit |
-| @justinsuntron | 42 | 22 | 8 other, 14 not recorded | 1791: 1791 per-account limit |
+| @elonmusk | 47 | 30 | 17 other, 13 not recorded | 2489: 2489 per-account limit |
+| @justinsuntron | 43 | 22 | 8 other, 14 not recorded | 1791: 1791 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
 | @muststopmurad | 34 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 21 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 25 other, 15 not recorded | 3453: 3453 per-account limit |
+| @toly | 49 | 40 | 25 other, 15 not recorded | 3513: 3513 per-account limit |
+| @vitalikbuterin | 2 | 0 | – | – |
 
 ## Posts and the launches after them
 
@@ -1847,9 +1848,29 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| ameri | america | +0%, no liq @1.9m | +420%, no liq @6.0m | – | – | – | no |
+| ameri | america | +0%, no liq @1.9m | +420%, no liq @6.0m | +34%, no liq @15.0m | +34%, no liq @60.8m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 525 s | ameri | america russiar | america | price not recorded |  |  |  |  |
+
+## @justinsuntron 2026-11-26 04:12:02 UTC (post 2125804747852857401)
+> TRON’s everyday use is a foundation institutions can build on. https://t.co/uYIlfFPfZy
+
+No matching launch in the next 10 minutes.
+
+## @VitalikButerin 2026-11-26 05:36:49 UTC (post 2125826087129358766)
+> A shallow dive into open-source chip design: https://t.co/wHWMD0UwIy
+
+No matching launch in the next 10 minutes.
+
+## @VitalikButerin 2026-11-26 05:37:02 UTC (post 2125826142083158334)
+> leanSeal ( https://t.co/I85xkixMHC ) ASIC in 240 lines of Verilog: https://t.co/lzCIylzOnR
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-26 06:01:08 UTC (post 2125832205301878841)
+> The share from SpaceX will be transferred next month. The share directly from me will be transferred when my lockup expires in June next yea
+
+No matching launch in the next 10 minutes.
 
