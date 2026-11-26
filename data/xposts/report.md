@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-26 19:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-26 20:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-296 post(s), 147 matching launch(es).
+298 post(s), 151 matching launch(es).
 
 ## Ticker mentions
 
@@ -46,14 +46,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 5 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 43 | 31 | 17 other, 14 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 21 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2828: 2828 per-account limit |
-| @justinsuntron | 47 | 22 | 8 other, 14 not recorded | 2008: 2008 per-account limit |
+| @elonmusk | 48 | 30 | 17 other, 13 not recorded | 2858: 2858 per-account limit |
+| @justinsuntron | 47 | 22 | 8 other, 14 not recorded | 2038: 2038 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
-| @muststopmurad | 38 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
-| @pumpfun | 33 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
+| @muststopmurad | 39 | 1 | 1 not recorded | 27: 26 per-account limit, 1 X error or pause |
+| @pumpfun | 34 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 24 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 25 other, 15 not recorded | 3903: 3903 per-account limit |
+| @toly | 49 | 40 | 25 other, 15 not recorded | 3933: 3933 per-account limit |
 | @vitalikbuterin | 3 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1985,4 +1985,28 @@ No matching launch in the next 10 minutes.
 > https://t.co/3ODgwVqibK
 
 No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-26 19:14:42 UTC (post 2126031911713964534)
+> The difference between spx6900 and everything else, is that what we are doing, is going to set us up for life.
+
+No matching launch in the next 10 minutes.
+
+## @Pumpfun 2026-11-26 20:00:12 UTC (post 2126043363724161265)
+> Over 60,000 callers have been rewarded for calling coins on the Pumpfun app 💰 Callers have earned a total of $37,000,000 since August! https
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| CALLERS | callers | +0%, no liq @2.2m | – | – | – | – | no |
+| CALLERS | callers | +0%, no liq @2.2m | – | – | – | – | no |
+| CALLING | calling | +0%, no liq @2.2m | – | – | – | – | no |
+| CALLERS | callers | – | – | – | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 14 s | CALLERS | Callers | callers | price not recorded |  |  |  |  |
+| 16 s | CALLING | Just Start Calling | calling | price not recorded |  |  |  |  |
+| 16 s | CALLERS | The Callers | callers | price not recorded |  |  |  |  |
+| 74 s | CALLERS | The Callers | callers | price not recorded |  |  |  |  |
 
