@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-27 17:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-27 18:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 279 post(s), 160 matching launch(es).
 
@@ -49,14 +49,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 4 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 38 | 26 | 17 other, 9 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 19 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 29 | 21 other, 8 not recorded | 3259: 3259 per-account limit |
-| @justinsuntron | 47 | 18 | 8 other, 10 not recorded | 2231: 2231 per-account limit |
+| @elonmusk | 48 | 29 | 21 other, 8 not recorded | 3289: 3289 per-account limit |
+| @justinsuntron | 47 | 18 | 8 other, 10 not recorded | 2261: 2261 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 37 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 26 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 24 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 30 other, 10 not recorded | 4492: 4492 per-account limit |
+| @toly | 49 | 40 | 30 other, 10 not recorded | 4522: 4522 per-account limit |
 | @vitalikbuterin | 4 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1922,13 +1922,13 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| AGI | agi | +0%, no liq @1.5m | -3%, no liq @5.8m | -4%, no liq @15.7m | – | – | no |
-| GETPAID | getting | +0%, no liq @1.5m | +0%, no liq @5.8m | +0%, no liq @15.7m | – | – | no |
-| AGI | agi | +0%, no liq @1.5m | +0%, no liq @5.8m | +0%, no liq @15.7m | – | – | no |
+| AGI | agi | +0%, no liq @1.5m | -3%, no liq @5.8m | -4%, no liq @15.7m | -4%, no liq @60.9m | – | no |
+| GETPAID | getting | +0%, no liq @1.5m | +0%, no liq @5.8m | +0%, no liq @15.7m | +0%, no liq @60.9m | – | no |
+| AGI | agi | +0%, no liq @1.5m | +0%, no liq @5.8m | +0%, no liq @15.7m | +0%, no liq @60.9m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 60 s | AGI | a good investment | agi | price not recorded |  |  |  |  |
 | 62 s | AGI | a good investment | agi | price not recorded |  |  |  |  |
-| 62 s | GETPAID | You guys are getting paid? | getting | price not recorded |  |  |  |  |
+| 62 s | GETPAID | You guys are getting paid? | getting | -45% | -45% | -45% | -45% | +189% (0 s) |
 
