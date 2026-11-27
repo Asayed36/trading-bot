@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-27 10:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-27 11:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-271 post(s), 149 matching launch(es).
+274 post(s), 150 matching launch(es).
 
 ## Ticker mentions
 
@@ -47,15 +47,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 |---|---|---|---|---|
 | @a1lon9 | 4 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 38 | 26 | 17 other, 9 not recorded | 2629: 2629 per-account limit |
-| @cz_binance | 17 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 29 | 21 other, 8 not recorded | 3049: 3049 per-account limit |
+| @cz_binance | 19 | 1 | 1 not recorded | 80: 80 per-account limit |
+| @elonmusk | 48 | 29 | 21 other, 8 not recorded | 3079: 3079 per-account limit |
 | @justinsuntron | 46 | 18 | 8 other, 10 not recorded | 2155: 2155 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
-| @muststopmurad | 34 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
+| @muststopmurad | 35 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 26 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 23 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 30 other, 10 not recorded | 4282: 4282 per-account limit |
+| @toly | 49 | 40 | 30 other, 10 not recorded | 4312: 4312 per-account limit |
 | @vitalikbuterin | 3 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1848,6 +1848,29 @@ No matching launch in the next 10 minutes.
 
 ## @MustStopMurad 2026-11-27 08:32:07 UTC (post 2126232590533132359)
 > Every time Crypto (and TradFi) prices go down, I get more EXCITED, for the following reasons: (1) We necessarily get rid of the non-believer
+
+No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-27 10:47:27 UTC (post 2126266645476000044)
+> First of two AMAs today. Had to rush to the next event, so didn't stay for photos. Will do book signing and some selfies tmr after the fires
+
+No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-27 10:58:34 UTC (post 2126269445467422728)
+> 2nd AMA today, at the beautiful Stonehill golf club. Very influential crowd. Great conversations. 🙏 https://t.co/yh21husud4
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| GPRP | club | +0%, no liq @1.1m | +0%, no liq @5.4m | +0%, no liq @15.1m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 474 s | GPRP | Grandpa RugPull Club | club | price not recorded |  |  |  |  |
+
+## @MustStopMurad 2026-11-27 11:20:07 UTC (post 2126274868220248472)
+> Crypto is a blessing for those who think long-term and a curse for those who think short-term
 
 No matching launch in the next 10 minutes.
 
