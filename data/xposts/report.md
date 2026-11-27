@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-27 12:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-27 13:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-274 post(s), 150 matching launch(es).
+275 post(s), 157 matching launch(es).
 
 ## Ticker mentions
 
@@ -23,8 +23,8 @@ Latest mentions (newest first; candidates = different tokens with that symbol in
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 2026-11-27 02:32 | @justinsuntron | $USDD | USDD (solana) | 10 | no | 1.8 min | – | +0.0% | +0.0% | +0.0% | – |
-| 2026-11-26 13:15 | @saylor | $TSLA | TSLA (solana) | 5 | no | 1.2 min | +0.1% | +0.0% | +0.0% | -0.3% | – |
-| 2026-11-26 13:15 | @saylor | $MSTR | MSTR (robinhood) | 9 | no | 1.2 min | +0.1% | -0.2% | -0.2% | -0.0% | – |
+| 2026-11-26 13:15 | @saylor | $TSLA | TSLA (solana) | 5 | no | 1.2 min | +0.1% | +0.0% | +0.0% | -0.3% | +1.8% |
+| 2026-11-26 13:15 | @saylor | $MSTR | MSTR (robinhood) | 9 | no | 1.2 min | +0.1% | -0.2% | -0.2% | -0.0% | +2.3% |
 | 2026-11-25 14:53 | @saylor | $STRC | STRC (base) | 3 | no | 1.1 min | – | +0.0% | +0.0% | +0.0% | +1.4% |
 | 2026-11-25 12:57 | @saylor | $STRC | STRC (base) | 3 | no | 1.0 min | – | +0.0% | +0.0% | +0.0% | +1.4% |
 | 2026-11-25 00:46 | @saylor | $STRC | STRC (base) | 3 | no | 1.8 min | – | +0.0% | +0.0% | +0.0% | +1.4% |
@@ -48,15 +48,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 4 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 38 | 26 | 17 other, 9 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 19 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 29 | 21 other, 8 not recorded | 3109: 3109 per-account limit |
+| @elonmusk | 48 | 29 | 21 other, 8 not recorded | 3139: 3139 per-account limit |
 | @justinsuntron | 46 | 18 | 8 other, 10 not recorded | 2155: 2155 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 35 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 26 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 23 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 30 other, 10 not recorded | 4342: 4342 per-account limit |
-| @vitalikbuterin | 3 | 0 | – | – |
+| @toly | 49 | 40 | 30 other, 10 not recorded | 4372: 4372 per-account limit |
+| @vitalikbuterin | 4 | 0 | – | – |
 
 ## Posts and the launches after them
 
@@ -1873,4 +1873,29 @@ post_match flags (DexScreener, recording only):
 > Crypto is a blessing for those who think long-term and a curse for those who think short-term
 
 No matching launch in the next 10 minutes.
+
+## @VitalikButerin 2026-11-27 12:23:46 UTC (post 2126290884786528279)
+> TIL: rhinodinos https://t.co/mYud8P7EWa
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| rhinodinos | rhinodinos | missed | missed | missed | – | – | no |
+| rhinodinos | rhinodinos | missed | missed | missed | – | – | no |
+| RHINODINOS | rhinodinos | +0%, no liq @1.8m | +0%, no liq @5.0m | +0%, no liq @15.7m | – | – | no |
+| RHINODINOS | rhinodinos | missed | missed | missed | – | – | no |
+| RHINODINOS | rhinodinos | missed | missed | missed | – | – | no |
+| RHINODINOS | rhinodinos | missed | missed | missed | – | – | no |
+| RHINODINOS | rhinodinos | missed | missed | missed | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 30 s | rhinodinos | rhinodinos | rhinodinos | price not recorded |  |  |  |  |
+| 44 s | rhinodinos | rhinodinos | rhinodinos | price not recorded |  |  |  |  |
+| 209 s | RHINODINOS | rhinodinos | rhinodinos | price not recorded |  |  |  |  |
+| 219 s | RHINODINOS | Rhinodinoscoin | rhinodinos | price not recorded |  |  |  |  |
+| 224 s | RHINODINOS | Rhinodinoscoin | rhinodinos | price not recorded |  |  |  |  |
+| 337 s | RHINODINOS | Paraceratherium | rhinodinos | price not recorded |  |  |  |  |
+| 352 s | RHINODINOS | Paraceratherium | rhinodinos | price not recorded |  |  |  |  |
 
