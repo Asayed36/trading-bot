@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-27 03:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-27 04:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 265 post(s), 145 matching launch(es).
 
@@ -14,7 +14,7 @@ Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EV
 |---|---|---|---|---|---|---|---|---|
 | @blknoiz06 | small | 1 | –, 1 missed | – | –, 1 missed | – | –, 1 missed | – |
 | @cz_binance | small | 1 | +0.00% / +0.00% (1) | +0.07% / +0.07% | +0.00% / +0.00% (1) | +0.13% / +0.13% | +0.00% / +0.00% (1) | +0.81% / +0.81% |
-| @justinsuntron | small | 1 | +0.00% / +0.00% (1) | -0.21% / -0.21% | +0.00% / +0.00% (1) | -0.53% / -0.53% | – | – |
+| @justinsuntron | small | 1 | +0.00% / +0.00% (1) | -0.21% / -0.21% | +0.00% / +0.00% (1) | -0.53% / -0.53% | +0.00% / +0.00% (1) | -0.08% / -0.08% |
 | @saylor | large | 2 | +0.00% / +0.00% (2) | +0.14% / +0.14% | +0.00% / +0.00% (2) | +0.43% / +0.43% | +0.00% / +0.00% (2) | +1.51% / +1.51% |
 | @saylor | small | 11 | -0.02% / +0.00% (11) | +0.04% / -0.03% | -0.02% / +0.00% (11) | +0.07% / -0.03% | +0.67% / +0.00% (11) | +0.79% / +0.04% |
 
@@ -22,7 +22,7 @@ Latest mentions (newest first; candidates = different tokens with that symbol in
 
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2026-11-27 02:32 | @justinsuntron | $USDD | USDD (solana) | 10 | no | 1.8 min | – | +0.0% | +0.0% | – | – |
+| 2026-11-27 02:32 | @justinsuntron | $USDD | USDD (solana) | 10 | no | 1.8 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-26 13:15 | @saylor | $TSLA | TSLA (solana) | 5 | no | 1.2 min | +0.1% | +0.0% | +0.0% | -0.3% | – |
 | 2026-11-26 13:15 | @saylor | $MSTR | MSTR (robinhood) | 9 | no | 1.2 min | +0.1% | -0.2% | -0.2% | -0.0% | – |
 | 2026-11-25 14:53 | @saylor | $STRC | STRC (base) | 3 | no | 1.1 min | – | +0.0% | +0.0% | +0.0% | +1.4% |
@@ -55,7 +55,7 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @pumpfun | 26 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 23 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 30 other, 10 not recorded | 4062: 4062 per-account limit |
+| @toly | 49 | 40 | 30 other, 10 not recorded | 4092: 4092 per-account limit |
 | @vitalikbuterin | 3 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1801,7 +1801,7 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| UNCS | uncs | +0%, no liq @1.9m | -2%, no liq @5.1m | -14%, no liq @15.9m | – | – | no |
+| UNCS | uncs | +0%, no liq @1.9m | -2%, no liq @5.1m | -14%, no liq @15.9m | -14%, no liq @60.0m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
