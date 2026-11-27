@@ -149,6 +149,11 @@
       "failed": [
         "Market cap"
       ]
+    },
+    "0xc18822356a9d45cd169752bbf979ab84a031c5a93a1e1a0eb30a2251d28767c7": {
+      "at": "2026-11-27T21:51:30.772793+00:00",
+      "passed": true,
+      "failed": []
     }
   },
   "sources": {
@@ -157,36 +162,39 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-27T21:41:27.359019+00:00",
+      "at": "2026-11-27T21:51:30.772793+00:00",
       "used_this_run": true
     },
     "dexscreener": {
-      "calls": 1,
-      "errors": 0,
+      "calls": 2,
+      "errors": 1,
       "rate_limited": 0,
+      "error": "api.dexscreener.com answered with error 400",
       "ok": true,
-      "at": "2026-11-27T21:21:32.305702+00:00",
-      "used_this_run": false
+      "at": "2026-11-27T21:51:30.772793+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-27T20:11:09.420549+00:00",
-      "used_this_run": false
+      "at": "2026-11-27T21:51:30.772793+00:00",
+      "used_this_run": true
     },
     "rpc": {
-      "calls": 4,
-      "errors": 0,
-      "rate_limited": 0,
+      "calls": 16,
+      "errors": 6,
+      "rate_limited": 1,
+      "error": "Robinhood Chain RPC: {'code': -32000, 'message': 'logs matched by query exceeds limit of 10000'}",
       "ok": true,
-      "at": "2026-11-27T21:41:27.359019+00:00",
+      "at": "2026-11-27T21:51:30.772793+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x9e31b3a5eb911b54e45cbc2e650f35c319237f7676c3f7ee6f8d5c7cabd39474": "FAIL|Market cap: $20,200 (need $25,000+)"
+    "0x9e31b3a5eb911b54e45cbc2e650f35c319237f7676c3f7ee6f8d5c7cabd39474": "FAIL|Market cap: $20,200 (need $25,000+)",
+    "0xc18822356a9d45cd169752bbf979ab84a031c5a93a1e1a0eb30a2251d28767c7": "PASS|"
   },
   "launchpad_tokens": {
     "0xaa1f4de6b9f7cdf11fb8aa97ce163d35d731cdb1": {
@@ -541,10 +549,10 @@
       "graduated": "2026-11-26T18:23:22Z",
       "symbol": "ASCODE",
       "title": "Assasin Code",
-      "seen": "2026-11-27T21:41:27.359019+00:00",
+      "seen": "2026-11-27T21:51:30.772793+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 25953.1101,
-      "market_cap_usd": 54064.54767
+      "liquidity_usd": 15388.0993,
+      "market_cap_usd": 15375.92149
     },
     "0xb6c951e721931a08a6e6f139b9da3f2509a30815": {
       "dex": "uniswap-pools-trade",
@@ -601,10 +609,10 @@
       "graduated": "2026-11-26T18:53:52Z",
       "symbol": "GMEC",
       "title": "GME Chain",
-      "seen": "2026-11-27T19:41:43.788328+00:00",
+      "seen": "2026-11-27T21:51:30.772793+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 4183.2881,
-      "market_cap_usd": 4243.371807
+      "liquidity_usd": 11916.5814,
+      "market_cap_usd": 15584.09587
     },
     "0x250422e35af24b5647156d6e34f2eca963c5b21c": {
       "dex": "uniswap-pools-trade",
@@ -698,7 +706,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-27T21:41:27.359019+00:00",
+    "at": "2026-11-27T21:51:30.772793+00:00",
     "hours": 24,
     "seen": {
       "0xbd45e923dd225bcb1865557d92f08d0a51637f56": "2026-11-27T00:45:01.704000+00:00",
@@ -716,7 +724,7 @@
       "0xbd45e923dd225bcb1865557d92f08d0a51637f56",
       "0xcbacbb43819a29f4d864a6b9de51e9be1f244210"
     ],
-    "scanned_to": 124560229,
+    "scanned_to": 124565774,
     "complete": true
   },
   "issues_to_close": [],
@@ -840,7 +848,7 @@
       0
     ],
     "2026-11-27 21:00": [
-      5,
+      6,
       0,
       0
     ]
