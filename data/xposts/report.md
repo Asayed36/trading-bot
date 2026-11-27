@@ -1,14 +1,14 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-27 14:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-27 15:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-276 post(s), 157 matching launch(es).
+278 post(s), 157 matching launch(es).
 
 ## Ticker mentions
 
 Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EVM addresses in the saved posts (at most 5 a post), each looked up once on DexScreener. Changes are from the price at the first check (not the post's own time); BTC is over the same real times, from the once-a-minute price log. "large": BTC, ETH, SOL, BNB, XRP, DOGE or above $5 billion. A handful of mentions says nothing yet; a mention is not a cause.
 
-16 mention(s) in 13 post(s): 16 identified.
+17 mention(s) in 14 post(s): 17 identified.
 
 | Account | Coins | Mentions | 5m coin avg / median (n) | 5m BTC avg / median | 15m coin avg / median (n) | 15m BTC avg / median | 60m coin avg / median (n) | 60m BTC avg / median |
 |---|---|---|---|---|---|---|---|---|
@@ -16,12 +16,13 @@ Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EV
 | @cz_binance | small | 1 | +0.00% / +0.00% (1) | +0.07% / +0.07% | +0.00% / +0.00% (1) | +0.13% / +0.13% | +0.00% / +0.00% (1) | +0.81% / +0.81% |
 | @justinsuntron | small | 1 | +0.00% / +0.00% (1) | -0.21% / -0.21% | +0.00% / +0.00% (1) | -0.53% / -0.53% | +0.00% / +0.00% (1) | -0.08% / -0.08% |
 | @saylor | large | 2 | +0.00% / +0.00% (2) | +0.14% / +0.14% | +0.00% / +0.00% (2) | +0.43% / +0.43% | +0.00% / +0.00% (2) | +1.51% / +1.51% |
-| @saylor | small | 11 | -0.02% / +0.00% (11) | +0.04% / -0.03% | -0.02% / +0.00% (11) | +0.07% / -0.03% | +0.67% / +0.00% (11) | +0.79% / +0.04% |
+| @saylor | small | 12 | -0.01% / +0.00% (12) | -0.02% / -0.05% | -0.01% / +0.00% (12) | -0.03% / -0.03% | +0.67% / +0.00% (11) | +0.79% / +0.04% |
 
 Latest mentions (newest first; candidates = different tokens with that symbol in DexScreener's search answer, so more than 1 means the ticker is ambiguous):
 
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| 2026-11-27 14:43 | @saylor | $STRC | STRC (base) | 4 | no | 0.6 min | – | +0.0% | +0.0% | – | – |
 | 2026-11-27 02:32 | @justinsuntron | $USDD | USDD (solana) | 10 | no | 1.8 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-26 13:15 | @saylor | $TSLA | TSLA (solana) | 5 | no | 1.2 min | +0.1% | +0.0% | +0.0% | -0.3% | +1.8% |
 | 2026-11-26 13:15 | @saylor | $MSTR | MSTR (robinhood) | 9 | no | 1.2 min | +0.1% | -0.2% | -0.2% | -0.0% | +2.3% |
@@ -48,14 +49,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 4 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 38 | 26 | 17 other, 9 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 19 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 29 | 21 other, 8 not recorded | 3169: 3169 per-account limit |
-| @justinsuntron | 46 | 18 | 8 other, 10 not recorded | 2155: 2155 per-account limit |
+| @elonmusk | 48 | 29 | 21 other, 8 not recorded | 3199: 3199 per-account limit |
+| @justinsuntron | 47 | 18 | 8 other, 10 not recorded | 2171: 2171 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 36 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 26 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
-| @saylor | 23 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 30 other, 10 not recorded | 4402: 4402 per-account limit |
+| @saylor | 24 | 1 | 1 other | 207: 207 per-account limit |
+| @toly | 49 | 40 | 30 other, 10 not recorded | 4432: 4432 per-account limit |
 | @vitalikbuterin | 4 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1901,6 +1902,16 @@ post_match flags (DexScreener, recording only):
 
 ## @MustStopMurad 2026-11-27 13:34:34 UTC (post 2126308705243107583)
 > People think that peak Bull Market is when you have to “lock in” Wrong. It’s right now.
+
+No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-27 14:43:25 UTC (post 2126326029728063994)
+> On Nov. 25, the 13-week U.S. Treasury bill (IRX), a three-month benchmark for dollar credit, was quoted at a 4.16% discount rate. Stretch ($
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-27 14:47:53 UTC (post 2126327154397118710)
+> Thank you @BitkubOfficial for a great evening in Bangkok and for having me speak tonight. https://t.co/0L1yRICm6h
 
 No matching launch in the next 10 minutes.
 
