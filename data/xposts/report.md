@@ -1,19 +1,20 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-27 01:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-27 03:04 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-260 post(s), 143 matching launch(es).
+265 post(s), 145 matching launch(es).
 
 ## Ticker mentions
 
 Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EVM addresses in the saved posts (at most 5 a post), each looked up once on DexScreener. Changes are from the price at the first check (not the post's own time); BTC is over the same real times, from the once-a-minute price log. "large": BTC, ETH, SOL, BNB, XRP, DOGE or above $5 billion. A handful of mentions says nothing yet; a mention is not a cause.
 
-15 mention(s) in 12 post(s): 15 identified.
+16 mention(s) in 13 post(s): 16 identified.
 
 | Account | Coins | Mentions | 5m coin avg / median (n) | 5m BTC avg / median | 15m coin avg / median (n) | 15m BTC avg / median | 60m coin avg / median (n) | 60m BTC avg / median |
 |---|---|---|---|---|---|---|---|---|
 | @blknoiz06 | small | 1 | –, 1 missed | – | –, 1 missed | – | –, 1 missed | – |
 | @cz_binance | small | 1 | +0.00% / +0.00% (1) | +0.07% / +0.07% | +0.00% / +0.00% (1) | +0.13% / +0.13% | +0.00% / +0.00% (1) | +0.81% / +0.81% |
+| @justinsuntron | small | 1 | +0.00% / +0.00% (1) | -0.21% / -0.21% | +0.00% / +0.00% (1) | -0.53% / -0.53% | – | – |
 | @saylor | large | 2 | +0.00% / +0.00% (2) | +0.14% / +0.14% | +0.00% / +0.00% (2) | +0.43% / +0.43% | +0.00% / +0.00% (2) | +1.51% / +1.51% |
 | @saylor | small | 11 | -0.02% / +0.00% (11) | +0.04% / -0.03% | -0.02% / +0.00% (11) | +0.07% / -0.03% | +0.67% / +0.00% (11) | +0.79% / +0.04% |
 
@@ -21,6 +22,7 @@ Latest mentions (newest first; candidates = different tokens with that symbol in
 
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| 2026-11-27 02:32 | @justinsuntron | $USDD | USDD (solana) | 10 | no | 1.8 min | – | +0.0% | +0.0% | – | – |
 | 2026-11-26 13:15 | @saylor | $TSLA | TSLA (solana) | 5 | no | 1.2 min | +0.1% | +0.0% | +0.0% | -0.3% | – |
 | 2026-11-26 13:15 | @saylor | $MSTR | MSTR (robinhood) | 9 | no | 1.2 min | +0.1% | -0.2% | -0.2% | -0.0% | – |
 | 2026-11-25 14:53 | @saylor | $STRC | STRC (base) | 3 | no | 1.1 min | – | +0.0% | +0.0% | +0.0% | +1.4% |
@@ -44,16 +46,16 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
 | @a1lon9 | 4 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 37 | 26 | 17 other, 9 not recorded | 2629: 2629 per-account limit |
-| @cz_binance | 15 | 1 | 1 not recorded | 80: 80 per-account limit |
+| @blknoiz06 | 38 | 26 | 17 other, 9 not recorded | 2629: 2629 per-account limit |
+| @cz_binance | 16 | 1 | 1 not recorded | 80: 80 per-account limit |
 | @elonmusk | 47 | 29 | 21 other, 8 not recorded | 2975: 2975 per-account limit |
-| @justinsuntron | 41 | 18 | 8 other, 10 not recorded | 2155: 2155 per-account limit |
+| @justinsuntron | 43 | 18 | 8 other, 10 not recorded | 2155: 2155 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 33 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 26 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 23 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 48 | 40 | 30 other, 10 not recorded | 4050: 4050 per-account limit |
+| @toly | 49 | 40 | 30 other, 10 not recorded | 4062: 4062 per-account limit |
 | @vitalikbuterin | 3 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1763,4 +1765,45 @@ No matching launch in the next 10 minutes.
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 274 s | FUTURE | the future | future | price not recorded |  |  |  |  |
+
+## @blknoiz06 2026-11-27 01:32:09 UTC (post 2126126899516854617)
+> go birds
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| $BIRDS | birds | +0%, no liq @1.1m | -1%, no liq @5.4m | -1%, no liq @16.0m | -1%, no liq @61.0m | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 123 s | $BIRDS | BIRD | birds | price not recorded |  |  |  |  |
+
+## @justinsuntron 2026-11-27 02:32:15 UTC (post 2126142027897409678)
+> 来试试 $USDD 的原生抵押借贷吧！ETH WBTC wSTETH 全支持！ https://t.co/vWJo6D2QLj
+
+No matching launch in the next 10 minutes.
+
+## @cz_binance 2026-11-27 02:32:26 UTC (post 2126142072491245817)
+> Happy Thanksgiving! 🦃
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-27 02:32:41 UTC (post 2126142133526790186)
+> USDD 启动！ https://t.co/Wek6L61ZO3
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-27 02:38:58 UTC (post 2126143715924435374)
+> Only Uncs https://t.co/CZkFmCUNI8
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| UNCS | uncs | +0%, no liq @1.9m | -2%, no liq @5.1m | -14%, no liq @15.9m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 47 s | UNCS | uncs | uncs | price not recorded |  |  |  |  |
 
