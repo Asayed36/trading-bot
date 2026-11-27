@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-27 07:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-27 08:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-269 post(s), 148 matching launch(es).
+270 post(s), 149 matching launch(es).
 
 ## Ticker mentions
 
@@ -48,14 +48,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 4 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 38 | 26 | 17 other, 9 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 17 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 47 | 29 | 21 other, 8 not recorded | 2975: 2975 per-account limit |
+| @elonmusk | 48 | 29 | 21 other, 8 not recorded | 2989: 2989 per-account limit |
 | @justinsuntron | 46 | 18 | 8 other, 10 not recorded | 2155: 2155 per-account limit |
 | @mrbeast | 3 | 0 | – | – |
 | @muststopmurad | 33 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 26 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 23 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 30 other, 10 not recorded | 4192: 4192 per-account limit |
+| @toly | 49 | 40 | 30 other, 10 not recorded | 4222: 4222 per-account limit |
 | @vitalikbuterin | 3 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1838,4 +1838,11 @@ post_match flags (DexScreener, recording only):
 > Credit by role: the solver, the formalizer, and the exposition. #JustinSunPrize https://t.co/rrZWUYX3x8
 
 No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-27 07:52:41 UTC (post 2126222666994737622)
+> True https://t.co/onabG4ka4u
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 108 s | TRUE | True | true | price not recorded |  |  |  |  |
 
