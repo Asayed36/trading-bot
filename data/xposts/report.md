@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-28 08:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-28 09:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-257 post(s), 150 matching launch(es).
+259 post(s), 150 matching launch(es).
 
 ## Ticker mentions
 
@@ -49,15 +49,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 3 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 32 | 22 | 17 other, 5 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 17 | 0 | – | 80: 80 per-account limit |
-| @elonmusk | 48 | 31 | 26 other, 5 not recorded | 3680: 3680 per-account limit |
+| @elonmusk | 48 | 31 | 26 other, 5 not recorded | 3710: 3710 per-account limit |
 | @justinsuntron | 46 | 14 | 9 other, 5 not recorded | 2429: 2429 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
 | @muststopmurad | 35 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 21 | 7 | 3 other, 4 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 20 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 35 other, 5 not recorded | 4901: 4901 per-account limit |
-| @vitalikbuterin | 6 | 0 | – | – |
+| @toly | 49 | 40 | 35 other, 5 not recorded | 4931: 4931 per-account limit |
+| @vitalikbuterin | 8 | 0 | – | – |
 
 ## Posts and the launches after them
 
@@ -1786,6 +1786,16 @@ No matching launch in the next 10 minutes.
 
 ## @MustStopMurad 2026-11-28 08:18:57 UTC (post 2126591663044956221)
 > Your only competition in Crypto is your own impatience. Master that and you will win beyond your wildest dreams.
+
+No matching launch in the next 10 minutes.
+
+## @VitalikButerin 2026-11-28 08:53:16 UTC (post 2126600301142765627)
+> Contra @slatestarcodex on SURA https://t.co/3XP3NdqtQW I'm only medium-confident in all of this; I don't trust anyone who's confident about 
+
+No matching launch in the next 10 minutes.
+
+## @VitalikButerin 2026-11-28 08:57:48 UTC (post 2126601440793874456)
+> https://t.co/tUrzjU9Xbg
 
 No matching launch in the next 10 minutes.
 
