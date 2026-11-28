@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-28 17:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-28 18:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-265 post(s), 150 matching launch(es).
+266 post(s), 150 matching launch(es).
 
 ## Ticker mentions
 
@@ -50,14 +50,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 4 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 32 | 22 | 17 other, 5 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 17 | 0 | – | 80: 80 per-account limit |
-| @elonmusk | 48 | 31 | 26 other, 5 not recorded | 3950: 3950 per-account limit |
-| @justinsuntron | 47 | 14 | 9 other, 5 not recorded | 2481: 2481 per-account limit |
+| @elonmusk | 48 | 31 | 26 other, 5 not recorded | 3980: 3980 per-account limit |
+| @justinsuntron | 47 | 14 | 9 other, 5 not recorded | 2511: 2511 per-account limit |
 | @mrbeast | 5 | 0 | – | – |
 | @muststopmurad | 38 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 21 | 7 | 3 other, 4 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
-| @saylor | 20 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 35 other, 5 not recorded | 5171: 5171 per-account limit |
+| @saylor | 21 | 1 | 1 other | 207: 207 per-account limit |
+| @toly | 49 | 40 | 35 other, 5 not recorded | 5201: 5201 per-account limit |
 | @vitalikbuterin | 8 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1827,6 +1827,11 @@ No matching launch in the next 10 minutes.
 
 ## @MrBeast 2026-11-28 17:07:47 UTC (post 2126724748398952507)
 > I gave a man and a woman this Lamborghini but to keep it they had to drive it around the entire world. Think they completed the journey? htt
+
+No matching launch in the next 10 minutes.
+
+## @saylor 2026-11-28 17:29:41 UTC (post 2126730262054883547)
+> ₿reak Free https://t.co/4PAjlJNwTH
 
 No matching launch in the next 10 minutes.
 
