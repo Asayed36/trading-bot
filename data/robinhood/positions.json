@@ -111,16 +111,6 @@
   ],
   "running_total_pnl_usd": -341.19861901705434,
   "watch": {
-    "0x7582b746d00009d06ea84efffd79c7b83e33669c75252e3f79652f2d9269f471": {
-      "pool": "0x7582b746d00009d06ea84efffd79c7b83e33669c75252e3f79652f2d9269f471",
-      "dex": "pons-v2-dex",
-      "token": "0xaca79ade982d8e90117ff072dd7e016c115cf130",
-      "name": "QUIV",
-      "title": "Quiver",
-      "created": "2026-11-27T22:27:28Z",
-      "liquidity_usd": 17582.0571,
-      "market_cap_usd": 56982.71876
-    },
     "0x1e7a192b29fa72a4b5b565054ef324a0ba74fd37eb27c4982ce61e32f8d7db91": {
       "pool": "0x1e7a192b29fa72a4b5b565054ef324a0ba74fd37eb27c4982ce61e32f8d7db91",
       "dex": "pons-v2-dex",
@@ -133,18 +123,12 @@
     }
   },
   "checked": {
-    "0x7582b746d00009d06ea84efffd79c7b83e33669c75252e3f79652f2d9269f471": {
-      "at": "2026-11-28T03:29:19.176963+00:00",
-      "passed": false,
-      "failed": [
-        "More buys than sells (1h)"
-      ]
-    },
     "0x1e7a192b29fa72a4b5b565054ef324a0ba74fd37eb27c4982ce61e32f8d7db91": {
-      "at": "2026-11-28T03:29:19.176963+00:00",
+      "at": "2026-11-28T04:31:12.510517+00:00",
       "passed": false,
       "failed": [
-        "Top 10 holders"
+        "Market cap",
+        "More buys than sells (1h)"
       ]
     }
   },
@@ -154,7 +138,7 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-28T04:21:16.199027+00:00",
+      "at": "2026-11-28T04:31:12.510517+00:00",
       "used_this_run": true
     },
     "dexscreener": {
@@ -162,8 +146,8 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-28T03:29:19.176963+00:00",
-      "used_this_run": false
+      "at": "2026-11-28T04:31:12.510517+00:00",
+      "used_this_run": true
     },
     "goplus": {
       "calls": 1,
@@ -178,26 +162,14 @@
       "errors": 0,
       "rate_limited": 0,
       "ok": true,
-      "at": "2026-11-28T04:21:16.199027+00:00",
+      "at": "2026-11-28T04:31:12.510517+00:00",
       "used_this_run": true
     }
   },
   "logged": {
-    "0x72c2ae09081fb69ee2658cfe184a708ecc2540cbca25600896b8c8298e020833": "FAIL|Top 10 holders: 37.3% (need under 30%; pools, launchpad and burn addresses left out)",
-    "0x7582b746d00009d06ea84efffd79c7b83e33669c75252e3f79652f2d9269f471": "FAIL|More buys than sells (1h): 18 buys vs 20 sells",
-    "0x1e7a192b29fa72a4b5b565054ef324a0ba74fd37eb27c4982ce61e32f8d7db91": "FAIL|Top 10 holders: 33.9% (need under 30%; pools, launchpad and burn addresses left out)"
+    "0x1e7a192b29fa72a4b5b565054ef324a0ba74fd37eb27c4982ce61e32f8d7db91": "FAIL|Market cap: $23,270 (need $25,000+); More buys than sells (1h): 5 buys vs 11 sells"
   },
   "launchpad_tokens": {
-    "0xbd1d57140eb22c2a34bc1ee055f7b6119cbf6c17": {
-      "dex": "pons-v2-dex",
-      "graduated": "2026-11-20T22:22:07Z",
-      "symbol": "NYMO",
-      "title": "Anonymo",
-      "seen": "2026-11-20T22:31:24.176959+00:00",
-      "source": "geckoterminal",
-      "liquidity_usd": 3394.5843,
-      "market_cap_usd": 2074.689387
-    },
     "0x2f91580ea6824212b26637014c756284cb7594df": {
       "dex": "pons-v2-dex",
       "graduated": "2026-11-21T03:57:21Z",
@@ -520,9 +492,9 @@
       "graduated": "2026-11-26T18:23:22Z",
       "symbol": "ASCODE",
       "title": "Assasin Code",
-      "seen": "2026-11-28T04:21:16.199027+00:00",
+      "seen": "2026-11-28T04:31:12.510517+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 4240.0113,
+      "liquidity_usd": 4241.2343,
       "market_cap_usd": 4204.380706
     },
     "0xb6c951e721931a08a6e6f139b9da3f2509a30815": {
@@ -580,9 +552,9 @@
       "graduated": "2026-11-26T18:53:52Z",
       "symbol": "GMEC",
       "title": "GME Chain",
-      "seen": "2026-11-28T04:21:16.199027+00:00",
+      "seen": "2026-11-28T04:31:12.510517+00:00",
       "source": "geckoterminal",
-      "liquidity_usd": 12702.0615,
+      "liquidity_usd": 12705.7253,
       "market_cap_usd": 4203.61907
     },
     "0x250422e35af24b5647156d6e34f2eca963c5b21c": {
@@ -706,7 +678,7 @@
     }
   },
   "graduations": {
-    "at": "2026-11-28T04:21:16.199027+00:00",
+    "at": "2026-11-28T04:31:12.510517+00:00",
     "hours": 24,
     "seen": {
       "0x9ee0ccb81756fa7ef4719a14b450a65b88e3bb3e": "2026-11-27T05:33:10.667900+00:00",
@@ -728,7 +700,7 @@
       "0xc46f6a8149d5a400a230d3cdfc7a3a9abf3150fc",
       "0xcbacbb43819a29f4d864a6b9de51e9be1f244210"
     ],
-    "scanned_to": 124770517,
+    "scanned_to": 124775385,
     "complete": true
   },
   "issues_to_close": [],
@@ -852,7 +824,7 @@
       1
     ],
     "2026-11-28 04:00": [
-      3,
+      4,
       0,
       0
     ]
