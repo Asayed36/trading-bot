@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-28 16:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-28 17:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-264 post(s), 150 matching launch(es).
+265 post(s), 150 matching launch(es).
 
 ## Ticker mentions
 
@@ -14,7 +14,7 @@ Recording only (screener/xmentions.py), the last 7 days. Cashtags, Solana and EV
 |---|---|---|---|---|---|---|---|---|
 | @blknoiz06 | small | 1 | –, 1 missed | – | –, 1 missed | – | –, 1 missed | – |
 | @cz_binance | small | 1 | +0.00% / +0.00% (1) | +0.07% / +0.07% | +0.00% / +0.00% (1) | +0.13% / +0.13% | +0.00% / +0.00% (1) | +0.81% / +0.81% |
-| @justinsuntron | small | 2 | +0.00% / +0.00% (2) | -0.08% / -0.08% | +0.00% / +0.00% (2) | -0.06% / -0.06% | +0.00% / +0.00% (1) | -0.08% / -0.08% |
+| @justinsuntron | small | 2 | +0.00% / +0.00% (2) | -0.08% / -0.08% | +0.00% / +0.00% (2) | -0.06% / -0.06% | +0.00% / +0.00% (2) | +0.12% / +0.12% |
 | @saylor | large | 2 | +0.00% / +0.00% (2) | +0.14% / +0.14% | +0.00% / +0.00% (2) | +0.43% / +0.43% | +0.00% / +0.00% (2) | +1.51% / +1.51% |
 | @saylor | small | 12 | -0.01% / +0.00% (12) | -0.02% / -0.05% | -0.01% / +0.00% (12) | -0.03% / -0.03% | +0.61% / +0.00% (12) | +0.73% / +0.06% |
 
@@ -22,7 +22,7 @@ Latest mentions (newest first; candidates = different tokens with that symbol in
 
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2026-11-28 15:36 | @justinsuntron | 0x4f8e5de400de | USDD (ethereum) | 1 | no | 1.8 min | – | +0.0% | +0.0% | – | – |
+| 2026-11-28 15:36 | @justinsuntron | 0x4f8e5de400de | USDD (ethereum) | 1 | no | 1.8 min | – | +0.0% | +0.0% | +0.0% | – |
 | 2026-11-27 14:43 | @saylor | $STRC | STRC (base) | 4 | no | 0.6 min | – | +0.0% | +0.0% | +0.0% | -4.4% |
 | 2026-11-27 02:32 | @justinsuntron | $USDD | USDD (solana) | 10 | no | 1.8 min | – | +0.0% | +0.0% | +0.0% | +0.0% |
 | 2026-11-26 13:15 | @saylor | $TSLA | TSLA (solana) | 5 | no | 1.2 min | +0.1% | +0.0% | +0.0% | -0.3% | +1.8% |
@@ -50,14 +50,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 4 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 32 | 22 | 17 other, 5 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 17 | 0 | – | 80: 80 per-account limit |
-| @elonmusk | 48 | 31 | 26 other, 5 not recorded | 3920: 3920 per-account limit |
-| @justinsuntron | 47 | 14 | 9 other, 5 not recorded | 2451: 2451 per-account limit |
-| @mrbeast | 4 | 0 | – | – |
+| @elonmusk | 48 | 31 | 26 other, 5 not recorded | 3950: 3950 per-account limit |
+| @justinsuntron | 47 | 14 | 9 other, 5 not recorded | 2481: 2481 per-account limit |
+| @mrbeast | 5 | 0 | – | – |
 | @muststopmurad | 38 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 21 | 7 | 3 other, 4 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 20 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 35 other, 5 not recorded | 5141: 5141 per-account limit |
+| @toly | 49 | 40 | 35 other, 5 not recorded | 5171: 5171 per-account limit |
 | @vitalikbuterin | 8 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1822,6 +1822,11 @@ No matching launch in the next 10 minutes.
 
 ## @MustStopMurad 2026-11-28 15:53:06 UTC (post 2126705954825646299)
 > Right now is the most exciting period in crypto. Right now is where the best entries, best DCAs are done. Right now is where the Strongest C
+
+No matching launch in the next 10 minutes.
+
+## @MrBeast 2026-11-28 17:07:47 UTC (post 2126724748398952507)
+> I gave a man and a woman this Lamborghini but to keep it they had to drive it around the entire world. Think they completed the journey? htt
 
 No matching launch in the next 10 minutes.
 
