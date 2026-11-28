@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-28 04:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-28 05:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 249 post(s), 150 matching launch(es).
 
@@ -49,14 +49,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 3 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 32 | 22 | 17 other, 5 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 15 | 0 | – | 80: 80 per-account limit |
-| @elonmusk | 48 | 31 | 26 other, 5 not recorded | 3560: 3560 per-account limit |
+| @elonmusk | 48 | 31 | 26 other, 5 not recorded | 3590: 3590 per-account limit |
 | @justinsuntron | 43 | 14 | 9 other, 5 not recorded | 2429: 2429 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
 | @muststopmurad | 34 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 21 | 7 | 3 other, 4 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 20 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 35 other, 5 not recorded | 4781: 4781 per-account limit |
+| @toly | 49 | 40 | 35 other, 5 not recorded | 4811: 4811 per-account limit |
 | @vitalikbuterin | 4 | 0 | – | – |
 
 ## Posts and the launches after them
