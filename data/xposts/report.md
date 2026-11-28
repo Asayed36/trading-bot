@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-28 07:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-28 08:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-252 post(s), 150 matching launch(es).
+257 post(s), 150 matching launch(es).
 
 ## Ticker mentions
 
@@ -49,15 +49,15 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 3 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 32 | 22 | 17 other, 5 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 17 | 0 | – | 80: 80 per-account limit |
-| @elonmusk | 48 | 31 | 26 other, 5 not recorded | 3650: 3650 per-account limit |
-| @justinsuntron | 44 | 14 | 9 other, 5 not recorded | 2429: 2429 per-account limit |
+| @elonmusk | 48 | 31 | 26 other, 5 not recorded | 3680: 3680 per-account limit |
+| @justinsuntron | 46 | 14 | 9 other, 5 not recorded | 2429: 2429 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
-| @muststopmurad | 34 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
+| @muststopmurad | 35 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 21 | 7 | 3 other, 4 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 20 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 35 other, 5 not recorded | 4871: 4871 per-account limit |
-| @vitalikbuterin | 4 | 0 | – | – |
+| @toly | 49 | 40 | 35 other, 5 not recorded | 4901: 4901 per-account limit |
+| @vitalikbuterin | 6 | 0 | – | – |
 
 ## Posts and the launches after them
 
@@ -1761,6 +1761,31 @@ No matching launch in the next 10 minutes.
 
 ## @justinsuntron 2026-11-28 06:53:13 UTC (post 2126570086857388528)
 > 来试试 USDD 原生以太坊支持吧！ https://t.co/0WxdpHEoDM
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-28 07:23:00 UTC (post 2126577582841954410)
+> Today's WLFI episode is just another rerun of insider circular lending to cash out, unauthorized insider selling, the illegal freezing of in
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-28 07:23:59 UTC (post 2126577829307654434)
+> 今天这起 WLFI 事件，不过是内部循环借贷套现、内部人违规出售、违法冻结投资者资产以及投资者欺诈的又一次上演。我呼吁各大交易所、监管机构、司法机关和法院，尽快对 WLFI 和 USD1
+
+No matching launch in the next 10 minutes.
+
+## @VitalikButerin 2026-11-28 07:24:38 UTC (post 2126577995205017693)
+> I think the complaints of people who are unhappy about EIP-8037 breaking a few contracts are valid and very reasonable. We do NOT want an Et
+
+No matching launch in the next 10 minutes.
+
+## @VitalikButerin 2026-11-28 08:01:36 UTC (post 2126587296770388168)
+> we need to make our digital landscape more mountainous https://t.co/sOzO4QbUzI
+
+No matching launch in the next 10 minutes.
+
+## @MustStopMurad 2026-11-28 08:18:57 UTC (post 2126591663044956221)
+> Your only competition in Crypto is your own impatience. Master that and you will win beyond your wildest dreams.
 
 No matching launch in the next 10 minutes.
 
