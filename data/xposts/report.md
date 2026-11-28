@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-28 00:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-28 01:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-246 post(s), 150 matching launch(es).
+249 post(s), 150 matching launch(es).
 
 ## Ticker mentions
 
@@ -49,14 +49,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 3 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 32 | 22 | 17 other, 5 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 15 | 0 | – | 80: 80 per-account limit |
-| @elonmusk | 47 | 31 | 26 other, 5 not recorded | 3457: 3457 per-account limit |
-| @justinsuntron | 42 | 14 | 9 other, 5 not recorded | 2429: 2429 per-account limit |
+| @elonmusk | 48 | 31 | 26 other, 5 not recorded | 3470: 3470 per-account limit |
+| @justinsuntron | 43 | 14 | 9 other, 5 not recorded | 2429: 2429 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
 | @muststopmurad | 34 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 21 | 7 | 3 other, 4 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 20 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 48 | 40 | 35 other, 5 not recorded | 4690: 4690 per-account limit |
+| @toly | 49 | 40 | 35 other, 5 not recorded | 4691: 4691 per-account limit |
 | @vitalikbuterin | 4 | 0 | – | – |
 
 ## Posts and the launches after them
@@ -1706,15 +1706,15 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| UPGRADE | upgrade | missed | missed | +0%, no liq @15.1m | – | – | no |
-| UPGRADE | upgrade | missed | missed | +0%, no liq @15.7m | – | – | no |
-| UPGRADE | upgrade | missed | missed | +0%, no liq @15.3m | – | – | no |
+| UPGRADE | upgrade | missed | missed | +0%, no liq @15.1m | +0%, no liq @60.9m | – | no |
+| UPGRADE | upgrade | missed | missed | +0%, no liq @15.7m | +0%, no liq @60.4m | – | no |
+| UPGRADE | upgrade | missed | missed | +0%, no liq @15.3m | +0%, no liq @60.0m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
 | 18 s | UPGRADE | Upgrade Now | upgrade | price not recorded |  |  |  |  |
-| 45 s | UPGRADE | Upgrade Now | upgrade | price not recorded |  |  |  |  |
-| 71 s | UPGRADE | Upgrade Now | upgrade | price not recorded |  |  |  |  |
+| 45 s | UPGRADE | Upgrade Now | upgrade | -68% | -70% | -70% | -70% | +59% (20 s) |
+| 71 s | UPGRADE | Upgrade Now | upgrade | -66% | -66% | -66% | -66% | +138% (24 s) |
 
 ## @toly 2026-11-27 23:51:31 UTC (post 2126463962661470442)
 > It’s Friday 😭😭😭
@@ -1723,7 +1723,7 @@ post_match flags (DexScreener, recording only):
 
 | Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
 |---|---|---|---|---|---|---|---|
-| FRIDAY | friday | missed | missed | +0%, no liq @16.0m | – | – | no |
+| FRIDAY | friday | missed | missed | +0%, no liq @16.0m | +0%, no liq @60.7m | – | no |
 
 | Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
 |---|---|---|---|---|---|---|---|---|
@@ -1731,6 +1731,21 @@ post_match flags (DexScreener, recording only):
 
 ## @toly 2026-11-27 23:57:58 UTC (post 2126465585957806316)
 > 👑👑👑 https://t.co/UstnN7KaGg
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-28 00:54:09 UTC (post 2126479727066272164)
+> Extremely troubling https://t.co/36CuHTvPxY
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-28 01:18:35 UTC (post 2126485875534225887)
+> 👑👑👑 https://t.co/9yBBEKIQVz
+
+No matching launch in the next 10 minutes.
+
+## @justinsuntron 2026-11-28 01:19:05 UTC (post 2126486002919494134)
+> Great to visit the @BitkubOfficial team in Bangkok. Thanks for the welcome. 🇹🇭 https://t.co/5N3DqhfVH1
 
 No matching launch in the next 10 minutes.
 
