@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-28 02:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-28 03:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 249 post(s), 150 matching launch(es).
 
@@ -23,7 +23,7 @@ Latest mentions (newest first; candidates = different tokens with that symbol in
 | Posted (UTC) | Account | Mention | Coin | Candidates | Large | First check after | 1 h change at first check | 5m | 15m | 60m | 24h |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 2026-11-27 14:43 | @saylor | $STRC | STRC (base) | 4 | no | 0.6 min | – | +0.0% | +0.0% | +0.0% | – |
-| 2026-11-27 02:32 | @justinsuntron | $USDD | USDD (solana) | 10 | no | 1.8 min | – | +0.0% | +0.0% | +0.0% | – |
+| 2026-11-27 02:32 | @justinsuntron | $USDD | USDD (solana) | 10 | no | 1.8 min | – | +0.0% | +0.0% | +0.0% | +0.0% |
 | 2026-11-26 13:15 | @saylor | $TSLA | TSLA (solana) | 5 | no | 1.2 min | +0.1% | +0.0% | +0.0% | -0.3% | +1.8% |
 | 2026-11-26 13:15 | @saylor | $MSTR | MSTR (robinhood) | 9 | no | 1.2 min | +0.1% | -0.2% | -0.2% | -0.0% | +2.3% |
 | 2026-11-25 14:53 | @saylor | $STRC | STRC (base) | 3 | no | 1.1 min | – | +0.0% | +0.0% | +0.0% | +1.4% |
@@ -49,14 +49,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 3 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 32 | 22 | 17 other, 5 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 15 | 0 | – | 80: 80 per-account limit |
-| @elonmusk | 48 | 31 | 26 other, 5 not recorded | 3500: 3500 per-account limit |
+| @elonmusk | 48 | 31 | 26 other, 5 not recorded | 3530: 3530 per-account limit |
 | @justinsuntron | 43 | 14 | 9 other, 5 not recorded | 2429: 2429 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
 | @muststopmurad | 34 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 21 | 7 | 3 other, 4 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 20 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 35 other, 5 not recorded | 4721: 4721 per-account limit |
+| @toly | 49 | 40 | 35 other, 5 not recorded | 4751: 4751 per-account limit |
 | @vitalikbuterin | 4 | 0 | – | – |
 
 ## Posts and the launches after them
