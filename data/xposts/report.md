@@ -1,8 +1,8 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-27 23:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-28 00:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
-282 post(s), 166 matching launch(es).
+246 post(s), 150 matching launch(es).
 
 ## Ticker mentions
 
@@ -46,344 +46,20 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 
 | Account | Posts saved | Seen late | Why late | Rounds not asked (why) |
 |---|---|---|---|---|
-| @a1lon9 | 4 | 0 | – | 1: 1 X error or pause |
-| @blknoiz06 | 38 | 26 | 17 other, 9 not recorded | 2629: 2629 per-account limit |
-| @cz_binance | 19 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 29 | 21 other, 8 not recorded | 3439: 3439 per-account limit |
-| @justinsuntron | 47 | 18 | 8 other, 10 not recorded | 2411: 2411 per-account limit |
+| @a1lon9 | 3 | 0 | – | 1: 1 X error or pause |
+| @blknoiz06 | 32 | 22 | 17 other, 5 not recorded | 2629: 2629 per-account limit |
+| @cz_binance | 15 | 0 | – | 80: 80 per-account limit |
+| @elonmusk | 47 | 31 | 26 other, 5 not recorded | 3457: 3457 per-account limit |
+| @justinsuntron | 42 | 14 | 9 other, 5 not recorded | 2429: 2429 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
-| @muststopmurad | 38 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
-| @pumpfun | 27 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
+| @muststopmurad | 34 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
+| @pumpfun | 21 | 7 | 3 other, 4 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
-| @saylor | 24 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 30 other, 10 not recorded | 4672: 4672 per-account limit |
+| @saylor | 20 | 1 | 1 other | 207: 207 per-account limit |
+| @toly | 48 | 40 | 35 other, 5 not recorded | 4690: 4690 per-account limit |
 | @vitalikbuterin | 4 | 0 | – | – |
 
 ## Posts and the launches after them
-
-## @toly 2026-11-20 00:34:59 UTC (post 2123575798489825742)
-> I think tradfi is not quoting nbbo if it’s not quoting solana https://t.co/e6hSokT2g4
-
-No matching launch in the next 10 minutes.
-
-## @saylor 2026-11-20 00:42:48 UTC (post 2123577768914923974)
-> How do we decide when to buy Bitcoin and when to buy back $STRC? In Strategy’s Q3 2026 Investor Q&amp;A with @NatBrunell, @PhongLe and I ans
-
-No matching launch in the next 10 minutes.
-
-## @saylor 2026-11-20 00:42:49 UTC (post 2123577772601696480)
-> You can also watch our full Q3 2026 Investor Q&amp;A on YouTube. https://t.co/P0Zs1V6wbv https://t.co/qbCk9j2iJ3
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-20 00:54:39 UTC (post 2123580750293512514)
-> https://t.co/KwQdBJMiPv
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-20 02:29:44 UTC (post 2123604677149212884)
-> w/ context of Qs breaking down, gold breaking down, dollar immense strength into likely more fed hikes &amp; nvda continued weakness seems u
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-20 07:35:32 UTC (post 2123681633589149750)
-> USDT on TRON, now in @PulsarMoneyApp. 🔻 https://t.co/kIigXBYBuM
-
-No matching launch in the next 10 minutes.
-
-## @elonmusk 2026-11-20 08:29:54 UTC (post 2123695317375992288)
-> This is not AI 😂 https://t.co/7QlYzcVszJ
-
-No matching launch in the next 10 minutes.
-
-## @elonmusk 2026-11-20 10:34:05 UTC (post 2123726569206415815)
-> Tesla’s AI, running on our little AI4 computer, can now reach Torment II in Diablo
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| AI4 | ai4 | +0%, no liq @2.5m | +0%, no liq @5.7m | +0%, no liq @15.3m | +0%, no liq @60.0m | – | no |
-| TI | tesla | +0%, no liq @2.4m | -32%, no liq @5.5m | -34%, no liq @15.2m | -35%, no liq @60.9m | – | no |
-| TI | tesla | missed | missed | missed | missed | – | no |
-| TI | tesla | +0%, no liq @2.2m | +0%, no liq @5.4m | -8%, no liq @15.0m | -8%, no liq @60.8m | – | no |
-| TAI | tesla | +0%, no liq @1.9m | -12%, no liq @5.0m | -24%, no liq @15.7m | -24%, no liq @60.4m | – | no |
-| AI4 | ai4 | +0%, no liq @1.8m | -7%, no liq @5.0m | -7%, no liq @15.7m | -7%, no liq @60.4m | – | no |
-| TAI | tesla | missed | missed | missed | missed | – | no |
-| TSI | tesla | +0%, no liq @1.4m | -4%, no liq @5.6m | -4%, no liq @15.2m | -4%, no liq @61.0m | – | no |
-| TI | tesla | +0%, no liq @1.9m | +0%, no liq @5.1m | +0%, no liq @15.7m | +0%, no liq @60.4m | – | no |
-| Diablo | diablo | +0%, no liq @1.4m | +0%, no liq @5.7m | +0%, no liq @15.2m | -0%, no liq @61.0m | – | no |
-| Diablo | diablo | +0%, no liq @1.2m | -27%, no liq @5.5m | -27%, no liq @15.0m | -27%, no liq @60.8m | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 14 s | AI4 | AI4 | ai4 | price not recorded |  |  |  |  |
-| 22 s | TI | Tesla Inu | tesla | price not recorded |  |  |  |  |
-| 25 s | TI | Tesla Inu | tesla | price not recorded |  |  |  |  |
-| 32 s | TI | Tesla Inu | tesla | price not recorded |  |  |  |  |
-| 52 s | TAI | Tesla Artificial Inu | tesla | price not recorded |  |  |  |  |
-| 53 s | AI4 | AI4 | ai4 | price not recorded |  |  |  |  |
-| 56 s | TAI | Tesla Artificial Inu | tesla | price not recorded |  |  |  |  |
-| 82 s | TSI | Tesla Super Inu | tesla | price not recorded |  |  |  |  |
-| 180 s | TI | Tesla Inu | tesla | price not recorded |  |  |  |  |
-| 270 s | Diablo | Diablo | diablo | price not recorded |  |  |  |  |
-| 348 s | Diablo | Diablo | diablo | price not recorded |  |  |  |  |
-
-## @cz_binance 2026-11-20 10:38:34 UTC (post 2123727696673026236)
-> There are forces spreading negative narratives, with massive amounts of funding behind it. https://t.co/Ymy4sA0cJd
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-20 11:06:02 UTC (post 2123734610169454954)
-> Literally all you have to do is Persist Forever, and you will win.
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| PERSIST | forever, persist | missed | missed | missed | missed | – | no |
-| PERSIST | forever, persist | missed | missed | missed | missed | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 35 s | PERSIST | Persist Forever | forever, persist | price not recorded |  |  |  |  |
-| 35 s | PERSIST | Persist Forever | forever, persist | price not recorded |  |  |  |  |
-
-## @cz_binance 2026-11-20 11:11:15 UTC (post 2123735923380965851)
-> Price discovery happens first on chain. https://t.co/GGL8NsrIkP
-
-No matching launch in the next 10 minutes.
-
-## @elonmusk 2026-11-20 11:19:25 UTC (post 2123737976710848580)
-> Yes https://t.co/NAk6Emsump
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-20 12:11:31 UTC (post 2123751089707376971)
-> 网上爆料一眼假，建议可以多关注下薄肌，黄毛，孙学理论，提升自我修养。
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-20 12:22:57 UTC (post 2123753964378439839)
-> 大红果时代的第一颗大结果！ https://t.co/uN28PvP6Q6
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-20 13:15:11 UTC (post 2123767110606176532)
-> To find the coin that will be the Biggest Household Name when we are in the middle of a Raging Bull Market… Find a community that acts as if
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| TRUMP | bull | +0%, no liq @1.1m | -0%, no liq @5.4m | -0%, no liq @15.1m | +0%, no liq @60.1m | – | no |
-| TRUMP | bull | +0%, no liq @1.8m | -0%, no liq @5.0m | -0%, no liq @15.8m | -0%, no liq @60.7m | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 231 s | TRUMP | The Crypto Bull | bull | +159% | +160% | -67% | -67% | +182% (64 s) |
-| 382 s | TRUMP | The Crypto Bull | bull | -8% | -8% | -8% | -8% | +13% (42 s) |
-| 600 s | BEARMKT | Bear Market | market | price not recorded |  |  |  |  |
-
-## @saylor 2026-11-20 14:13:03 UTC (post 2123781672705360055)
-> Bitcoin is the foundation of everything we do at Strategy. It gives people, companies and agents everywhere the power to hold, move and prog
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| SA | agents | +0%, no liq @1.2m | -47%, no liq @5.5m | -47%, no liq @15.1m | -49%, no liq @61.0m | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 480 s | SA | Super Agents | agents | price not recorded |  |  |  |  |
-
-## @justinsuntron 2026-11-20 15:35:24 UTC (post 2123802396686168289)
-> 交易美股来火币！ https://t.co/U5Trov8XP9
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-20 15:39:04 UTC (post 2123803318476808632)
-> TRX，人称小JST 😂 https://t.co/c9FtzkGi2w
-
-No matching launch in the next 10 minutes.
-
-## @Pumpfun 2026-11-20 16:06:15 UTC (post 2123810162071019606)
-> The $1,000,000 Perps Open has officially begun! Traders on Pumpfun have 2 weeks to achieve the highest perps PnL to be in with a chance of w
-
-No matching launch in the next 10 minutes.
-
-## @Pumpfun 2026-11-20 16:06:16 UTC (post 2123810166768554352)
-> Learn more about the $1M Perps Open: https://t.co/0D9w5V8eyI
-
-No matching launch in the next 10 minutes.
-
-## @Pumpfun 2026-11-20 16:06:18 UTC (post 2123810171583693065)
-> Who can trade Perps Hyperliquid is a third-party protocol, which https://t.co/CxsEJIFc8C does not operate. https://t.co/WWU97JhVgi is an app
-
-No matching launch in the next 10 minutes.
-
-## @Pumpfun 2026-11-20 16:06:20 UTC (post 2123810182069407768)
-> https://t.co/zGb537JwBu
-
-No matching launch in the next 10 minutes.
-
-## @justinsuntron 2026-11-20 16:11:19 UTC (post 2123811434320871659)
-> Riemann Hypothesis has been solved. @JustinSunPrize https://t.co/NErQ9ASUXT
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-20 16:15:20 UTC (post 2123812446745907359)
-> The crypto communities that survive the next few months will go to Trillions.
-
-No matching launch in the next 10 minutes.
-
-## @saylor 2026-11-20 17:11:41 UTC (post 2123826627759264099)
-> Remember why you ₿ought. https://t.co/UxYdpFJutx
-
-No matching launch in the next 10 minutes.
-
-## @elonmusk 2026-11-20 17:17:07 UTC (post 2123827993382687217)
-> Made with Grok @Bot https://t.co/b1rXfw9h4K
-
-No matching launch in the next 10 minutes.
-
-## @Pumpfun 2026-11-20 18:15:34 UTC (post 2123842705767977412)
-> Cross margin and Pro mode are live on Pumpfun! - Cross margin: every position shares your full balance as margin - Add or remove margin on o
-
-No matching launch in the next 10 minutes.
-
-## @Pumpfun 2026-11-20 18:15:35 UTC (post 2123842710591402027)
-> The $1,000,000 Perps Open is live. Learn more: https://t.co/0D9w5V8eyI
-
-No matching launch in the next 10 minutes.
-
-## @Pumpfun 2026-11-20 18:15:37 UTC (post 2123842715381281104)
-> Who can trade Perps Hyperliquid is a third-party protocol, which https://t.co/CxsEJIFc8C does not operate. https://t.co/WWU97JhVgi is an app
-
-No matching launch in the next 10 minutes.
-
-## @Pumpfun 2026-11-20 18:15:39 UTC (post 2123842727301484663)
-> https://t.co/jWtq7KeAHv
-
-No matching launch in the next 10 minutes.
-
-## @elonmusk 2026-11-20 18:28:08 UTC (post 2123845867526574261)
-> I was just thinking that (for myself) stupidity doesn’t count unless I’m also really obstinate about it
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 91 s | OI | Obstinate Inu | obstinate | price not recorded |  |  |  |  |
-
-## @elonmusk 2026-11-20 18:30:35 UTC (post 2123846481488789866)
-> Haven’t read it, but probably mostly (80% or so) accurate https://t.co/C4XWSywt7B
-
-No matching launch in the next 10 minutes.
-
-## @elonmusk 2026-11-20 18:34:02 UTC (post 2123847352582897719)
-> This is where the smart people are https://t.co/9PRyK3Sx3i
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 29 s | SI | Smart Inu | smart | price not recorded |  |  |  |  |
-| 55 s | SI | Smart Inu | smart | price not recorded |  |  |  |  |
-| 105 s | Smartlon | Smart Elon | smart | +16% | -62% | -62% | -62% | +110% (95 s) |
-
-## @elonmusk 2026-11-20 18:55:08 UTC (post 2123852660688494744)
-> Hear me out: “Singularity dot Com”, a dating site for digital superintelligences …
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 73 s | SINGULARITY | Singularity.com | singularity | price not recorded |  |  |  |  |
-| 104 s | Single SI | Singularity.com | singularity | price not recorded |  |  |  |  |
-| 160 s | Singularity | Singularity.com | singularity | price not recorded |  |  |  |  |
-| 529 s | SING | Singularity | singularity | +0% | +0% | +0% | +0% | +0% (2 s) |
-| 536 s | Singular | SINGULARITY.COM | singularity | price not recorded |  |  |  |  |
-
-## @a1lon9 2026-11-20 19:28:04 UTC (post 2123860949979320368)
-> Why is Pumpfun running a perps competition in this market? Over 27% of the traders who signed up for the $1M Perps Open had never traded per
-
-No matching launch in the next 10 minutes.
-
-## @MustStopMurad 2026-11-20 19:29:53 UTC (post 2123861406655357176)
-> SPX6900 will be the first ever memecoin to reach a market capitalization of a Trillion Dollars. Mark my words.
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| SPX6900 | spx6900 | missed | missed | missed | missed | – | no |
-| MAPLE | market | +0%, no liq @1.7m | +0%, no liq @6.0m | +0%, no liq @15.7m | +0%, no liq @61.0m | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 10 s | SPX6900 | SPX6900 | spx6900 | price not recorded |  |  |  |  |
-| 520 s | MAPLE | maple market | market | price not recorded |  |  |  |  |
-
-## @blknoiz06 2026-11-20 20:44:42 UTC (post 2123880234303062051)
-> equities are trading like there's going to be war escalation this weekend or something its just straight down, ive seen crypto do this a lot
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-20 22:34:47 UTC (post 2123907939966861741)
-> stay patient but remain ready to respond to new information https://t.co/TjGwXdVCD6
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-20 23:08:56 UTC (post 2123916530664841351)
-> 🐜🐜🐜 https://t.co/ZCrVhy384n
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-20 23:10:33 UTC (post 2123916941501022208)
-> gmihao brother we will weather the storm together https://t.co/lsFcKFPIA3 https://t.co/eiz2mafjSB
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-20 23:10:53 UTC (post 2123917021452837258)
-> Proof of History has never been solved. Just saying.
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-20 23:13:27 UTC (post 2123917670148096323)
-> 👑👑👑 https://t.co/2JZABd8LJz
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-20 23:13:30 UTC (post 2123917682906951870)
-> bro dis shit deadass look like a shitcoin chart https://t.co/a8WdONkoFY
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 309 s | BOTSHIT | Bot Shit | shit | price not recorded |  |  |  |  |
-
-## @toly 2026-11-20 23:15:40 UTC (post 2123918228347134029)
-> 😭😭😭 https://t.co/28DbXsMNJK
-
-No matching launch in the next 10 minutes.
-
-## @toly 2026-11-20 23:17:48 UTC (post 2123918764794380309)
-> 🐐🐐🐐 https://t.co/QS5YZOubIp
-
-No matching launch in the next 10 minutes.
-
-## @blknoiz06 2026-11-20 23:33:42 UTC (post 2123922764361023733)
-> what we buyin chat
-
-post_match flags (DexScreener, recording only):
-
-| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
-|---|---|---|---|---|---|---|---|
-| WHAT | buyin | missed | missed | missed | +0%, no liq @60.8m | – | no |
-
-| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
-|---|---|---|---|---|---|---|---|---|
-| 266 s | WHAT | What we buyin | buyin | price not recorded |  |  |  |  |
-
-## @cz_binance 2026-11-20 23:50:33 UTC (post 2123927005863563713)
-> Wow, this is insane, and complete BS. I guess this is how they control "public perception"? https://t.co/rJvAhFlmmP
-
-No matching launch in the next 10 minutes.
 
 ## @toly 2026-11-21 00:11:23 UTC (post 2123932250308039087)
 > 😭😭😭 https://t.co/gshO7b337l
@@ -1915,6 +1591,11 @@ No matching launch in the next 10 minutes.
 
 No matching launch in the next 10 minutes.
 
+## @justinsuntron 2026-11-27 15:40:59 UTC (post 2126340518103961999)
+> Bangkok, look up. 🔻 https://t.co/8FosfWBzee
+
+No matching launch in the next 10 minutes.
+
 ## @MustStopMurad 2026-11-27 16:53:02 UTC (post 2126358649492910244)
 > What if AGI comes, but instead of life getting better for everyone, it gets +200% better for the top 5% and -60% worse for the bottom 95%?
 
@@ -1970,4 +1651,86 @@ post_match flags (DexScreener, recording only):
 | 292 s | CI | callout inu | callout | price not recorded |  |  |  |  |
 | 331 s | CI | callout inu | callout | +0% | +0% | +0% | +0% | +183% (1 s) |
 | 382 s | CI | callout inu | callout | +0% | +0% | +0% | +0% | +0% (1 s) |
+
+## @toly 2026-11-27 21:22:41 UTC (post 2126426507686076539)
+> 🤯🤯🤯 https://t.co/OiAwiV7BMj
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-27 21:29:54 UTC (post 2126428324012446090)
+> The goal with Grok Bots is to enable you to build a whole company! https://t.co/rLPoReaR6R
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 550 s | Pumpfamli | Whole Coin | whole | price not recorded |  |  |  |  |
+
+## @elonmusk 2026-11-27 21:34:02 UTC (post 2126429365504229400)
+> Worth trying https://t.co/oqe53VZr0X
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-27 22:08:23 UTC (post 2126438008748384711)
+> Give Grok Bot your hardest problems https://t.co/jCbD27mE3F
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 94 s | Grok | The Everything Bot | grok | price not recorded |  |  |  |  |
+| 181 s | Grok | The Everything Bot | grok | -71% | -71% | -71% | -71% | +25% (8 s) |
+| 275 s | Grok | The Everything Bot | grok | -72% | -72% | -72% | -72% | +264% (53 s) |
+| 388 s | Grok | The Everything Bot | grok | price not recorded |  |  |  |  |
+| 418 s | Grok | The Everything Bot | grok | +0% | -69% | -69% | -69% | +0% (3 s) |
+| 440 s | Grok | The Everything Bot | grok | -1% | -1% | -1% | -1% | +224% (2 s) |
+| 458 s | Grok | The Everything Bot | grok | +0% | +0% | +0% | +0% | +212% (2 s) |
+| 489 s | Grok | The Everything Bot | grok | -0% | -0% | -0% | -0% | +238% (3 s) |
+| 526 s | Grok | The Everything Bot | grok | +0% | -66% | -66% | -66% | +0% (0 s) |
+
+## @elonmusk 2026-11-27 22:08:57 UTC (post 2126438150314631286)
+> This is the way https://t.co/VlkdujMi4d
+
+No matching launch in the next 10 minutes.
+
+## @elonmusk 2026-11-27 22:10:11 UTC (post 2126438463520350588)
+> Give each Bot a specific job, just like people in a company https://t.co/BKIliX3HzA
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-27 22:43:44 UTC (post 2126446905991561444)
+> Boil em, mash em https://t.co/AI0k5oUTkB
+
+No matching launch in the next 10 minutes.
+
+## @toly 2026-11-27 23:50:13 UTC (post 2126463636046741900)
+> Upgrade pls!!! https://t.co/QaC2yPf0pQ
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| UPGRADE | upgrade | missed | missed | +0%, no liq @15.1m | – | – | no |
+| UPGRADE | upgrade | missed | missed | +0%, no liq @15.7m | – | – | no |
+| UPGRADE | upgrade | missed | missed | +0%, no liq @15.3m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 18 s | UPGRADE | Upgrade Now | upgrade | price not recorded |  |  |  |  |
+| 45 s | UPGRADE | Upgrade Now | upgrade | price not recorded |  |  |  |  |
+| 71 s | UPGRADE | Upgrade Now | upgrade | price not recorded |  |  |  |  |
+
+## @toly 2026-11-27 23:51:31 UTC (post 2126463962661470442)
+> It’s Friday 😭😭😭
+
+post_match flags (DexScreener, recording only):
+
+| Symbol | Matched | 1 min | 5 min | 15 min | 60 min | Highest liquidity | Reached $50,000 |
+|---|---|---|---|---|---|---|---|
+| FRIDAY | friday | missed | missed | +0%, no liq @16.0m | – | – | no |
+
+| Launched after | Symbol | Name | Matched | 1 min | 5 min | 15 min | 1 h | Peak (after) |
+|---|---|---|---|---|---|---|---|---|
+| 14 s | FRIDAY | It’s Friday | friday | price not recorded |  |  |  |  |
+
+## @toly 2026-11-27 23:57:58 UTC (post 2126465585957806316)
+> 👑👑👑 https://t.co/UstnN7KaGg
+
+No matching launch in the next 10 minutes.
 
