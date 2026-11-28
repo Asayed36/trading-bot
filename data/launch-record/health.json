@@ -1,19 +1,19 @@
 {
- "updated": "2026-11-28T02:03:48Z",
+ "updated": "2026-11-28T03:01:43Z",
  "feed_up": true,
  "endpoint": "solana-rpc.publicnode.com",
- "last_message": "2026-11-28T02:03:47Z",
- "feed_silent_seconds": 1,
- "last_row": "2026-11-28T01:35:35Z",
- "last_row_ts": 1795829735.9816394,
- "since_last_row_seconds": 1692,
- "launches_seen_last_hour": 57,
- "in_flight": 57,
- "rows_written_today": 178,
+ "last_message": "2026-11-28T03:01:33Z",
+ "feed_silent_seconds": 10,
+ "last_row": "2026-11-28T02:31:00Z",
+ "last_row_ts": 1795833060.0137498,
+ "since_last_row_seconds": 1843,
+ "launches_seen_last_hour": 450,
+ "in_flight": 450,
+ "rows_written_today": 203,
  "rows_skipped_by_cap_today": 298,
  "max_rows_per_day": 4000,
- "feed_disconnects_today": 320,
- "gap_seconds_today": 369,
+ "feed_disconnects_today": 438,
+ "gap_seconds_today": 489,
  "started": "2026-11-27T06:23:19Z",
  "dropped_at_last_restart": 287,
  "days": {
@@ -190,37 +190,31 @@
    "dropped_at_restart": 287
   },
   "2026-11-28": {
-   "gap_seconds": 369,
-   "feed_disconnects": 320,
-   "launches_seen": 749,
-   "finished": 692,
-   "watched_60": 692,
-   "buyers_qualified": 473,
-   "watched_60_ge_1": 631,
-   "watched_60_ge_2": 533,
-   "watched_60_ge_3": 473,
-   "qualified": 473,
-   "nonsample_rows": 167,
-   "rows_written": 178,
-   "watched_60_ge_4": 419,
-   "watched_60_ge_5": 375,
-   "watched_60_ge_8": 296,
-   "watched_60_ge_10": 253,
-   "watched_60_ge_15": 159,
-   "watched_60_ge_20": 107,
-   "sample": 11,
-   "watched_60_ge_30": 57,
-   "watched_60_ge_50": 40,
+   "gap_seconds": 489,
+   "feed_disconnects": 438,
+   "launches_seen": 1199,
+   "finished": 749,
+   "watched_60": 749,
+   "buyers_qualified": 497,
+   "watched_60_ge_1": 674,
+   "watched_60_ge_2": 562,
+   "watched_60_ge_3": 497,
+   "qualified": 497,
+   "nonsample_rows": 191,
+   "rows_written": 203,
+   "watched_60_ge_4": 435,
+   "watched_60_ge_5": 390,
+   "watched_60_ge_8": 304,
+   "watched_60_ge_10": 261,
+   "watched_60_ge_15": 166,
+   "watched_60_ge_20": 113,
+   "sample": 12,
+   "watched_60_ge_30": 59,
+   "watched_60_ge_50": 41,
    "skipped_by_cap": 298
   }
  },
  "feed_counts": {
-  "2026-11-27T02": {
-   "messages": 389017,
-   "trades": 81244,
-   "undecoded": 40601,
-   "creations": 637
-  },
   "2026-11-27T03": {
    "messages": 36143,
    "undecoded": 1003,
@@ -352,40 +346,35 @@
    "undecoded": 4602,
    "trades": 4835,
    "creations": 57
+  },
+  "2026-11-28T02": {
+   "messages": 360223,
+   "undecoded": 34929,
+   "trades": 59423,
+   "creations": 450
   }
  },
  "endpoints": {
   "api.mainnet-beta.solana.com": {
-   "attempts": 612,
-   "successes": 610,
-   "failures": 613,
+   "attempts": 594,
+   "successes": 592,
+   "failures": 595,
    "top_failure": "closed without a close frame (code 1006); we sent code 1002 (invalid status code)",
-   "top_failure_count": 596,
-   "avg_connected_seconds": 107.2,
-   "ended_connections": 611
+   "top_failure_count": 578,
+   "avg_connected_seconds": 104.5,
+   "ended_connections": 593
   },
   "solana-rpc.publicnode.com": {
-   "attempts": 978,
-   "successes": 978,
-   "failures": 977,
+   "attempts": 1096,
+   "successes": 1096,
+   "failures": 1095,
    "top_failure": "ConnectionError: no message for 15 s",
-   "top_failure_count": 975,
-   "avg_connected_seconds": 19.4,
-   "ended_connections": 977
+   "top_failure_count": 1093,
+   "avg_connected_seconds": 20.3,
+   "ended_connections": 1095
   }
  },
  "endpoint_hours": {
-  "2026-11-27T00": {
-   "api.mainnet-beta.solana.com": {
-    "attempts": 29,
-    "successes": 29,
-    "failures": {
-     "closed without a close frame (code 1006); we sent code 1002 (invalid status code)": 29
-    },
-    "ended": 29,
-    "connected_seconds": 3490.630578994751
-   }
-  },
   "2026-11-27T01": {
    "api.mainnet-beta.solana.com": {
     "attempts": 30,
@@ -707,13 +696,24 @@
   },
   "2026-11-28T02": {
    "solana-rpc.publicnode.com": {
-    "attempts": 14,
-    "successes": 14,
+    "attempts": 126,
+    "successes": 126,
     "failures": {
-     "ConnectionError: no message for 15 s": 14
+     "ConnectionError: no message for 15 s": 126
     },
-    "ended": 14,
-    "connected_seconds": 225.1809697151184
+    "ended": 126,
+    "connected_seconds": 3462.580048084259
+   }
+  },
+  "2026-11-28T03": {
+   "solana-rpc.publicnode.com": {
+    "attempts": 6,
+    "successes": 6,
+    "failures": {
+     "ConnectionError: no message for 15 s": 6
+    },
+    "ended": 6,
+    "connected_seconds": 97.12748694419861
    }
   }
  }
