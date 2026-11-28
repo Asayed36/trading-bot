@@ -1,6 +1,6 @@
 # X posts and the pump.fun launches after them
 
-Measurement only (screener/xposts_report.py), written 2026-11-27 22:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
+Measurement only (screener/xposts_report.py), written 2026-11-27 23:22 UTC, the last 7 days. For each post, the new launches in the 10 minutes after it whose name or symbol matches a word of the post. Price moves are from the first recorded price (5 s after the launch) and exist only for the launches the launch recorder followed (qualified launches and a 2% sample); a match is not a cause.
 
 282 post(s), 166 matching launch(es).
 
@@ -49,14 +49,14 @@ The last 7 days: per account, the posts saved more than 3 minutes after they wer
 | @a1lon9 | 4 | 0 | – | 1: 1 X error or pause |
 | @blknoiz06 | 38 | 26 | 17 other, 9 not recorded | 2629: 2629 per-account limit |
 | @cz_binance | 19 | 1 | 1 not recorded | 80: 80 per-account limit |
-| @elonmusk | 48 | 29 | 21 other, 8 not recorded | 3409: 3409 per-account limit |
-| @justinsuntron | 47 | 18 | 8 other, 10 not recorded | 2381: 2381 per-account limit |
+| @elonmusk | 48 | 29 | 21 other, 8 not recorded | 3439: 3439 per-account limit |
+| @justinsuntron | 47 | 18 | 8 other, 10 not recorded | 2411: 2411 per-account limit |
 | @mrbeast | 4 | 0 | – | – |
 | @muststopmurad | 38 | 0 | – | 27: 26 per-account limit, 1 X error or pause |
 | @pumpfun | 27 | 9 | 3 other, 6 not recorded | 379: 378 per-account limit, 1 X error or pause |
 | @realdonaldtrump | 0 | 0 | – | 1: 1 X error or pause |
 | @saylor | 24 | 1 | 1 other | 207: 207 per-account limit |
-| @toly | 49 | 40 | 30 other, 10 not recorded | 4642: 4642 per-account limit |
+| @toly | 49 | 40 | 30 other, 10 not recorded | 4672: 4672 per-account limit |
 | @vitalikbuterin | 4 | 0 | – | – |
 
 ## Posts and the launches after them
